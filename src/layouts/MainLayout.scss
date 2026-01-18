@@ -1,0 +1,46 @@
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+.main-layout {
+  min-height: 100vh;
+  @include flex-column;
+
+  &__header {
+    background-color: $color-white;
+    box-shadow: $shadow-sm;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  &__header-content {
+    @include flex-between;
+    padding: $spacing-md 0;
+  }
+
+  &__logo {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__nav {
+    @include flex-center;
+    gap: $spacing-md;
+  }
+
+  &__user {
+    display: none;
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+
+    @include md {
+      display: block;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    padding: $spacing-lg 0;
+  }
+}

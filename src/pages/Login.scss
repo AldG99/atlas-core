@@ -1,0 +1,35 @@
+@use '../styles/abstracts/variables' as *;
+
+.login-form {
+  h2 {
+    text-align: center;
+    margin-bottom: $spacing-lg;
+    color: $color-gray-800;
+  }
+
+  &__error {
+    background-color: rgba($color-danger, 0.1);
+    color: $color-danger;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-md;
+    margin-bottom: $spacing-md;
+    font-size: $font-size-sm;
+    text-align: center;
+  }
+
+  &__link {
+    text-align: center;
+    margin-top: $spacing-lg;
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+
+    a {
+      color: $color-primary;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
