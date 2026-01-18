@@ -1,0 +1,33 @@
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+.edit-pedido {
+  max-width: 600px;
+  margin: 0 auto;
+
+  &__header {
+    margin-bottom: $spacing-lg;
+
+    h1 {
+      margin: 0;
+    }
+  }
+
+  &__error {
+    background-color: rgba($color-danger, 0.1);
+    color: $color-danger;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-md;
+    margin-bottom: $spacing-md;
+    font-size: $font-size-sm;
+  }
+
+  &__loading {
+    text-align: center;
+    color: $color-gray-500;
+  }
+
+  &__form {
+    @include card;
+  }
+}

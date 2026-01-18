@@ -1,0 +1,66 @@
+@use '../../styles/abstracts/variables' as *;
+
+.toast-container {
+  position: fixed;
+  top: $spacing-md;
+  right: $spacing-md;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  max-width: 90vw;
+
+  @media (min-width: 480px) {
+    max-width: 360px;
+  }
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-lg;
+  cursor: pointer;
+  animation: slideIn 0.3s ease-out;
+  color: $color-white;
+
+  &__icon {
+    font-size: $font-size-lg;
+    font-weight: bold;
+  }
+
+  &__message {
+    font-size: $font-size-sm;
+    flex: 1;
+  }
+
+  &--success {
+    background-color: $color-success;
+  }
+
+  &--error {
+    background-color: $color-danger;
+  }
+
+  &--warning {
+    background-color: $color-warning;
+    color: $color-gray-900;
+  }
+
+  &--info {
+    background-color: $color-primary;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

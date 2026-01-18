@@ -1,0 +1,110 @@
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+.dashboard {
+  &__header {
+    @include flex-between;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+
+    h1 {
+      margin: 0;
+    }
+  }
+
+  &__header-actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__controls {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+
+    @include md {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  &__search {
+    flex: 1;
+
+    .input {
+      width: 100%;
+    }
+  }
+
+  &__selects {
+    display: flex;
+    gap: $spacing-sm;
+
+    .select {
+      min-width: 140px;
+    }
+  }
+
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__filter {
+    padding: $spacing-xs $spacing-md;
+    border-radius: $border-radius-full;
+    font-size: $font-size-sm;
+    background-color: $color-gray-200;
+    color: $color-gray-700;
+    transition: all $transition-fast;
+
+    &:hover {
+      background-color: $color-gray-300;
+    }
+
+    &--active {
+      background-color: $color-primary;
+      color: $color-white;
+
+      &:hover {
+        background-color: $color-primary-dark;
+      }
+    }
+  }
+
+  &__loading,
+  &__error {
+    text-align: center;
+    padding: $spacing-xl;
+  }
+
+  &__error {
+    color: $color-danger;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $spacing-2xl;
+    background-color: $color-white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+
+    p {
+      margin-bottom: $spacing-md;
+      color: $color-gray-500;
+    }
+  }
+
+  &__list {
+    display: grid;
+    gap: $spacing-md;
+
+    @include lg {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
