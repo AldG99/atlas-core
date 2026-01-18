@@ -1,0 +1,78 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.resumen-dia {
+  @include card;
+  margin-bottom: $spacing-lg;
+
+  &__title {
+    font-size: $font-size-lg;
+    margin-bottom: $spacing-md;
+    color: $color-gray-700;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $color-gray-200;
+  }
+
+  &__stat {
+    text-align: center;
+    padding: $spacing-md;
+    background-color: $color-gray-50;
+    border-radius: $border-radius-md;
+
+    &--primary {
+      background-color: rgba($color-primary, 0.1);
+
+      .resumen-dia__stat-value {
+        color: $color-primary;
+      }
+    }
+  }
+
+  &__stat-value {
+    display: block;
+    font-size: $font-size-2xl;
+    font-weight: 700;
+    color: $color-gray-800;
+  }
+
+  &__stat-label {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+
+  &__estados {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__estado {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  &__estado-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  &__estado-label {
+    flex: 1;
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+  }
+
+  &__estado-count {
+    font-weight: 600;
+    color: $color-gray-800;
+  }
+}

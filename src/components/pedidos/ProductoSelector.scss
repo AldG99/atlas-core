@@ -1,0 +1,85 @@
+@use '../../styles/abstracts/variables' as *;
+
+.producto-selector {
+  background-color: $color-gray-100;
+  border-radius: $border-radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-gray-700;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    padding: $spacing-sm;
+    background-color: $color-white;
+    border-radius: $border-radius-sm;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__form-actions {
+    display: flex;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  &__loading,
+  &__empty {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+    text-align: center;
+    padding: $spacing-sm;
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    background-color: $color-white;
+    border: 1px solid $color-gray-300;
+    border-radius: $border-radius-full;
+    font-size: $font-size-sm;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      border-color: $color-primary;
+      background-color: rgba($color-primary, 0.05);
+    }
+  }
+
+  &__item-name {
+    color: $color-gray-700;
+  }
+
+  &__item-price {
+    color: $color-primary;
+    font-weight: 600;
+  }
+}
+
+.btn--sm {
+  padding: $spacing-xs $spacing-sm;
+  font-size: $font-size-sm;
+}

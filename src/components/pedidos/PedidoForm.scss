@@ -1,0 +1,8 @@
+@use '../../styles/abstracts/variables' as *;
+
+.pedido-form {
+  textarea.input {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
