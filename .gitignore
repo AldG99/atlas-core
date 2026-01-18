@@ -21,6 +21,9 @@ src/types
 # Docs
 fase-1-gestor-pedidos.md
 
+# Vite
+vite-env.d.ts
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
