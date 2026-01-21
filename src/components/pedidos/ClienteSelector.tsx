@@ -31,7 +31,14 @@ const ClienteSelector = ({ onSelect }: ClienteSelectorProps) => {
     try {
       await addCliente({
         nombre: nombre.trim(),
-        telefono: telefono.trim()
+        apellido: '',
+        telefono: telefono.trim(),
+        calle: '',
+        numeroExterior: '',
+        colonia: '',
+        ciudad: '',
+        codigoPostal: '',
+        numeroVisible: true
       });
       showToast('Cliente guardado', 'success');
       setNombre('');
