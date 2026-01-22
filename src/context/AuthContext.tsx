@@ -3,12 +3,14 @@ import { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import type { User, AuthState, LoginCredentials, RegisterCredentials } from '../types/User';
-import { loginUser, registerUser, logoutUser, getUserData } from '../services/authService';
+import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage } from '../services/authService';
+import type { UpdateProfileData } from '../services/authService';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: UpdateProfileData, imageFile?: File | null) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -74,13 +76,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const updateProfile = async (data: UpdateProfileData, imageFile?: File | null) => {
+    if (!user) return;
+
+    try {
+      setError(null);
+      let profileData = { ...data };
+
+      if (imageFile) {
+        const imageUrl = await uploadProfileImage(imageFile, user.uid);
+        profileData.fotoPerfil = imageUrl;
+      }
+
+      const updatedUser = await updateUserProfile(user.uid, profileData);
+      setUser(updatedUser);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al actualizar perfil');
+      throw err;
+    }
+  };
+
   const value: AuthContextType = {
     user,
     loading,
     error,
     login,
     register,
-    logout
+    logout,
+    updateProfile
   };
 
   return (

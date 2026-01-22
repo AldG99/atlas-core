@@ -9,6 +9,8 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import NewPedido from './pages/NewPedido';
 import EditPedido from './pages/EditPedido';
+import Clientes from './pages/Clientes';
+import ComingSoon from './pages/ComingSoon';
 import './styles/main.scss';
 
 function App() {
@@ -41,6 +43,54 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditPedido />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.CLIENTES}
+            element={
+              <ProtectedRoute>
+                <Clientes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.PRODUCTOS}
+            element={
+              <ProtectedRoute>
+                <ComingSoon />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.REPORTES}
+            element={
+              <ProtectedRoute>
+                <ComingSoon />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.ARCHIVO}
+            element={
+              <ProtectedRoute>
+                <ComingSoon />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.CONFIGURACION}
+            element={
+              <ProtectedRoute>
+                <ComingSoon />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.SOPORTE}
+            element={
+              <ProtectedRoute>
+                <ComingSoon />
               </ProtectedRoute>
             }
           />

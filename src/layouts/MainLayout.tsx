@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { ROUTES } from '../config/routes';
+import Sidebar from '../components/ui/Sidebar';
+import Header from '../components/ui/Header';
 import './MainLayout.scss';
 
 interface MainLayoutProps {
@@ -9,36 +8,17 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate(ROUTES.LOGIN);
-  };
-
   return (
     <div className="main-layout">
-      <header className="main-layout__header">
-        <div className="container">
-          <div className="main-layout__header-content">
-            <Link to={ROUTES.DASHBOARD} className="main-layout__logo">
-              Gestor de Pedidos
-            </Link>
-            <nav className="main-layout__nav">
-              <span className="main-layout__user">{user?.nombreNegocio}</span>
-              <button onClick={handleLogout} className="btn btn--secondary">
-                Cerrar sesión
-              </button>
-            </nav>
-          </div>
-        </div>
-      </header>
-      <main className="main-layout__content">
-        <div className="container">
+      <Sidebar />
+      <div className="main-layout__header">
+        <Header />
+      </div>
+      <div className="main-layout__wrapper">
+        <main className="main-layout__content">
           {children}
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

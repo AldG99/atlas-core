@@ -15,7 +15,12 @@ export const useClientes = () => {
   const { user } = useAuth();
 
   const fetchClientes = useCallback(async () => {
-    if (!user) return;
+    console.log('useClientes - fetchClientes called, user:', user?.uid);
+    if (!user) {
+      console.log('useClientes - No user, skipping fetch');
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -35,12 +40,25 @@ export const useClientes = () => {
   }, [fetchClientes]);
 
   const addCliente = async (data: ClienteFormData) => {
-    if (!user) return;
+    if (!user) throw new Error('Usuario no autenticado');
 
     const id = await createCliente(data, user.uid);
     const newCliente: Cliente = {
       id,
-      ...data,
+      fotoPerfil: data.fotoPerfil || '',
+      nombre: data.nombre,
+      apellido: data.apellido,
+      telefono: data.telefono,
+      correo: data.correo || '',
+      calle: data.calle,
+      numeroExterior: data.numeroExterior,
+      colonia: data.colonia,
+      ciudad: data.ciudad,
+      codigoPostal: data.codigoPostal,
+      referencia: data.referencia || '',
+      numeroVisible: data.numeroVisible,
+      horarioEntrega: data.horarioEntrega || '',
+      notas: data.notas || '',
       userId: user.uid,
       fechaCreacion: new Date()
     };

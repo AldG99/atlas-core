@@ -1,46 +1,49 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
+$sidebar-width: 220px;
+$header-height: 70px;
+
 .main-layout {
   min-height: 100vh;
-  @include flex-column;
+  background-color: $color-gray-100;
 
-  &__header {
-    background-color: $color-white;
-    box-shadow: $shadow-sm;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  &__header-content {
-    @include flex-between;
-    padding: $spacing-md 0;
-  }
-
-  &__logo {
-    font-size: $font-size-lg;
-    font-weight: 700;
-    color: $color-primary;
-  }
-
-  &__nav {
-    @include flex-center;
-    gap: $spacing-md;
-  }
-
-  &__user {
-    display: none;
-    font-size: $font-size-sm;
-    color: $color-gray-600;
+  &__wrapper {
+    min-height: 100vh;
+    padding-top: calc($header-height + $spacing-md);
 
     @include md {
-      display: block;
+      margin-left: $sidebar-width;
+    }
+  }
+
+  &__header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $header-height;
+    z-index: 900;
+    background-color: $color-white;
+    border-bottom: 1px solid $color-gray-200;
+    display: flex;
+    align-items: center;
+    padding: 0 $spacing-md;
+    padding-left: 60px;
+
+    @include md {
+      left: $sidebar-width;
+      padding: 0 $spacing-lg;
     }
   }
 
   &__content {
-    flex: 1;
-    padding: $spacing-lg 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: $spacing-md;
+
+    @include md {
+      padding: $spacing-lg;
+    }
   }
 }

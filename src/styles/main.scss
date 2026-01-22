@@ -1,3 +1,6 @@
+// Sass modules
+@use 'sass:color';
+
 // Abstracts
 @use 'abstracts/variables' as *;
 @use 'abstracts/mixins' as *;
@@ -44,7 +47,7 @@
     color: $color-white;
 
     &:hover:not(:disabled) {
-      background-color: darken($color-danger, 10%);
+      background-color: color.adjust($color-danger, $lightness: -10%);
     }
   }
 
@@ -131,4 +134,58 @@
 
 .mb-lg {
   margin-bottom: $spacing-lg;
+}
+
+// Botones con iconos
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  background-color: transparent;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &--primary {
+    color: $color-primary;
+
+    &:hover {
+      background-color: rgba($color-primary, 0.1);
+    }
+  }
+
+  &--secondary {
+    color: $color-gray-600;
+
+    &:hover {
+      background-color: $color-gray-100;
+    }
+  }
+
+  &--danger {
+    color: $color-danger;
+
+    &:hover {
+      background-color: rgba($color-danger, 0.1);
+    }
+  }
+
+  &--whatsapp {
+    color: #25d366;
+
+    &:hover {
+      background-color: rgba(#25d366, 0.1);
+    }
+  }
 }
