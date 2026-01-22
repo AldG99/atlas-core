@@ -1,0 +1,131 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.pedidos-table-container {
+  background-color: $color-white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.pedidos-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+
+  thead {
+    background-color: $color-gray-50;
+    border-bottom: 1px solid $color-gray-200;
+
+    th {
+      padding: $spacing-md;
+      text-align: left;
+      font-size: $font-size-sm;
+      font-weight: 600;
+      color: $color-gray-600;
+      white-space: nowrap;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid $color-gray-100;
+      transition: background-color $transition-fast;
+
+      &:hover {
+        background-color: $color-gray-50;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      padding: $spacing-md;
+      font-size: $font-size-sm;
+      color: $color-gray-700;
+      vertical-align: top;
+    }
+  }
+
+  &__client {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: $color-gray-800;
+  }
+
+  &__phone {
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+  }
+
+  &__products {
+    max-width: 250px;
+    line-height: 1.4;
+  }
+
+  &__notes {
+    display: block;
+    margin-top: $spacing-xs;
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+    font-style: italic;
+  }
+
+  &__total {
+    font-weight: 600;
+    color: $color-gray-800;
+    white-space: nowrap;
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: $border-radius-full;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    color: $color-white;
+    white-space: nowrap;
+  }
+
+  &__date {
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+    white-space: nowrap;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    align-items: center;
+  }
+
+  &__select {
+    padding: 4px 8px;
+    font-size: $font-size-xs;
+    border: 1px solid $color-gray-300;
+    border-radius: $border-radius-sm;
+    background-color: $color-white;
+    color: $color-gray-700;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+  }
+}
+
+// Botones pequeños para la tabla
+.btn--sm {
+  padding: 4px 8px;
+  font-size: $font-size-xs;
+}

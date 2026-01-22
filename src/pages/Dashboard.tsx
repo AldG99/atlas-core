@@ -7,7 +7,7 @@ import { PEDIDO_STATUS } from '../constants/pedidoStatus';
 import { ROUTES } from '../config/routes';
 import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
-import PedidoCard from '../components/pedidos/PedidoCard';
+import PedidosTable from '../components/pedidos/PedidosTable';
 import ResumenDia from '../components/pedidos/ResumenDia';
 import './Dashboard.scss';
 
@@ -298,19 +298,16 @@ const Dashboard = () => {
           </div>
         )}
 
-        <div className="dashboard__list">
-          {filteredAndSortedPedidos.map((pedido) => (
-            <PedidoCard
-              key={pedido.id}
-              pedido={pedido}
-              onChangeStatus={handleChangeStatus}
-              onDelete={handleDelete}
-              onArchive={!showArchived ? handleArchive : undefined}
-              onRestore={showArchived ? handleRestore : undefined}
-              isArchived={showArchived}
-            />
-          ))}
-        </div>
+        {!loading && !error && filteredAndSortedPedidos.length > 0 && (
+          <PedidosTable
+            pedidos={filteredAndSortedPedidos}
+            onChangeStatus={handleChangeStatus}
+            onDelete={handleDelete}
+            onArchive={!showArchived ? handleArchive : undefined}
+            onRestore={showArchived ? handleRestore : undefined}
+            isArchived={showArchived}
+          />
+        )}
       </div>
     </MainLayout>
   );

@@ -1,7 +1,7 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
-.dashboard {
+.clientes {
   &__header {
     @include flex-between;
     flex-wrap: wrap;
@@ -13,67 +13,31 @@
     }
   }
 
-  &__header-actions {
-    display: flex;
-    gap: $spacing-sm;
-  }
-
   &__controls {
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
-    margin-bottom: $spacing-md;
+    margin-bottom: $spacing-lg;
 
     @include md {
       flex-direction: row;
       align-items: center;
+      justify-content: space-between;
     }
   }
 
   &__search {
     flex: 1;
+    max-width: 400px;
 
     .input {
       width: 100%;
     }
   }
 
-  &__selects {
-    display: flex;
-    gap: $spacing-sm;
-
-    .select {
-      min-width: 140px;
-    }
-  }
-
-  &__filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-sm;
-    margin-bottom: $spacing-lg;
-  }
-
-  &__filter {
-    padding: $spacing-xs $spacing-md;
-    border-radius: $border-radius-full;
+  &__count {
     font-size: $font-size-sm;
-    background-color: $color-gray-200;
-    color: $color-gray-700;
-    transition: all $transition-fast;
-
-    &:hover {
-      background-color: $color-gray-300;
-    }
-
-    &--active {
-      background-color: $color-primary;
-      color: $color-white;
-
-      &:hover {
-        background-color: $color-primary-dark;
-      }
-    }
+    color: $color-gray-500;
   }
 
   &__loading,
