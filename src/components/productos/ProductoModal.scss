@@ -1,0 +1,78 @@
+@use '../../styles/abstracts/variables' as *;
+
+.input-currency {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &__symbol {
+    position: absolute;
+    left: $spacing-sm;
+    color: $color-gray-500;
+    font-weight: 500;
+    pointer-events: none;
+  }
+
+  .input {
+    padding-left: $spacing-lg;
+  }
+}
+
+.producto-image-section {
+  margin-bottom: $spacing-md;
+
+  > label {
+    display: block;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-gray-700;
+    margin-bottom: $spacing-xs;
+  }
+}
+
+.producto-image-upload {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.producto-image-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px dashed $color-gray-300;
+  transition: border-color $transition-fast;
+
+  &:hover {
+    border-color: $color-primary;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.producto-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  background-color: $color-gray-50;
+  color: $color-gray-400;
+
+  span {
+    font-size: $font-size-xs;
+  }
+
+  &:hover {
+    color: $color-primary;
+    background-color: rgba($color-primary, 0.05);
+  }
+}
