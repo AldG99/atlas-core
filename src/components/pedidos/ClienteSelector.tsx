@@ -1,26 +1,41 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useClientes } from '../../hooks/useClientes';
 import { useToast } from '../../hooks/useToast';
 import type { Cliente } from '../../types/Cliente';
 import './ClienteSelector.scss';
 
 interface ClienteSelectorProps {
-  onSelect: (cliente: Cliente) => void;
+  onSelect: (cliente: Cliente | null) => void;
+  selectedCliente?: Cliente | null;
 }
 
-const ClienteSelector = ({ onSelect }: ClienteSelectorProps) => {
+const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) => {
   const { clientes, loading, addCliente } = useClientes();
   const { showToast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const filteredClientes = clientes.filter(
     (c) =>
       c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.telefono.includes(searchTerm)
   );
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setShowDropdown(value.length > 0);
+  };
+
+  const handleSelectCliente = (cliente: Cliente) => {
+    onSelect(cliente);
+    setSearchTerm('');
+    setShowDropdown(false);
+  };
 
   const handleAddNew = async () => {
     if (!nombre.trim() || !telefono.trim()) {
@@ -29,7 +44,7 @@ const ClienteSelector = ({ onSelect }: ClienteSelectorProps) => {
     }
 
     try {
-      await addCliente({
+      const newCliente = await addCliente({
         nombre: nombre.trim(),
         apellido: '',
         telefono: telefono.trim(),
@@ -40,30 +55,142 @@ const ClienteSelector = ({ onSelect }: ClienteSelectorProps) => {
         codigoPostal: '',
         numeroVisible: true
       });
-      showToast('Cliente guardado', 'success');
+      if (newCliente) {
+        onSelect(newCliente);
+      }
+      showToast('Cliente creado correctamente', 'success');
       setNombre('');
       setTelefono('');
       setShowForm(false);
     } catch {
-      showToast('Error al guardar cliente', 'error');
+      showToast('Error al crear cliente', 'error');
     }
   };
 
+  const handleClearSelection = () => {
+    onSelect(null);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  if (selectedCliente) {
+    return (
+      <div className="cliente-selector cliente-selector--selected">
+        <div className="cliente-selector__selected-header">
+          <span className="cliente-selector__label">Cliente</span>
+          <button
+            type="button"
+            className="btn btn--outline btn--sm"
+            onClick={handleClearSelection}
+          >
+            Cambiar
+          </button>
+        </div>
+        <div className="cliente-selector__selected-info">
+          <div className="cliente-selector__selected-avatar">
+            {selectedCliente.fotoPerfil ? (
+              <img src={selectedCliente.fotoPerfil} alt={selectedCliente.nombre} />
+            ) : (
+              <span className="cliente-selector__selected-avatar-placeholder">
+                {selectedCliente.nombre.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="cliente-selector__selected-details">
+            <div className="cliente-selector__selected-name">
+              {selectedCliente.nombre} {selectedCliente.apellido}
+            </div>
+            <div className="cliente-selector__selected-phone">
+              {selectedCliente.telefono}
+            </div>
+            {selectedCliente.calle && (
+              <div className="cliente-selector__selected-address">
+                {selectedCliente.calle} {selectedCliente.numeroExterior}
+                {selectedCliente.numeroInterior && ` Int. ${selectedCliente.numeroInterior}`},
+                {' '}{selectedCliente.colonia}, {selectedCliente.ciudad}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="cliente-selector">
-      <div className="cliente-selector__header">
-        <span className="cliente-selector__title">Clientes frecuentes</span>
+    <div className="cliente-selector" ref={wrapperRef}>
+      <label className="cliente-selector__label">Cliente</label>
+
+      <div className="cliente-selector__search-row">
+        <div className="cliente-selector__search-wrapper">
+          <input
+            type="text"
+            placeholder="Buscar por nombre o teléfono..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            onFocus={() => searchTerm && setShowDropdown(true)}
+            className="input cliente-selector__search"
+          />
+          {loading && <span className="cliente-selector__spinner" />}
+        </div>
         <button
           type="button"
-          className="btn btn--secondary btn--sm"
+          className="btn btn--primary cliente-selector__add-btn"
           onClick={() => setShowForm(!showForm)}
+          title="Agregar nuevo cliente"
         >
-          {showForm ? 'Cancelar' : '+ Nuevo'}
+          +
         </button>
       </div>
 
+      {showDropdown && (
+        <div className="cliente-selector__dropdown">
+          {filteredClientes.length > 0 ? (
+            filteredClientes.map((cliente) => (
+              <button
+                key={cliente.id}
+                type="button"
+                className="cliente-selector__dropdown-item"
+                onClick={() => handleSelectCliente(cliente)}
+              >
+                <div className="cliente-selector__dropdown-avatar">
+                  {cliente.fotoPerfil ? (
+                    <img src={cliente.fotoPerfil} alt={cliente.nombre} />
+                  ) : (
+                    <span className="cliente-selector__dropdown-avatar-placeholder">
+                      {cliente.nombre.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <div className="cliente-selector__dropdown-info">
+                  <span className="cliente-selector__dropdown-name">
+                    {cliente.nombre} {cliente.apellido}
+                  </span>
+                  <span className="cliente-selector__dropdown-phone">
+                    {cliente.telefono}
+                  </span>
+                </div>
+              </button>
+            ))
+          ) : (
+            <div className="cliente-selector__dropdown-empty">
+              No se encontraron clientes
+            </div>
+          )}
+        </div>
+      )}
+
       {showForm && (
         <div className="cliente-selector__form">
+          <div className="cliente-selector__form-title">Nuevo cliente</div>
           <input
             type="text"
             placeholder="Nombre del cliente"
@@ -78,45 +205,22 @@ const ClienteSelector = ({ onSelect }: ClienteSelectorProps) => {
             onChange={(e) => setTelefono(e.target.value)}
             className="input"
           />
-          <button
-            type="button"
-            className="btn btn--primary btn--sm"
-            onClick={handleAddNew}
-          >
-            Guardar cliente
-          </button>
-        </div>
-      )}
-
-      {!showForm && clientes.length > 5 && (
-        <input
-          type="text"
-          placeholder="Buscar cliente..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="input cliente-selector__search"
-        />
-      )}
-
-      {loading && <p className="cliente-selector__loading">Cargando...</p>}
-
-      {!loading && clientes.length === 0 && !showForm && (
-        <p className="cliente-selector__empty">No hay clientes guardados.</p>
-      )}
-
-      {!loading && filteredClientes.length > 0 && (
-        <div className="cliente-selector__list">
-          {filteredClientes.map((cliente) => (
+          <div className="cliente-selector__form-actions">
             <button
-              key={cliente.id}
               type="button"
-              className="cliente-selector__item"
-              onClick={() => onSelect(cliente)}
+              className="btn btn--outline btn--sm"
+              onClick={() => setShowForm(false)}
             >
-              <span className="cliente-selector__item-name">{cliente.nombre}</span>
-              <span className="cliente-selector__item-phone">{cliente.telefono}</span>
+              Cancelar
             </button>
-          ))}
+            <button
+              type="button"
+              className="btn btn--primary btn--sm"
+              onClick={handleAddNew}
+            >
+              Guardar
+            </button>
+          </div>
         </div>
       )}
     </div>

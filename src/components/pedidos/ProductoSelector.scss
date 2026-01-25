@@ -1,81 +1,286 @@
 @use '../../styles/abstracts/variables' as *;
 
 .producto-selector {
-  background-color: $color-gray-100;
-  border-radius: $border-radius-md;
-  padding: $spacing-md;
   margin-bottom: $spacing-md;
 
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $spacing-sm;
-  }
-
-  &__title {
+  &__label {
+    display: block;
     font-size: $font-size-sm;
     font-weight: 600;
     color: $color-gray-700;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__search-row {
+    display: flex;
+    gap: $spacing-sm;
+    position: relative;
+  }
+
+  &__search-wrapper {
+    flex: 1;
+    position: relative;
+  }
+
+  &__search {
+    width: 100%;
+  }
+
+  &__spinner {
+    position: absolute;
+    right: $spacing-sm;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid $color-gray-300;
+    border-top-color: $color-primary;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: translateY(-50%) rotate(360deg);
+    }
+  }
+
+  &__add-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-size: $font-size-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: $color-white;
+    border: 1px solid $color-gray-300;
+    border-radius: $border-radius-md;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 100;
+    margin-top: $spacing-xs;
+  }
+
+  &__dropdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    background: none;
+    border: none;
+    border-bottom: 1px solid $color-gray-200;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color $transition-fast;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: rgba($color-primary, 0.05);
+    }
+  }
+
+  &__dropdown-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__dropdown-name {
+    font-weight: 500;
+    color: $color-gray-800;
+  }
+
+  &__dropdown-clave {
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+  }
+
+  &__dropdown-price {
+    font-weight: 600;
+    color: $color-primary;
+  }
+
+  &__dropdown-empty {
+    padding: $spacing-md;
+    text-align: center;
+    color: $color-gray-500;
+    font-size: $font-size-sm;
   }
 
   &__form {
+    margin-top: $spacing-sm;
+    padding: $spacing-md;
+    background-color: $color-gray-100;
+    border-radius: $border-radius-md;
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
-    padding: $spacing-sm;
-    background-color: $color-white;
-    border-radius: $border-radius-sm;
-    margin-bottom: $spacing-sm;
+  }
+
+  &__form-title {
+    font-weight: 600;
+    font-size: $font-size-sm;
+    color: $color-gray-700;
+    margin-bottom: $spacing-xs;
   }
 
   &__form-actions {
     display: flex;
     gap: $spacing-sm;
-    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-top: $spacing-xs;
   }
 
-  &__loading,
-  &__empty {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
-    text-align: center;
-    padding: $spacing-sm;
+  &__items {
+    margin-top: $spacing-md;
+    background-color: $color-gray-100;
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
   }
 
-  &__list {
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: $color-white;
+    border-radius: $border-radius-sm;
+    overflow: hidden;
+
+    th,
+    td {
+      padding: $spacing-sm;
+      text-align: left;
+      border-bottom: 1px solid $color-gray-200;
+    }
+
+    th {
+      background-color: $color-gray-100;
+      font-size: $font-size-sm;
+      font-weight: 600;
+      color: $color-gray-700;
+    }
+
+    td {
+      font-size: $font-size-sm;
+      color: $color-gray-800;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  &__table-name {
     display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-xs;
-    max-height: 200px;
-    overflow-y: auto;
+    flex-direction: column;
+    gap: 2px;
   }
 
-  &__item {
+  &__table-clave {
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+    display: block;
+  }
+
+  &__table-subtotal {
+    font-weight: 600;
+    color: $color-primary;
+  }
+
+  &__cantidad {
     display: flex;
     align-items: center;
     gap: $spacing-xs;
-    padding: $spacing-xs $spacing-sm;
-    background-color: $color-white;
+  }
+
+  &__cantidad-btn {
+    width: 28px;
+    height: 28px;
     border: 1px solid $color-gray-300;
-    border-radius: $border-radius-full;
-    font-size: $font-size-sm;
+    background-color: $color-white;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-base;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all $transition-fast;
 
     &:hover {
       border-color: $color-primary;
-      background-color: rgba($color-primary, 0.05);
+      color: $color-primary;
     }
   }
 
-  &__item-name {
+  &__cantidad-value {
+    min-width: 30px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  &__remove-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background-color: transparent;
+    color: $color-gray-500;
+    font-size: $font-size-lg;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $border-radius-sm;
+    transition: all $transition-fast;
+
+    &:hover {
+      background-color: rgba($color-danger, 0.1);
+      color: $color-danger;
+    }
+  }
+
+  &__total {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: $spacing-md;
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 2px solid $color-gray-300;
+  }
+
+  &__total-label {
+    font-size: $font-size-base;
+    font-weight: 600;
     color: $color-gray-700;
   }
 
-  &__item-price {
+  &__total-value {
+    font-size: $font-size-xl;
+    font-weight: 700;
     color: $color-primary;
-    font-weight: 600;
+  }
+
+  &__empty {
+    margin-top: $spacing-md;
+    padding: $spacing-lg;
+    background-color: $color-gray-100;
+    border-radius: $border-radius-md;
+    text-align: center;
+    color: $color-gray-500;
+    font-size: $font-size-sm;
   }
 }
 

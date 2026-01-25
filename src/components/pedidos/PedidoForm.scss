@@ -5,4 +5,12 @@
     resize: vertical;
     min-height: 80px;
   }
+
+  .error-message {
+    display: block;
+    color: $color-danger;
+    font-size: $font-size-sm;
+    margin-top: -$spacing-sm;
+    margin-bottom: $spacing-md;
+  }
 }

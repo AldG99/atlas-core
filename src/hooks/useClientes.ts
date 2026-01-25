@@ -39,7 +39,7 @@ export const useClientes = () => {
     fetchClientes();
   }, [fetchClientes]);
 
-  const addCliente = async (data: ClienteFormData) => {
+  const addCliente = async (data: ClienteFormData): Promise<Cliente> => {
     if (!user) throw new Error('Usuario no autenticado');
 
     const id = await createCliente(data, user.uid);
@@ -63,6 +63,7 @@ export const useClientes = () => {
       fechaCreacion: new Date()
     };
     setClientes((prev) => [...prev, newCliente].sort((a, b) => a.nombre.localeCompare(b.nombre)));
+    return newCliente;
   };
 
   const editCliente = async (id: string, data: Partial<ClienteFormData>) => {
