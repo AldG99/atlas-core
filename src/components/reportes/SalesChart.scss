@@ -1,0 +1,55 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.sales-chart {
+  @include card;
+  height: 100%;
+
+  &--empty {
+    @include flex-center;
+    min-height: 300px;
+    color: $color-gray-500;
+  }
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    margin: 0 0 $spacing-md;
+    color: $color-gray-800;
+  }
+
+  &__container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: $spacing-md;
+  }
+
+  &__svg {
+    width: 100%;
+    min-width: 300px;
+    height: auto;
+  }
+
+  &__summary {
+    display: flex;
+    gap: $spacing-lg;
+    padding-top: $spacing-md;
+    border-top: 1px solid $color-gray-200;
+  }
+
+  &__summary-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__summary-value {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-gray-900;
+  }
+
+  &__summary-label {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+}

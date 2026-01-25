@@ -1,0 +1,46 @@
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+.reportes {
+  &__header {
+    @include flex-between;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+
+    h1 {
+      margin: 0;
+    }
+  }
+
+  &__loading,
+  &__error {
+    text-align: center;
+    padding: $spacing-xl;
+  }
+
+  &__error {
+    color: $color-danger;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+    margin-top: $spacing-lg;
+
+    @include lg {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  &__chart {
+    min-width: 0;
+  }
+
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+  }
+}

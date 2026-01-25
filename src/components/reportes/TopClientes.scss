@@ -1,0 +1,91 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.top-clientes {
+  @include card;
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    margin: 0 0 $spacing-md;
+    color: $color-gray-800;
+  }
+
+  &__empty {
+    color: $color-gray-500;
+    font-size: $font-size-sm;
+    text-align: center;
+    padding: $spacing-md 0;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-sm;
+    border-radius: $border-radius-md;
+    background-color: $color-gray-50;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background-color: $color-gray-100;
+    }
+  }
+
+  &__rank {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: $color-primary;
+    color: $color-white;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    @include flex-center;
+    flex-shrink: 0;
+  }
+
+  &__item:nth-child(1) &__rank {
+    background-color: #fbbf24;
+  }
+
+  &__item:nth-child(2) &__rank {
+    background-color: #9ca3af;
+  }
+
+  &__item:nth-child(3) &__rank {
+    background-color: #d97706;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__name {
+    font-weight: 500;
+    color: $color-gray-800;
+    @include truncate;
+  }
+
+  &__pedidos {
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+  }
+
+  &__total {
+    font-weight: 600;
+    color: $color-success;
+    white-space: nowrap;
+  }
+}

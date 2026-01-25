@@ -10,6 +10,8 @@ import Dashboard from './pages/Dashboard';
 import NewPedido from './pages/NewPedido';
 import EditPedido from './pages/EditPedido';
 import Clientes from './pages/Clientes';
+import Productos from './pages/Productos';
+import Reportes from './pages/Reportes';
 import ComingSoon from './pages/ComingSoon';
 import './styles/main.scss';
 
@@ -58,7 +60,7 @@ function App() {
             path={ROUTES.PRODUCTOS}
             element={
               <ProtectedRoute>
-                <ComingSoon />
+                <Productos />
               </ProtectedRoute>
             }
           />
@@ -66,7 +68,7 @@ function App() {
             path={ROUTES.REPORTES}
             element={
               <ProtectedRoute>
-                <ComingSoon />
+                <Reportes />
               </ProtectedRoute>
             }
           />

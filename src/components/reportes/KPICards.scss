@@ -1,0 +1,69 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.kpi-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+
+  @include sm {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include lg {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.kpi-card {
+  @include card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $border-radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-xl;
+    font-weight: 700;
+    color: $color-white;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__value {
+    font-size: $font-size-xl;
+    font-weight: 700;
+    color: $color-gray-900;
+
+    @include truncate;
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+
+  &--ventas .kpi-card__icon {
+    background-color: $color-success;
+  }
+
+  &--pedidos .kpi-card__icon {
+    background-color: $color-primary;
+  }
+
+  &--ticket .kpi-card__icon {
+    background-color: $color-warning;
+  }
+
+  &--clientes .kpi-card__icon {
+    background-color: $color-secondary;
+  }
+}
