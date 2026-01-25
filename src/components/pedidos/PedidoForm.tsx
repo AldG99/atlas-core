@@ -65,6 +65,8 @@ const PedidoForm = ({
     const data: PedidoFormData = {
       clienteNombre: selectedCliente!.nombre + ' ' + selectedCliente!.apellido,
       clienteTelefono: selectedCliente!.telefono,
+      clienteFoto: selectedCliente!.fotoPerfil,
+      clienteCodigoPostal: selectedCliente!.codigoPostal,
       productos: productosText,
       total,
       notas

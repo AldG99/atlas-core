@@ -10,14 +10,6 @@ interface ClienteModalProps {
   onSave: (data: ClienteFormData) => void;
 }
 
-const HORARIOS_ENTREGA = [
-  '09:00 - 12:00',
-  '12:00 - 15:00',
-  '15:00 - 18:00',
-  '18:00 - 21:00',
-  'Cualquier horario'
-];
-
 const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -373,54 +365,6 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
                 placeholder="Ej: Casa color azul, entre calle X y calle Y"
                 rows={2}
               />
-            </div>
-          </div>
-
-          {/* Información de entrega */}
-          <div className="form-section">
-            <h3 className="form-section__title">Información de entrega</h3>
-            <div className="form-grid form-grid--2">
-              <div className="form-group">
-                <label>¿El número es visible desde la calle?</label>
-                <div className="form-radio-group">
-                  <label className="form-radio">
-                    <input
-                      type="radio"
-                      name="numeroVisible"
-                      checked={formData.numeroVisible === true}
-                      onChange={() => setFormData(prev => ({ ...prev, numeroVisible: true }))}
-                    />
-                    <span>Sí</span>
-                  </label>
-                  <label className="form-radio">
-                    <input
-                      type="radio"
-                      name="numeroVisible"
-                      checked={formData.numeroVisible === false}
-                      onChange={() => setFormData(prev => ({ ...prev, numeroVisible: false }))}
-                    />
-                    <span>No</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="horarioEntrega">Horario de entrega preferido</label>
-                <select
-                  id="horarioEntrega"
-                  name="horarioEntrega"
-                  value={formData.horarioEntrega || ''}
-                  onChange={handleChange}
-                  className="select"
-                >
-                  <option value="">Seleccionar horario</option>
-                  {HORARIOS_ENTREGA.map((horario) => (
-                    <option key={horario} value={horario}>
-                      {horario}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
           </div>
 

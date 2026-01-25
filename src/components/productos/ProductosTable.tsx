@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Producto, ProductoFormData } from '../../types/Producto';
 import './ProductosTable.scss';
 
@@ -8,6 +9,8 @@ interface ProductosTableProps {
 }
 
 const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) => {
+  const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
@@ -22,6 +25,8 @@ const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) =>
       year: 'numeric'
     }).format(date);
   };
+
+  const closeModal = () => setSelectedProducto(null);
 
   return (
     <div className="productos-table-container">
@@ -43,22 +48,7 @@ const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) =>
                 <span className="productos-table__clave">{producto.clave}</span>
               </td>
               <td>
-                <div className="productos-table__product">
-                  <div className="productos-table__image">
-                    {producto.imagen ? (
-                      <img src={producto.imagen} alt={producto.nombre} />
-                    ) : (
-                      <div className="productos-table__icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                  <span className="productos-table__name">{producto.nombre}</span>
-                </div>
+                <span className="productos-table__name">{producto.nombre}</span>
               </td>
               <td>
                 <span className="productos-table__price">{formatPrice(producto.precio)}</span>
@@ -74,19 +64,13 @@ const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) =>
               <td>
                 <div className="productos-table__actions">
                   <button
-                    onClick={() => onEdit(producto.id, {
-                      clave: producto.clave,
-                      nombre: producto.nombre,
-                      precio: producto.precio,
-                      descripcion: producto.descripcion,
-                      imagen: producto.imagen
-                    })}
+                    onClick={() => setSelectedProducto(producto)}
                     className="btn-icon btn-icon--primary"
-                    title="Editar producto"
+                    title="Ver detalles"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
                     </svg>
                   </button>
                   <button
@@ -107,6 +91,86 @@ const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) =>
           ))}
         </tbody>
       </table>
+
+      {selectedProducto && (
+        <div className="productos-table__modal-overlay" onClick={closeModal}>
+          <div className="productos-table__modal" onClick={(e) => e.stopPropagation()}>
+            <div className="productos-table__modal-header">
+              <h3>Detalles del producto</h3>
+              <button className="productos-table__modal-close" onClick={closeModal}>
+                ×
+              </button>
+            </div>
+            <div className="productos-table__modal-body">
+              <div className="productos-table__modal-image">
+                {selectedProducto.imagen ? (
+                  <img src={selectedProducto.imagen} alt={selectedProducto.nombre} />
+                ) : (
+                  <div className="productos-table__modal-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                      <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                      <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                    <span>Sin imagen</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="productos-table__modal-section">
+                <h4>Información</h4>
+                <div className="productos-table__modal-info">
+                  <div className="productos-table__modal-row">
+                    <span className="productos-table__modal-label">Clave:</span>
+                    <span className="productos-table__modal-value">{selectedProducto.clave}</span>
+                  </div>
+                  <div className="productos-table__modal-row">
+                    <span className="productos-table__modal-label">Nombre:</span>
+                    <span className="productos-table__modal-value">{selectedProducto.nombre}</span>
+                  </div>
+                  <div className="productos-table__modal-row">
+                    <span className="productos-table__modal-label">Precio:</span>
+                    <span className="productos-table__modal-value productos-table__modal-price">
+                      {formatPrice(selectedProducto.precio)}
+                    </span>
+                  </div>
+                  <div className="productos-table__modal-row">
+                    <span className="productos-table__modal-label">Registro:</span>
+                    <span className="productos-table__modal-value">{formatDate(selectedProducto.fechaCreacion)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="productos-table__modal-section">
+                <h4>Descripción</h4>
+                <p className="productos-table__modal-description">
+                  {selectedProducto.descripcion || 'Sin descripción'}
+                </p>
+              </div>
+            </div>
+            <div className="productos-table__modal-footer">
+              <button className="btn btn--secondary" onClick={closeModal}>
+                Cerrar
+              </button>
+              <button
+                className="btn btn--primary"
+                onClick={() => {
+                  onEdit(selectedProducto.id, {
+                    clave: selectedProducto.clave,
+                    nombre: selectedProducto.nombre,
+                    precio: selectedProducto.precio,
+                    descripcion: selectedProducto.descripcion,
+                    imagen: selectedProducto.imagen
+                  });
+                  closeModal();
+                }}
+              >
+                Editar producto
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

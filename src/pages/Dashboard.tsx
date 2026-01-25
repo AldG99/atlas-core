@@ -212,7 +212,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {!loading && !showArchived && pedidos.length > 0 && <ResumenDia pedidos={pedidos} />}
+        {!showArchived && <ResumenDia pedidos={pedidos} />}
 
         {!showArchived && <div className="dashboard__controls">
           <div className="dashboard__search">

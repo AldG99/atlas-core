@@ -1,5 +1,4 @@
 @use '../../styles/abstracts/variables' as *;
-@use '../../styles/abstracts/mixins' as *;
 
 .pedidos-table-container {
   background-color: $color-white;
@@ -12,7 +11,7 @@
 .pedidos-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px;
+  min-width: 1000px;
 
   thead {
     background-color: $color-gray-50;
@@ -32,6 +31,7 @@
     tr {
       border-bottom: 1px solid $color-gray-100;
       transition: background-color $transition-fast;
+      height: 72px;
 
       &:hover {
         background-color: $color-gray-50;
@@ -43,22 +43,59 @@
     }
 
     td {
-      padding: $spacing-md;
+      padding: $spacing-sm $spacing-md;
       font-size: $font-size-sm;
       color: $color-gray-700;
-      vertical-align: top;
+      vertical-align: middle;
+      height: 72px;
+      max-height: 72px;
     }
   }
 
   &__client {
     display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    span {
+      color: $color-white;
+      font-size: $font-size-sm;
+      font-weight: 600;
+    }
+  }
+
+  &__client-info {
+    display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
+    max-width: 160px;
   }
 
   &__name {
     font-weight: 600;
     color: $color-gray-800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__phone {
@@ -67,16 +104,24 @@
   }
 
   &__products {
-    max-width: 250px;
-    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 200px;
+    overflow: hidden;
   }
 
-  &__notes {
-    display: block;
-    margin-top: $spacing-xs;
+  &__products-main {
+    font-size: $font-size-sm;
+    color: $color-gray-800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__products-more {
     font-size: $font-size-xs;
     color: $color-gray-500;
-    font-style: italic;
   }
 
   &__total {
@@ -103,9 +148,9 @@
 
   &__actions {
     display: flex;
-    flex-wrap: wrap;
     gap: $spacing-xs;
     align-items: center;
+    justify-content: flex-end;
   }
 
   &__select {
@@ -122,10 +167,179 @@
       border-color: $color-primary;
     }
   }
-}
 
-// Botones pequeños para la tabla
-.btn--sm {
-  padding: 4px 8px;
-  font-size: $font-size-xs;
+  // Modal de detalles
+  &__modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: $spacing-md;
+  }
+
+  &__modal {
+    background-color: $color-white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-lg;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 1px solid $color-gray-200;
+
+    h3 {
+      margin: 0;
+      font-size: $font-size-lg;
+      color: $color-gray-800;
+    }
+  }
+
+  &__modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: $color-gray-500;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+
+    &:hover {
+      color: $color-gray-800;
+    }
+  }
+
+  &__modal-body {
+    padding: $spacing-lg;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  &__modal-section {
+    margin-bottom: $spacing-lg;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    h4 {
+      margin: 0 0 $spacing-sm 0;
+      font-size: $font-size-sm;
+      font-weight: 600;
+      color: $color-gray-600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  &__modal-client {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  &__modal-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    span {
+      color: $color-white;
+      font-size: $font-size-lg;
+      font-weight: 600;
+    }
+  }
+
+  &__modal-client-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__modal-client-name {
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $color-gray-800;
+  }
+
+  &__modal-client-phone {
+    font-size: $font-size-sm;
+    color: $color-primary;
+  }
+
+  &__modal-products {
+    background-color: $color-gray-50;
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
+  }
+
+  &__modal-product-item {
+    padding: $spacing-sm 0;
+    border-bottom: 1px solid $color-gray-200;
+    font-size: $font-size-sm;
+    color: $color-gray-800;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    &:first-child {
+      padding-top: 0;
+    }
+  }
+
+  &__modal-total {
+    font-size: $font-size-xl;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__modal-notes {
+    font-size: $font-size-sm;
+    color: $color-gray-700;
+    background-color: $color-gray-50;
+    padding: $spacing-md;
+    border-radius: $border-radius-md;
+    font-style: italic;
+  }
+
+  &__modal-date {
+    font-size: $font-size-sm;
+    color: $color-gray-700;
+  }
+
+  &__modal-footer {
+    display: flex;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    border-top: 1px solid $color-gray-200;
+    background-color: $color-gray-50;
+  }
 }

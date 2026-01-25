@@ -29,7 +29,6 @@ const ClientesTable = ({ clientes, onView, onDelete }: ClientesTableProps) => {
             <th>Cliente</th>
             <th>Dirección</th>
             <th>C.P.</th>
-            <th>Entrega</th>
             <th>Registro</th>
             <th>Acciones</th>
           </tr>
@@ -66,11 +65,6 @@ const ClientesTable = ({ clientes, onView, onDelete }: ClientesTableProps) => {
               </td>
               <td>
                 <span className="clientes-table__cp">{cliente.codigoPostal}</span>
-              </td>
-              <td>
-                <span className="clientes-table__schedule">
-                  {cliente.horarioEntrega || '—'}
-                </span>
               </td>
               <td>
                 <span className="clientes-table__date">

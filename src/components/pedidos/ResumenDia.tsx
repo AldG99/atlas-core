@@ -36,7 +36,7 @@ const ResumenDia = ({ pedidos }: ResumenDiaProps) => {
         </div>
         <div className="resumen-dia__stat resumen-dia__stat--primary">
           <span className="resumen-dia__stat-value">{formatCurrency(totalVentas)}</span>
-          <span className="resumen-dia__stat-label">Ventas</span>
+          <span className="resumen-dia__stat-label">Total</span>
         </div>
       </div>
 

@@ -149,14 +149,6 @@
   transition: all $transition-fast;
   background-color: transparent;
 
-  &:hover {
-    transform: scale(1.1);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
   &--primary {
     color: $color-primary;
 
@@ -186,6 +178,14 @@
 
     &:hover {
       background-color: rgba(#25d366, 0.1);
+    }
+  }
+
+  &--success {
+    color: $color-success;
+
+    &:hover {
+      background-color: rgba($color-success, 0.1);
     }
   }
 }
