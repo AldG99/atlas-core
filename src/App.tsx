@@ -12,7 +12,9 @@ import EditPedido from './pages/EditPedido';
 import Clientes from './pages/Clientes';
 import Productos from './pages/Productos';
 import Reportes from './pages/Reportes';
-import ComingSoon from './pages/ComingSoon';
+import Archivo from './pages/Archivo';
+import Configuracion from './pages/Configuracion';
+import Soporte from './pages/Soporte';
 import './styles/main.scss';
 
 function App() {
@@ -76,7 +78,7 @@ function App() {
             path={ROUTES.ARCHIVO}
             element={
               <ProtectedRoute>
-                <ComingSoon />
+                <Archivo />
               </ProtectedRoute>
             }
           />
@@ -84,7 +86,7 @@ function App() {
             path={ROUTES.CONFIGURACION}
             element={
               <ProtectedRoute>
-                <ComingSoon />
+                <Configuracion />
               </ProtectedRoute>
             }
           />
@@ -92,7 +94,7 @@ function App() {
             path={ROUTES.SOPORTE}
             element={
               <ProtectedRoute>
-                <ComingSoon />
+                <Soporte />
               </ProtectedRoute>
             }
           />
