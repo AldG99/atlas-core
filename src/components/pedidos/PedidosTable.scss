@@ -1,4 +1,5 @@
 @use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
 
 .pedidos-table-container {
   background-color: $color-white;
@@ -337,9 +338,22 @@
 
   &__modal-footer {
     display: flex;
+    flex-direction: column-reverse;
     gap: $spacing-sm;
     padding: $spacing-md $spacing-lg;
     border-top: 1px solid $color-gray-200;
     background-color: $color-gray-50;
+
+    .btn {
+      width: 100%;
+    }
+
+    @include sm {
+      flex-direction: row;
+
+      .btn {
+        width: auto;
+      }
+    }
   }
 }

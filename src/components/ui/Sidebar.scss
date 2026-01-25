@@ -81,11 +81,9 @@ $sidebar-active-bg: rgba($color-primary, 0.1);
   }
 
   &__logo {
-    font-size: $font-size-lg;
-    font-weight: 700;
-    color: $color-primary;
-    white-space: nowrap;
-    overflow: hidden;
+    max-width: 150px;
+    height: auto;
+    display: block;
   }
 
   &__nav {

@@ -1,4 +1,5 @@
 @use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
 
 .cliente-selector {
   margin-bottom: $spacing-md;
@@ -163,9 +164,22 @@
 
   &__form-actions {
     display: flex;
+    flex-direction: column-reverse;
     gap: $spacing-sm;
-    justify-content: flex-end;
     margin-top: $spacing-xs;
+
+    .btn {
+      width: 100%;
+    }
+
+    @include sm {
+      flex-direction: row;
+      justify-content: flex-end;
+
+      .btn {
+        width: auto;
+      }
+    }
   }
 
   // Estado seleccionado

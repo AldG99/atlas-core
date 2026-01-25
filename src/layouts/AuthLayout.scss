@@ -18,12 +18,13 @@
     color: $color-white;
   }
 
-  &__title {
-    font-size: $font-size-2xl;
-    margin-bottom: $spacing-xs;
+  &__logo {
+    max-width: 180px;
+    height: auto;
+    margin-bottom: $spacing-sm;
 
     @include md {
-      font-size: $font-size-3xl;
+      max-width: 220px;
     }
   }
 

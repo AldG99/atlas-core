@@ -3,19 +3,40 @@
 
 .archivo {
   &__header {
-    @include flex-between;
-    flex-wrap: wrap;
+    display: flex;
+    flex-direction: column;
     gap: $spacing-md;
     margin-bottom: $spacing-lg;
 
+    @include sm {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
     h1 {
       margin: 0;
+      font-size: $font-size-xl;
+
+      @include sm {
+        font-size: $font-size-2xl;
+      }
     }
   }
 
   &__header-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: $spacing-sm;
+
+    .btn {
+      flex: 1;
+      min-width: fit-content;
+
+      @include sm {
+        flex: initial;
+      }
+    }
   }
 
   &__stats {

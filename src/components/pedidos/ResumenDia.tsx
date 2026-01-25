@@ -17,7 +17,9 @@ const ResumenDia = ({ pedidos }: ResumenDiaProps) => {
     return fechaPedido.getTime() === hoy.getTime();
   });
 
-  const totalVentas = pedidosHoy.reduce((sum, pedido) => sum + pedido.total, 0);
+  const totalVentas = pedidosHoy
+    .filter((pedido) => pedido.estado === 'entregado')
+    .reduce((sum, pedido) => sum + pedido.total, 0);
 
   const contadorEstados = {
     pendiente: pedidosHoy.filter((p) => p.estado === 'pendiente').length,
@@ -27,30 +29,24 @@ const ResumenDia = ({ pedidos }: ResumenDiaProps) => {
 
   return (
     <div className="resumen-dia">
-      <h2 className="resumen-dia__title">Resumen de hoy</h2>
-
-      <div className="resumen-dia__stats">
-        <div className="resumen-dia__stat">
-          <span className="resumen-dia__stat-value">{pedidosHoy.length}</span>
-          <span className="resumen-dia__stat-label">Pedidos</span>
-        </div>
+      <div className="resumen-dia__content">
         <div className="resumen-dia__stat resumen-dia__stat--primary">
           <span className="resumen-dia__stat-value">{formatCurrency(totalVentas)}</span>
-          <span className="resumen-dia__stat-label">Total</span>
+          <span className="resumen-dia__stat-label">Vendido hoy</span>
         </div>
-      </div>
 
-      <div className="resumen-dia__estados">
-        {(Object.keys(contadorEstados) as Array<keyof typeof contadorEstados>).map((estado) => (
-          <div key={estado} className="resumen-dia__estado">
-            <span
-              className="resumen-dia__estado-dot"
-              style={{ backgroundColor: PEDIDO_STATUS_COLORS[estado] }}
-            />
-            <span className="resumen-dia__estado-label">{PEDIDO_STATUS[estado]}</span>
-            <span className="resumen-dia__estado-count">{contadorEstados[estado]}</span>
-          </div>
-        ))}
+        <div className="resumen-dia__estados">
+          {(Object.keys(contadorEstados) as Array<keyof typeof contadorEstados>).map((estado) => (
+            <div key={estado} className="resumen-dia__estado">
+              <span
+                className="resumen-dia__estado-dot"
+                style={{ backgroundColor: PEDIDO_STATUS_COLORS[estado] }}
+              />
+              <span className="resumen-dia__estado-count">{contadorEstados[estado]}</span>
+              <span className="resumen-dia__estado-label">{PEDIDO_STATUS[estado]}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

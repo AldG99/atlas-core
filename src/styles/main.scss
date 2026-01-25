@@ -24,6 +24,20 @@
 .btn {
   @include button-base;
 
+  // Mobile: botones más grandes para mejor touch target
+  padding: $spacing-sm $spacing-md;
+  min-height: 44px;
+
+  @include sm {
+    min-height: auto;
+  }
+
+  &--sm {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-xs;
+    min-height: 32px;
+  }
+
   &--primary {
     background-color: $color-primary;
     color: $color-white;
@@ -141,13 +155,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border: none;
   border-radius: $border-radius-md;
   cursor: pointer;
   transition: all $transition-fast;
   background-color: transparent;
+
+  @include sm {
+    width: 36px;
+    height: 36px;
+  }
 
   &--primary {
     color: $color-primary;

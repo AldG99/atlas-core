@@ -2,33 +2,41 @@
 @use '../../styles/abstracts/mixins' as *;
 
 .resumen-dia {
-  @include card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  background-color: $color-white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $spacing-sm $spacing-md;
   margin-bottom: $spacing-lg;
+  flex-wrap: wrap;
 
-  &__title {
-    font-size: $font-size-lg;
-    margin-bottom: $spacing-md;
-    color: $color-gray-700;
+  @include sm {
+    flex-wrap: nowrap;
+    padding: $spacing-md $spacing-lg;
   }
 
-  &__stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+  &__content {
+    display: flex;
+    align-items: center;
     gap: $spacing-md;
-    margin-bottom: $spacing-md;
-    padding-bottom: $spacing-md;
-    border-bottom: 1px solid $color-gray-200;
+    flex: 1;
+    flex-wrap: wrap;
+
+    @include sm {
+      flex-wrap: nowrap;
+      gap: $spacing-lg;
+    }
   }
 
   &__stat {
-    text-align: center;
-    padding: $spacing-md;
-    background-color: $color-gray-50;
-    border-radius: $border-radius-md;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    white-space: nowrap;
 
     &--primary {
-      background-color: rgba($color-primary, 0.1);
-
       .resumen-dia__stat-value {
         color: $color-primary;
       }
@@ -36,43 +44,53 @@
   }
 
   &__stat-value {
-    display: block;
-    font-size: $font-size-2xl;
-    font-weight: 700;
+    font-size: 0.96rem;
+    font-weight: 600;
     color: $color-gray-800;
   }
 
   &__stat-label {
-    font-size: $font-size-sm;
+    font-size: 0.96rem;
     color: $color-gray-500;
   }
 
   &__estados {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: $spacing-sm;
+    margin-left: auto;
+
+    @include sm {
+      gap: $spacing-md;
+    }
   }
 
   &__estado {
     display: flex;
     align-items: center;
-    gap: $spacing-sm;
+    gap: 4px;
   }
 
   &__estado-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-  }
-
-  &__estado-label {
-    flex: 1;
-    font-size: $font-size-sm;
-    color: $color-gray-600;
+    flex-shrink: 0;
   }
 
   &__estado-count {
+    font-size: 0.96rem;
     font-weight: 600;
     color: $color-gray-800;
+  }
+
+  &__estado-label {
+    display: none;
+    font-size: 0.96rem;
+    color: $color-gray-500;
+
+    @include md {
+      display: inline;
+    }
   }
 }

@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { usePedidos } from '../hooks/usePedidos';
 import { useToast } from '../hooks/useToast';
-import type { PedidoStatus } from '../types/Pedido';
+import type { Pedido, PedidoStatus } from '../types/Pedido';
 import { PEDIDO_STATUS } from '../constants/pedidoStatus';
 import { ROUTES } from '../config/routes';
 import { exportToCSV } from '../utils/formatters';
@@ -35,6 +35,7 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
   const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
+  const [allPedidos, setAllPedidos] = useState<Pedido[]>([]);
   const {
     pedidos,
     loading,
@@ -49,6 +50,13 @@ const Dashboard = () => {
     restore
   } = usePedidos();
   const { showToast } = useToast();
+
+  // Guardar todos los pedidos cuando el filtro es 'todos'
+  useEffect(() => {
+    if (filterStatus === 'todos' && !showArchived) {
+      setAllPedidos(pedidos);
+    }
+  }, [pedidos, filterStatus, showArchived]);
 
   const filteredAndSortedPedidos = useMemo(() => {
     let result = [...pedidos];
@@ -212,7 +220,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {!showArchived && <ResumenDia pedidos={pedidos} />}
+        {!showArchived && <ResumenDia pedidos={allPedidos} />}
 
         {!showArchived && <div className="dashboard__controls">
           <div className="dashboard__search">

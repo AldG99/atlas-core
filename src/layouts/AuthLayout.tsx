@@ -10,8 +10,12 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
     <div className="auth-layout">
       <div className="auth-layout__container">
         <div className="auth-layout__header">
-          <h1 className="auth-layout__title">Gestor de Pedidos</h1>
-          <p className="auth-layout__subtitle">WhatsApp / Instagram</p>
+          <img
+            src="/logo-orderly.svg"
+            alt="Orderly"
+            className="auth-layout__logo"
+          />
+          <p className="auth-layout__subtitle">Gestión de pedidos simplificada</p>
         </div>
         <div className="auth-layout__content">
           {children}

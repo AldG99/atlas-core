@@ -100,7 +100,11 @@ const Sidebar = () => {
 
       <aside className={`sidebar ${isMobileOpen ? 'sidebar--mobile-open' : ''}`}>
         <div className="sidebar__header">
-          <div className="sidebar__logo">Gestor Pedidos</div>
+          <img
+            src="/logo-orderly.svg"
+            alt="Orderly"
+            className="sidebar__logo"
+          />
         </div>
 
         <nav className="sidebar__nav">

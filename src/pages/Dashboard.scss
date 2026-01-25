@@ -3,19 +3,40 @@
 
 .dashboard {
   &__header {
-    @include flex-between;
-    flex-wrap: wrap;
+    display: flex;
+    flex-direction: column;
     gap: $spacing-md;
     margin-bottom: $spacing-lg;
 
+    @include sm {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
     h1 {
       margin: 0;
+      font-size: $font-size-xl;
+
+      @include sm {
+        font-size: $font-size-2xl;
+      }
     }
   }
 
   &__header-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: $spacing-sm;
+
+    .btn {
+      flex: 1;
+      min-width: fit-content;
+
+      @include sm {
+        flex: initial;
+      }
+    }
   }
 
   &__controls {
@@ -50,17 +71,26 @@
   &__filters {
     display: flex;
     flex-wrap: wrap;
-    gap: $spacing-sm;
+    gap: $spacing-xs;
     margin-bottom: $spacing-lg;
+
+    @include sm {
+      gap: $spacing-sm;
+    }
   }
 
   &__filter {
-    padding: $spacing-xs $spacing-md;
+    padding: $spacing-xs $spacing-sm;
     border-radius: $border-radius-full;
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     background-color: $color-gray-200;
     color: $color-gray-700;
     transition: all $transition-fast;
+
+    @include sm {
+      padding: $spacing-xs $spacing-md;
+      font-size: $font-size-sm;
+    }
 
     &:hover {
       background-color: $color-gray-300;

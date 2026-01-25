@@ -71,6 +71,11 @@
   border-radius: $border-radius-md;
   background-color: $color-white;
   transition: border-color $transition-fast;
+  min-height: 44px; // Mobile touch target
+
+  @media (min-width: $breakpoint-sm) {
+    min-height: auto;
+  }
 
   &:focus {
     outline: none;

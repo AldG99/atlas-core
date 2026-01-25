@@ -71,14 +71,27 @@
 
   &__actions {
     display: flex;
+    flex-direction: column-reverse;
     gap: $spacing-sm;
-    justify-content: flex-end;
     margin-top: $spacing-lg;
     padding-top: $spacing-lg;
     border-top: 1px solid $color-gray-200;
     position: sticky;
     bottom: 0;
     background-color: $color-white;
+
+    .btn {
+      width: 100%;
+    }
+
+    @include sm {
+      flex-direction: row;
+      justify-content: flex-end;
+
+      .btn {
+        width: auto;
+      }
+    }
   }
 }
 
