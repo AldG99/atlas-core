@@ -23,6 +23,19 @@
       }
     }
 
+  }
+
+  &__header-actions {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    width: 100%;
+
+    @include sm {
+      flex-direction: row;
+      width: auto;
+    }
+
     .btn {
       width: 100%;
 

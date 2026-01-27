@@ -2,56 +2,291 @@
 @use '../styles/abstracts/mixins' as *;
 
 .soporte {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  text-align: center;
-  padding: $spacing-lg;
+  max-width: 900px;
+  margin: 0 auto;
 
-  @include sm {
-    padding: $spacing-xl;
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+
+    h1 {
+      margin: 0 0 $spacing-sm;
+      font-size: $font-size-2xl;
+      color: $color-gray-900;
+
+      @include sm {
+        font-size: $font-size-3xl;
+      }
+    }
+
+    p {
+      margin: 0;
+      color: $color-gray-500;
+      font-size: $font-size-base;
+
+      @include sm {
+        font-size: $font-size-lg;
+      }
+    }
   }
 
-  &__icon {
+  &__section {
+    margin-bottom: $spacing-xl;
+  }
+
+  &__section-title {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-gray-800;
+    margin: 0 0 $spacing-md;
+  }
+
+  // Estado del Sistema
+  &__status-card {
+    background-color: $color-white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+  }
+
+  &__status-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    background-color: rgba($color-success, 0.05);
+    border-bottom: 1px solid $color-gray-100;
+    font-weight: 500;
+    color: $color-gray-800;
+  }
+
+  &__status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+
+    &--operational {
+      background-color: $color-success;
+      box-shadow: 0 0 0 3px rgba($color-success, 0.2);
+    }
+  }
+
+  &__status-list {
+    padding: $spacing-sm 0;
+  }
+
+  &__status-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-sm $spacing-lg;
+
+    span:first-child {
+      color: $color-gray-700;
+      font-size: $font-size-sm;
+    }
+  }
+
+  &__status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: $font-size-xs;
+    font-weight: 500;
+
+    &--operational {
+      color: $color-success;
+    }
+  }
+
+  // Guías
+  &__guides {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+
+    @include sm {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__guide-card {
+    background-color: $color-white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+    padding: $spacing-lg;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateY(-2px);
+    }
+
+    h3 {
+      margin: 0 0 $spacing-xs;
+      font-size: $font-size-base;
+      font-weight: 600;
+      color: $color-gray-800;
+    }
+
+    p {
+      margin: 0;
+      font-size: $font-size-sm;
+      color: $color-gray-500;
+      line-height: 1.5;
+    }
+  }
+
+  &__guide-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, rgba($color-primary, 0.1), rgba($color-primary, 0.05));
-    border-radius: 50%;
-    margin-bottom: $spacing-md;
+    width: 48px;
+    height: 48px;
+    background-color: rgba($color-primary, 0.1);
+    border-radius: $border-radius-md;
     color: $color-primary;
+    margin-bottom: $spacing-md;
+  }
 
-    @include sm {
-      width: 120px;
-      height: 120px;
-      margin-bottom: $spacing-lg;
+  // FAQ
+  &__faq {
+    background-color: $color-white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+  }
+
+  &__faq-item {
+    border-bottom: 1px solid $color-gray-100;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--open {
+      .soporte__faq-icon {
+        transform: rotate(180deg);
+      }
+
+      .soporte__faq-answer {
+        max-height: 200px;
+        padding: 0 $spacing-lg $spacing-md;
+      }
     }
   }
 
-  &__title {
-    font-size: $font-size-xl;
-    font-weight: 700;
+  &__faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: $spacing-md $spacing-lg;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: $font-size-sm;
+    font-weight: 500;
     color: $color-gray-800;
-    margin: 0 0 $spacing-sm;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: $color-gray-50;
+    }
 
     @include sm {
-      font-size: $font-size-3xl;
-      margin: 0 0 $spacing-md;
+      font-size: $font-size-base;
     }
   }
 
-  &__description {
-    font-size: $font-size-base;
-    color: $color-gray-500;
-    margin: 0;
-    max-width: 400px;
+  &__faq-icon {
+    color: $color-gray-400;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  &__faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+
+    p {
+      margin: 0;
+      font-size: $font-size-sm;
+      color: $color-gray-600;
+      line-height: 1.6;
+    }
+  }
+
+  // Formulario de Contacto
+  &__contact-card {
+    background-color: $color-white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+    padding: $spacing-lg;
 
     @include sm {
-      font-size: $font-size-lg;
+      padding: $spacing-xl;
     }
+  }
+
+  &__contact-info {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-lg;
+    border-bottom: 1px solid $color-gray-100;
+
+    > svg {
+      color: $color-primary;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      margin: 0 0 $spacing-xs;
+      font-size: $font-size-base;
+      font-weight: 600;
+      color: $color-gray-800;
+    }
+
+    p {
+      margin: 0;
+      font-size: $font-size-sm;
+      color: $color-gray-500;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__form-group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    label {
+      font-size: $font-size-sm;
+      font-weight: 500;
+      color: $color-gray-700;
+    }
+
+    textarea.input {
+      resize: vertical;
+      min-height: 100px;
+    }
+  }
+
+  .btn--primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    align-self: flex-start;
   }
 }
