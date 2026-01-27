@@ -6,7 +6,7 @@ $sidebar-bg: $color-white;
 $sidebar-text: $color-gray-600;
 $sidebar-text-active: $color-gray-800;
 $sidebar-hover-bg: $color-gray-100;
-$sidebar-active-bg: rgba($color-primary, 0.1);
+$sidebar-active-bg: $color-gray-900;
 
 .sidebar-toggle {
   display: flex;
@@ -113,11 +113,12 @@ $sidebar-active-bg: rgba($color-primary, 0.1);
 
     &--active {
       background-color: $sidebar-active-bg;
-      color: $color-primary;
-      font-weight: 600;
+      color: $color-white;
+      font-weight: 500;
 
       &:hover {
-        background-color: $sidebar-active-bg;
+        background-color: $color-gray-800;
+        color: $color-white;
       }
     }
 

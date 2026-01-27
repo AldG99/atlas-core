@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Pedido, PedidoStatus } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
@@ -18,8 +18,30 @@ interface PedidosTableProps {
 const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore, isArchived = false }: PedidosTableProps) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
+  const [statusMenuOpen, setStatusMenuOpen] = useState<string | null>(null);
   const { clientes } = useClientes();
   const statusOptions: PedidoStatus[] = ['pendiente', 'en_preparacion', 'entregado'];
+
+  const handleStatusClick = (pedidoId: string) => {
+    setStatusMenuOpen(statusMenuOpen === pedidoId ? null : pedidoId);
+  };
+
+  const handleStatusChange = (pedidoId: string, status: PedidoStatus) => {
+    onChangeStatus(pedidoId, status);
+    setStatusMenuOpen(null);
+  };
+
+  // Cerrar menú al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (statusMenuOpen) {
+        setStatusMenuOpen(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [statusMenuOpen]);
 
   const getClienteFoto = (pedido: Pedido): string | undefined => {
     if (pedido.clienteFoto) return pedido.clienteFoto;
@@ -106,12 +128,41 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                 <span className="pedidos-table__total">{formatCurrency(pedido.total)}</span>
               </td>
               <td>
-                <span
-                  className="pedidos-table__status"
-                  style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-                >
-                  {PEDIDO_STATUS[pedido.estado]}
-                </span>
+                <div className="pedidos-table__status-wrapper">
+                  <button
+                    className="pedidos-table__status pedidos-table__status--clickable"
+                    style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      !isArchived && handleStatusClick(pedido.id);
+                    }}
+                    disabled={isArchived}
+                  >
+                    {PEDIDO_STATUS[pedido.estado]}
+                    {!isArchived && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    )}
+                  </button>
+                  {statusMenuOpen === pedido.id && (
+                    <div className="pedidos-table__status-menu" onClick={(e) => e.stopPropagation()}>
+                      {statusOptions.map((status) => (
+                        <button
+                          key={status}
+                          className={`pedidos-table__status-option ${pedido.estado === status ? 'pedidos-table__status-option--active' : ''}`}
+                          onClick={() => handleStatusChange(pedido.id, status)}
+                        >
+                          <span
+                            className="pedidos-table__status-dot"
+                            style={{ backgroundColor: PEDIDO_STATUS_COLORS[status] }}
+                          />
+                          {PEDIDO_STATUS[status]}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </td>
               <td>
                 <span className="pedidos-table__date">{formatDate(pedido.fechaCreacion)}</span>
@@ -130,18 +181,6 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                           <circle cx="12" cy="12" r="3"></circle>
                         </svg>
                       </button>
-
-                      <select
-                        value={pedido.estado}
-                        onChange={(e) => onChangeStatus(pedido.id, e.target.value as PedidoStatus)}
-                        className="pedidos-table__select"
-                      >
-                        {statusOptions.map((status) => (
-                          <option key={status} value={status}>
-                            {PEDIDO_STATUS[status]}
-                          </option>
-                        ))}
-                      </select>
 
                       <button
                         onClick={() => handleWhatsApp(pedido)}
@@ -229,66 +268,113 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
             </div>
 
             <div className="pedidos-table__modal-body">
-              <div className="pedidos-table__modal-section">
-                <h4>Cliente</h4>
-                <div className="pedidos-table__modal-client">
-                  <div className="pedidos-table__modal-avatar">
-                    {getClienteFoto(selectedPedido) ? (
-                      <img src={getClienteFoto(selectedPedido)} alt={selectedPedido.clienteNombre} />
-                    ) : (
-                      <span>{selectedPedido.clienteNombre.charAt(0).toUpperCase()}</span>
-                    )}
-                  </div>
-                  <div className="pedidos-table__modal-client-info">
-                    <span className="pedidos-table__modal-client-name">{selectedPedido.clienteNombre}</span>
-                    <span className="pedidos-table__modal-client-phone">{selectedPedido.clienteTelefono}</span>
-                  </div>
-                </div>
-              </div>
+              <table className="pedidos-table__detail-table">
+                <tbody>
+                  <tr>
+                    <td className="pedidos-table__detail-label">Cliente</td>
+                    <td className="pedidos-table__detail-value">
+                      <div className="pedidos-table__modal-client">
+                        <div className="pedidos-table__modal-avatar">
+                          {getClienteFoto(selectedPedido) ? (
+                            <img src={getClienteFoto(selectedPedido)} alt={selectedPedido.clienteNombre} />
+                          ) : (
+                            <span>{selectedPedido.clienteNombre.charAt(0).toUpperCase()}</span>
+                          )}
+                        </div>
+                        <div className="pedidos-table__modal-client-info">
+                          <span className="pedidos-table__modal-client-name">{selectedPedido.clienteNombre}</span>
+                          <span className="pedidos-table__modal-client-phone">{selectedPedido.clienteTelefono}</span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="pedidos-table__detail-label">Productos</td>
+                    <td className="pedidos-table__detail-value">
+                      <table className="pedidos-table__products-table">
+                        <thead>
+                          <tr>
+                            <th>Clave</th>
+                            <th>Cant.</th>
+                            <th>Producto</th>
+                            <th>Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedPedido.productos.split('\n').map((linea, index) => {
+                            // Formato: "2x [CLAVE] Nombre - $100.00" o "2x Nombre - $100.00"
+                            const matchConClave = linea.match(/^(\d+)x\s+\[(.+?)\]\s+(.+?)\s+-\s+(\$[\d,.]+)$/);
+                            const matchSinClave = linea.match(/^(\d+)x\s+(.+?)\s+-\s+(\$[\d,.]+)$/);
 
-              <div className="pedidos-table__modal-section">
-                <h4>Productos</h4>
-                <div className="pedidos-table__modal-products">
-                  {selectedPedido.productos.split('\n').map((producto, index) => (
-                    <div key={index} className="pedidos-table__modal-product-item">
-                      {producto}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pedidos-table__modal-section">
-                <h4>Total</h4>
-                <div className="pedidos-table__modal-total">
-                  {formatCurrency(selectedPedido.total)}
-                </div>
-              </div>
-
-              {selectedPedido.notas && (
-                <div className="pedidos-table__modal-section">
-                  <h4>Notas</h4>
-                  <div className="pedidos-table__modal-notes">
-                    {selectedPedido.notas}
-                  </div>
-                </div>
-              )}
-
-              <div className="pedidos-table__modal-section">
-                <h4>Estado</h4>
-                <span
-                  className="pedidos-table__status"
-                  style={{ backgroundColor: PEDIDO_STATUS_COLORS[selectedPedido.estado] }}
-                >
-                  {PEDIDO_STATUS[selectedPedido.estado]}
-                </span>
-              </div>
-
-              <div className="pedidos-table__modal-section">
-                <h4>Fecha</h4>
-                <span className="pedidos-table__modal-date">
-                  {formatDate(selectedPedido.fechaCreacion)}
-                </span>
-              </div>
+                            if (matchConClave) {
+                              return (
+                                <tr key={index}>
+                                  <td className="pedidos-table__products-clave">{matchConClave[2]}</td>
+                                  <td>{matchConClave[1]}</td>
+                                  <td>{matchConClave[3]}</td>
+                                  <td>{matchConClave[4]}</td>
+                                </tr>
+                              );
+                            }
+                            if (matchSinClave) {
+                              return (
+                                <tr key={index}>
+                                  <td className="pedidos-table__products-clave">-</td>
+                                  <td>{matchSinClave[1]}</td>
+                                  <td>{matchSinClave[2]}</td>
+                                  <td>{matchSinClave[3]}</td>
+                                </tr>
+                              );
+                            }
+                            return (
+                              <tr key={index}>
+                                <td className="pedidos-table__products-clave">-</td>
+                                <td>1</td>
+                                <td colSpan={2}>{linea}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="pedidos-table__detail-label">Total</td>
+                    <td className="pedidos-table__detail-value">
+                      <span className="pedidos-table__modal-total">
+                        {formatCurrency(selectedPedido.total)}
+                      </span>
+                    </td>
+                  </tr>
+                  {selectedPedido.notas && (
+                    <tr>
+                      <td className="pedidos-table__detail-label">Notas</td>
+                      <td className="pedidos-table__detail-value">
+                        <div className="pedidos-table__modal-notes">
+                          {selectedPedido.notas}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  <tr>
+                    <td className="pedidos-table__detail-label">Estado</td>
+                    <td className="pedidos-table__detail-value">
+                      <span
+                        className="pedidos-table__status"
+                        style={{ backgroundColor: PEDIDO_STATUS_COLORS[selectedPedido.estado] }}
+                      >
+                        {PEDIDO_STATUS[selectedPedido.estado]}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="pedidos-table__detail-label">Fecha</td>
+                    <td className="pedidos-table__detail-value">
+                      {formatDate(selectedPedido.fechaCreacion)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
             <div className="pedidos-table__modal-footer">

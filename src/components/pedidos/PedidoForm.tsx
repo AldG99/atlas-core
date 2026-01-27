@@ -59,7 +59,10 @@ const PedidoForm = ({
     if (!validate()) return;
 
     const productosText = items
-      .map((item) => `${item.cantidad}x ${item.producto.nombre} - $${item.subtotal.toFixed(2)}`)
+      .map((item) => {
+        const clave = item.producto.clave ? `[${item.producto.clave}] ` : '';
+        return `${item.cantidad}x ${clave}${item.producto.nombre} - $${item.subtotal.toFixed(2)}`;
+      })
       .join('\n');
 
     const data: PedidoFormData = {
