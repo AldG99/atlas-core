@@ -65,6 +65,26 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
     }).format(amount);
   };
 
+  const getCantidadTotal = (productos: string): number => {
+    return productos.split('\n').reduce((total, linea) => {
+      const match = linea.match(/^(\d+)x\s+/);
+      return total + (match ? parseInt(match[1], 10) : 1);
+    }, 0);
+  };
+
+  const getClave = (linea: string): string => {
+    const match = linea.match(/\[(.+?)\]/);
+    return match ? match[1] : '-';
+  };
+
+  const getNombreProducto = (linea: string): string => {
+    // Quita "2x " del inicio, "[CLAVE] " y " - $100.00" del final
+    return linea
+      .replace(/^\d+x\s+/, '')
+      .replace(/\[.+?\]\s*/, '')
+      .replace(/\s+-\s+\$[\d,.]+$/, '');
+  };
+
   const handleCopy = async (pedido: Pedido) => {
     const message = formatPedidoForWhatsApp(pedido);
     const success = await copyToClipboard(message);
@@ -85,7 +105,9 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
         <thead>
           <tr>
             <th>Cliente</th>
-            <th>Productos</th>
+            <th>Clave</th>
+            <th>Producto</th>
+            <th>Cant.</th>
             <th>Total</th>
             <th>Estado</th>
             <th>Fecha</th>
@@ -113,9 +135,12 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                 </div>
               </td>
               <td>
+                <span className="pedidos-table__clave">{getClave(pedido.productos.split('\n')[0])}</span>
+              </td>
+              <td>
                 <div className="pedidos-table__products" title={pedido.productos}>
                   <span className="pedidos-table__products-main">
-                    {pedido.productos.split('\n')[0]}
+                    {getNombreProducto(pedido.productos.split('\n')[0])}
                   </span>
                   {pedido.productos.split('\n').length > 1 && (
                     <span className="pedidos-table__products-more">
@@ -123,6 +148,9 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                     </span>
                   )}
                 </div>
+              </td>
+              <td>
+                <span className="pedidos-table__cantidad">{getCantidadTotal(pedido.productos)}</span>
               </td>
               <td>
                 <span className="pedidos-table__total">{formatCurrency(pedido.total)}</span>
