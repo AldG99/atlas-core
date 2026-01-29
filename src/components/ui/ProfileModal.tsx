@@ -1,31 +1,11 @@
 import { useState, useRef } from 'react';
+import { PiXBold, PiCameraBold, PiTrashBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
 import './ProfileModal.scss';
 
 interface ProfileModalProps {
   onClose: () => void;
 }
-
-const IconX = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18"></line>
-    <line x1="6" y1="6" x2="18" y2="18"></line>
-  </svg>
-);
-
-const IconCamera = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-    <circle cx="12" cy="13" r="4"></circle>
-  </svg>
-);
-
-const IconTrash = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="3 6 5 6 21 6"></polyline>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-  </svg>
-);
 
 const ProfileModal = ({ onClose }: ProfileModalProps) => {
   const { user, updateProfile } = useAuth();
@@ -112,7 +92,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
         <div className="profile-modal__header">
           <h2>Mi Perfil</h2>
           <button className="profile-modal__close" onClick={onClose}>
-            <IconX />
+            <PiXBold size={20} />
           </button>
         </div>
 
@@ -129,7 +109,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
               )}
               {isEditing && (
                 <div className="profile-modal__avatar-overlay">
-                  <IconCamera />
+                  <PiCameraBold size={20} />
                 </div>
               )}
             </div>
@@ -146,7 +126,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
                 className="profile-modal__remove-photo"
                 onClick={removeImage}
               >
-                <IconTrash />
+                <PiTrashBold size={16} />
                 <span>Eliminar foto</span>
               </button>
             )}

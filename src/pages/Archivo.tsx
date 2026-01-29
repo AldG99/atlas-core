@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { PiArchiveBold, PiCurrencyDollarBold, PiUsersBold } from 'react-icons/pi';
 import type { Pedido } from '../types/Pedido';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -27,14 +28,6 @@ const DATE_FILTERS: Record<DateFilter, string> = {
   mes: 'Último mes',
   trimestre: 'Últimos 3 meses'
 };
-
-const IconArchive = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="4" width="20" height="5" rx="2"></rect>
-    <path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"></path>
-    <path d="M10 13h4"></path>
-  </svg>
-);
 
 const Archivo = () => {
   const { user } = useAuth();
@@ -214,7 +207,7 @@ const Archivo = () => {
           <div className="archivo__stats">
             <div className="archivo__stat">
               <div className="archivo__stat-icon">
-                <IconArchive />
+                <PiArchiveBold size={24} />
               </div>
               <div className="archivo__stat-content">
                 <span className="archivo__stat-value">{stats.total}</span>
@@ -222,14 +215,18 @@ const Archivo = () => {
               </div>
             </div>
             <div className="archivo__stat">
-              <div className="archivo__stat-icon archivo__stat-icon--money">$</div>
+              <div className="archivo__stat-icon archivo__stat-icon--money">
+                <PiCurrencyDollarBold size={24} />
+              </div>
               <div className="archivo__stat-content">
                 <span className="archivo__stat-value">{formatCurrency(stats.valorTotal)}</span>
                 <span className="archivo__stat-label">Valor total</span>
               </div>
             </div>
             <div className="archivo__stat">
-              <div className="archivo__stat-icon archivo__stat-icon--clients">@</div>
+              <div className="archivo__stat-icon archivo__stat-icon--clients">
+                <PiUsersBold size={24} />
+              </div>
               <div className="archivo__stat-content">
                 <span className="archivo__stat-value">{stats.clientesUnicos}</span>
                 <span className="archivo__stat-label">Clientes únicos</span>
@@ -293,7 +290,7 @@ const Archivo = () => {
         {!loading && !error && pedidos.length === 0 && (
           <div className="archivo__empty">
             <div className="archivo__empty-icon">
-              <IconArchive />
+              <PiArchiveBold size={24} />
             </div>
             <h2>El archivo está vacío</h2>
             <p>Los pedidos que archives aparecerán aquí</p>

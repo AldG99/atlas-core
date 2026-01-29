@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { PiXBold, PiUserBold } from 'react-icons/pi';
 import type { ClienteFormData } from '../../types/Cliente';
 import { uploadClienteImage } from '../../services/clienteService';
 import { useAuth } from '../../hooks/useAuth';
@@ -150,10 +151,7 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
         <div className="modal__header">
           <h2>{cliente ? 'Editar Cliente' : 'Nuevo Cliente'}</h2>
           <button className="modal__close" onClick={onClose}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
+            <PiXBold size={24} />
           </button>
         </div>
 
@@ -167,10 +165,7 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
                   <img src={previewImage} alt="Preview" />
                 ) : (
                   <div className="form-avatar__placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
+                    <PiUserBold size={32} />
                     <span>Agregar foto</span>
                   </div>
                 )}

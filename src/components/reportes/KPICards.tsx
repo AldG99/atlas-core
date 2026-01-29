@@ -1,3 +1,4 @@
+import { PiCurrencyDollarBold, PiHashBold, PiTrendUpBold, PiUsersBold } from 'react-icons/pi';
 import type { KPIs } from '../../types/Reporte';
 import { formatCurrency } from '../../utils/formatters';
 import './KPICards.scss';
@@ -9,25 +10,25 @@ interface KPICardsProps {
 const KPICards = ({ kpis }: KPICardsProps) => {
   const cards = [
     {
-      icon: '$',
+      icon: <PiCurrencyDollarBold size={24} />,
       value: formatCurrency(kpis.ventasTotales),
       label: 'Ventas totales',
       className: 'kpi-card--ventas'
     },
     {
-      icon: '#',
+      icon: <PiHashBold size={24} />,
       value: kpis.totalPedidos.toString(),
       label: 'Pedidos',
       className: 'kpi-card--pedidos'
     },
     {
-      icon: '~',
+      icon: <PiTrendUpBold size={24} />,
       value: formatCurrency(kpis.ticketPromedio),
       label: 'Ticket promedio',
       className: 'kpi-card--ticket'
     },
     {
-      icon: '@',
+      icon: <PiUsersBold size={24} />,
       value: kpis.clientesUnicos.toString(),
       label: 'Clientes',
       className: 'kpi-card--clientes'

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { PiXBold, PiImageBold } from 'react-icons/pi';
 import type { ProductoFormData } from '../../types/Producto';
 import { uploadProductoImage } from '../../services/productoService';
 import { useAuth } from '../../hooks/useAuth';
@@ -124,20 +125,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
         <div className="modal__header">
           <h2>{producto ? 'Editar Producto' : 'Nuevo Producto'}</h2>
           <button className="modal__close" onClick={onClose}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
+            <PiXBold size={24} />
           </button>
         </div>
 
@@ -153,28 +141,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   <img src={previewImage} alt="Preview" />
                 ) : (
                   <div className="producto-image-placeholder">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <rect
-                        x="3"
-                        y="3"
-                        width="18"
-                        height="18"
-                        rx="2"
-                        ry="2"
-                      ></rect>
-                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                      <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
+                    <PiImageBold size={32} />
                     <span>Agregar imagen</span>
                   </div>
                 )}

@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold } from 'react-icons/pi';
 import { usePedidos } from '../hooks/usePedidos';
 import { useToast } from '../hooks/useToast';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
@@ -9,29 +10,6 @@ import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
 import PedidosTable from '../components/pedidos/PedidosTable';
 import './Dashboard.scss';
-
-// Icons for summary cards
-const IconShoppingBag = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-    <line x1="3" y1="6" x2="21" y2="6"></line>
-    <path d="M16 10a4 4 0 0 1-8 0"></path>
-  </svg>
-);
-
-const IconDollar = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="1" x2="12" y2="23"></line>
-    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-  </svg>
-);
-
-const IconCheckCircle = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-  </svg>
-);
 
 type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc' | 'nombre_desc';
 type DateFilter = 'todos' | 'hoy' | 'semana' | 'mes';
@@ -218,12 +196,7 @@ const Dashboard = () => {
               className="btn btn--outline"
               title="Exportar a Google Drive"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
-                <polyline points="16 16 12 12 8 16"></polyline>
-                <line x1="12" y1="12" x2="12" y2="21"></line>
-                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                <polyline points="16 16 12 12 8 16"></polyline>
-              </svg>
+              <PiCloudArrowUpBold size={18} style={{ marginRight: '6px' }} />
               Google Drive
             </button>
             <button
@@ -242,7 +215,7 @@ const Dashboard = () => {
         <div className="dashboard__today-summary">
             <div className="dashboard__summary-card">
               <div className="dashboard__summary-icon">
-                <IconShoppingBag />
+                <PiShoppingBagBold size={20} />
               </div>
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">Pedidos hoy</span>
@@ -251,7 +224,7 @@ const Dashboard = () => {
             </div>
             <div className="dashboard__summary-card">
               <div className="dashboard__summary-icon dashboard__summary-icon--primary">
-                <IconDollar />
+                <PiCurrencyDollarBold size={20} />
               </div>
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">Ventas del día</span>
@@ -262,7 +235,7 @@ const Dashboard = () => {
             </div>
             <div className="dashboard__summary-card">
               <div className="dashboard__summary-icon dashboard__summary-icon--success">
-                <IconCheckCircle />
+                <PiCheckCircleBold size={20} />
               </div>
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">Entregados</span>
