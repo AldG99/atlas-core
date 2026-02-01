@@ -66,7 +66,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
       <div className="pedido-card__body">
         <div className="pedido-card__products">
           <strong>Productos:</strong>
-          <p>{pedido.productos}</p>
+          <p>{pedido.productos.map(p => `${p.cantidad}x ${p.nombre}`).join(', ')}</p>
         </div>
 
         {pedido.notas && (

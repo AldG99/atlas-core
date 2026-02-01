@@ -106,7 +106,7 @@ const Archivo = () => {
         (pedido) =>
           pedido.clienteNombre.toLowerCase().includes(term) ||
           pedido.clienteTelefono.toLowerCase().includes(term) ||
-          pedido.productos.toLowerCase().includes(term)
+          pedido.productos.some(p => p.nombre.toLowerCase().includes(term) || p.clave?.toLowerCase().includes(term))
       );
     }
 

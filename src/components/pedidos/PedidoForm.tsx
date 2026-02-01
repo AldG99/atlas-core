@@ -1,6 +1,6 @@
 import type { FormEvent } from 'react';
 import { useState, useEffect } from 'react';
-import type { PedidoFormData } from '../../types/Pedido';
+import type { PedidoFormData, ProductoItem } from '../../types/Pedido';
 import type { Producto } from '../../types/Producto';
 import type { Cliente } from '../../types/Cliente';
 import ProductoSelector, { type ItemPedido } from './ProductoSelector';
@@ -58,19 +58,20 @@ const PedidoForm = ({
 
     if (!validate()) return;
 
-    const productosText = items
-      .map((item) => {
-        const clave = item.producto.clave ? `[${item.producto.clave}] ` : '';
-        return `${item.cantidad}x ${clave}${item.producto.nombre} - $${item.subtotal.toFixed(2)}`;
-      })
-      .join('\n');
+    const productos: ProductoItem[] = items.map((item) => ({
+      nombre: item.producto.nombre,
+      clave: item.producto.clave || undefined,
+      cantidad: item.cantidad,
+      precioUnitario: item.producto.precio,
+      subtotal: item.subtotal
+    }));
 
     const data: PedidoFormData = {
       clienteNombre: selectedCliente!.nombre + ' ' + selectedCliente!.apellido,
       clienteTelefono: selectedCliente!.telefono,
       clienteFoto: selectedCliente!.fotoPerfil,
       clienteCodigoPostal: selectedCliente!.codigoPostal,
-      productos: productosText,
+      productos,
       total,
       notas
     };

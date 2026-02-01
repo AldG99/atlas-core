@@ -24,18 +24,27 @@ export const formatShortDate = (date: Date): string => {
   }).format(date);
 };
 
+import type { ProductoItem } from '../types/Pedido';
+
 interface PedidoForWhatsApp {
   clienteNombre: string;
   clienteTelefono: string;
-  productos: string;
+  productos: ProductoItem[];
   total: number;
   notas?: string;
 }
 
+const formatProductosText = (productos: ProductoItem[]): string => {
+  return productos.map(p => {
+    const clave = p.clave ? `[${p.clave}] ` : '';
+    return `${p.cantidad}x ${clave}${p.nombre} - $${p.subtotal.toFixed(2)}`;
+  }).join('\n');
+};
+
 export const formatPedidoForWhatsApp = (pedido: PedidoForWhatsApp): string => {
   let message = `*Pedido - ${pedido.clienteNombre}*\n`;
   message += `${pedido.clienteTelefono}\n\n`;
-  message += `*Productos:*\n${pedido.productos}\n\n`;
+  message += `*Productos:*\n${formatProductosText(pedido.productos)}\n\n`;
   message += `*Total: ${formatCurrency(pedido.total)}*`;
 
   if (pedido.notas) {
@@ -64,7 +73,7 @@ interface PedidoForCSV {
   id: string;
   clienteNombre: string;
   clienteTelefono: string;
-  productos: string;
+  productos: ProductoItem[];
   total: number;
   notas?: string;
   estado: string;
@@ -85,7 +94,7 @@ export const exportToCSV = (pedidos: PedidoForCSV[], filename: string = 'pedidos
     pedido.id,
     escapeCSV(pedido.clienteNombre),
     escapeCSV(pedido.clienteTelefono),
-    escapeCSV(pedido.productos.replace(/\n/g, ' | ')),
+    escapeCSV(formatProductosText(pedido.productos).replace(/\n/g, ' | ')),
     pedido.total.toFixed(2),
     pedido.estado,
     escapeCSV(pedido.notas || ''),

@@ -66,26 +66,6 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
     }).format(amount);
   };
 
-  const getCantidadTotal = (productos: string): number => {
-    return productos.split('\n').reduce((total, linea) => {
-      const match = linea.match(/^(\d+)x\s+/);
-      return total + (match ? parseInt(match[1], 10) : 1);
-    }, 0);
-  };
-
-  const getClave = (linea: string): string => {
-    const match = linea.match(/\[(.+?)\]/);
-    return match ? match[1] : '-';
-  };
-
-  const getNombreProducto = (linea: string): string => {
-    // Quita "2x " del inicio, "[CLAVE] " y " - $100.00" del final
-    return linea
-      .replace(/^\d+x\s+/, '')
-      .replace(/\[.+?\]\s*/, '')
-      .replace(/\s+-\s+\$[\d,.]+$/, '');
-  };
-
   const handleCopy = async (pedido: Pedido) => {
     const message = formatPedidoForWhatsApp(pedido);
     const success = await copyToClipboard(message);
@@ -136,22 +116,22 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                 </div>
               </td>
               <td>
-                <span className="pedidos-table__clave">{getClave(pedido.productos.split('\n')[0])}</span>
+                <span className="pedidos-table__clave">{pedido.productos[0]?.clave || '-'}</span>
               </td>
               <td>
-                <div className="pedidos-table__products" title={pedido.productos}>
+                <div className="pedidos-table__products">
                   <span className="pedidos-table__products-main">
-                    {getNombreProducto(pedido.productos.split('\n')[0])}
+                    {pedido.productos[0]?.nombre}
                   </span>
-                  {pedido.productos.split('\n').length > 1 && (
+                  {pedido.productos.length > 1 && (
                     <span className="pedidos-table__products-more">
-                      +{pedido.productos.split('\n').length - 1} más
+                      +{pedido.productos.length - 1} más
                     </span>
                   )}
                 </div>
               </td>
               <td>
-                <span className="pedidos-table__cantidad">{getCantidadTotal(pedido.productos)}</span>
+                <span className="pedidos-table__cantidad">{pedido.productos.reduce((sum, p) => sum + p.cantidad, 0)}</span>
               </td>
               <td>
                 <span className="pedidos-table__total">{formatCurrency(pedido.total)}</span>
@@ -306,39 +286,14 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                           </tr>
                         </thead>
                         <tbody>
-                          {selectedPedido.productos.split('\n').map((linea, index) => {
-                            // Formato: "2x [CLAVE] Nombre - $100.00" o "2x Nombre - $100.00"
-                            const matchConClave = linea.match(/^(\d+)x\s+\[(.+?)\]\s+(.+?)\s+-\s+(\$[\d,.]+)$/);
-                            const matchSinClave = linea.match(/^(\d+)x\s+(.+?)\s+-\s+(\$[\d,.]+)$/);
-
-                            if (matchConClave) {
-                              return (
-                                <tr key={index}>
-                                  <td className="pedidos-table__products-clave">{matchConClave[2]}</td>
-                                  <td>{matchConClave[1]}</td>
-                                  <td>{matchConClave[3]}</td>
-                                  <td>{matchConClave[4]}</td>
-                                </tr>
-                              );
-                            }
-                            if (matchSinClave) {
-                              return (
-                                <tr key={index}>
-                                  <td className="pedidos-table__products-clave">-</td>
-                                  <td>{matchSinClave[1]}</td>
-                                  <td>{matchSinClave[2]}</td>
-                                  <td>{matchSinClave[3]}</td>
-                                </tr>
-                              );
-                            }
-                            return (
-                              <tr key={index}>
-                                <td className="pedidos-table__products-clave">-</td>
-                                <td>1</td>
-                                <td colSpan={2}>{linea}</td>
-                              </tr>
-                            );
-                          })}
+                          {selectedPedido.productos.map((p, index) => (
+                            <tr key={index}>
+                              <td className="pedidos-table__products-clave">{p.clave || '-'}</td>
+                              <td>{p.cantidad}</td>
+                              <td>{p.nombre}</td>
+                              <td>${p.subtotal.toFixed(2)}</td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </td>
