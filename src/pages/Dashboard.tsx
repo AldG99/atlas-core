@@ -43,7 +43,8 @@ const Dashboard = () => {
     changeStatus,
     removePedido,
     fetchPedidos,
-    fetchByStatus
+    fetchByStatus,
+    registrarAbono
   } = usePedidos();
   const { showToast } = useToast();
 
@@ -290,6 +291,7 @@ const Dashboard = () => {
             onClick={() => handleFilterChange('todos')}
           >
             Todos
+            <span className="dashboard__filter-count">{allPedidos.length}</span>
           </button>
           {(Object.keys(PEDIDO_STATUS) as PedidoStatus[]).map((status) => (
             <button
@@ -331,6 +333,7 @@ const Dashboard = () => {
             pedidos={filteredAndSortedPedidos}
             onChangeStatus={handleChangeStatus}
             onDelete={handleDelete}
+            onAddAbono={registrarAbono}
           />
         )}
       </div>

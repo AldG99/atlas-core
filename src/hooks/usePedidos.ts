@@ -9,7 +9,8 @@ import {
   updatePedidoStatus,
   deletePedido,
   archivePedido,
-  unarchivePedido
+  unarchivePedido,
+  addAbono
 } from '../services/pedidoService';
 import { useAuth } from './useAuth';
 
@@ -140,6 +141,23 @@ export const usePedidos = () => {
     }
   }, []);
 
+  const registrarAbono = useCallback(async (pedidoId: string, monto: number, productoIndex?: number) => {
+    try {
+      setError(null);
+      const nuevoAbono = await addAbono(pedidoId, monto, productoIndex);
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id === pedidoId
+            ? { ...p, abonos: [...(p.abonos || []), nuevoAbono] }
+            : p
+        )
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al registrar abono');
+      throw err;
+    }
+  }, []);
+
   useEffect(() => {
     fetchPedidos();
   }, [fetchPedidos]);
@@ -157,6 +175,7 @@ export const usePedidos = () => {
     changeStatus,
     removePedido,
     archive,
-    restore
+    restore,
+    registrarAbono
   };
 };

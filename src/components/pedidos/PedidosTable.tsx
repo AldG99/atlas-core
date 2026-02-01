@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { PiArchiveBold, PiTrashBold, PiArrowCounterClockwiseBold, PiCaretDownBold, PiWhatsappLogoBold, PiCopyBold, PiPencilBold } from 'react-icons/pi';
+import { PiArchiveBold, PiTrashBold, PiArrowCounterClockwiseBold, PiCaretDownBold, PiWhatsappLogoBold, PiCopyBold, PiPencilBold, PiPlusBold } from 'react-icons/pi';
 import type { Pedido, PedidoStatus } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatPedidoForWhatsApp, openWhatsApp, copyToClipboard } from '../../utils/formatters';
@@ -13,12 +13,15 @@ interface PedidosTableProps {
   onDelete: (id: string) => void;
   onArchive?: (id: string) => void;
   onRestore?: (id: string) => void;
+  onAddAbono?: (id: string, monto: number, productoIndex?: number) => void;
   isArchived?: boolean;
 }
 
-const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore, isArchived = false }: PedidosTableProps) => {
+const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore, onAddAbono, isArchived = false }: PedidosTableProps) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [abonoInput, setAbonoInput] = useState<string>('');
+  const [abonoProducto, setAbonoProducto] = useState<string>('general');
   const [statusMenuOpen, setStatusMenuOpen] = useState<string | null>(null);
   const { clientes } = useClientes();
   const statusOptions: PedidoStatus[] = ['pendiente', 'en_preparacion', 'entregado'];
@@ -81,6 +84,20 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
 
   const toggleExpanded = (pedidoId: string) => {
     setExpandedId(expandedId === pedidoId ? null : pedidoId);
+    setAbonoInput('');
+    setAbonoProducto('general');
+  };
+
+  const getTotalPagado = (pedido: Pedido) =>
+    (pedido.abonos || []).reduce((sum, a) => sum + a.monto, 0);
+
+  const handleAddAbono = (pedidoId: string) => {
+    const monto = parseFloat(abonoInput);
+    if (!monto || monto <= 0 || !onAddAbono) return;
+    const productoIndex = abonoProducto === 'general' ? undefined : parseInt(abonoProducto, 10);
+    onAddAbono(pedidoId, monto, productoIndex);
+    setAbonoInput('');
+    setAbonoProducto('general');
   };
 
   return (
@@ -89,7 +106,8 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
         <thead>
           <tr>
             <th>Cliente</th>
-            <th>Producto</th>
+            <th>C.P.</th>
+            <th>Abonado</th>
             <th>Total</th>
             <th>Estado</th>
             <th>Fecha</th>
@@ -104,7 +122,6 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
               <Fragment key={pedido.id}>
                 <tr
                   className={`pedidos-table__row ${isExpanded ? 'pedidos-table__row--expanded' : ''}`}
-                  onClick={() => toggleExpanded(pedido.id)}
                 >
                   <td>
                     <div className="pedidos-table__client">
@@ -124,19 +141,35 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                     </div>
                   </td>
                   <td>
-                    <div className="pedidos-table__products">
-                      <span className="pedidos-table__products-main">
-                        {pedido.productos[0]?.nombre}
-                      </span>
-                      {pedido.productos.length > 1 && (
-                        <span className="pedidos-table__products-more">
-                          +{pedido.productos.length - 1} más
-                        </span>
-                      )}
-                    </div>
+                    <span className="pedidos-table__cp">{pedido.clienteCodigoPostal || '-'}</span>
                   </td>
                   <td>
-                    <span className="pedidos-table__total">{formatCurrency(pedido.total)}</span>
+                    {(() => {
+                      const pagado = getTotalPagado(pedido);
+                      const porcentaje = pedido.total > 0 ? Math.round((pagado / pedido.total) * 100) : 0;
+                      const status = pagado >= pedido.total ? 'paid' : pagado > 0 ? 'partial' : 'pending';
+                      return (
+                        <div className={`pedidos-table__paid pedidos-table__paid--${status}`}>
+                          <span className="pedidos-table__paid-amount">{formatCurrency(pagado)}</span>
+                          <span className="pedidos-table__paid-percent">{porcentaje}%</span>
+                        </div>
+                      );
+                    })()}
+                  </td>
+                  <td>
+                    {(() => {
+                      const pagado = getTotalPagado(pedido);
+                      const totalClass = pagado >= pedido.total
+                        ? 'pedidos-table__total--paid'
+                        : pagado > 0
+                          ? 'pedidos-table__total--pending'
+                          : '';
+                      return (
+                        <span className={`pedidos-table__total ${totalClass}`}>
+                          {formatCurrency(pedido.total)}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td>
                     <div className="pedidos-table__status-wrapper">
@@ -195,41 +228,166 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                     </div>
                   </td>
                   <td>
-                    <span className={`pedidos-table__expand-icon ${isExpanded ? 'pedidos-table__expand-icon--open' : ''}`}>
+                    <span
+                      className={`pedidos-table__expand-icon ${isExpanded ? 'pedidos-table__expand-icon--open' : ''}`}
+                      onClick={() => toggleExpanded(pedido.id)}
+                    >
                       <PiCaretDownBold size={16} />
                     </span>
                   </td>
                 </tr>
                 {isExpanded && (
                   <tr key={`${pedido.id}-expanded`} className="pedidos-table__expanded-row">
-                    <td colSpan={7}>
+                    <td colSpan={8}>
                       <div className="pedidos-table__expanded-content">
-                        <table className="pedidos-table__products-table">
-                          <thead>
-                            <tr>
-                              <th>Clave</th>
-                              <th>Cant.</th>
-                              <th>Producto</th>
-                              <th>Subtotal</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {pedido.productos.map((p, index) => (
-                              <tr key={index}>
-                                <td className="pedidos-table__products-clave">{p.clave || '-'}</td>
-                                <td>{p.cantidad}</td>
-                                <td>{p.nombre}</td>
-                                <td>${p.subtotal.toFixed(2)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                        {(() => {
+                          const pagado = getTotalPagado(pedido);
+                          const abonos = pedido.abonos || [];
+                          const asignadoPorProducto: number[] = pedido.productos.map(() => 0);
+                          const abonosGenerales: number[] = [];
+                          abonos.forEach((a) => {
+                            if (typeof a.productoIndex === 'number' && a.productoIndex >= 0 && a.productoIndex < pedido.productos.length) {
+                              asignadoPorProducto[a.productoIndex] += a.monto;
+                            } else {
+                              abonosGenerales.push(a.monto);
+                            }
+                          });
+                          const cobertura = [...asignadoPorProducto];
+                          let generalPool = abonosGenerales.reduce((s, m) => s + m, 0);
+                          pedido.productos.forEach((p, idx) => {
+                            const falta = Math.max(0, p.subtotal - cobertura[idx]);
+                            const porcion = Math.min(generalPool, falta);
+                            cobertura[idx] += porcion;
+                            generalPool -= porcion;
+                          });
+                          return (
+                            <>
+                              <div className="pedidos-table__payment-header">
+                                <strong>Productos y pagos</strong>
+                                <span className="pedidos-table__payment-info">
+                                  {formatCurrency(pagado)} de {formatCurrency(pedido.total)}
+                                </span>
+                              </div>
+                              <table className="pedidos-table__products-table">
+                                <thead>
+                                  <tr>
+                                    <th>Clave</th>
+                                    <th>Cant.</th>
+                                    <th>Producto</th>
+                                    <th>Subtotal</th>
+                                    <th>Abonado</th>
+                                    <th>Estado</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {pedido.productos.map((p, index) => {
+                                    const cubierto = Math.min(cobertura[index], p.subtotal);
+                                    const porcentaje = p.subtotal > 0 ? (cubierto / p.subtotal) * 100 : 0;
+                                    const status = porcentaje >= 100 ? 'paid' : porcentaje > 0 ? 'partial' : 'pending';
+                                    return (
+                                      <tr key={index} className={`pedidos-table__product-row--${status}`}>
+                                        <td>{p.clave ? <span className="pedidos-table__products-clave">{p.clave}</span> : '-'}</td>
+                                        <td>{p.cantidad}</td>
+                                        <td>{p.nombre}</td>
+                                        <td>{formatCurrency(p.subtotal)}</td>
+                                        <td>
+                                          <div className="pedidos-table__product-paid-cell">
+                                            <span>{formatCurrency(cubierto)}</span>
+                                            <div className="pedidos-table__product-bar">
+                                              <div
+                                                className={`pedidos-table__product-bar-fill pedidos-table__product-bar-fill--${status}`}
+                                                style={{ width: `${porcentaje}%` }}
+                                              />
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <span className={`pedidos-table__product-status pedidos-table__product-status--${status}`}>
+                                            {status === 'paid' ? 'Pagado' : status === 'partial' ? `${Math.round(porcentaje)}%` : 'Pendiente'}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                  <tr className="pedidos-table__product-total-row">
+                                    <td colSpan={3}><strong>Total</strong></td>
+                                    <td><strong>{formatCurrency(pedido.total)}</strong></td>
+                                    <td><strong>{formatCurrency(pagado)}</strong></td>
+                                    <td>
+                                      <strong className={pagado >= pedido.total ? 'pedidos-table__product-status--paid' : pagado > 0 ? 'pedidos-table__product-status--partial' : 'pedidos-table__product-status--pending'}>
+                                        {pagado >= pedido.total ? 'Liquidado' : formatCurrency(pedido.total - pagado) + ' restante'}
+                                      </strong>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </>
+                          );
+                        })()}
 
                         {pedido.notas && (
                           <div className="pedidos-table__expanded-notes">
                             <strong>Notas:</strong> {pedido.notas}
                           </div>
                         )}
+
+                        <div className="pedidos-table__payment-section" onClick={(e) => e.stopPropagation()}>
+                          {(() => {
+                            const abonos = pedido.abonos || [];
+                            return (
+                              <>
+                                {abonos.length > 0 && (
+                                  <>
+                                    <div className="pedidos-table__payment-header">
+                                      <strong>Historial de abonos</strong>
+                                    </div>
+                                    <ul className="pedidos-table__payment-list">
+                                      {abonos.map((abono, i) => (
+                                        <li key={i}>
+                                          {formatCurrency(abono.monto)} — {formatDate(abono.fecha)}
+                                          {typeof abono.productoIndex === 'number' && pedido.productos[abono.productoIndex] && (
+                                            <span className="pedidos-table__payment-label"> → {pedido.productos[abono.productoIndex].clave && <span className="pedidos-table__products-clave">{pedido.productos[abono.productoIndex].clave}</span>} {pedido.productos[abono.productoIndex].nombre}</span>
+                                          )}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </>
+                                )}
+                                {onAddAbono && !isArchived && (
+                                  <div className="pedidos-table__payment-form">
+                                    <select
+                                      value={abonoProducto}
+                                      onChange={(e) => setAbonoProducto(e.target.value)}
+                                    >
+                                      <option value="general">General</option>
+                                      {pedido.productos.map((p, idx) => (
+                                        <option key={idx} value={idx}>{p.nombre}</option>
+                                      ))}
+                                    </select>
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      step="0.01"
+                                      placeholder="$0.00"
+                                      value={abonoInput}
+                                      onChange={(e) => setAbonoInput(e.target.value)}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleAddAbono(pedido.id);
+                                      }}
+                                    />
+                                    <button
+                                      className="btn btn--primary btn--sm"
+                                      onClick={() => handleAddAbono(pedido.id)}
+                                    >
+                                      <PiPlusBold size={14} />
+                                      Agregar abono
+                                    </button>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
+                        </div>
 
                         <div className="pedidos-table__expanded-actions">
                           {!isArchived && (
