@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { PiEyeBold, PiArchiveBold, PiTrashBold, PiArrowCounterClockwiseBold, PiCaretDownBold, PiWhatsappLogoBold } from 'react-icons/pi';
+import { PiArchiveBold, PiTrashBold, PiArrowCounterClockwiseBold, PiCaretDownBold, PiWhatsappLogoBold, PiCopyBold, PiPencilBold } from 'react-icons/pi';
 import type { Pedido, PedidoStatus } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatPedidoForWhatsApp, openWhatsApp, copyToClipboard } from '../../utils/formatters';
@@ -18,7 +18,7 @@ interface PedidosTableProps {
 
 const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore, isArchived = false }: PedidosTableProps) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [statusMenuOpen, setStatusMenuOpen] = useState<string | null>(null);
   const { clientes } = useClientes();
   const statusOptions: PedidoStatus[] = ['pendiente', 'en_preparacion', 'entregado'];
@@ -32,7 +32,6 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
     setStatusMenuOpen(null);
   };
 
-  // Cerrar menú al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = () => {
       if (statusMenuOpen) {
@@ -80,291 +79,206 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
     openWhatsApp(pedido.clienteTelefono, message);
   };
 
+  const toggleExpanded = (pedidoId: string) => {
+    setExpandedId(expandedId === pedidoId ? null : pedidoId);
+  };
+
   return (
     <div className="pedidos-table-container">
       <table className="pedidos-table">
         <thead>
           <tr>
             <th>Cliente</th>
-            <th>Clave</th>
             <th>Producto</th>
-            <th>Cant.</th>
             <th>Total</th>
             <th>Estado</th>
             <th>Fecha</th>
             <th>Acciones</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          {pedidos.map((pedido) => (
-            <tr key={pedido.id}>
-              <td>
-                <div className="pedidos-table__client">
-                  <div className="pedidos-table__avatar">
-                    {getClienteFoto(pedido) ? (
-                      <img src={getClienteFoto(pedido)} alt={pedido.clienteNombre} />
-                    ) : (
-                      <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
-                    )}
-                  </div>
-                  <div className="pedidos-table__client-info">
-                    <span className="pedidos-table__name" title={pedido.clienteNombre}>
-                      {pedido.clienteNombre}
-                    </span>
-                    <span className="pedidos-table__phone">{pedido.clienteTelefono}</span>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span className="pedidos-table__clave">{pedido.productos[0]?.clave || '-'}</span>
-              </td>
-              <td>
-                <div className="pedidos-table__products">
-                  <span className="pedidos-table__products-main">
-                    {pedido.productos[0]?.nombre}
-                  </span>
-                  {pedido.productos.length > 1 && (
-                    <span className="pedidos-table__products-more">
-                      +{pedido.productos.length - 1} más
-                    </span>
-                  )}
-                </div>
-              </td>
-              <td>
-                <span className="pedidos-table__cantidad">{pedido.productos.reduce((sum, p) => sum + p.cantidad, 0)}</span>
-              </td>
-              <td>
-                <span className="pedidos-table__total">{formatCurrency(pedido.total)}</span>
-              </td>
-              <td>
-                <div className="pedidos-table__status-wrapper">
-                  <button
-                    className="pedidos-table__status pedidos-table__status--clickable"
-                    style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      !isArchived && handleStatusClick(pedido.id);
-                    }}
-                    disabled={isArchived}
-                  >
-                    {PEDIDO_STATUS[pedido.estado]}
-                    {!isArchived && (
-                      <PiCaretDownBold size={12} />
-                    )}
-                  </button>
-                  {statusMenuOpen === pedido.id && (
-                    <div className="pedidos-table__status-menu" onClick={(e) => e.stopPropagation()}>
-                      {statusOptions.map((status) => (
-                        <button
-                          key={status}
-                          className={`pedidos-table__status-option ${pedido.estado === status ? 'pedidos-table__status-option--active' : ''}`}
-                          onClick={() => handleStatusChange(pedido.id, status)}
-                        >
-                          <span
-                            className="pedidos-table__status-dot"
-                            style={{ backgroundColor: PEDIDO_STATUS_COLORS[status] }}
-                          />
-                          {PEDIDO_STATUS[status]}
-                        </button>
-                      ))}
+          {pedidos.map((pedido) => {
+            const isExpanded = expandedId === pedido.id;
+            return (
+              <Fragment key={pedido.id}>
+                <tr
+                  className={`pedidos-table__row ${isExpanded ? 'pedidos-table__row--expanded' : ''}`}
+                  onClick={() => toggleExpanded(pedido.id)}
+                >
+                  <td>
+                    <div className="pedidos-table__client">
+                      <div className="pedidos-table__avatar">
+                        {getClienteFoto(pedido) ? (
+                          <img src={getClienteFoto(pedido)} alt={pedido.clienteNombre} />
+                        ) : (
+                          <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
+                        )}
+                      </div>
+                      <div className="pedidos-table__client-info">
+                        <span className="pedidos-table__name" title={pedido.clienteNombre}>
+                          {pedido.clienteNombre}
+                        </span>
+                        <span className="pedidos-table__phone">{pedido.clienteTelefono}</span>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </td>
-              <td>
-                <span className="pedidos-table__date">{formatDate(pedido.fechaCreacion)}</span>
-              </td>
-              <td>
-                <div className="pedidos-table__actions">
-                  {!isArchived && (
-                    <>
+                  </td>
+                  <td>
+                    <div className="pedidos-table__products">
+                      <span className="pedidos-table__products-main">
+                        {pedido.productos[0]?.nombre}
+                      </span>
+                      {pedido.productos.length > 1 && (
+                        <span className="pedidos-table__products-more">
+                          +{pedido.productos.length - 1} más
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <span className="pedidos-table__total">{formatCurrency(pedido.total)}</span>
+                  </td>
+                  <td>
+                    <div className="pedidos-table__status-wrapper">
                       <button
-                        onClick={() => setSelectedPedido(pedido)}
-                        className="btn-icon btn-icon--primary"
-                        title="Ver detalles"
+                        className="pedidos-table__status pedidos-table__status--clickable"
+                        style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          !isArchived && handleStatusClick(pedido.id);
+                        }}
+                        disabled={isArchived}
                       >
-                        <PiEyeBold size={18} />
+                        {PEDIDO_STATUS[pedido.estado]}
+                        {!isArchived && (
+                          <PiCaretDownBold size={12} />
+                        )}
                       </button>
-
+                      {statusMenuOpen === pedido.id && (
+                        <div className="pedidos-table__status-menu" onClick={(e) => e.stopPropagation()}>
+                          {statusOptions.map((status) => (
+                            <button
+                              key={status}
+                              className={`pedidos-table__status-option ${pedido.estado === status ? 'pedidos-table__status-option--active' : ''}`}
+                              onClick={() => handleStatusChange(pedido.id, status)}
+                            >
+                              <span
+                                className="pedidos-table__status-dot"
+                                style={{ backgroundColor: PEDIDO_STATUS_COLORS[status] }}
+                              />
+                              {PEDIDO_STATUS[status]}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <span className="pedidos-table__date">{formatDate(pedido.fechaCreacion)}</span>
+                  </td>
+                  <td>
+                    <div className="pedidos-table__actions">
                       <button
-                        onClick={() => handleWhatsApp(pedido)}
+                        onClick={(e) => { e.stopPropagation(); handleWhatsApp(pedido); }}
                         className="btn-icon btn-icon--whatsapp"
                         title="Enviar por WhatsApp"
                       >
                         <PiWhatsappLogoBold size={18} />
                       </button>
-
-                      {onArchive && (
-                        <button
-                          onClick={() => onArchive(pedido.id)}
-                          className="btn-icon btn-icon--secondary"
-                          title="Archivar pedido"
-                        >
-                          <PiArchiveBold size={18} />
-                        </button>
-                      )}
-
                       <button
-                        onClick={() => onDelete(pedido.id)}
+                        onClick={(e) => { e.stopPropagation(); onDelete(pedido.id); }}
                         className="btn-icon btn-icon--danger"
                         title="Eliminar pedido"
                       >
                         <PiTrashBold size={18} />
                       </button>
-                    </>
-                  )}
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`pedidos-table__expand-icon ${isExpanded ? 'pedidos-table__expand-icon--open' : ''}`}>
+                      <PiCaretDownBold size={16} />
+                    </span>
+                  </td>
+                </tr>
+                {isExpanded && (
+                  <tr key={`${pedido.id}-expanded`} className="pedidos-table__expanded-row">
+                    <td colSpan={7}>
+                      <div className="pedidos-table__expanded-content">
+                        <table className="pedidos-table__products-table">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Cant.</th>
+                              <th>Producto</th>
+                              <th>Subtotal</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {pedido.productos.map((p, index) => (
+                              <tr key={index}>
+                                <td className="pedidos-table__products-clave">{p.clave || '-'}</td>
+                                <td>{p.cantidad}</td>
+                                <td>{p.nombre}</td>
+                                <td>${p.subtotal.toFixed(2)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
 
-                  {isArchived && onRestore && (
-                    <>
-                      <button
-                        onClick={() => onRestore(pedido.id)}
-                        className="btn-icon btn-icon--primary"
-                        title="Restaurar pedido"
-                      >
-                        <PiArrowCounterClockwiseBold size={18} />
-                      </button>
-                      <button
-                        onClick={() => onDelete(pedido.id)}
-                        className="btn-icon btn-icon--danger"
-                        title="Eliminar pedido"
-                      >
-                        <PiTrashBold size={18} />
-                      </button>
-                    </>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                        {pedido.notas && (
+                          <div className="pedidos-table__expanded-notes">
+                            <strong>Notas:</strong> {pedido.notas}
+                          </div>
+                        )}
 
-      {selectedPedido && (
-        <div className="pedidos-table__modal-overlay" onClick={() => setSelectedPedido(null)}>
-          <div className="pedidos-table__modal" onClick={(e) => e.stopPropagation()}>
-            <div className="pedidos-table__modal-header">
-              <h3>Detalles del Pedido</h3>
-              <button
-                className="pedidos-table__modal-close"
-                onClick={() => setSelectedPedido(null)}
-              >
-                &times;
-              </button>
-            </div>
-
-            <div className="pedidos-table__modal-body">
-              <table className="pedidos-table__detail-table">
-                <tbody>
-                  <tr>
-                    <td className="pedidos-table__detail-label">Cliente</td>
-                    <td className="pedidos-table__detail-value">
-                      <div className="pedidos-table__modal-client">
-                        <div className="pedidos-table__modal-avatar">
-                          {getClienteFoto(selectedPedido) ? (
-                            <img src={getClienteFoto(selectedPedido)} alt={selectedPedido.clienteNombre} />
-                          ) : (
-                            <span>{selectedPedido.clienteNombre.charAt(0).toUpperCase()}</span>
+                        <div className="pedidos-table__expanded-actions">
+                          {!isArchived && (
+                            <>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleCopy(pedido); }}
+                                className="btn btn--outline btn--sm"
+                              >
+                                <PiCopyBold size={16} />
+                                {copiedId === pedido.id ? 'Copiado!' : 'Copiar'}
+                              </button>
+                              <Link
+                                to={`/pedido/${pedido.id}/editar`}
+                                className="btn btn--primary btn--sm"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <PiPencilBold size={16} />
+                                Editar
+                              </Link>
+                              {onArchive && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); onArchive(pedido.id); }}
+                                  className="btn btn--secondary btn--sm"
+                                >
+                                  <PiArchiveBold size={16} />
+                                  Archivar
+                                </button>
+                              )}
+                            </>
                           )}
-                        </div>
-                        <div className="pedidos-table__modal-client-info">
-                          <span className="pedidos-table__modal-client-name">{selectedPedido.clienteNombre}</span>
-                          <span className="pedidos-table__modal-client-phone">{selectedPedido.clienteTelefono}</span>
+                          {isArchived && onRestore && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onRestore(pedido.id); }}
+                              className="btn btn--primary btn--sm"
+                            >
+                              <PiArrowCounterClockwiseBold size={16} />
+                              Restaurar
+                            </button>
+                          )}
                         </div>
                       </div>
                     </td>
                   </tr>
-                  <tr>
-                    <td className="pedidos-table__detail-label">Productos</td>
-                    <td className="pedidos-table__detail-value">
-                      <table className="pedidos-table__products-table">
-                        <thead>
-                          <tr>
-                            <th>Clave</th>
-                            <th>Cant.</th>
-                            <th>Producto</th>
-                            <th>Subtotal</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedPedido.productos.map((p, index) => (
-                            <tr key={index}>
-                              <td className="pedidos-table__products-clave">{p.clave || '-'}</td>
-                              <td>{p.cantidad}</td>
-                              <td>{p.nombre}</td>
-                              <td>${p.subtotal.toFixed(2)}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="pedidos-table__detail-label">Total</td>
-                    <td className="pedidos-table__detail-value">
-                      <span className="pedidos-table__modal-total">
-                        {formatCurrency(selectedPedido.total)}
-                      </span>
-                    </td>
-                  </tr>
-                  {selectedPedido.notas && (
-                    <tr>
-                      <td className="pedidos-table__detail-label">Notas</td>
-                      <td className="pedidos-table__detail-value">
-                        <div className="pedidos-table__modal-notes">
-                          {selectedPedido.notas}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                  <tr>
-                    <td className="pedidos-table__detail-label">Estado</td>
-                    <td className="pedidos-table__detail-value">
-                      <span
-                        className="pedidos-table__status"
-                        style={{ backgroundColor: PEDIDO_STATUS_COLORS[selectedPedido.estado] }}
-                      >
-                        {PEDIDO_STATUS[selectedPedido.estado]}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="pedidos-table__detail-label">Fecha</td>
-                    <td className="pedidos-table__detail-value">
-                      {formatDate(selectedPedido.fechaCreacion)}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="pedidos-table__modal-footer">
-              <button
-                onClick={() => {
-                  handleWhatsApp(selectedPedido);
-                }}
-                className="btn btn--whatsapp"
-              >
-                <PiWhatsappLogoBold size={16} />
-                WhatsApp
-              </button>
-              <button
-                onClick={() => {
-                  handleCopy(selectedPedido);
-                }}
-                className="btn btn--outline"
-              >
-                {copiedId === selectedPedido.id ? 'Copiado!' : 'Copiar'}
-              </button>
-              <Link
-                to={`/pedido/${selectedPedido.id}/editar`}
-                className="btn btn--primary"
-              >
-                Editar
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+                )}
+              </Fragment>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
