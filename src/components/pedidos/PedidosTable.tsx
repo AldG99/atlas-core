@@ -302,7 +302,7 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                                   style={{ backgroundColor: et.color }}
                                                   title={et.nombre}
                                                 >
-                                                  {Icon && <Icon size={10} />}
+                                                  {Icon && <Icon size={12} />}
                                                 </span>
                                               );
                                             })}
@@ -334,7 +334,7 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                               if (found) setSelectedProducto(found);
                                             }}
                                           >
-                                            <PiEyeBold size={14} />
+                                            <PiEyeBold size={18} />
                                           </button>
                                         </td>
                                       </tr>

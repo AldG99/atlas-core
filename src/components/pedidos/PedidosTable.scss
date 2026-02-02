@@ -57,12 +57,7 @@
     }
 
     &--expanded {
-      background-color: rgba($color-primary, 0.08);
       border-bottom-color: transparent !important;
-
-      td {
-        color: $color-gray-900;
-      }
 
       .pedidos-table__name {
         color: $color-primary;
@@ -71,10 +66,8 @@
   }
 
   &__expanded-row {
-    background-color: rgba($color-primary, 0.04);
-
     &:hover {
-      background-color: rgba($color-primary, 0.04) !important;
+      background-color: transparent !important;
     }
 
     > td {
@@ -104,11 +97,9 @@
   &__expanded-notes {
     font-size: $font-size-sm;
     color: $color-gray-600;
-    font-style: italic;
     padding: $spacing-xs 0;
 
     strong {
-      font-style: normal;
       color: $color-gray-700;
     }
   }
@@ -432,7 +423,7 @@
     thead {
       th {
         padding: $spacing-xs $spacing-md;
-        font-size: $font-size-xs;
+        font-size: $font-size-sm;
         font-weight: 600;
         color: $color-gray-500;
         text-align: left;
@@ -532,7 +523,7 @@
   }
 
   &__product-status {
-    font-size: $font-size-xs;
+    font-size: $font-size-sm;
     font-weight: 600;
     padding: 2px 8px;
     border-radius: 0;
@@ -563,8 +554,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     color: $color-white;
   }
@@ -572,7 +563,7 @@
   &__products-clave {
     display: inline-block;
     padding: 2px 6px;
-    font-size: $font-size-xs;
+    font-size: $font-size-sm;
     font-weight: 500;
     color: $color-primary;
     background-color: rgba($color-primary, 0.1);
@@ -594,7 +585,7 @@
 
     thead th {
       padding: $spacing-xs $spacing-md;
-      font-size: $font-size-xs;
+      font-size: $font-size-sm;
       font-weight: 600;
       color: $color-gray-500;
       text-align: left;
