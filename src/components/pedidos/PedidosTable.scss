@@ -5,12 +5,13 @@
   background-color: $color-white;
   border-radius: 0;
   box-shadow: $shadow-sm;
-  overflow: visible;
+  overflow-x: auto;
 }
 
 .pedidos-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   min-width: 700px;
 
   thead {
@@ -18,7 +19,7 @@
     border-bottom: 1px solid $color-gray-200;
 
     th {
-      padding: $spacing-md;
+      padding: $spacing-sm $spacing-md;
       text-align: left;
       font-size: $font-size-sm;
       font-weight: 600;
@@ -30,13 +31,29 @@
         text-align: center;
       }
 
+      // Abonado
+      &:nth-child(4) {
+        text-align: right;
+      }
+
+      // Total
+      &:nth-child(5) {
+        text-align: right;
+      }
+
       // Estado
       &:nth-child(6) {
         text-align: center;
       }
 
+      // Acciones
+      &:nth-child(8) {
+        text-align: center;
+      }
+
       &:last-child {
         width: 40px;
+        padding-right: $spacing-md;
       }
     }
   }
@@ -62,9 +79,29 @@
         text-align: center;
       }
 
+      // Abonado
+      &:nth-child(4) {
+        text-align: right;
+      }
+
+      // Total
+      &:nth-child(5) {
+        text-align: right;
+      }
+
       // Estado
       &:nth-child(6) {
         text-align: center;
+      }
+
+      // Acciones
+      &:nth-child(8) {
+        text-align: center;
+      }
+
+      // Flecha expand
+      &:last-child {
+        padding-right: $spacing-md;
       }
     }
   }
@@ -149,7 +186,7 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
-    max-width: 160px;
+    max-width: 100%;
   }
 
   &__phone {
@@ -222,7 +259,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 160px;
+    max-width: 100%;
     transition: color 0.3s ease;
   }
 
@@ -252,6 +289,7 @@
   &__paid {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: $spacing-xs;
 
     &--paid {
@@ -297,7 +335,7 @@
     display: flex;
     gap: $spacing-md;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   &__product-count {
@@ -449,7 +487,7 @@
       border-bottom: 1px solid $color-gray-200;
 
       th {
-        padding: $spacing-xs $spacing-md;
+        padding: $spacing-sm $spacing-md;
         font-size: $font-size-sm;
         font-weight: 600;
         color: $color-gray-500;
@@ -462,11 +500,6 @@
         // Cant.
         &:nth-child(2) {
           text-align: center;
-        }
-
-        // Producto
-        &:nth-child(3) {
-          text-align: left;
         }
 
         // Etiquetas
@@ -482,6 +515,16 @@
         // Subtotal
         &:nth-child(6) {
           text-align: right;
+        }
+
+        // Estado
+        &:nth-child(7) {
+          text-align: center;
+        }
+
+        // Acciones
+        &:nth-child(8) {
+          text-align: center;
         }
 
         &:last-child {
@@ -501,7 +544,7 @@
       }
 
       td {
-        padding: $spacing-xs $spacing-md;
+        padding: $spacing-sm $spacing-md;
         font-size: $font-size-sm;
         color: $color-gray-800;
         text-align: left;
@@ -521,11 +564,6 @@
           text-align: center;
         }
 
-        // Producto
-        &:nth-child(3) {
-          text-align: left;
-        }
-
         // Etiquetas
         &:nth-child(4) {
           text-align: center;
@@ -533,16 +571,26 @@
 
         // Abonado
         &:nth-child(5) {
-          font-weight: 500;
+          font-weight: 600;
           color: $color-gray-700;
           text-align: right;
         }
 
         // Subtotal
         &:nth-child(6) {
-          font-weight: 500;
+          font-weight: 600;
           color: $color-gray-700;
           text-align: right;
+        }
+
+        // Estado
+        &:nth-child(7) {
+          text-align: center;
+        }
+
+        // Acciones
+        &:nth-child(8) {
+          text-align: center;
         }
       }
     }
@@ -552,9 +600,14 @@
     border-top: 1px solid $color-gray-100;
 
     td {
-      padding: $spacing-xs $spacing-md;
+      padding: $spacing-sm $spacing-md;
 
       // Abonado total
+      &:nth-child(5) {
+        text-align: right;
+      }
+
+      // Subtotal total
       &:nth-child(6) {
         text-align: right;
       }
@@ -648,30 +701,35 @@
   }
 
   &__abonos-table {
-    width: 100%;
+    width: calc(100% + #{$spacing-md} * 2);
+    margin-left: -$spacing-md;
+    margin-right: -$spacing-md;
     border-collapse: collapse;
+    table-layout: fixed;
 
-    thead th {
-      padding: $spacing-xs $spacing-md;
-      font-size: $font-size-sm;
-      font-weight: 600;
-      color: $color-gray-500;
-      text-align: left;
-      border-bottom: 1px solid $color-gray-100;
+    thead {
+      background-color: $color-gray-50;
+      border-bottom: 1px solid $color-gray-200;
 
-      &:first-child {
-        width: 80px;
-        padding-left: 0;
-      }
-
-      // Monto
-      &:nth-child(3) {
-        width: 120px;
+      th {
+        padding: $spacing-sm $spacing-md;
+        font-size: $font-size-sm;
+        font-weight: 600;
+        color: $color-gray-500;
         text-align: left;
-      }
 
-      &:nth-child(4) {
-        width: 140px;
+        &:first-child {
+          padding-left: $spacing-md;
+        }
+
+        // Monto
+        &:nth-child(3) {
+          text-align: right;
+        }
+
+        &:last-child {
+          padding-right: $spacing-md * 2;
+        }
       }
     }
 
@@ -685,7 +743,7 @@
       }
 
       td {
-        padding: $spacing-xs $spacing-md;
+        padding: $spacing-sm $spacing-md;
         font-size: $font-size-sm;
         color: $color-gray-700;
         vertical-align: middle;
@@ -693,12 +751,11 @@
         // Clave
         &:first-child {
           white-space: nowrap;
-          padding-left: 0;
+          padding-left: $spacing-md;
         }
 
         // Producto
         &:nth-child(2) {
-          max-width: 200px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -708,13 +765,14 @@
         &:nth-child(3) {
           font-weight: 600;
           white-space: nowrap;
-          text-align: left;
+          text-align: right;
         }
 
         // Fecha
         &:last-child {
           white-space: nowrap;
           color: $color-gray-500;
+          padding-right: $spacing-md * 2;
         }
       }
     }

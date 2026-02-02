@@ -114,6 +114,17 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
   return (
     <div className="pedidos-table-container">
       <table className="pedidos-table">
+        <colgroup>
+          <col style={{ width: '22%' }} />
+          <col style={{ width: '6%' }} />
+          <col style={{ width: '8%' }} />
+          <col style={{ width: '10%' }} />
+          <col style={{ width: '8%' }} />
+          <col style={{ width: '10%' }} />
+          <col style={{ width: '12%' }} />
+          <col style={{ width: '10%' }} />
+          <col style={{ width: '4%' }} />
+        </colgroup>
         <thead>
           <tr>
             <th>Cliente</th>
@@ -259,14 +270,14 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                               </div>
                               <table className="pedidos-table__products-table">
                                 <colgroup>
-                                  <col style={{ width: '10%' }} />
                                   <col style={{ width: '8%' }} />
-                                  <col style={{ width: '18%' }} />
+                                  <col style={{ width: '6%' }} />
+                                  <col style={{ width: '20%' }} />
                                   <col style={{ width: '10%' }} />
                                   <col style={{ width: '16%' }} />
                                   <col style={{ width: '14%' }} />
-                                  <col style={{ width: '16%' }} />
-                                  <col style={{ width: '8%' }} />
+                                  <col style={{ width: '14%' }} />
+                                  <col style={{ width: '12%' }} />
                                 </colgroup>
                                 <thead>
                                   <tr>
@@ -377,6 +388,12 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                       <strong>Historial de abonos</strong>
                                     </div>
                                     <table className="pedidos-table__abonos-table">
+                                      <colgroup>
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '46%' }} />
+                                        <col style={{ width: '24%' }} />
+                                        <col style={{ width: '20%' }} />
+                                      </colgroup>
                                       <thead>
                                         <tr>
                                           <th>Clave</th>
