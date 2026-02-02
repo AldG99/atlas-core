@@ -25,6 +25,16 @@
       color: $color-gray-600;
       white-space: nowrap;
 
+      // Productos
+      &:nth-child(3) {
+        text-align: center;
+      }
+
+      // Estado
+      &:nth-child(6) {
+        text-align: center;
+      }
+
       &:last-child {
         width: 40px;
       }
@@ -46,6 +56,16 @@
       font-size: $font-size-sm;
       color: $color-gray-700;
       vertical-align: middle;
+
+      // Productos
+      &:nth-child(3) {
+        text-align: center;
+      }
+
+      // Estado
+      &:nth-child(6) {
+        text-align: center;
+      }
     }
   }
 
@@ -209,8 +229,10 @@
   &__products {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 2px;
     max-width: 200px;
+    margin: 0 auto;
     overflow: hidden;
   }
 
@@ -415,22 +437,50 @@
   }
 
   &__products-table {
-    width: 100%;
+    width: calc(100% + #{$spacing-md} * 2);
+    margin-left: -$spacing-md;
+    margin-right: -$spacing-md;
     border-collapse: collapse;
     background-color: transparent;
     table-layout: fixed;
 
     thead {
+      background-color: $color-gray-50;
+      border-bottom: 1px solid $color-gray-200;
+
       th {
         padding: $spacing-xs $spacing-md;
         font-size: $font-size-sm;
         font-weight: 600;
         color: $color-gray-500;
         text-align: left;
-        border-bottom: 1px solid $color-gray-100;
 
         &:first-child {
-          padding-left: 0;
+          padding-left: $spacing-md;
+        }
+
+        // Cant.
+        &:nth-child(2) {
+          text-align: center;
+        }
+
+        // Producto
+        &:nth-child(3) {
+          text-align: left;
+        }
+
+        // Etiquetas
+        &:nth-child(4) {
+          text-align: center;
+        }
+
+        // Abonado
+        &:nth-child(6) {
+          text-align: right;
+        }
+
+        &:last-child {
+          padding-right: $spacing-md * 2;
         }
       }
     }
@@ -453,12 +503,27 @@
         height: auto;
 
         &:first-child {
-          padding-left: 0;
+          padding-left: $spacing-md;
+        }
+
+        &:last-child {
+          padding-right: $spacing-md * 2;
         }
 
         // Cant.
         &:nth-child(2) {
           font-weight: 600;
+          text-align: center;
+        }
+
+        // Producto
+        &:nth-child(3) {
+          text-align: left;
+        }
+
+        // Etiquetas
+        &:nth-child(4) {
+          text-align: center;
         }
 
         // Subtotal
@@ -471,6 +536,7 @@
         &:nth-child(6) {
           font-weight: 500;
           color: $color-gray-700;
+          text-align: right;
         }
       }
     }
@@ -525,22 +591,17 @@
   &__product-status {
     font-size: $font-size-sm;
     font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 0;
 
     &--paid {
       color: #16a34a;
-      background-color: rgba(#16a34a, 0.1);
     }
 
     &--partial {
       color: #ea580c;
-      background-color: rgba(#ea580c, 0.1);
     }
 
     &--pending {
       color: $color-gray-400;
-      background-color: $color-gray-100;
     }
   }
 
@@ -548,6 +609,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 3px;
+    justify-content: center;
   }
 
   &__etiqueta {
@@ -596,8 +658,10 @@
         padding-left: 0;
       }
 
+      // Monto
       &:nth-child(3) {
         width: 120px;
+        text-align: left;
       }
 
       &:nth-child(4) {
@@ -638,6 +702,7 @@
         &:nth-child(3) {
           font-weight: 600;
           white-space: nowrap;
+          text-align: left;
         }
 
         // Fecha
@@ -737,8 +802,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 34px;
+    height: 34px;
     border: none;
     background: none;
     color: $color-primary;
@@ -748,6 +813,35 @@
 
     &:hover {
       color: $color-primary-dark;
+    }
+  }
+
+  &__action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+
+    &--whatsapp {
+      color: #25d366;
+
+      &:hover {
+        color: darken(#25d366, 10%);
+      }
+    }
+
+    &--danger {
+      color: $color-danger;
+
+      &:hover {
+        color: darken($color-danger, 10%);
+      }
     }
   }
 

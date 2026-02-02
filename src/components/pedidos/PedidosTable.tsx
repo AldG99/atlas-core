@@ -202,17 +202,17 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                     <div className="pedidos-table__actions">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleWhatsApp(pedido); }}
-                        className="btn-icon btn-icon--whatsapp"
+                        className="pedidos-table__action-btn pedidos-table__action-btn--whatsapp"
                         title="Enviar por WhatsApp"
                       >
-                        <PiWhatsappLogoBold size={18} />
+                        <PiWhatsappLogoBold size={20} />
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); onDelete(pedido.id); }}
-                        className="btn-icon btn-icon--danger"
+                        className="pedidos-table__action-btn pedidos-table__action-btn--danger"
                         title="Eliminar pedido"
                       >
-                        <PiTrashBold size={18} />
+                        <PiTrashBold size={20} />
                       </button>
                     </div>
                   </td>
@@ -334,7 +334,7 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                               if (found) setSelectedProducto(found);
                                             }}
                                           >
-                                            <PiEyeBold size={18} />
+                                            <PiEyeBold size={20} />
                                           </button>
                                         </td>
                                       </tr>
