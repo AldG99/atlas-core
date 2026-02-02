@@ -261,11 +261,11 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                 <colgroup>
                                   <col style={{ width: '10%' }} />
                                   <col style={{ width: '8%' }} />
-                                  <col style={{ width: '20%' }} />
-                                  <col style={{ width: '10%' }} />
-                                  <col style={{ width: '14%' }} />
                                   <col style={{ width: '18%' }} />
-                                  <col style={{ width: '12%' }} />
+                                  <col style={{ width: '10%' }} />
+                                  <col style={{ width: '16%' }} />
+                                  <col style={{ width: '14%' }} />
+                                  <col style={{ width: '16%' }} />
                                   <col style={{ width: '8%' }} />
                                 </colgroup>
                                 <thead>
@@ -274,8 +274,8 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                     <th>Cant.</th>
                                     <th>Producto</th>
                                     <th>Etiquetas</th>
-                                    <th>Subtotal</th>
                                     <th>Abonado</th>
+                                    <th>Subtotal</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                   </tr>
@@ -308,7 +308,6 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                             })}
                                           </div>
                                         </td>
-                                        <td>{formatCurrency(p.subtotal)}</td>
                                         <td>
                                           <div className="pedidos-table__product-paid-cell">
                                             <span>{formatCurrency(cubierto)}</span>
@@ -320,6 +319,7 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                             </div>
                                           </div>
                                         </td>
+                                        <td>{formatCurrency(p.subtotal)}</td>
                                         <td>
                                           <span className={`pedidos-table__product-status pedidos-table__product-status--${status}`}>
                                             {status === 'paid' ? 'Pagado' : status === 'partial' ? `${Math.round(porcentaje)}%` : 'Pendiente'}
@@ -345,8 +345,8 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td><strong>{formatCurrency(pedido.total)}</strong></td>
                                     <td><strong>{formatCurrency(pagado)}</strong></td>
+                                    <td><strong>{formatCurrency(pedido.total)}</strong></td>
                                     <td>
                                       <strong className={pagado >= pedido.total ? 'pedidos-table__product-status--paid' : pagado > 0 ? 'pedidos-table__product-status--partial' : 'pedidos-table__product-status--pending'}>
                                         {pagado >= pedido.total ? 'Liquidado' : formatCurrency(pedido.total - pagado) + ' restante'}

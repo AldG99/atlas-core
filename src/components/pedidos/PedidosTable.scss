@@ -295,7 +295,7 @@
 
   &__actions {
     display: flex;
-    gap: $spacing-xs;
+    gap: $spacing-md;
     align-items: center;
     justify-content: flex-start;
   }
@@ -475,6 +475,11 @@
         }
 
         // Abonado
+        &:nth-child(5) {
+          text-align: right;
+        }
+
+        // Subtotal
         &:nth-child(6) {
           text-align: right;
         }
@@ -526,13 +531,14 @@
           text-align: center;
         }
 
-        // Subtotal
+        // Abonado
         &:nth-child(5) {
           font-weight: 500;
           color: $color-gray-700;
+          text-align: right;
         }
 
-        // Abonado
+        // Subtotal
         &:nth-child(6) {
           font-weight: 500;
           color: $color-gray-700;
