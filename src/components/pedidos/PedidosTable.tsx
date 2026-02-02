@@ -1,10 +1,14 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { PiArchiveBold, PiTrashBold, PiArrowCounterClockwiseBold, PiCaretDownBold, PiWhatsappLogoBold, PiCopyBold, PiPencilBold, PiPlusBold } from 'react-icons/pi';
+import { PiArchiveBold, PiTrashBold, PiArrowCounterClockwiseBold, PiCaretDownBold, PiWhatsappLogoBold, PiCopyBold, PiPencilBold, PiPlusBold, PiCheckBold, PiEyeBold, PiXBold, PiPackageBold } from 'react-icons/pi';
 import type { Pedido, PedidoStatus } from '../../types/Pedido';
+import type { Producto, Etiqueta } from '../../types/Producto';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
+import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import { formatPedidoForWhatsApp, openWhatsApp, copyToClipboard } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
+import { useProductos } from '../../hooks/useProductos';
+import { useEtiquetas } from '../../hooks/useEtiquetas';
 import './PedidosTable.scss';
 
 interface PedidosTableProps {
@@ -22,29 +26,20 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [abonoInput, setAbonoInput] = useState<string>('');
   const [abonoProducto, setAbonoProducto] = useState<string>('general');
-  const [statusMenuOpen, setStatusMenuOpen] = useState<string | null>(null);
+  const [abonoError, setAbonoError] = useState<string | null>(null);
+  const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
   const { clientes } = useClientes();
-  const statusOptions: PedidoStatus[] = ['pendiente', 'en_preparacion', 'entregado'];
+  const { productos: catalogoProductos } = useProductos();
+  const { etiquetas: todasEtiquetas } = useEtiquetas();
 
-  const handleStatusClick = (pedidoId: string) => {
-    setStatusMenuOpen(statusMenuOpen === pedidoId ? null : pedidoId);
+  const getEtiquetasForClave = (clave?: string): Etiqueta[] => {
+    if (!clave) return [];
+    const producto = catalogoProductos.find(cp => cp.clave === clave);
+    if (!producto?.etiquetas) return [];
+    return producto.etiquetas
+      .map(id => todasEtiquetas.find(e => e.id === id))
+      .filter((e): e is Etiqueta => !!e);
   };
-
-  const handleStatusChange = (pedidoId: string, status: PedidoStatus) => {
-    onChangeStatus(pedidoId, status);
-    setStatusMenuOpen(null);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = () => {
-      if (statusMenuOpen) {
-        setStatusMenuOpen(null);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [statusMenuOpen]);
 
   const getClienteFoto = (pedido: Pedido): string | undefined => {
     if (pedido.clienteFoto) return pedido.clienteFoto;
@@ -86,16 +81,32 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
     setExpandedId(expandedId === pedidoId ? null : pedidoId);
     setAbonoInput('');
     setAbonoProducto('general');
+    setAbonoError(null);
   };
 
   const getTotalPagado = (pedido: Pedido) =>
     (pedido.abonos || []).reduce((sum, a) => sum + a.monto, 0);
 
-  const handleAddAbono = (pedidoId: string) => {
+  const handleAddAbono = (pedido: Pedido) => {
     const monto = parseFloat(abonoInput);
     if (!monto || monto <= 0 || !onAddAbono) return;
+    setAbonoError(null);
+
+    const totalPagado = getTotalPagado(pedido);
+    const restante = pedido.total - totalPagado;
+
+    if (restante <= 0) {
+      setAbonoError('Este pedido ya está completamente pagado');
+      return;
+    }
+
+    if (monto > restante) {
+      setAbonoError(`El monto excede el saldo restante (${formatCurrency(restante)})`);
+      return;
+    }
+
     const productoIndex = abonoProducto === 'general' ? undefined : parseInt(abonoProducto, 10);
-    onAddAbono(pedidoId, monto, productoIndex);
+    onAddAbono(pedido.id, monto, productoIndex);
     setAbonoInput('');
     setAbonoProducto('general');
   };
@@ -107,6 +118,7 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
           <tr>
             <th>Cliente</th>
             <th>C.P.</th>
+            <th>Productos</th>
             <th>Abonado</th>
             <th>Total</th>
             <th>Estado</th>
@@ -144,6 +156,11 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                     <span className="pedidos-table__cp">{pedido.clienteCodigoPostal || '-'}</span>
                   </td>
                   <td>
+                    <span className="pedidos-table__product-count">
+                      {pedido.productos.reduce((sum, p) => sum + p.cantidad, 0)}
+                    </span>
+                  </td>
+                  <td>
                     {(() => {
                       const pagado = getTotalPagado(pedido);
                       const porcentaje = pedido.total > 0 ? Math.round((pagado / pedido.total) * 100) : 0;
@@ -172,39 +189,11 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                     })()}
                   </td>
                   <td>
-                    <div className="pedidos-table__status-wrapper">
-                      <button
-                        className="pedidos-table__status pedidos-table__status--clickable"
-                        style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          !isArchived && handleStatusClick(pedido.id);
-                        }}
-                        disabled={isArchived}
-                      >
-                        {PEDIDO_STATUS[pedido.estado]}
-                        {!isArchived && (
-                          <PiCaretDownBold size={12} />
-                        )}
-                      </button>
-                      {statusMenuOpen === pedido.id && (
-                        <div className="pedidos-table__status-menu" onClick={(e) => e.stopPropagation()}>
-                          {statusOptions.map((status) => (
-                            <button
-                              key={status}
-                              className={`pedidos-table__status-option ${pedido.estado === status ? 'pedidos-table__status-option--active' : ''}`}
-                              onClick={() => handleStatusChange(pedido.id, status)}
-                            >
-                              <span
-                                className="pedidos-table__status-dot"
-                                style={{ backgroundColor: PEDIDO_STATUS_COLORS[status] }}
-                              />
-                              {PEDIDO_STATUS[status]}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <span
+                      className="pedidos-table__status-dot-indicator"
+                      style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                      title={PEDIDO_STATUS[pedido.estado]}
+                    />
                   </td>
                   <td>
                     <span className="pedidos-table__date">{formatDate(pedido.fechaCreacion)}</span>
@@ -238,7 +227,7 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                 </tr>
                 {isExpanded && (
                   <tr key={`${pedido.id}-expanded`} className="pedidos-table__expanded-row">
-                    <td colSpan={8}>
+                    <td colSpan={9}>
                       <div className="pedidos-table__expanded-content">
                         {(() => {
                           const pagado = getTotalPagado(pedido);
@@ -269,14 +258,26 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                 </span>
                               </div>
                               <table className="pedidos-table__products-table">
+                                <colgroup>
+                                  <col style={{ width: '10%' }} />
+                                  <col style={{ width: '8%' }} />
+                                  <col style={{ width: '20%' }} />
+                                  <col style={{ width: '10%' }} />
+                                  <col style={{ width: '14%' }} />
+                                  <col style={{ width: '18%' }} />
+                                  <col style={{ width: '12%' }} />
+                                  <col style={{ width: '8%' }} />
+                                </colgroup>
                                 <thead>
                                   <tr>
                                     <th>Clave</th>
                                     <th>Cant.</th>
                                     <th>Producto</th>
+                                    <th>Etiquetas</th>
                                     <th>Subtotal</th>
                                     <th>Abonado</th>
                                     <th>Estado</th>
+                                    <th>Acciones</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -289,6 +290,24 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                         <td>{p.clave ? <span className="pedidos-table__products-clave">{p.clave}</span> : '-'}</td>
                                         <td>{p.cantidad}</td>
                                         <td>{p.nombre}</td>
+                                        <td>
+                                          <div className="pedidos-table__etiquetas">
+                                            {getEtiquetasForClave(p.clave).map(et => {
+                                              const iconData = ETIQUETA_ICONS[et.icono];
+                                              const Icon = iconData?.icon;
+                                              return (
+                                                <span
+                                                  key={et.id}
+                                                  className="pedidos-table__etiqueta"
+                                                  style={{ backgroundColor: et.color }}
+                                                  title={et.nombre}
+                                                >
+                                                  {Icon && <Icon size={10} />}
+                                                </span>
+                                              );
+                                            })}
+                                          </div>
+                                        </td>
                                         <td>{formatCurrency(p.subtotal)}</td>
                                         <td>
                                           <div className="pedidos-table__product-paid-cell">
@@ -306,11 +325,26 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                             {status === 'paid' ? 'Pagado' : status === 'partial' ? `${Math.round(porcentaje)}%` : 'Pendiente'}
                                           </span>
                                         </td>
+                                        <td>
+                                          <button
+                                            className="pedidos-table__product-eye"
+                                            title="Ver detalles"
+                                            onClick={() => {
+                                              const found = catalogoProductos.find(cp => cp.clave === p.clave);
+                                              if (found) setSelectedProducto(found);
+                                            }}
+                                          >
+                                            <PiEyeBold size={14} />
+                                          </button>
+                                        </td>
                                       </tr>
                                     );
                                   })}
                                   <tr className="pedidos-table__product-total-row">
-                                    <td colSpan={3}><strong>Total</strong></td>
+                                    <td><strong>Total</strong></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                     <td><strong>{formatCurrency(pedido.total)}</strong></td>
                                     <td><strong>{formatCurrency(pagado)}</strong></td>
                                     <td>
@@ -318,6 +352,7 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                         {pagado >= pedido.total ? 'Liquidado' : formatCurrency(pedido.total - pagado) + ' restante'}
                                       </strong>
                                     </td>
+                                    <td></td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -341,48 +376,75 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                     <div className="pedidos-table__payment-header">
                                       <strong>Historial de abonos</strong>
                                     </div>
-                                    <ul className="pedidos-table__payment-list">
-                                      {abonos.map((abono, i) => (
-                                        <li key={i}>
-                                          {formatCurrency(abono.monto)} — {formatDate(abono.fecha)}
-                                          {typeof abono.productoIndex === 'number' && pedido.productos[abono.productoIndex] && (
-                                            <span className="pedidos-table__payment-label"> → {pedido.productos[abono.productoIndex].clave && <span className="pedidos-table__products-clave">{pedido.productos[abono.productoIndex].clave}</span>} {pedido.productos[abono.productoIndex].nombre}</span>
-                                          )}
-                                        </li>
-                                      ))}
-                                    </ul>
+                                    <table className="pedidos-table__abonos-table">
+                                      <thead>
+                                        <tr>
+                                          <th>Clave</th>
+                                          <th>Producto</th>
+                                          <th>Monto</th>
+                                          <th>Fecha</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {abonos.map((abono, i) => (
+                                          <tr key={i}>
+                                            <td>
+                                              {typeof abono.productoIndex === 'number' && pedido.productos[abono.productoIndex]?.clave ? (
+                                                <span className="pedidos-table__products-clave">{pedido.productos[abono.productoIndex].clave}</span>
+                                              ) : (
+                                                <span>-</span>
+                                              )}
+                                            </td>
+                                            <td>
+                                              {typeof abono.productoIndex === 'number' && pedido.productos[abono.productoIndex] ? (
+                                                <span>{pedido.productos[abono.productoIndex].nombre}</span>
+                                              ) : (
+                                                <span className="pedidos-table__payment-label--general">General</span>
+                                              )}
+                                            </td>
+                                            <td>{formatCurrency(abono.monto)}</td>
+                                            <td>{formatDate(abono.fecha)}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
                                   </>
                                 )}
                                 {onAddAbono && !isArchived && (
-                                  <div className="pedidos-table__payment-form">
-                                    <select
-                                      value={abonoProducto}
-                                      onChange={(e) => setAbonoProducto(e.target.value)}
-                                    >
-                                      <option value="general">General</option>
-                                      {pedido.productos.map((p, idx) => (
-                                        <option key={idx} value={idx}>{p.nombre}</option>
-                                      ))}
-                                    </select>
-                                    <input
-                                      type="number"
-                                      min="0"
-                                      step="0.01"
-                                      placeholder="$0.00"
-                                      value={abonoInput}
-                                      onChange={(e) => setAbonoInput(e.target.value)}
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter') handleAddAbono(pedido.id);
-                                      }}
-                                    />
-                                    <button
-                                      className="btn btn--primary btn--sm"
-                                      onClick={() => handleAddAbono(pedido.id)}
-                                    >
-                                      <PiPlusBold size={14} />
-                                      Agregar abono
-                                    </button>
-                                  </div>
+                                  <>
+                                    <div className="pedidos-table__payment-form">
+                                      <select
+                                        value={abonoProducto}
+                                        onChange={(e) => setAbonoProducto(e.target.value)}
+                                      >
+                                        <option value="general">General</option>
+                                        {pedido.productos.map((p, idx) => (
+                                          <option key={idx} value={idx}>{p.nombre}</option>
+                                        ))}
+                                      </select>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="$0.00"
+                                        value={abonoInput}
+                                        onChange={(e) => { setAbonoInput(e.target.value); setAbonoError(null); }}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') handleAddAbono(pedido);
+                                        }}
+                                      />
+                                      <button
+                                        className="btn btn--primary btn--sm"
+                                        onClick={() => handleAddAbono(pedido)}
+                                      >
+                                        <PiPlusBold size={14} />
+                                        Agregar abono
+                                      </button>
+                                    </div>
+                                    {abonoError && expandedId === pedido.id && (
+                                      <span className="pedidos-table__abono-error">{abonoError}</span>
+                                    )}
+                                  </>
                                 )}
                               </>
                             );
@@ -407,6 +469,16 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                                 <PiPencilBold size={16} />
                                 Editar
                               </Link>
+                              {pedido.estado !== 'entregado' && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); onChangeStatus(pedido.id, 'entregado'); }}
+                                  className={`pedidos-table__btn-entregado ${pedido.estado === 'en_preparacion' ? 'pedidos-table__btn-entregado--active' : ''}`}
+                                  disabled={pedido.estado !== 'en_preparacion'}
+                                >
+                                  <PiCheckBold size={16} />
+                                  Entregado
+                                </button>
+                              )}
                               {onArchive && (
                                 <button
                                   onClick={(e) => { e.stopPropagation(); onArchive(pedido.id); }}
@@ -437,6 +509,57 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
           })}
         </tbody>
       </table>
+
+      {selectedProducto && (
+        <div className="pedidos-table__modal-overlay" onClick={() => setSelectedProducto(null)}>
+          <div className="pedidos-table__modal" onClick={(e) => e.stopPropagation()}>
+            <div className="pedidos-table__modal-header">
+              <h3>Detalles del producto</h3>
+              <button className="pedidos-table__modal-close" onClick={() => setSelectedProducto(null)}>
+                <PiXBold size={18} />
+              </button>
+            </div>
+            <div className="pedidos-table__modal-body">
+              <div className="pedidos-table__modal-image">
+                {selectedProducto.imagen ? (
+                  <img src={selectedProducto.imagen} alt={selectedProducto.nombre} />
+                ) : (
+                  <div className="pedidos-table__modal-placeholder">
+                    <PiPackageBold size={48} />
+                    <span>Sin imagen</span>
+                  </div>
+                )}
+              </div>
+              <div className="pedidos-table__modal-section">
+                <h4>Información</h4>
+                <div className="pedidos-table__modal-info">
+                  <div className="pedidos-table__modal-row">
+                    <span className="pedidos-table__modal-label">Clave</span>
+                    <span className="pedidos-table__modal-value">{selectedProducto.clave}</span>
+                  </div>
+                  <div className="pedidos-table__modal-row">
+                    <span className="pedidos-table__modal-label">Nombre</span>
+                    <span className="pedidos-table__modal-value">{selectedProducto.nombre}</span>
+                  </div>
+                  <div className="pedidos-table__modal-row">
+                    <span className="pedidos-table__modal-label">Precio</span>
+                    <span className="pedidos-table__modal-value">{formatCurrency(selectedProducto.precio)}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="pedidos-table__modal-section">
+                <h4>Descripción</h4>
+                <p>{selectedProducto.descripcion || 'Sin descripción'}</p>
+              </div>
+            </div>
+            <div className="pedidos-table__modal-footer">
+              <button className="btn btn--secondary btn--sm" onClick={() => setSelectedProducto(null)}>
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

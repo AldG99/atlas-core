@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { PiEyeBold, PiTrashBold, PiPackageBold } from 'react-icons/pi';
-import type { Producto, ProductoFormData } from '../../types/Producto';
+import { PiEyeBold, PiPencilBold, PiTrashBold, PiPackageBold } from 'react-icons/pi';
+import type { Producto, ProductoFormData, Etiqueta } from '../../types/Producto';
+import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import './ProductosTable.scss';
 
 interface ProductosTableProps {
   productos: Producto[];
+  etiquetas: Etiqueta[];
   onEdit: (id: string, data: ProductoFormData) => void;
   onDelete: (id: string) => void;
 }
 
-const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) => {
+const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTableProps) => {
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
 
   const formatPrice = (price: number) => {
@@ -27,6 +29,12 @@ const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) =>
     }).format(date);
   };
 
+  const getEtiquetasForProducto = (producto: Producto) => {
+    return (producto.etiquetas || [])
+      .map(id => etiquetas.find(e => e.id === id))
+      .filter((e): e is Etiqueta => !!e);
+  };
+
   const closeModal = () => setSelectedProducto(null);
 
   return (
@@ -37,51 +45,91 @@ const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) =>
             <th>Clave</th>
             <th>Producto</th>
             <th>Precio</th>
+            <th>Etiquetas</th>
             <th>Descripción</th>
             <th>Fecha de registro</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {productos.map((producto) => (
-            <tr key={producto.id}>
-              <td>
-                <span className="productos-table__clave">{producto.clave}</span>
-              </td>
-              <td>
-                <span className="productos-table__name">{producto.nombre}</span>
-              </td>
-              <td>
-                <span className="productos-table__price">{formatPrice(producto.precio)}</span>
-              </td>
-              <td>
-                <span className="productos-table__description" title={producto.descripcion}>
-                  {producto.descripcion || '—'}
-                </span>
-              </td>
-              <td>
-                <span className="productos-table__date">{formatDate(producto.fechaCreacion)}</span>
-              </td>
-              <td>
-                <div className="productos-table__actions">
-                  <button
-                    onClick={() => setSelectedProducto(producto)}
-                    className="btn-icon btn-icon--primary"
-                    title="Ver detalles"
-                  >
-                    <PiEyeBold size={18} />
-                  </button>
-                  <button
-                    onClick={() => onDelete(producto.id)}
-                    className="btn-icon btn-icon--danger"
-                    title="Eliminar producto"
-                  >
-                    <PiTrashBold size={18} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
+          {productos.map((producto) => {
+            const productoEtiquetas = getEtiquetasForProducto(producto);
+            return (
+              <tr key={producto.id}>
+                <td>
+                  <span className="productos-table__clave">{producto.clave}</span>
+                </td>
+                <td>
+                  <span className="productos-table__name">{producto.nombre}</span>
+                </td>
+                <td>
+                  <span className="productos-table__price">{formatPrice(producto.precio)}</span>
+                </td>
+                <td>
+                  <div className="productos-table__etiquetas">
+                    {productoEtiquetas.map(et => (
+                      <span
+                        key={et.id}
+                        className="productos-table__etiqueta"
+                        style={{ backgroundColor: et.color }}
+                        title={et.nombre}
+                      >
+                        {ETIQUETA_ICONS[et.icono] && (() => {
+                          const Icon = ETIQUETA_ICONS[et.icono].icon;
+                          return <Icon size={11} />;
+                        })()}
+                      </span>
+                    ))}
+                    {productoEtiquetas.length === 0 && (
+                      <span className="productos-table__no-etiquetas">—</span>
+                    )}
+                  </div>
+                </td>
+                <td>
+                  <span className="productos-table__description" title={producto.descripcion}>
+                    {producto.descripcion || '—'}
+                  </span>
+                </td>
+                <td>
+                  <span className="productos-table__date">{formatDate(producto.fechaCreacion)}</span>
+                </td>
+                <td>
+                  <div className="productos-table__actions">
+                    <button
+                      onClick={() => setSelectedProducto(producto)}
+                      className="btn-icon btn-icon--primary"
+                      title="Ver detalles"
+                    >
+                      <PiEyeBold size={18} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        onEdit(producto.id, {
+                          clave: producto.clave,
+                          nombre: producto.nombre,
+                          precio: producto.precio,
+                          descripcion: producto.descripcion,
+                          imagen: producto.imagen,
+                          etiquetas: producto.etiquetas
+                        });
+                      }}
+                      className="btn-icon btn-icon--secondary"
+                      title="Editar producto"
+                    >
+                      <PiPencilBold size={18} />
+                    </button>
+                    <button
+                      onClick={() => onDelete(producto.id)}
+                      className="btn-icon btn-icon--danger"
+                      title="Eliminar producto"
+                    >
+                      <PiTrashBold size={18} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
@@ -130,6 +178,27 @@ const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) =>
                 </div>
               </div>
 
+              {getEtiquetasForProducto(selectedProducto).length > 0 && (
+                <div className="productos-table__modal-section">
+                  <h4>Etiquetas</h4>
+                  <div className="productos-table__etiquetas">
+                    {getEtiquetasForProducto(selectedProducto).map(et => (
+                      <span
+                        key={et.id}
+                        className="productos-table__etiqueta"
+                        style={{ backgroundColor: et.color }}
+                        title={et.nombre}
+                      >
+                        {ETIQUETA_ICONS[et.icono] && (() => {
+                          const Icon = ETIQUETA_ICONS[et.icono].icon;
+                          return <Icon size={11} />;
+                        })()}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="productos-table__modal-section">
                 <h4>Descripción</h4>
                 <p className="productos-table__modal-description">
@@ -140,21 +209,6 @@ const ProductosTable = ({ productos, onEdit, onDelete }: ProductosTableProps) =>
             <div className="productos-table__modal-footer">
               <button className="btn btn--secondary" onClick={closeModal}>
                 Cerrar
-              </button>
-              <button
-                className="btn btn--primary"
-                onClick={() => {
-                  onEdit(selectedProducto.id, {
-                    clave: selectedProducto.clave,
-                    nombre: selectedProducto.nombre,
-                    precio: selectedProducto.precio,
-                    descripcion: selectedProducto.descripcion,
-                    imagen: selectedProducto.imagen
-                  });
-                  closeModal();
-                }}
-              >
-                Editar producto
               </button>
             </div>
           </div>

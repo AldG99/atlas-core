@@ -10,7 +10,7 @@ $header-height: 70px;
 
   &__wrapper {
     min-height: 100vh;
-    padding-top: calc($header-height + $spacing-md);
+    padding-top: $header-height;
 
     @include md {
       margin-left: $sidebar-width;

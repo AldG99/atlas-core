@@ -20,7 +20,7 @@ $sidebar-active-bg: $color-gray-900;
   height: 40px;
   background-color: $sidebar-bg;
   border: 1px solid $color-gray-200;
-  border-radius: $border-radius-md;
+  border-radius: 0;
   color: $sidebar-text;
   cursor: pointer;
   box-shadow: $shadow-sm;
@@ -100,7 +100,7 @@ $sidebar-active-bg: $color-gray-900;
     align-items: center;
     gap: $spacing-sm;
     padding: $spacing-sm $spacing-md;
-    border-radius: $border-radius-md;
+    border-radius: 0;
     color: $sidebar-text;
     text-decoration: none;
     transition: all $transition-fast;
@@ -159,7 +159,7 @@ $sidebar-active-bg: $color-gray-900;
     font-weight: 600;
     background-color: $color-gray-200;
     color: $color-gray-500;
-    border-radius: $border-radius-full;
+    border-radius: 0;
     white-space: nowrap;
   }
 

@@ -76,3 +76,223 @@
     background-color: rgba($color-primary, 0.05);
   }
 }
+
+// Etiquetas
+.etiquetas-section {
+  border-top: 1px solid $color-gray-200;
+  padding-top: $spacing-md;
+}
+
+.etiqueta-chip-wrapper {
+  position: relative;
+  display: inline-flex;
+
+  &:hover .etiqueta-chip__delete {
+    opacity: 1;
+  }
+}
+
+.etiquetas-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.etiqueta-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: $color-white;
+  position: relative;
+
+  &__remove {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background: $color-gray-700;
+    border: 1.5px solid $color-white;
+    border-radius: 50%;
+    color: $color-white;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity $transition-fast;
+  }
+
+  &--removable:hover &__remove {
+    opacity: 1;
+  }
+
+  &__delete {
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    width: 16px;
+    height: 16px;
+    background: $color-danger;
+    border: 1.5px solid $color-white;
+    border-radius: 50%;
+    color: $color-white;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity $transition-fast;
+
+    &:hover {
+      background: darken($color-danger, 10%);
+    }
+  }
+}
+
+.etiquetas-disponibles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.etiqueta-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px dashed $color-gray-300;
+  background: $color-white;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $color-gray-400;
+    background-color: $color-gray-50;
+    transform: scale(1.1);
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.etiqueta-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px dashed $color-gray-300;
+  border-radius: $border-radius-full;
+  padding: 4px $spacing-sm;
+  font-size: $font-size-xs;
+  color: $color-gray-500;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $color-primary;
+    color: $color-primary;
+  }
+}
+
+.etiqueta-new-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  border: 1px solid $color-gray-200;
+  border-radius: $border-radius-lg;
+  background-color: $color-gray-50;
+
+  &__actions {
+    display: flex;
+    gap: $spacing-xs;
+    justify-content: flex-end;
+  }
+}
+
+.etiqueta-picker-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.etiqueta-picker-label {
+  font-size: $font-size-xs;
+  font-weight: 500;
+  color: $color-gray-500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.etiqueta-icon-picker {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.etiqueta-icon-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-md;
+  border: 2px solid transparent;
+  background: $color-white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: $color-gray-100;
+    transform: scale(1.08);
+  }
+
+  &--active {
+    border-color: currentColor;
+    background-color: $color-white;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.etiqueta-color-picker {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.etiqueta-color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+
+  &--active {
+    border-color: $color-gray-800;
+    box-shadow: 0 0 0 2px $color-white, 0 0 0 4px currentColor;
+  }
+}
+
+.etiqueta-new-preview {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-xs 0;
+}

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PiCloudArrowUpBold, PiPackageBold } from 'react-icons/pi';
 import { useProductos } from '../hooks/useProductos';
+import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
 import type { ProductoFormData } from '../types/Producto';
 import MainLayout from '../layouts/MainLayout';
@@ -14,6 +15,7 @@ const Productos = () => {
   const [editingProducto, setEditingProducto] = useState<{ id: string; data: ProductoFormData } | null>(null);
 
   const { productos, loading, error, addProducto, editProducto, removeProducto } = useProductos();
+  const { etiquetas } = useEtiquetas();
   const { showToast } = useToast();
 
   const filteredProductos = useMemo(() => {
@@ -131,6 +133,7 @@ const Productos = () => {
         {!loading && !error && filteredProductos.length > 0 && (
           <ProductosTable
             productos={filteredProductos}
+            etiquetas={etiquetas}
             onEdit={openEditModal}
             onDelete={handleDelete}
           />

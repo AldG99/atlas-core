@@ -104,6 +104,26 @@
     display: block;
   }
 
+  &__etiquetas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  &__etiqueta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: $color-white;
+  }
+
+  &__no-etiquetas {
+    color: $color-gray-400;
+  }
+
   &__date {
     font-size: $font-size-xs;
     color: $color-gray-500;

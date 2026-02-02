@@ -57,12 +57,11 @@
     gap: $spacing-md;
     padding: $spacing-md $spacing-lg;
     background-color: $color-white;
-    border-radius: $border-radius-lg;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    transition: box-shadow 0.2s ease;
+    border-radius: 0;
+    box-shadow: none;
 
     &:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: none;
     }
   }
 
@@ -72,7 +71,7 @@
     justify-content: center;
     width: 44px;
     height: 44px;
-    border-radius: $border-radius-md;
+    border-radius: 0;
     background-color: $color-gray-100;
     color: $color-gray-600;
     flex-shrink: 0;
@@ -152,7 +151,7 @@
     align-items: center;
     gap: $spacing-xs;
     padding: $spacing-sm $spacing-md;
-    border-radius: $border-radius-md;
+    border-radius: 0;
     font-size: $font-size-sm;
     font-weight: 500;
     background-color: $color-white;
@@ -196,7 +195,7 @@
     min-width: 20px;
     height: 20px;
     padding: 0 $spacing-xs;
-    border-radius: $border-radius-full;
+    border-radius: 0;
     font-size: $font-size-xs;
     font-weight: 600;
     background-color: $color-gray-100;
@@ -217,7 +216,7 @@
     text-align: center;
     padding: $spacing-2xl;
     background-color: $color-white;
-    border-radius: $border-radius-lg;
+    border-radius: 0;
     box-shadow: $shadow-sm;
 
     p {

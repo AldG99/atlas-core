@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { PiXBold, PiImageBold } from 'react-icons/pi';
-import type { ProductoFormData } from '../../types/Producto';
+import { PiXBold, PiImageBold, PiPlusBold, PiTrashBold } from 'react-icons/pi';
+import type { ProductoFormData, Etiqueta } from '../../types/Producto';
 import { uploadProductoImage } from '../../services/productoService';
 import { useAuth } from '../../hooks/useAuth';
+import { useEtiquetas } from '../../hooks/useEtiquetas';
+import { ETIQUETA_ICONS, ETIQUETA_COLORES } from '../../constants/etiquetaIcons';
 import './ProductoModal.scss';
 
 interface ProductoModalProps {
@@ -13,6 +15,7 @@ interface ProductoModalProps {
 
 const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
   const { user } = useAuth();
+  const { etiquetas: todasEtiquetas, addEtiqueta, removeEtiqueta } = useEtiquetas();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -24,11 +27,16 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
     precio: 0,
     descripcion: '',
     imagen: '',
+    etiquetas: [],
   });
 
   const [errors, setErrors] = useState<
     Partial<Record<keyof ProductoFormData, string>>
   >({});
+
+  const [showNewEtiqueta, setShowNewEtiqueta] = useState(false);
+  const [nuevaEtiquetaColor, setNuevaEtiquetaColor] = useState(ETIQUETA_COLORES[0]);
+  const [nuevaEtiquetaIcono, setNuevaEtiquetaIcono] = useState('star');
 
   useEffect(() => {
     if (producto) {
@@ -117,6 +125,66 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const etiquetasAsignadas = (formData.etiquetas || [])
+    .map(id => todasEtiquetas.find(e => e.id === id))
+    .filter((e): e is Etiqueta => !!e);
+
+  const etiquetasDisponibles = todasEtiquetas.filter(
+    e => !(formData.etiquetas || []).includes(e.id)
+  );
+
+  const toggleEtiqueta = (id: string) => {
+    setFormData(prev => {
+      const current = prev.etiquetas || [];
+      if (current.includes(id)) {
+        return { ...prev, etiquetas: current.filter(eid => eid !== id) };
+      }
+      return { ...prev, etiquetas: [...current, id] };
+    });
+  };
+
+  const handleDeleteEtiqueta = async (id: string) => {
+    await removeEtiqueta(id);
+    setFormData(prev => ({
+      ...prev,
+      etiquetas: (prev.etiquetas || []).filter(eid => eid !== id),
+    }));
+  };
+
+  const handleCrearEtiqueta = async () => {
+    const iconLabel = ETIQUETA_ICONS[nuevaEtiquetaIcono]?.label || nuevaEtiquetaIcono;
+    const nueva = await addEtiqueta(
+      iconLabel,
+      nuevaEtiquetaColor,
+      nuevaEtiquetaIcono
+    );
+    if (nueva) {
+      setFormData(prev => ({
+        ...prev,
+        etiquetas: [...(prev.etiquetas || []), nueva.id],
+      }));
+    }
+    setNuevaEtiquetaColor(ETIQUETA_COLORES[0]);
+    setNuevaEtiquetaIcono('star');
+    setShowNewEtiqueta(false);
+  };
+
+  const renderEtiquetaChip = (et: Etiqueta) => {
+    const iconData = ETIQUETA_ICONS[et.icono];
+    const Icon = iconData?.icon;
+    return (
+      <span
+        key={et.id}
+        className="etiqueta-chip"
+        style={{ backgroundColor: et.color }}
+        title={et.nombre}
+      >
+        {Icon && <Icon size={12} />}
+        <span className="etiqueta-chip__label">{et.nombre}</span>
+      </span>
+    );
   };
 
   return (
@@ -227,6 +295,156 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
               placeholder="Describe el producto..."
               rows={3}
             />
+          </div>
+
+          <div className="form-group etiquetas-section">
+            <label>Etiquetas</label>
+
+            {etiquetasAsignadas.length > 0 && (
+              <div className="etiquetas-chips">
+                {etiquetasAsignadas.map(et => (
+                  <div key={et.id} className="etiqueta-chip-wrapper">
+                    <span
+                      className="etiqueta-chip etiqueta-chip--removable"
+                      style={{ backgroundColor: et.color }}
+                      title={et.nombre}
+                    >
+                      {ETIQUETA_ICONS[et.icono] && (() => {
+                        const Icon = ETIQUETA_ICONS[et.icono].icon;
+                        return <Icon size={12} />;
+                      })()}
+                      <button
+                        type="button"
+                        className="etiqueta-chip__remove"
+                        onClick={() => toggleEtiqueta(et.id)}
+                      >
+                        <PiXBold size={10} />
+                      </button>
+                    </span>
+                    <button
+                      type="button"
+                      className="etiqueta-chip__delete"
+                      onClick={() => handleDeleteEtiqueta(et.id)}
+                      title="Eliminar etiqueta"
+                    >
+                      <PiTrashBold size={10} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {etiquetasDisponibles.length > 0 && (
+              <div className="etiquetas-disponibles">
+                {etiquetasDisponibles.map(et => {
+                  const iconData = ETIQUETA_ICONS[et.icono];
+                  const Icon = iconData?.icon;
+                  return (
+                    <div key={et.id} className="etiqueta-chip-wrapper">
+                      <button
+                        type="button"
+                        className="etiqueta-option"
+                        onClick={() => toggleEtiqueta(et.id)}
+                        title={et.nombre}
+                      >
+                        <span
+                          className="etiqueta-option__icon"
+                          style={{ color: et.color }}
+                        >
+                          {Icon && <Icon size={14} />}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        className="etiqueta-chip__delete"
+                        onClick={() => handleDeleteEtiqueta(et.id)}
+                        title="Eliminar etiqueta"
+                      >
+                        <PiTrashBold size={10} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {!showNewEtiqueta ? (
+              <button
+                type="button"
+                className="etiqueta-add-btn"
+                onClick={() => setShowNewEtiqueta(true)}
+              >
+                <PiPlusBold size={14} />
+                Nueva etiqueta
+              </button>
+            ) : (
+              <div className="etiqueta-new-form">
+                <div className="etiqueta-picker-row">
+                  <span className="etiqueta-picker-label">Icono</span>
+                  <div className="etiqueta-icon-picker">
+                    {Object.entries(ETIQUETA_ICONS).map(([key, { icon: Icon, label }]) => (
+                      <button
+                        key={key}
+                        type="button"
+                        className={`etiqueta-icon-swatch ${nuevaEtiquetaIcono === key ? 'etiqueta-icon-swatch--active' : ''}`}
+                        style={{ color: nuevaEtiquetaColor }}
+                        onClick={() => setNuevaEtiquetaIcono(key)}
+                        title={label}
+                      >
+                        <Icon size={16} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="etiqueta-picker-row">
+                  <span className="etiqueta-picker-label">Color</span>
+                  <div className="etiqueta-color-picker">
+                    {ETIQUETA_COLORES.map(color => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`etiqueta-color-swatch ${nuevaEtiquetaColor === color ? 'etiqueta-color-swatch--active' : ''}`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => setNuevaEtiquetaColor(color)}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="etiqueta-new-preview">
+                  {(() => {
+                    const Icon = ETIQUETA_ICONS[nuevaEtiquetaIcono]?.icon;
+                    return (
+                      <span
+                        className="etiqueta-chip"
+                        style={{ backgroundColor: nuevaEtiquetaColor }}
+                        title="Vista previa"
+                      >
+                        {Icon && <Icon size={12} />}
+                      </span>
+                    );
+                  })()}
+                </div>
+
+                <div className="etiqueta-new-form__actions">
+                  <button
+                    type="button"
+                    className="btn btn--sm btn--secondary"
+                    onClick={() => setShowNewEtiqueta(false)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn--sm btn--primary"
+                    onClick={handleCrearEtiqueta}
+                  >
+                    Crear
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="modal__actions">

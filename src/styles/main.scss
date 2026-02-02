@@ -23,6 +23,7 @@
 
 .btn {
   @include button-base;
+  gap: $spacing-xs;
 
   // Mobile: botones más grandes para mejor touch target
   padding: $spacing-sm $spacing-md;

@@ -146,11 +146,16 @@ export const usePedidos = () => {
       setError(null);
       const nuevoAbono = await addAbono(pedidoId, monto, productoIndex);
       setPedidos((prev) =>
-        prev.map((p) =>
-          p.id === pedidoId
-            ? { ...p, abonos: [...(p.abonos || []), nuevoAbono] }
-            : p
-        )
+        prev.map((p) => {
+          if (p.id !== pedidoId) return p;
+          const updatedAbonos = [...(p.abonos || []), nuevoAbono];
+          const nuevoPagado = updatedAbonos.reduce((sum, a) => sum + a.monto, 0);
+          const nuevoEstado = nuevoPagado >= p.total && p.estado === 'pendiente' ? 'en_preparacion' : p.estado;
+          if (nuevoEstado !== p.estado) {
+            updatePedidoStatus(pedidoId, nuevoEstado).catch(() => {});
+          }
+          return { ...p, abonos: updatedAbonos, estado: nuevoEstado };
+        })
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al registrar abono');
