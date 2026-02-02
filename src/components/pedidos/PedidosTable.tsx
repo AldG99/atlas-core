@@ -122,8 +122,7 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
           <col style={{ width: '8%' }} />
           <col style={{ width: '10%' }} />
           <col style={{ width: '12%' }} />
-          <col style={{ width: '10%' }} />
-          <col style={{ width: '4%' }} />
+          <col style={{ width: '14%' }} />
         </colgroup>
         <thead>
           <tr>
@@ -135,7 +134,6 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
             <th>Estado</th>
             <th>Fecha</th>
             <th>Acciones</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -225,20 +223,18 @@ const PedidosTable = ({ pedidos, onChangeStatus, onDelete, onArchive, onRestore,
                       >
                         <PiTrashBold size={20} />
                       </button>
+                      <span
+                        className={`pedidos-table__expand-icon ${isExpanded ? 'pedidos-table__expand-icon--open' : ''}`}
+                        onClick={() => toggleExpanded(pedido.id)}
+                      >
+                        <PiCaretDownBold size={16} />
+                      </span>
                     </div>
-                  </td>
-                  <td>
-                    <span
-                      className={`pedidos-table__expand-icon ${isExpanded ? 'pedidos-table__expand-icon--open' : ''}`}
-                      onClick={() => toggleExpanded(pedido.id)}
-                    >
-                      <PiCaretDownBold size={16} />
-                    </span>
                   </td>
                 </tr>
                 {isExpanded && (
                   <tr key={`${pedido.id}-expanded`} className="pedidos-table__expanded-row">
-                    <td colSpan={9}>
+                    <td colSpan={8}>
                       <div className="pedidos-table__expanded-content">
                         {(() => {
                           const pagado = getTotalPagado(pedido);

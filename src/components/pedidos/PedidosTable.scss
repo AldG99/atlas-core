@@ -48,7 +48,7 @@
 
       // Acciones
       &:nth-child(8) {
-        text-align: center;
+        text-align: left;
       }
 
       &:last-child {
@@ -96,7 +96,7 @@
 
       // Acciones
       &:nth-child(8) {
-        text-align: center;
+        text-align: left;
       }
 
       // Flecha expand
@@ -335,7 +335,7 @@
     display: flex;
     gap: $spacing-md;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   &__product-count {
@@ -502,6 +502,11 @@
           text-align: center;
         }
 
+        // Producto
+        &:nth-child(3) {
+          text-align: left;
+        }
+
         // Etiquetas
         &:nth-child(4) {
           text-align: center;
@@ -519,12 +524,12 @@
 
         // Estado
         &:nth-child(7) {
-          text-align: center;
+          text-align: left;
         }
 
         // Acciones
         &:nth-child(8) {
-          text-align: center;
+          text-align: left;
         }
 
         &:last-child {
@@ -564,6 +569,11 @@
           text-align: center;
         }
 
+        // Producto
+        &:nth-child(3) {
+          text-align: left;
+        }
+
         // Etiquetas
         &:nth-child(4) {
           text-align: center;
@@ -585,12 +595,12 @@
 
         // Estado
         &:nth-child(7) {
-          text-align: center;
+          text-align: left;
         }
 
         // Acciones
         &:nth-child(8) {
-          text-align: center;
+          text-align: left;
         }
       }
     }
@@ -724,10 +734,12 @@
 
         // Monto
         &:nth-child(3) {
-          text-align: right;
+          text-align: left;
         }
 
+        // Fecha
         &:last-child {
+          text-align: left;
           padding-right: $spacing-md * 2;
         }
       }
@@ -765,13 +777,14 @@
         &:nth-child(3) {
           font-weight: 600;
           white-space: nowrap;
-          text-align: right;
+          text-align: left;
         }
 
         // Fecha
         &:last-child {
           white-space: nowrap;
           color: $color-gray-500;
+          text-align: left;
           padding-right: $spacing-md * 2;
         }
       }
