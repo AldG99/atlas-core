@@ -2,12 +2,14 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
+$topbar-height: 52px;
+$bottombar-height: 64px;
+
 .pedido-detail {
   max-width: 900px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-md;
+  padding-top: $topbar-height;
+  padding-bottom: $bottombar-height;
 
   &__loading {
     text-align: center;
@@ -15,35 +17,159 @@
     padding: $spacing-xl 0;
   }
 
+  // Fixed Top Bar
   &__top-bar {
+    position: fixed;
+    top: 70px; // Altura del header del MainLayout
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: $topbar-height;
+    background-color: $color-white;
+    border-bottom: 1px solid $color-gray-200;
+    padding: 0 $spacing-md;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__top-bar-inner {
+    max-width: 900px;
+    width: 100%;
+    display: flex;
     align-items: center;
     gap: $spacing-md;
   }
 
-  &__top-actions {
+  &__top-divider {
+    width: 1px;
+    height: 20px;
+    background-color: $color-gray-300;
+    margin: 0 $spacing-xs;
+  }
+
+  &__icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $color-gray-600;
+    cursor: pointer;
+    padding: $spacing-xs;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-gray-800;
+    }
+
+    &--whatsapp {
+      color: #25d366;
+    }
+
+    &--primary {
+      color: $color-primary;
+    }
+
+    &--success {
+      color: #16a34a;
+    }
+
+    &--danger {
+      color: #dc2626;
+    }
+
+    &--back {
+      margin-right: $spacing-lg;
+    }
+  }
+
+  // Scrollable Content
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  // Fixed Bottom Bar
+  &__bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    min-height: $bottombar-height;
+    background-color: $color-white;
+    border-top: 1px solid $color-gray-200;
+    padding: $spacing-sm $spacing-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__bottom-bar-inner {
+    max-width: 900px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  &__bottom-bar-info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding-right: $spacing-md;
+    border-right: 1px solid $color-gray-200;
+    margin-right: $spacing-sm;
+  }
+
+  &__bottom-bar-label {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+
+  &__bottom-bar-amount {
+    font-size: $font-size-base;
+    font-weight: 700;
+    color: #ea580c;
+
+    &--paid {
+      color: #16a34a;
+    }
+  }
+
+  &__bottom-bar-form {
     display: flex;
     flex-wrap: wrap;
     gap: $spacing-sm;
     align-items: center;
-  }
+    flex: 1;
 
-  &__back {
-    display: inline-flex;
-    align-items: center;
-    gap: $spacing-xs;
-    background: none;
-    border: none;
-    color: $color-gray-600;
-    font-size: $font-size-sm;
-    font-weight: 500;
-    cursor: pointer;
-    padding: $spacing-xs 0;
-    transition: color 0.2s ease;
+    select,
+    input {
+      height: 36px;
+      padding: 0 $spacing-sm;
+      border: 1px solid $color-gray-300;
+      font-size: $font-size-sm;
+      outline: none;
+      background-color: $color-white;
+      box-sizing: border-box;
 
-    &:hover {
-      color: $color-primary;
+      &:focus {
+        border-color: $color-primary;
+        box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+      }
+    }
+
+    select {
+      cursor: pointer;
+      max-width: 140px;
+    }
+
+    input {
+      width: 100px;
     }
   }
 
@@ -315,71 +441,28 @@
     color: $color-gray-400;
   }
 
-  // Abono form
-  &__abono-form {
-    display: flex;
-    gap: $spacing-sm;
-    align-items: center;
-
-    select,
-    input {
-      height: 32px;
-      max-width: 160px;
-      padding: 0 $spacing-sm;
-      border: 1px solid $color-gray-300;
-      font-size: $font-size-sm;
-      outline: none;
-      background-color: $color-white;
-      box-sizing: border-box;
-
-      &:focus {
-        border-color: $color-primary;
-        box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
-      }
-    }
-
-    select { cursor: pointer; }
-    input { flex: 1; }
-  }
-
   &__abono-error {
+    width: 100%;
     font-size: $font-size-xs;
     color: #dc2626;
     font-weight: 500;
-    padding: $spacing-xs 0;
-    display: block;
-  }
-
-  // Actions bar
-  &__actions {
-    background-color: $color-white;
-    box-shadow: $shadow-sm;
-    padding: $spacing-md;
-  }
-
-  &__action-btn--whatsapp {
-    color: #25d366 !important;
-    border-color: #25d366 !important;
-
-    &:hover {
-      background-color: rgba(#25d366, 0.05) !important;
-    }
+    margin-top: $spacing-xs;
   }
 
   &__btn-entregado {
     display: inline-flex;
     align-items: center;
     gap: $spacing-xs;
-    padding: $spacing-sm $spacing-lg;
+    padding: $spacing-xs $spacing-md;
+    height: 36px;
     font-size: $font-size-sm;
     font-weight: 600;
     border: none;
     background-color: $color-gray-100;
     color: $color-gray-400;
     cursor: not-allowed;
-    transition: all 0.3s ease;
-    width: 100%;
-    justify-content: center;
+    transition: all 0.2s ease;
+    margin-left: auto;
 
     &--active {
       background-color: #16a34a;

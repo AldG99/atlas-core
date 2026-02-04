@@ -10,14 +10,15 @@ import {
   PiPlusBold,
   PiEyeBold,
   PiXBold,
-  PiPackageBold
+  PiPackageBold,
+  PiTrashBold
 } from 'react-icons/pi';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import type { Producto, Etiqueta } from '../types/Producto';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import { formatPedidoForWhatsApp, openWhatsApp, copyToClipboard } from '../utils/formatters';
-import { getPedidoById, updatePedidoStatus, addAbono, archivePedido } from '../services/pedidoService';
+import { getPedidoById, updatePedidoStatus, addAbono, archivePedido, deletePedido } from '../services/pedidoService';
 import { useClientes } from '../hooks/useClientes';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
@@ -133,6 +134,18 @@ const PedidoDetail = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!pedido) return;
+    if (!window.confirm('¿Estás seguro de eliminar este pedido? Esta acción no se puede deshacer.')) return;
+    try {
+      await deletePedido(pedido.id);
+      showToast('Pedido eliminado', 'success');
+      navigate(ROUTES.DASHBOARD);
+    } catch {
+      showToast('Error al eliminar el pedido', 'error');
+    }
+  };
+
   const handleAddAbono = async () => {
     if (!pedido) return;
     const monto = parseFloat(abonoInput);
@@ -205,36 +218,61 @@ const PedidoDetail = () => {
     generalPool -= porcion;
   });
 
+  const restante = pedido.total - pagado;
+  const puedeMarcarEntregado = pedido.estado === 'en_preparacion';
+
   return (
     <MainLayout>
       <div className="pedido-detail">
+        {/* Fixed Top Bar */}
         <div className="pedido-detail__top-bar">
-          <button className="pedido-detail__back" onClick={() => navigate(ROUTES.DASHBOARD)}>
-            <PiArrowLeftBold size={18} />
-            Volver
-          </button>
-          <div className="pedido-detail__top-actions">
-            <button onClick={handleWhatsApp} className="btn btn--outline btn--sm pedido-detail__action-btn--whatsapp">
-              <PiWhatsappLogoBold size={16} />
-              WhatsApp
+          <div className="pedido-detail__top-bar-inner">
+            <button className="pedido-detail__icon-btn pedido-detail__icon-btn--back" onClick={() => navigate(ROUTES.DASHBOARD)} title="Volver">
+              <PiArrowLeftBold size={20} />
             </button>
-            <button onClick={handleCopy} className="btn btn--outline btn--sm">
-              <PiCopyBold size={16} />
-              {copiedId ? 'Copiado!' : 'Copiar'}
+            <button
+              onClick={handleWhatsApp}
+              className="pedido-detail__icon-btn pedido-detail__icon-btn--whatsapp"
+              title="Enviar por WhatsApp"
+            >
+              <PiWhatsappLogoBold size={20} />
             </button>
-            <Link to={`/pedido/${pedido.id}/editar`} className="btn btn--primary btn--sm">
-              <PiPencilBold size={16} />
-              Editar
-            </Link>
             {!pedido.archivado && (
-              <button onClick={handleArchive} className="btn btn--secondary btn--sm">
-                <PiArchiveBold size={16} />
-                Archivar
+              <button
+                onClick={handleArchive}
+                className="pedido-detail__icon-btn"
+                title="Archivar pedido"
+              >
+                <PiArchiveBold size={20} />
               </button>
             )}
+            <span className="pedido-detail__top-divider" />
+            <button
+              onClick={handleCopy}
+              className={`pedido-detail__icon-btn ${copiedId ? 'pedido-detail__icon-btn--success' : ''}`}
+              title={copiedId ? 'Copiado!' : 'Copiar al portapapeles'}
+            >
+              {copiedId ? <PiCheckBold size={20} /> : <PiCopyBold size={20} />}
+            </button>
+            <Link
+              to={`/pedido/${pedido.id}/editar`}
+              className="pedido-detail__icon-btn pedido-detail__icon-btn--primary"
+              title="Editar pedido"
+            >
+              <PiPencilBold size={20} />
+            </Link>
+            <button
+              onClick={handleDelete}
+              className="pedido-detail__icon-btn pedido-detail__icon-btn--danger"
+              title="Eliminar pedido"
+            >
+              <PiTrashBold size={20} />
+            </button>
           </div>
         </div>
 
+        {/* Scrollable Content */}
+        <div className="pedido-detail__content">
         <div className="pedido-detail__header">
           <div className="pedido-detail__client">
             <div className="pedido-detail__avatar">
@@ -405,49 +443,56 @@ const PedidoDetail = () => {
           </div>
         )}
 
-        {!pedido.archivado && (
-          <div className="pedido-detail__section">
-            <div className="pedido-detail__section-header">
-              <strong>Agregar abono</strong>
-            </div>
-            <div className="pedido-detail__abono-form">
-              <select
-                value={abonoProducto}
-                onChange={(e) => setAbonoProducto(e.target.value)}
-              >
-                <option value="general">General</option>
-                {pedido.productos.map((p, idx) => (
-                  <option key={idx} value={idx}>{p.nombre}</option>
-                ))}
-              </select>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="$0.00"
-                value={abonoInput}
-                onChange={(e) => { setAbonoInput(e.target.value); setAbonoError(null); }}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleAddAbono(); }}
-              />
-              <button className="btn btn--primary btn--sm" onClick={handleAddAbono}>
-                <PiPlusBold size={14} />
-                Agregar abono
-              </button>
-            </div>
-            {abonoError && <span className="pedido-detail__abono-error">{abonoError}</span>}
-          </div>
-        )}
+        </div>
+        {/* End Scrollable Content */}
 
-        {pedido.estado !== 'entregado' && (
-          <div className="pedido-detail__actions">
-            <button
-              onClick={() => handleChangeStatus('entregado')}
-              className={`pedido-detail__btn-entregado ${pedido.estado === 'en_preparacion' ? 'pedido-detail__btn-entregado--active' : ''}`}
-              disabled={pedido.estado !== 'en_preparacion'}
-            >
-              <PiCheckBold size={16} />
-              Marcar como entregado
-            </button>
+        {/* Fixed Bottom Bar */}
+        {!pedido.archivado && (
+          <div className="pedido-detail__bottom-bar">
+            <div className="pedido-detail__bottom-bar-inner">
+              <div className="pedido-detail__bottom-bar-info">
+                <span className="pedido-detail__bottom-bar-label">Restante:</span>
+                <span className={`pedido-detail__bottom-bar-amount ${restante <= 0 ? 'pedido-detail__bottom-bar-amount--paid' : ''}`}>
+                  {restante <= 0 ? 'Liquidado' : formatCurrency(restante)}
+                </span>
+              </div>
+              <div className="pedido-detail__bottom-bar-form">
+                <select
+                  value={abonoProducto}
+                  onChange={(e) => setAbonoProducto(e.target.value)}
+                >
+                  <option value="general">General</option>
+                  {pedido.productos.map((p, idx) => (
+                    <option key={idx} value={idx}>{p.nombre}</option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="$0.00"
+                  value={abonoInput}
+                  onChange={(e) => { setAbonoInput(e.target.value); setAbonoError(null); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleAddAbono(); }}
+                />
+                <button className="btn btn--primary btn--sm" onClick={handleAddAbono}>
+                  <PiPlusBold size={14} />
+                  Abonar
+                </button>
+                {pedido.estado !== 'entregado' && (
+                  <button
+                    onClick={() => handleChangeStatus('entregado')}
+                    className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''}`}
+                    disabled={!puedeMarcarEntregado}
+                    title={!puedeMarcarEntregado ? 'Solo disponible cuando el pedido está en preparación' : ''}
+                  >
+                    <PiCheckBold size={16} />
+                    Entregado
+                  </button>
+                )}
+              </div>
+              {abonoError && <span className="pedido-detail__abono-error">{abonoError}</span>}
+            </div>
           </div>
         )}
       </div>
