@@ -208,10 +208,32 @@ const PedidoDetail = () => {
   return (
     <MainLayout>
       <div className="pedido-detail">
-        <button className="pedido-detail__back" onClick={() => navigate(ROUTES.DASHBOARD)}>
-          <PiArrowLeftBold size={18} />
-          Volver
-        </button>
+        <div className="pedido-detail__top-bar">
+          <button className="pedido-detail__back" onClick={() => navigate(ROUTES.DASHBOARD)}>
+            <PiArrowLeftBold size={18} />
+            Volver
+          </button>
+          <div className="pedido-detail__top-actions">
+            <button onClick={handleWhatsApp} className="btn btn--outline btn--sm pedido-detail__action-btn--whatsapp">
+              <PiWhatsappLogoBold size={16} />
+              WhatsApp
+            </button>
+            <button onClick={handleCopy} className="btn btn--outline btn--sm">
+              <PiCopyBold size={16} />
+              {copiedId ? 'Copiado!' : 'Copiar'}
+            </button>
+            <Link to={`/pedido/${pedido.id}/editar`} className="btn btn--primary btn--sm">
+              <PiPencilBold size={16} />
+              Editar
+            </Link>
+            {!pedido.archivado && (
+              <button onClick={handleArchive} className="btn btn--secondary btn--sm">
+                <PiArchiveBold size={16} />
+                Archivar
+              </button>
+            )}
+          </div>
+        </div>
 
         <div className="pedido-detail__header">
           <div className="pedido-detail__client">
@@ -416,36 +438,18 @@ const PedidoDetail = () => {
           </div>
         )}
 
-        <div className="pedido-detail__actions">
-          <button onClick={handleWhatsApp} className="btn btn--outline btn--sm pedido-detail__action-btn--whatsapp">
-            <PiWhatsappLogoBold size={16} />
-            WhatsApp
-          </button>
-          <button onClick={handleCopy} className="btn btn--outline btn--sm">
-            <PiCopyBold size={16} />
-            {copiedId ? 'Copiado!' : 'Copiar'}
-          </button>
-          <Link to={`/pedido/${pedido.id}/editar`} className="btn btn--primary btn--sm">
-            <PiPencilBold size={16} />
-            Editar
-          </Link>
-          {pedido.estado !== 'entregado' && (
+        {pedido.estado !== 'entregado' && (
+          <div className="pedido-detail__actions">
             <button
               onClick={() => handleChangeStatus('entregado')}
               className={`pedido-detail__btn-entregado ${pedido.estado === 'en_preparacion' ? 'pedido-detail__btn-entregado--active' : ''}`}
               disabled={pedido.estado !== 'en_preparacion'}
             >
               <PiCheckBold size={16} />
-              Entregado
+              Marcar como entregado
             </button>
-          )}
-          {!pedido.archivado && (
-            <button onClick={handleArchive} className="btn btn--secondary btn--sm">
-              <PiArchiveBold size={16} />
-              Archivar
-            </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {selectedProducto && (

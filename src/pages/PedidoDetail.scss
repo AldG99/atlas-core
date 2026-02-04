@@ -15,6 +15,20 @@
     padding: $spacing-xl 0;
   }
 
+  &__top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  &__top-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    align-items: center;
+  }
+
   &__back {
     display: inline-flex;
     align-items: center;
@@ -338,10 +352,9 @@
 
   // Actions bar
   &__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-sm;
-    padding: $spacing-md 0;
+    background-color: $color-white;
+    box-shadow: $shadow-sm;
+    padding: $spacing-md;
   }
 
   &__action-btn--whatsapp {
@@ -357,15 +370,16 @@
     display: inline-flex;
     align-items: center;
     gap: $spacing-xs;
-    padding: $spacing-xs $spacing-md;
-    font-size: $font-size-xs;
+    padding: $spacing-sm $spacing-lg;
+    font-size: $font-size-sm;
     font-weight: 600;
     border: none;
     background-color: $color-gray-100;
     color: $color-gray-400;
     cursor: not-allowed;
     transition: all 0.3s ease;
-    margin-left: auto;
+    width: 100%;
+    justify-content: center;
 
     &--active {
       background-color: #16a34a;
