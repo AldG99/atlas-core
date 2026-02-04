@@ -181,9 +181,6 @@ const Archivo = () => {
     }
   };
 
-  // Dummy handler for onChangeStatus (required by PedidosTable but not used in archive)
-  const handleChangeStatus = () => {};
-
   return (
     <MainLayout>
       <div className="archivo">
@@ -312,10 +309,6 @@ const Archivo = () => {
         {!loading && !error && filteredAndSortedPedidos.length > 0 && (
           <PedidosTable
             pedidos={filteredAndSortedPedidos}
-            onChangeStatus={handleChangeStatus}
-            onDelete={handleDelete}
-            onRestore={handleRestore}
-            isArchived={true}
           />
         )}
       </div>

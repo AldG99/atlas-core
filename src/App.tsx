@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import NewPedido from './pages/NewPedido';
 import EditPedido from './pages/EditPedido';
+import PedidoDetail from './pages/PedidoDetail';
 import Clientes from './pages/Clientes';
 import Productos from './pages/Productos';
 import Reportes from './pages/Reportes';
@@ -43,7 +44,15 @@ function App() {
             }
           />
           <Route
-            path="/pedido/:id/editar"
+            path={ROUTES.DETAIL_PEDIDO}
+            element={
+              <ProtectedRoute>
+                <PedidoDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.EDIT_PEDIDO}
             element={
               <ProtectedRoute>
                 <EditPedido />

@@ -1,0 +1,521 @@
+@use 'sass:color';
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+.pedido-detail {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  &__loading {
+    text-align: center;
+    color: $color-gray-500;
+    padding: $spacing-xl 0;
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    background: none;
+    border: none;
+    color: $color-gray-600;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    cursor: pointer;
+    padding: $spacing-xs 0;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: $color-white;
+    padding: $spacing-md;
+    box-shadow: $shadow-sm;
+  }
+
+  &__client {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  &__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    span {
+      color: $color-white;
+      font-size: $font-size-base;
+      font-weight: 600;
+    }
+  }
+
+  &__client-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__name {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-gray-800;
+    margin: 0;
+  }
+
+  &__phone {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+
+  &__cp {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+  }
+
+  &__header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: $spacing-xs;
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    color: $color-white;
+    white-space: nowrap;
+  }
+
+  &__date {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+
+  &__section {
+    background-color: $color-white;
+    box-shadow: $shadow-sm;
+    padding: $spacing-md;
+  }
+
+  &__section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-sm;
+
+    strong {
+      color: $color-gray-800;
+    }
+  }
+
+  &__payment-info {
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+    font-weight: 500;
+  }
+
+  &__notes {
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+
+    strong {
+      color: $color-gray-700;
+    }
+  }
+
+  // Products table
+  &__products-table,
+  &__abonos-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+
+    thead {
+      background-color: $color-gray-50;
+      border-bottom: 1px solid $color-gray-200;
+
+      th {
+        padding: $spacing-sm $spacing-md;
+        font-size: $font-size-sm;
+        font-weight: 600;
+        color: $color-gray-500;
+        text-align: left;
+        white-space: nowrap;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $color-gray-100;
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+
+      td {
+        padding: $spacing-sm $spacing-md;
+        font-size: $font-size-sm;
+        color: $color-gray-800;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  &__products-table {
+    thead th {
+      // Cant.
+      &:nth-child(2) { text-align: center; }
+      // Etiquetas
+      &:nth-child(4) { text-align: center; }
+      // Abonado
+      &:nth-child(5) { text-align: right; }
+      // Subtotal
+      &:nth-child(6) { text-align: right; }
+    }
+
+    tbody td {
+      // Cant.
+      &:nth-child(2) { text-align: center; font-weight: 600; }
+      // Etiquetas
+      &:nth-child(4) { text-align: center; }
+      // Abonado
+      &:nth-child(5) { text-align: right; font-weight: 600; }
+      // Subtotal
+      &:nth-child(6) { text-align: right; font-weight: 600; }
+    }
+  }
+
+  &__product-total-row {
+    border-top: 1px solid $color-gray-200 !important;
+
+    td:nth-child(5),
+    td:nth-child(6) {
+      text-align: right;
+    }
+  }
+
+  &__clave {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-primary;
+    background-color: rgba($color-primary, 0.1);
+    font-family: monospace;
+  }
+
+  &__etiquetas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: center;
+  }
+
+  &__etiqueta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    color: $color-white;
+  }
+
+  &__product-paid-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  &__product-bar {
+    width: 100%;
+    height: 4px;
+    background-color: $color-gray-200;
+    overflow: hidden;
+  }
+
+  &__product-bar-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+
+    &--paid { background-color: #16a34a; }
+    &--partial { background-color: #ea580c; }
+    &--pending { background-color: $color-gray-300; }
+  }
+
+  &__product-status {
+    font-size: $font-size-sm;
+    font-weight: 600;
+
+    &--paid { color: #16a34a; }
+    &--partial { color: #ea580c; }
+    &--pending { color: $color-gray-400; }
+  }
+
+  &__product-eye {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: none;
+    color: $color-primary;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-primary-dark;
+    }
+  }
+
+  &__general-label {
+    color: $color-gray-400;
+  }
+
+  // Abono form
+  &__abono-form {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
+
+    select,
+    input {
+      height: 32px;
+      max-width: 160px;
+      padding: 0 $spacing-sm;
+      border: 1px solid $color-gray-300;
+      font-size: $font-size-sm;
+      outline: none;
+      background-color: $color-white;
+      box-sizing: border-box;
+
+      &:focus {
+        border-color: $color-primary;
+        box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+      }
+    }
+
+    select { cursor: pointer; }
+    input { flex: 1; }
+  }
+
+  &__abono-error {
+    font-size: $font-size-xs;
+    color: #dc2626;
+    font-weight: 500;
+    padding: $spacing-xs 0;
+    display: block;
+  }
+
+  // Actions bar
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    padding: $spacing-md 0;
+  }
+
+  &__action-btn--whatsapp {
+    color: #25d366 !important;
+    border-color: #25d366 !important;
+
+    &:hover {
+      background-color: rgba(#25d366, 0.05) !important;
+    }
+  }
+
+  &__btn-entregado {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-md;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    border: none;
+    background-color: $color-gray-100;
+    color: $color-gray-400;
+    cursor: not-allowed;
+    transition: all 0.3s ease;
+    margin-left: auto;
+
+    &--active {
+      background-color: #16a34a;
+      color: $color-white;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #15803d;
+      }
+    }
+  }
+
+  // Modal (same as PedidosTable)
+  &__modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pedidoDetailFadeIn 0.15s ease;
+  }
+
+  &__modal {
+    background-color: $color-white;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  &__modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-md;
+    border-bottom: 1px solid $color-gray-100;
+
+    h3 {
+      margin: 0;
+      font-size: $font-size-sm;
+      font-weight: 600;
+      color: $color-gray-800;
+    }
+  }
+
+  &__modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: none;
+    color: $color-gray-500;
+    cursor: pointer;
+
+    &:hover { color: $color-gray-800; }
+  }
+
+  &__modal-body {
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__modal-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: $color-gray-100;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__modal-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    color: $color-gray-400;
+
+    span { font-size: $font-size-sm; }
+  }
+
+  &__modal-section {
+    h4 {
+      font-size: $font-size-sm;
+      font-weight: 600;
+      color: $color-gray-800;
+      margin-bottom: $spacing-sm;
+    }
+
+    p {
+      font-size: $font-size-sm;
+      color: $color-gray-600;
+      line-height: 1.5;
+      margin: 0;
+    }
+  }
+
+  &__modal-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__modal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-xs 0;
+    border-bottom: 1px solid $color-gray-100;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  &__modal-label {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+    font-weight: 500;
+  }
+
+  &__modal-value {
+    font-size: $font-size-sm;
+    color: $color-gray-800;
+    font-weight: 600;
+  }
+
+  &__modal-footer {
+    padding: $spacing-sm $spacing-md;
+    border-top: 1px solid $color-gray-100;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+@keyframes pedidoDetailFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

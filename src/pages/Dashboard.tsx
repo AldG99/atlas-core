@@ -40,11 +40,8 @@ const Dashboard = () => {
     pedidos,
     loading,
     error,
-    changeStatus,
-    removePedido,
     fetchPedidos,
-    fetchByStatus,
-    registrarAbono
+    fetchByStatus
   } = usePedidos();
   const { showToast } = useToast();
 
@@ -154,26 +151,6 @@ const Dashboard = () => {
       await fetchPedidos();
     } else {
       await fetchByStatus(status);
-    }
-  };
-
-  const handleChangeStatus = async (id: string, status: PedidoStatus) => {
-    try {
-      await changeStatus(id, status);
-      showToast(`Estado cambiado a "${PEDIDO_STATUS[status]}"`, 'success');
-    } catch {
-      showToast('Error al cambiar el estado', 'error');
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm('¿Estás seguro de eliminar este pedido?')) {
-      try {
-        await removePedido(id);
-        showToast('Pedido eliminado', 'success');
-      } catch {
-        showToast('Error al eliminar el pedido', 'error');
-      }
     }
   };
 
@@ -331,9 +308,6 @@ const Dashboard = () => {
         {!loading && !error && filteredAndSortedPedidos.length > 0 && (
           <PedidosTable
             pedidos={filteredAndSortedPedidos}
-            onChangeStatus={handleChangeStatus}
-            onDelete={handleDelete}
-            onAddAbono={registrarAbono}
           />
         )}
       </div>
