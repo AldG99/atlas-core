@@ -53,6 +53,16 @@
     }
   }
 
+  &__row {
+    cursor: pointer;
+
+    &:hover {
+      .clientes-table__name {
+        color: $color-primary;
+      }
+    }
+  }
+
   &__client {
     display: flex;
     align-items: center;
@@ -97,6 +107,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.2s ease;
   }
 
   &__phone-sub {

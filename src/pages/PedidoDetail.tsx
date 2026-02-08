@@ -390,7 +390,7 @@ const PedidoDetail = () => {
                 <td><strong>{formatCurrency(pedido.total)}</strong></td>
                 <td>
                   <strong className={pagado >= pedido.total ? 'pedido-detail__product-status--paid' : pagado > 0 ? 'pedido-detail__product-status--partial' : 'pedido-detail__product-status--pending'}>
-                    {pagado >= pedido.total ? 'Liquidado' : formatCurrency(pedido.total - pagado) + ' restante'}
+                    {pagado >= pedido.total ? 'Liquidado' : formatCurrency(pedido.total - pagado)}
                   </strong>
                 </td>
                 <td></td>
@@ -422,7 +422,7 @@ const PedidoDetail = () => {
                 </tr>
               </thead>
               <tbody>
-                {abonos.map((abono, i) => (
+                {[...abonos].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).map((abono, i) => (
                   <tr key={i}>
                     <td>
                       {typeof abono.productoIndex === 'number' && pedido.productos[abono.productoIndex]?.clave ? (

@@ -1,14 +1,15 @@
-import { PiEyeBold, PiTrashBold, PiWhatsappLogoBold } from 'react-icons/pi';
+import { useNavigate } from 'react-router-dom';
+import { PiTrashBold, PiWhatsappLogoBold } from 'react-icons/pi';
 import type { Cliente } from '../../types/Cliente';
 import './ClientesTable.scss';
 
 interface ClientesTableProps {
   clientes: Cliente[];
-  onView: (cliente: Cliente) => void;
   onDelete: (id: string) => void;
 }
 
-const ClientesTable = ({ clientes, onView, onDelete }: ClientesTableProps) => {
+const ClientesTable = ({ clientes, onDelete }: ClientesTableProps) => {
+  const navigate = useNavigate();
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-MX', {
       day: '2-digit',
@@ -36,7 +37,7 @@ const ClientesTable = ({ clientes, onView, onDelete }: ClientesTableProps) => {
         </thead>
         <tbody>
           {clientes.map((cliente) => (
-            <tr key={cliente.id}>
+            <tr key={cliente.id} className="clientes-table__row" onClick={() => navigate(`/cliente/${cliente.id}`)}>
               <td>
                 <div className="clientes-table__client">
                   <div className="clientes-table__avatar">
@@ -75,21 +76,14 @@ const ClientesTable = ({ clientes, onView, onDelete }: ClientesTableProps) => {
               <td>
                 <div className="clientes-table__actions">
                   <button
-                    onClick={() => onView(cliente)}
-                    className="btn-icon btn-icon--primary"
-                    title="Ver detalles"
-                  >
-                    <PiEyeBold size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleWhatsApp(cliente.telefono)}
+                    onClick={(e) => { e.stopPropagation(); handleWhatsApp(cliente.telefono); }}
                     className="btn-icon btn-icon--whatsapp"
                     title="Enviar WhatsApp"
                   >
                     <PiWhatsappLogoBold size={18} />
                   </button>
                   <button
-                    onClick={() => onDelete(cliente.id)}
+                    onClick={(e) => { e.stopPropagation(); onDelete(cliente.id); }}
                     className="btn-icon btn-icon--danger"
                     title="Eliminar cliente"
                   >

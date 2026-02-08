@@ -11,7 +11,9 @@ import NewPedido from './pages/NewPedido';
 import EditPedido from './pages/EditPedido';
 import PedidoDetail from './pages/PedidoDetail';
 import Clientes from './pages/Clientes';
+import ClienteDetail from './pages/ClienteDetail';
 import Productos from './pages/Productos';
+import ProductoDetail from './pages/ProductoDetail';
 import Reportes from './pages/Reportes';
 import Archivo from './pages/Archivo';
 import Configuracion from './pages/Configuracion';
@@ -68,10 +70,26 @@ function App() {
             }
           />
           <Route
+            path={ROUTES.DETAIL_CLIENTE}
+            element={
+              <ProtectedRoute>
+                <ClienteDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path={ROUTES.PRODUCTOS}
             element={
               <ProtectedRoute>
                 <Productos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.DETAIL_PRODUCTO}
+            element={
+              <ProtectedRoute>
+                <ProductoDetail />
               </ProtectedRoute>
             }
           />

@@ -28,9 +28,15 @@ $bottombar-height: 64px;
     background-color: $color-white;
     border-bottom: 1px solid $color-gray-200;
     padding: 0 $spacing-md;
+    padding-left: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    @include md {
+      left: 220px;
+      padding: 0 $spacing-lg;
+    }
   }
 
   &__top-bar-inner {
@@ -39,6 +45,7 @@ $bottombar-height: 64px;
     display: flex;
     align-items: center;
     gap: $spacing-md;
+    padding-left: 0;
   }
 
   &__top-divider {
@@ -80,7 +87,12 @@ $bottombar-height: 64px;
     }
 
     &--back {
-      margin-right: $spacing-lg;
+      position: absolute;
+      left: 60px;
+
+      @include md {
+        left: $spacing-lg;
+      }
     }
   }
 
@@ -92,6 +104,8 @@ $bottombar-height: 64px;
   }
 
   // Fixed Bottom Bar
+  $control-height: 40px;
+
   &__bottom-bar {
     position: fixed;
     bottom: 0;
@@ -99,40 +113,46 @@ $bottombar-height: 64px;
     right: 0;
     z-index: 100;
     min-height: $bottombar-height;
-    background-color: $color-white;
+    background-color: rgba($color-white, 0.95);
+    backdrop-filter: blur(10px);
     border-top: 1px solid $color-gray-200;
     padding: $spacing-sm $spacing-md;
+    padding-left: 60px;
     display: flex;
     align-items: center;
-    justify-content: center;
+
+    @include md {
+      left: 220px;
+      padding: $spacing-sm $spacing-lg;
+    }
   }
 
   &__bottom-bar-inner {
-    max-width: 900px;
-    width: 100%;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: $spacing-sm;
+    gap: $spacing-md;
   }
 
   &__bottom-bar-info {
     display: flex;
     align-items: center;
-    gap: $spacing-xs;
-    padding-right: $spacing-md;
-    border-right: 1px solid $color-gray-200;
-    margin-right: $spacing-sm;
+    gap: $spacing-sm;
+    height: $control-height;
+    padding: 0 $spacing-md;
+    background-color: $color-gray-50;
+    border-radius: 10px;
+    min-width: 240px;
   }
 
   &__bottom-bar-label {
     font-size: $font-size-sm;
+    font-weight: 500;
     color: $color-gray-500;
   }
 
   &__bottom-bar-amount {
-    font-size: $font-size-base;
-    font-weight: 700;
+    font-size: $font-size-sm;
+    font-weight: 600;
     color: #ea580c;
 
     &--paid {
@@ -142,34 +162,59 @@ $bottombar-height: 64px;
 
   &__bottom-bar-form {
     display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-sm;
+    gap: 2px;
     align-items: center;
-    flex: 1;
+    background-color: $color-gray-100;
+    border-radius: 10px;
+    padding: 2px;
 
     select,
     input {
-      height: 36px;
+      height: calc(#{$control-height} - 4px);
       padding: 0 $spacing-sm;
-      border: 1px solid $color-gray-300;
+      border: none;
       font-size: $font-size-sm;
+      font-weight: 500;
       outline: none;
-      background-color: $color-white;
+      background-color: transparent;
       box-sizing: border-box;
+      transition: all 0.2s ease;
 
       &:focus {
-        border-color: $color-primary;
-        box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+        background-color: $color-white;
+        border-radius: 8px;
       }
     }
 
     select {
       cursor: pointer;
-      max-width: 140px;
+      min-width: 110px;
+      color: $color-gray-700;
+      border-radius: 8px 0 0 8px;
+
+      &:hover {
+        background-color: rgba($color-white, 0.5);
+      }
     }
 
     input {
-      width: 100px;
+      min-width: 120px;
+      color: $color-gray-800;
+      text-align: right;
+
+      &::placeholder {
+        color: $color-gray-400;
+      }
+    }
+
+    .btn {
+      height: calc(#{$control-height} - 4px);
+      border-radius: 8px;
+      font-weight: 600;
+      padding: 0 $spacing-md;
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
     }
   }
 
@@ -331,24 +376,43 @@ $bottombar-height: 64px;
   &__products-table {
     thead th {
       // Cant.
-      &:nth-child(2) { text-align: center; }
+      &:nth-child(2) {
+        text-align: center;
+      }
       // Etiquetas
-      &:nth-child(4) { text-align: center; }
+      &:nth-child(4) {
+        text-align: center;
+      }
       // Abonado
-      &:nth-child(5) { text-align: right; }
+      &:nth-child(5) {
+        text-align: right;
+      }
       // Subtotal
-      &:nth-child(6) { text-align: right; }
+      &:nth-child(6) {
+        text-align: right;
+      }
     }
 
     tbody td {
       // Cant.
-      &:nth-child(2) { text-align: center; font-weight: 600; }
+      &:nth-child(2) {
+        text-align: center;
+        font-weight: 600;
+      }
       // Etiquetas
-      &:nth-child(4) { text-align: center; }
+      &:nth-child(4) {
+        text-align: center;
+      }
       // Abonado
-      &:nth-child(5) { text-align: right; font-weight: 600; }
+      &:nth-child(5) {
+        text-align: right;
+        font-weight: 600;
+      }
       // Subtotal
-      &:nth-child(6) { text-align: right; font-weight: 600; }
+      &:nth-child(6) {
+        text-align: right;
+        font-weight: 600;
+      }
     }
   }
 
@@ -406,18 +470,30 @@ $bottombar-height: 64px;
     height: 100%;
     transition: width 0.3s ease;
 
-    &--paid { background-color: #16a34a; }
-    &--partial { background-color: #ea580c; }
-    &--pending { background-color: $color-gray-300; }
+    &--paid {
+      background-color: #16a34a;
+    }
+    &--partial {
+      background-color: #ea580c;
+    }
+    &--pending {
+      background-color: $color-gray-300;
+    }
   }
 
   &__product-status {
     font-size: $font-size-sm;
     font-weight: 600;
 
-    &--paid { color: #16a34a; }
-    &--partial { color: #ea580c; }
-    &--pending { color: $color-gray-400; }
+    &--paid {
+      color: #16a34a;
+    }
+    &--partial {
+      color: #ea580c;
+    }
+    &--pending {
+      color: $color-gray-400;
+    }
   }
 
   &__product-eye {
@@ -442,35 +518,59 @@ $bottombar-height: 64px;
   }
 
   &__abono-error {
-    width: 100%;
+    position: absolute;
+    bottom: 100%;
+    left: 60px;
     font-size: $font-size-xs;
     color: #dc2626;
     font-weight: 500;
-    margin-top: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    background-color: rgba(#dc2626, 0.1);
+    border-radius: 6px;
+    margin-bottom: $spacing-xs;
+
+    @include md {
+      left: $spacing-lg;
+    }
   }
 
   &__btn-entregado {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: $spacing-xs;
-    padding: $spacing-xs $spacing-md;
-    height: 36px;
+    padding: 0 $spacing-lg;
+    height: 40px;
     font-size: $font-size-sm;
     font-weight: 600;
     border: none;
+    border-radius: 10px;
     background-color: $color-gray-100;
     color: $color-gray-400;
     cursor: not-allowed;
     transition: all 0.2s ease;
-    margin-left: auto;
+    position: absolute;
+    right: $spacing-md;
+
+    @include md {
+      right: $spacing-lg;
+    }
 
     &--active {
       background-color: #16a34a;
       color: $color-white;
       cursor: pointer;
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
 
       &:hover {
         background-color: #15803d;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
       }
     }
   }
@@ -525,7 +625,9 @@ $bottombar-height: 64px;
     color: $color-gray-500;
     cursor: pointer;
 
-    &:hover { color: $color-gray-800; }
+    &:hover {
+      color: $color-gray-800;
+    }
   }
 
   &__modal-body {
@@ -558,7 +660,9 @@ $bottombar-height: 64px;
     gap: $spacing-xs;
     color: $color-gray-400;
 
-    span { font-size: $font-size-sm; }
+    span {
+      font-size: $font-size-sm;
+    }
   }
 
   &__modal-section {
@@ -589,7 +693,9 @@ $bottombar-height: 64px;
     padding: $spacing-xs 0;
     border-bottom: 1px solid $color-gray-100;
 
-    &:last-child { border-bottom: none; }
+    &:last-child {
+      border-bottom: none;
+    }
   }
 
   &__modal-label {
@@ -613,6 +719,12 @@ $bottombar-height: 64px;
 }
 
 @keyframes pedidoDetailFadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

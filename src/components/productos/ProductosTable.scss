@@ -50,6 +50,16 @@
     }
   }
 
+  &__row {
+    cursor: pointer;
+
+    &:hover {
+      .productos-table__name {
+        color: $color-primary;
+      }
+    }
+  }
+
   &__product {
     display: flex;
     align-items: center;
@@ -87,6 +97,7 @@
   &__name {
     font-weight: 600;
     color: $color-gray-800;
+    transition: color 0.2s ease;
   }
 
   &__price {

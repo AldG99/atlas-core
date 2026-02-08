@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { PiEyeBold, PiPencilBold, PiTrashBold, PiPackageBold } from 'react-icons/pi';
+import { useNavigate } from 'react-router-dom';
+import { PiPencilBold, PiTrashBold } from 'react-icons/pi';
 import type { Producto, ProductoFormData, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import './ProductosTable.scss';
@@ -12,7 +12,7 @@ interface ProductosTableProps {
 }
 
 const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTableProps) => {
-  const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
+  const navigate = useNavigate();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-MX', {
@@ -35,8 +35,6 @@ const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTab
       .filter((e): e is Etiqueta => !!e);
   };
 
-  const closeModal = () => setSelectedProducto(null);
-
   return (
     <div className="productos-table-container">
       <table className="productos-table">
@@ -55,7 +53,7 @@ const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTab
           {productos.map((producto) => {
             const productoEtiquetas = getEtiquetasForProducto(producto);
             return (
-              <tr key={producto.id}>
+              <tr key={producto.id} className="productos-table__row" onClick={() => navigate(`/producto-detalle/${producto.id}`)}>
                 <td>
                   <span className="productos-table__clave">{producto.clave}</span>
                 </td>
@@ -96,14 +94,8 @@ const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTab
                 <td>
                   <div className="productos-table__actions">
                     <button
-                      onClick={() => setSelectedProducto(producto)}
-                      className="btn-icon btn-icon--primary"
-                      title="Ver detalles"
-                    >
-                      <PiEyeBold size={18} />
-                    </button>
-                    <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         onEdit(producto.id, {
                           clave: producto.clave,
                           nombre: producto.nombre,
@@ -119,7 +111,7 @@ const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTab
                       <PiPencilBold size={18} />
                     </button>
                     <button
-                      onClick={() => onDelete(producto.id)}
+                      onClick={(e) => { e.stopPropagation(); onDelete(producto.id); }}
                       className="btn-icon btn-icon--danger"
                       title="Eliminar producto"
                     >
@@ -132,88 +124,6 @@ const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTab
           })}
         </tbody>
       </table>
-
-      {selectedProducto && (
-        <div className="productos-table__modal-overlay" onClick={closeModal}>
-          <div className="productos-table__modal" onClick={(e) => e.stopPropagation()}>
-            <div className="productos-table__modal-header">
-              <h3>Detalles del producto</h3>
-              <button className="productos-table__modal-close" onClick={closeModal}>
-                ×
-              </button>
-            </div>
-            <div className="productos-table__modal-body">
-              <div className="productos-table__modal-image">
-                {selectedProducto.imagen ? (
-                  <img src={selectedProducto.imagen} alt={selectedProducto.nombre} />
-                ) : (
-                  <div className="productos-table__modal-placeholder">
-                    <PiPackageBold size={48} />
-                    <span>Sin imagen</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="productos-table__modal-section">
-                <h4>Información</h4>
-                <div className="productos-table__modal-info">
-                  <div className="productos-table__modal-row">
-                    <span className="productos-table__modal-label">Clave:</span>
-                    <span className="productos-table__modal-value">{selectedProducto.clave}</span>
-                  </div>
-                  <div className="productos-table__modal-row">
-                    <span className="productos-table__modal-label">Nombre:</span>
-                    <span className="productos-table__modal-value">{selectedProducto.nombre}</span>
-                  </div>
-                  <div className="productos-table__modal-row">
-                    <span className="productos-table__modal-label">Precio:</span>
-                    <span className="productos-table__modal-value productos-table__modal-price">
-                      {formatPrice(selectedProducto.precio)}
-                    </span>
-                  </div>
-                  <div className="productos-table__modal-row">
-                    <span className="productos-table__modal-label">Registro:</span>
-                    <span className="productos-table__modal-value">{formatDate(selectedProducto.fechaCreacion)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {getEtiquetasForProducto(selectedProducto).length > 0 && (
-                <div className="productos-table__modal-section">
-                  <h4>Etiquetas</h4>
-                  <div className="productos-table__etiquetas">
-                    {getEtiquetasForProducto(selectedProducto).map(et => (
-                      <span
-                        key={et.id}
-                        className="productos-table__etiqueta"
-                        style={{ backgroundColor: et.color }}
-                        title={et.nombre}
-                      >
-                        {ETIQUETA_ICONS[et.icono] && (() => {
-                          const Icon = ETIQUETA_ICONS[et.icono].icon;
-                          return <Icon size={11} />;
-                        })()}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="productos-table__modal-section">
-                <h4>Descripción</h4>
-                <p className="productos-table__modal-description">
-                  {selectedProducto.descripcion || 'Sin descripción'}
-                </p>
-              </div>
-            </div>
-            <div className="productos-table__modal-footer">
-              <button className="btn btn--secondary" onClick={closeModal}>
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -2,18 +2,16 @@ import { useState, useMemo } from 'react';
 import { PiCloudArrowUpBold } from 'react-icons/pi';
 import { useClientes } from '../hooks/useClientes';
 import { useToast } from '../hooks/useToast';
-import type { Cliente, ClienteFormData } from '../types/Cliente';
+import type { ClienteFormData } from '../types/Cliente';
 import MainLayout from '../layouts/MainLayout';
 import ClientesTable from '../components/clientes/ClientesTable';
 import ClienteModal from '../components/clientes/ClienteModal';
-import ClienteDetailModal from '../components/clientes/ClienteDetailModal';
 import './Clientes.scss';
 
 const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState<{ id: string; data: ClienteFormData } | null>(null);
-  const [viewingCliente, setViewingCliente] = useState<Cliente | null>(null);
 
   const { clientes, loading, error, addCliente, editCliente, removeCliente } = useClientes();
   const { showToast } = useToast();
@@ -68,41 +66,6 @@ const Clientes = () => {
     }
   };
 
-  const openEditModal = (id: string, data: ClienteFormData) => {
-    setEditingCliente({ id, data });
-  };
-
-  const handleView = (cliente: Cliente) => {
-    setViewingCliente(cliente);
-  };
-
-  const handleWhatsApp = (telefono: string) => {
-    const cleanPhone = telefono.replace(/\D/g, '');
-    window.open(`https://wa.me/${cleanPhone}`, '_blank');
-  };
-
-  const handleEditFromDetail = () => {
-    if (!viewingCliente) return;
-    setViewingCliente(null);
-    openEditModal(viewingCliente.id, {
-      fotoPerfil: viewingCliente.fotoPerfil,
-      nombre: viewingCliente.nombre,
-      apellido: viewingCliente.apellido,
-      telefono: viewingCliente.telefono,
-      telefonoSecundario: viewingCliente.telefonoSecundario,
-      correo: viewingCliente.correo,
-      calle: viewingCliente.calle,
-      numeroExterior: viewingCliente.numeroExterior,
-      numeroInterior: viewingCliente.numeroInterior,
-      colonia: viewingCliente.colonia,
-      ciudad: viewingCliente.ciudad,
-      codigoPostal: viewingCliente.codigoPostal,
-      referencia: viewingCliente.referencia,
-      numeroVisible: viewingCliente.numeroVisible,
-      horarioEntrega: viewingCliente.horarioEntrega,
-      notas: viewingCliente.notas
-    });
-  };
 
   return (
     <MainLayout>
@@ -167,7 +130,6 @@ const Clientes = () => {
         {!loading && !error && filteredClientes.length > 0 && (
           <ClientesTable
             clientes={filteredClientes}
-            onView={handleView}
             onDelete={handleDelete}
           />
         )}
@@ -184,15 +146,6 @@ const Clientes = () => {
             cliente={editingCliente.data}
             onClose={() => setEditingCliente(null)}
             onSave={handleEdit}
-          />
-        )}
-
-        {viewingCliente && (
-          <ClienteDetailModal
-            cliente={viewingCliente}
-            onClose={() => setViewingCliente(null)}
-            onEdit={handleEditFromDetail}
-            onWhatsApp={() => handleWhatsApp(viewingCliente.telefono)}
           />
         )}
       </div>
