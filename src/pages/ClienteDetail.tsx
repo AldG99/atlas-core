@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   PiArrowLeftBold,
@@ -8,16 +8,17 @@ import {
   PiMapPinBold,
   PiPhoneBold,
   PiEnvelopeBold,
-  PiClockBold,
   PiEyeBold,
-  PiNoteBold
+  PiNoteBold,
+  PiCheckBold,
+  PiXBold,
+  PiCameraBold
 } from 'react-icons/pi';
 import type { Cliente, ClienteFormData } from '../types/Cliente';
 import { getClienteById, deleteCliente, updateCliente } from '../services/clienteService';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
-import ClienteModal from '../components/clientes/ClienteModal';
 import './ClienteDetail.scss';
 
 const ClienteDetail = () => {
@@ -27,7 +28,21 @@ const ClienteDetail = () => {
 
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState<ClienteFormData | null>(null);
+  const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && editData) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditData({ ...editData, fotoPerfil: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const fetchCliente = useCallback(async () => {
     if (!id) return;
@@ -59,9 +74,13 @@ const ClienteDetail = () => {
       year: 'numeric'
     }).format(new Date(date));
 
-  const getFullAddress = (c: Cliente) => {
+  const getPostalAddress = (c: Cliente) => {
     const numInterior = c.numeroInterior ? `, Int. ${c.numeroInterior}` : '';
-    return `${c.calle} ${c.numeroExterior}${numInterior}, ${c.colonia}, ${c.ciudad}, CP ${c.codigoPostal}`;
+    return {
+      line1: `${c.calle} ${c.numeroExterior}${numInterior}`,
+      line2: c.colonia,
+      line3: `${c.ciudad}, CP ${c.codigoPostal}`
+    };
   };
 
   const handleWhatsApp = () => {
@@ -82,16 +101,53 @@ const ClienteDetail = () => {
     }
   };
 
-  const handleEdit = async (data: ClienteFormData) => {
+  const startEditing = () => {
     if (!cliente) return;
+    setEditData({
+      fotoPerfil: cliente.fotoPerfil,
+      nombre: cliente.nombre,
+      apellido: cliente.apellido,
+      telefono: cliente.telefono,
+      telefonoSecundario: cliente.telefonoSecundario,
+      correo: cliente.correo,
+      calle: cliente.calle,
+      numeroExterior: cliente.numeroExterior,
+      numeroInterior: cliente.numeroInterior,
+      colonia: cliente.colonia,
+      ciudad: cliente.ciudad,
+      codigoPostal: cliente.codigoPostal,
+      referencia: cliente.referencia,
+      numeroVisible: cliente.numeroVisible,
+      horarioEntrega: cliente.horarioEntrega,
+      notas: cliente.notas
+    });
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setIsEditing(false);
+    setEditData(null);
+  };
+
+  const handleSave = async () => {
+    if (!cliente || !editData) return;
     try {
-      await updateCliente(cliente.id, data);
-      setCliente({ ...cliente, ...data });
-      setIsEditModalOpen(false);
+      setSaving(true);
+      await updateCliente(cliente.id, editData);
+      setCliente({ ...cliente, ...editData });
+      setIsEditing(false);
+      setEditData(null);
       showToast('Cliente actualizado correctamente', 'success');
     } catch {
       showToast('Error al actualizar el cliente', 'error');
+    } finally {
+      setSaving(false);
     }
+  };
+
+  const updateField = (field: keyof ClienteFormData, value: string | boolean) => {
+    if (!editData) return;
+    setEditData({ ...editData, [field]: value });
   };
 
   if (loading) {
@@ -119,28 +175,51 @@ const ClienteDetail = () => {
             >
               <PiArrowLeftBold size={20} />
             </button>
-            <button
-              onClick={handleWhatsApp}
-              className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp"
-              title="Enviar WhatsApp"
-            >
-              <PiWhatsappLogoBold size={20} />
-            </button>
-            <span className="cliente-detail__top-divider" />
-            <button
-              onClick={() => setIsEditModalOpen(true)}
-              className="cliente-detail__icon-btn cliente-detail__icon-btn--primary"
-              title="Editar cliente"
-            >
-              <PiPencilBold size={20} />
-            </button>
-            <button
-              onClick={handleDelete}
-              className="cliente-detail__icon-btn cliente-detail__icon-btn--danger"
-              title="Eliminar cliente"
-            >
-              <PiTrashBold size={20} />
-            </button>
+            {isEditing ? (
+              <>
+                <button
+                  onClick={handleSave}
+                  className="cliente-detail__icon-btn cliente-detail__icon-btn--success"
+                  title="Guardar cambios"
+                  disabled={saving}
+                >
+                  <PiCheckBold size={20} />
+                </button>
+                <button
+                  onClick={cancelEditing}
+                  className="cliente-detail__icon-btn cliente-detail__icon-btn--danger"
+                  title="Cancelar"
+                  disabled={saving}
+                >
+                  <PiXBold size={20} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handleWhatsApp}
+                  className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp"
+                  title="Enviar WhatsApp"
+                >
+                  <PiWhatsappLogoBold size={20} />
+                </button>
+                <span className="cliente-detail__top-divider" />
+                <button
+                  onClick={startEditing}
+                  className="cliente-detail__icon-btn cliente-detail__icon-btn--primary"
+                  title="Editar cliente"
+                >
+                  <PiPencilBold size={20} />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="cliente-detail__icon-btn cliente-detail__icon-btn--danger"
+                  title="Eliminar cliente"
+                >
+                  <PiTrashBold size={20} />
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -149,15 +228,49 @@ const ClienteDetail = () => {
           {/* Header */}
           <div className="cliente-detail__header">
             <div className="cliente-detail__client">
-              <div className="cliente-detail__avatar">
-                {cliente.fotoPerfil ? (
-                  <img src={cliente.fotoPerfil} alt={cliente.nombre} />
+              <div
+                className={`cliente-detail__avatar ${isEditing ? 'cliente-detail__avatar--editable' : ''}`}
+                onClick={() => isEditing && fileInputRef.current?.click()}
+              >
+                {(isEditing ? editData?.fotoPerfil : cliente.fotoPerfil) ? (
+                  <img src={(isEditing ? editData?.fotoPerfil : cliente.fotoPerfil) || ''} alt={cliente.nombre} />
                 ) : (
-                  <span>{cliente.nombre[0]}{cliente.apellido?.[0] ?? ''}</span>
+                  <span>{(editData?.nombre || cliente.nombre)[0]}{(editData?.apellido || cliente.apellido)?.[0] ?? ''}</span>
                 )}
+                {isEditing && (
+                  <div className="cliente-detail__avatar-overlay">
+                    <PiCameraBold size={24} />
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  style={{ display: 'none' }}
+                />
               </div>
               <div className="cliente-detail__client-info">
-                <h1 className="cliente-detail__name">{cliente.nombre} {cliente.apellido}</h1>
+                {isEditing ? (
+                  <div className="cliente-detail__name-edit">
+                    <input
+                      type="text"
+                      value={editData?.nombre || ''}
+                      onChange={(e) => updateField('nombre', e.target.value)}
+                      placeholder="Nombre"
+                      className="cliente-detail__input"
+                    />
+                    <input
+                      type="text"
+                      value={editData?.apellido || ''}
+                      onChange={(e) => updateField('apellido', e.target.value)}
+                      placeholder="Apellido"
+                      className="cliente-detail__input"
+                    />
+                  </div>
+                ) : (
+                  <h1 className="cliente-detail__name">{cliente.nombre} {cliente.apellido}</h1>
+                )}
                 <span className="cliente-detail__date">Cliente desde {formatDate(cliente.fechaCreacion)}</span>
               </div>
             </div>
@@ -175,28 +288,55 @@ const ClienteDetail = () => {
                 </div>
                 <div className="cliente-detail__info-content">
                   <span className="cliente-detail__info-label">Teléfono</span>
-                  <span className="cliente-detail__info-value">{cliente.telefono}</span>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      value={editData?.telefono || ''}
+                      onChange={(e) => updateField('telefono', e.target.value)}
+                      className="cliente-detail__input"
+                    />
+                  ) : (
+                    <span className="cliente-detail__info-value">{cliente.telefono}</span>
+                  )}
                 </div>
               </div>
-              {cliente.telefonoSecundario && (
+              {(isEditing || cliente.telefonoSecundario) && (
                 <div className="cliente-detail__info-item">
                   <div className="cliente-detail__info-icon">
                     <PiPhoneBold size={18} />
                   </div>
                   <div className="cliente-detail__info-content">
                     <span className="cliente-detail__info-label">Teléfono secundario</span>
-                    <span className="cliente-detail__info-value">{cliente.telefonoSecundario}</span>
+                    {isEditing ? (
+                      <input
+                        type="tel"
+                        value={editData?.telefonoSecundario || ''}
+                        onChange={(e) => updateField('telefonoSecundario', e.target.value)}
+                        className="cliente-detail__input"
+                      />
+                    ) : (
+                      <span className="cliente-detail__info-value">{cliente.telefonoSecundario}</span>
+                    )}
                   </div>
                 </div>
               )}
-              {cliente.correo && (
+              {(isEditing || cliente.correo) && (
                 <div className="cliente-detail__info-item">
                   <div className="cliente-detail__info-icon">
                     <PiEnvelopeBold size={18} />
                   </div>
                   <div className="cliente-detail__info-content">
                     <span className="cliente-detail__info-label">Correo electrónico</span>
-                    <span className="cliente-detail__info-value">{cliente.correo}</span>
+                    {isEditing ? (
+                      <input
+                        type="email"
+                        value={editData?.correo || ''}
+                        onChange={(e) => updateField('correo', e.target.value)}
+                        className="cliente-detail__input"
+                      />
+                    ) : (
+                      <span className="cliente-detail__info-value">{cliente.correo}</span>
+                    )}
                   </div>
                 </div>
               )}
@@ -206,30 +346,79 @@ const ClienteDetail = () => {
           {/* Address Section */}
           <div className="cliente-detail__section">
             <div className="cliente-detail__section-header">
-              <strong>Dirección de entrega</strong>
+              <strong>Dirección</strong>
             </div>
-            <div className="cliente-detail__info-grid">
+            {isEditing ? (
+              <div className="cliente-detail__address-edit">
+                <div className="cliente-detail__address-row">
+                  <input
+                    type="text"
+                    value={editData?.calle || ''}
+                    onChange={(e) => updateField('calle', e.target.value)}
+                    placeholder="Calle"
+                    className="cliente-detail__input cliente-detail__input--flex"
+                  />
+                  <input
+                    type="text"
+                    value={editData?.numeroExterior || ''}
+                    onChange={(e) => updateField('numeroExterior', e.target.value)}
+                    placeholder="No. Ext"
+                    className="cliente-detail__input cliente-detail__input--small"
+                  />
+                  <input
+                    type="text"
+                    value={editData?.numeroInterior || ''}
+                    onChange={(e) => updateField('numeroInterior', e.target.value)}
+                    placeholder="No. Int"
+                    className="cliente-detail__input cliente-detail__input--small"
+                  />
+                </div>
+                <div className="cliente-detail__address-row">
+                  <input
+                    type="text"
+                    value={editData?.colonia || ''}
+                    onChange={(e) => updateField('colonia', e.target.value)}
+                    placeholder="Colonia"
+                    className="cliente-detail__input"
+                  />
+                  <input
+                    type="text"
+                    value={editData?.ciudad || ''}
+                    onChange={(e) => updateField('ciudad', e.target.value)}
+                    placeholder="Ciudad"
+                    className="cliente-detail__input"
+                  />
+                  <input
+                    type="text"
+                    value={editData?.codigoPostal || ''}
+                    onChange={(e) => updateField('codigoPostal', e.target.value)}
+                    placeholder="CP"
+                    className="cliente-detail__input cliente-detail__input--small"
+                  />
+                </div>
+                <textarea
+                  value={editData?.referencia || ''}
+                  onChange={(e) => updateField('referencia', e.target.value)}
+                  placeholder="Ej: Casa color azul, entre calle X y calle Y"
+                  className="cliente-detail__textarea cliente-detail__textarea--small"
+                  rows={2}
+                />
+              </div>
+            ) : (
               <div className="cliente-detail__info-item cliente-detail__info-item--full">
                 <div className="cliente-detail__info-icon">
                   <PiMapPinBold size={18} />
                 </div>
-                <div className="cliente-detail__info-content">
-                  <span className="cliente-detail__info-label">Dirección completa</span>
-                  <span className="cliente-detail__info-value">{getFullAddress(cliente)}</span>
+                <div className="cliente-detail__address">
+                  <p>{getPostalAddress(cliente).line1}</p>
+                  <p>{getPostalAddress(cliente).line2}</p>
+                  <p>{getPostalAddress(cliente).line3}</p>
+                  {cliente.referencia && (
+                    <p className="cliente-detail__address-ref">Ref: {cliente.referencia}</p>
+                  )}
                 </div>
               </div>
-              {cliente.referencia && (
-                <div className="cliente-detail__info-item cliente-detail__info-item--full">
-                  <div className="cliente-detail__info-icon">
-                    <PiNoteBold size={18} />
-                  </div>
-                  <div className="cliente-detail__info-content">
-                    <span className="cliente-detail__info-label">Referencia</span>
-                    <span className="cliente-detail__info-value">{cliente.referencia}</span>
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
           </div>
 
           {/* Delivery Section */}
@@ -244,61 +433,47 @@ const ClienteDetail = () => {
                 </div>
                 <div className="cliente-detail__info-content">
                   <span className="cliente-detail__info-label">Número visible</span>
-                  <span className={`cliente-detail__badge ${cliente.numeroVisible ? 'cliente-detail__badge--success' : 'cliente-detail__badge--warning'}`}>
-                    {cliente.numeroVisible ? 'Sí, es visible' : 'No es visible'}
-                  </span>
+                  {isEditing ? (
+                    <label className="cliente-detail__toggle">
+                      <input
+                        type="checkbox"
+                        checked={editData?.numeroVisible || false}
+                        onChange={(e) => updateField('numeroVisible', e.target.checked)}
+                      />
+                      <span>{editData?.numeroVisible ? 'Sí, es visible' : 'No es visible'}</span>
+                    </label>
+                  ) : (
+                    <span className={`cliente-detail__info-value ${cliente.numeroVisible ? 'cliente-detail__info-value--success' : 'cliente-detail__info-value--warning'}`}>
+                      {cliente.numeroVisible ? 'Sí, es visible' : 'No es visible'}
+                    </span>
+                  )}
                 </div>
               </div>
-              {cliente.horarioEntrega && (
-                <div className="cliente-detail__info-item">
-                  <div className="cliente-detail__info-icon">
-                    <PiClockBold size={18} />
-                  </div>
-                  <div className="cliente-detail__info-content">
-                    <span className="cliente-detail__info-label">Horario preferido</span>
-                    <span className="cliente-detail__info-value">{cliente.horarioEntrega}</span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
           {/* Notes Section */}
-          {cliente.notas && (
+          {(isEditing || cliente.notas) && (
             <div className="cliente-detail__section">
               <div className="cliente-detail__section-header">
                 <strong>Notas</strong>
               </div>
-              <p className="cliente-detail__notes">{cliente.notas}</p>
+              {isEditing ? (
+                <textarea
+                  value={editData?.notas || ''}
+                  onChange={(e) => updateField('notas', e.target.value)}
+                  placeholder="Notas sobre el cliente..."
+                  className="cliente-detail__textarea"
+                  rows={3}
+                />
+              ) : (
+                <p className="cliente-detail__notes">{cliente.notas}</p>
+              )}
             </div>
           )}
         </div>
       </div>
 
-      {isEditModalOpen && (
-        <ClienteModal
-          cliente={{
-            fotoPerfil: cliente.fotoPerfil,
-            nombre: cliente.nombre,
-            apellido: cliente.apellido,
-            telefono: cliente.telefono,
-            telefonoSecundario: cliente.telefonoSecundario,
-            correo: cliente.correo,
-            calle: cliente.calle,
-            numeroExterior: cliente.numeroExterior,
-            numeroInterior: cliente.numeroInterior,
-            colonia: cliente.colonia,
-            ciudad: cliente.ciudad,
-            codigoPostal: cliente.codigoPostal,
-            referencia: cliente.referencia,
-            numeroVisible: cliente.numeroVisible,
-            horarioEntrega: cliente.horarioEntrega,
-            notas: cliente.notas
-          }}
-          onClose={() => setIsEditModalOpen(false)}
-          onSave={handleEdit}
-        />
-      )}
     </MainLayout>
   );
 };

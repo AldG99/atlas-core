@@ -135,6 +135,18 @@
     }
   }
 
+  &__text {
+    &--success {
+      color: $color-success;
+      font-weight: 600;
+    }
+
+    &--warning {
+      color: $color-warning;
+      font-weight: 600;
+    }
+  }
+
   &__notes {
     margin: 0;
     font-size: $font-size-sm;
@@ -144,5 +156,28 @@
     padding: $spacing-sm;
     border-radius: $border-radius-md;
     border-left: 3px solid $color-primary;
+  }
+
+  &__address {
+    display: flex;
+    flex-direction: column;
+    background-color: $color-gray-50;
+    padding: $spacing-md;
+    border-radius: $border-radius-md;
+    border-left: 3px solid $color-primary;
+
+    p {
+      display: block;
+      margin: 0;
+      font-size: $font-size-sm;
+      color: $color-gray-700;
+      line-height: 1.6;
+    }
+
+    &-ref {
+      margin-top: $spacing-sm !important;
+      font-style: italic;
+      color: $color-gray-500 !important;
+    }
   }
 }

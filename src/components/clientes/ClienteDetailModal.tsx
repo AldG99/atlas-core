@@ -18,9 +18,13 @@ const ClienteDetailModal = ({ cliente, onClose, onEdit, onWhatsApp }: ClienteDet
     }).format(date);
   };
 
-  const getFullAddress = () => {
+  const getPostalAddress = () => {
     const numInterior = cliente.numeroInterior ? `, Int. ${cliente.numeroInterior}` : '';
-    return `${cliente.calle} ${cliente.numeroExterior}${numInterior}, ${cliente.colonia}, ${cliente.ciudad}, CP ${cliente.codigoPostal}`;
+    return {
+      line1: `${cliente.calle} ${cliente.numeroExterior}${numInterior}`,
+      line2: cliente.colonia,
+      line3: `${cliente.ciudad}, CP ${cliente.codigoPostal}`
+    };
   };
 
   return (
@@ -78,17 +82,15 @@ const ClienteDetailModal = ({ cliente, onClose, onEdit, onWhatsApp }: ClienteDet
 
             {/* Dirección */}
             <div className="cliente-detail-modal__section">
-              <h4>Dirección de entrega</h4>
-              <div className="cliente-detail-modal__field cliente-detail-modal__field--full">
-                <label>Dirección completa</label>
-                <span>{getFullAddress()}</span>
+              <h4>Dirección</h4>
+              <div className="cliente-detail-modal__address">
+                <p>{getPostalAddress().line1}</p>
+                <p>{getPostalAddress().line2}</p>
+                <p>{getPostalAddress().line3}</p>
+                {cliente.referencia && (
+                  <p className="cliente-detail-modal__address-ref">Ref: {cliente.referencia}</p>
+                )}
               </div>
-              {cliente.referencia && (
-                <div className="cliente-detail-modal__field cliente-detail-modal__field--full">
-                  <label>Referencia</label>
-                  <span>{cliente.referencia}</span>
-                </div>
-              )}
             </div>
 
             {/* Entrega */}
@@ -97,7 +99,7 @@ const ClienteDetailModal = ({ cliente, onClose, onEdit, onWhatsApp }: ClienteDet
               <div className="cliente-detail-modal__grid">
                 <div className="cliente-detail-modal__field">
                   <label>Número visible</label>
-                  <span className={`cliente-detail-modal__badge ${cliente.numeroVisible ? 'cliente-detail-modal__badge--success' : 'cliente-detail-modal__badge--warning'}`}>
+                  <span className={cliente.numeroVisible ? 'cliente-detail-modal__text--success' : 'cliente-detail-modal__text--warning'}>
                     {cliente.numeroVisible ? 'Sí, es visible' : 'No es visible'}
                   </span>
                 </div>
