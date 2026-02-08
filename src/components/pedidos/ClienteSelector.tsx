@@ -114,9 +114,14 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
             </div>
             {selectedCliente.calle && (
               <div className="cliente-selector__selected-address">
-                {selectedCliente.calle} {selectedCliente.numeroExterior}
-                {selectedCliente.numeroInterior && ` Int. ${selectedCliente.numeroInterior}`},
-                {' '}{selectedCliente.colonia}, {selectedCliente.ciudad}
+                <p>{selectedCliente.calle} {selectedCliente.numeroExterior}{selectedCliente.numeroInterior ? `, Int. ${selectedCliente.numeroInterior}` : ''}</p>
+                {selectedCliente.colonia && <p>{selectedCliente.colonia}</p>}
+                {(selectedCliente.ciudad || selectedCliente.codigoPostal) && (
+                  <p>{selectedCliente.ciudad}{selectedCliente.codigoPostal ? `, CP ${selectedCliente.codigoPostal}` : ''}</p>
+                )}
+                {selectedCliente.referencia && (
+                  <p className="cliente-selector__selected-address-ref">Ref: {selectedCliente.referencia}</p>
+                )}
               </div>
             )}
           </div>

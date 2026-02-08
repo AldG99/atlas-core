@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useProductos } from '../../hooks/useProductos';
+import { useEtiquetas } from '../../hooks/useEtiquetas';
 import { useToast } from '../../hooks/useToast';
+import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import type { Producto } from '../../types/Producto';
 import './ProductoSelector.scss';
 
@@ -26,6 +28,7 @@ const ProductoSelector = ({
   total
 }: ProductoSelectorProps) => {
   const { productos, loading, addProducto } = useProductos();
+  const { etiquetas: todasEtiquetas } = useEtiquetas();
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -111,15 +114,28 @@ const ProductoSelector = ({
                     className="producto-selector__dropdown-item"
                     onClick={() => handleSelectProducto(producto)}
                   >
-                    <div className="producto-selector__dropdown-info">
-                      <span className="producto-selector__dropdown-name">
-                        {producto.nombre}
-                      </span>
-                      {producto.clave && (
-                        <span className="producto-selector__dropdown-clave">
-                          {producto.clave}
-                        </span>
-                      )}
+                    <span className={`producto-selector__dropdown-clave${producto.clave?.toLowerCase().includes(searchTerm.toLowerCase()) ? ' producto-selector__dropdown-clave--match' : ''}`}>
+                      {producto.clave || ''}
+                    </span>
+                    <span className="producto-selector__dropdown-name">
+                      {producto.nombre}
+                    </span>
+                    <div className="producto-selector__dropdown-etiquetas">
+                      {(producto.etiquetas || []).map(etId => {
+                        const et = todasEtiquetas.find(e => e.id === etId);
+                        if (!et) return null;
+                        const iconData = ETIQUETA_ICONS[et.icono];
+                        const Icon = iconData?.icon;
+                        return (
+                          <span
+                            key={et.id}
+                            className="producto-selector__dropdown-etiqueta"
+                            style={{ backgroundColor: et.color }}
+                          >
+                            {Icon && <Icon size={10} />}
+                          </span>
+                        );
+                      })}
                     </div>
                     <span className="producto-selector__dropdown-price">
                       ${producto.precio.toFixed(2)}

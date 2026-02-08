@@ -250,8 +250,23 @@
   }
 
   &__selected-address {
-    color: $color-gray-600;
-    font-size: $font-size-sm;
+    display: flex;
+    flex-direction: column;
     margin-top: $spacing-xs;
+
+    p {
+      margin: 0;
+      font-size: $font-size-sm;
+      color: $color-gray-800;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    &-ref {
+      margin-top: $spacing-xs !important;
+      font-style: italic;
+      color: $color-gray-500 !important;
+      font-weight: 400 !important;
+    }
   }
 }
