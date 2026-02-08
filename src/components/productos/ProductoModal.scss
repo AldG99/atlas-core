@@ -296,4 +296,23 @@
   align-items: center;
   gap: $spacing-sm;
   padding: $spacing-xs 0;
+
+  .etiqueta-chip {
+    width: auto;
+    height: auto;
+    padding: 4px 10px;
+    border-radius: $border-radius-full;
+    gap: 6px;
+  }
+}
+
+.etiqueta-nombre-input {
+  padding: $spacing-xs $spacing-sm;
+  font-size: $font-size-sm;
+}
+
+.etiquetas-limite {
+  font-size: $font-size-xs;
+  color: $color-gray-500;
+  font-style: italic;
 }

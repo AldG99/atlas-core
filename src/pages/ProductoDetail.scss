@@ -75,6 +75,10 @@ $topbar-height: 52px;
       color: #dc2626;
     }
 
+    &--success {
+      color: #16a34a;
+    }
+
     &--back {
       position: absolute;
       left: 60px;
@@ -103,11 +107,38 @@ $topbar-height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    &--editable {
+      cursor: pointer;
+
+      &:hover .producto-detail__image-overlay {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__image-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
+    color: $color-white;
+    opacity: 0;
+    transition: opacity 0.2s;
+
+    span {
+      font-size: $font-size-sm;
     }
   }
 
@@ -283,5 +314,93 @@ $topbar-height: 52px;
     margin: 0;
     white-space: pre-wrap;
     padding-top: 8px;
+  }
+
+  // Edit Mode Styles
+  &__input {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-sm;
+    border: 1px solid $color-gray-300;
+    border-radius: 6px;
+    background-color: $color-white;
+    color: $color-gray-800;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    }
+
+    &--clave {
+      font-family: monospace;
+      width: 120px;
+      font-weight: 600;
+    }
+
+    &--name {
+      font-size: $font-size-lg;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    &--price {
+      font-size: $font-size-xl;
+      font-weight: 700;
+      color: $color-success;
+      width: 150px;
+      text-align: right;
+    }
+  }
+
+  &__textarea {
+    width: 100%;
+    padding: $spacing-sm;
+    font-size: $font-size-sm;
+    border: 1px solid $color-gray-300;
+    border-radius: 6px;
+    background-color: $color-white;
+    color: $color-gray-800;
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    }
+  }
+
+  &__etiqueta {
+    &--selectable {
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    &--unselected {
+      background-color: $color-gray-200 !important;
+      color: $color-gray-600;
+    }
+
+    &--disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+
+  &__etiquetas-limite {
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+    font-style: italic;
+    font-weight: 400;
   }
 }
