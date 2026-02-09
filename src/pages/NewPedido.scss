@@ -28,6 +28,8 @@
   }
 
   &__form {
-    @include card;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
   }
 }

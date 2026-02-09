@@ -150,6 +150,7 @@ const PedidoForm = ({
         onUpdateCantidad={handleUpdateCantidad}
         onRemoveItem={handleRemoveItem}
         total={total}
+        disabled={!selectedCliente}
       />
       {errors.productos && (
         <span className="error-message">{errors.productos}</span>

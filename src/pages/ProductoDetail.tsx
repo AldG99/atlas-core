@@ -7,8 +7,6 @@ import {
   PiPackageBold,
   PiCalendarBold,
   PiTextAlignLeftBold,
-  PiCheckBold,
-  PiXBold,
   PiCameraBold
 } from 'react-icons/pi';
 import type { Producto, ProductoFormData } from '../types/Producto';
@@ -176,24 +174,22 @@ const ProductoDetail = () => {
               <PiArrowLeftBold size={20} />
             </button>
             {isEditing ? (
-              <>
-                <button
-                  onClick={handleSave}
-                  className="producto-detail__icon-btn producto-detail__icon-btn--success"
-                  title="Guardar cambios"
-                  disabled={saving}
-                >
-                  <PiCheckBold size={20} />
-                </button>
+              <div className="producto-detail__top-bar-actions">
                 <button
                   onClick={cancelEditing}
-                  className="producto-detail__icon-btn producto-detail__icon-btn--danger"
-                  title="Cancelar"
+                  className="btn btn--outline btn--sm"
                   disabled={saving}
                 >
-                  <PiXBold size={20} />
+                  Cancelar
                 </button>
-              </>
+                <button
+                  onClick={handleSave}
+                  className="btn btn--primary btn--sm"
+                  disabled={saving}
+                >
+                  {saving ? 'Guardando...' : 'Guardar'}
+                </button>
+              </div>
             ) : (
               <>
                 <span className="producto-detail__top-divider" />

@@ -176,24 +176,22 @@ const ClienteDetail = () => {
               <PiArrowLeftBold size={20} />
             </button>
             {isEditing ? (
-              <>
-                <button
-                  onClick={handleSave}
-                  className="cliente-detail__icon-btn cliente-detail__icon-btn--success"
-                  title="Guardar cambios"
-                  disabled={saving}
-                >
-                  <PiCheckBold size={20} />
-                </button>
+              <div className="cliente-detail__top-bar-actions">
                 <button
                   onClick={cancelEditing}
-                  className="cliente-detail__icon-btn cliente-detail__icon-btn--danger"
-                  title="Cancelar"
+                  className="btn btn--outline btn--sm"
                   disabled={saving}
                 >
-                  <PiXBold size={20} />
+                  Cancelar
                 </button>
-              </>
+                <button
+                  onClick={handleSave}
+                  className="btn btn--primary btn--sm"
+                  disabled={saving}
+                >
+                  {saving ? 'Guardando...' : 'Guardar'}
+                </button>
+              </div>
             ) : (
               <>
                 <button

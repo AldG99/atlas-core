@@ -5,6 +5,7 @@ $topbar-height: 52px;
 
 .cliente-detail {
   max-width: 900px;
+  width: 100%;
   margin: 0 auto;
   padding-top: $topbar-height;
 
@@ -43,6 +44,13 @@ $topbar-height: 52px;
     align-items: center;
     gap: $spacing-md;
     padding-left: 0;
+  }
+
+  &__top-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-left: auto;
   }
 
   &__top-divider {
@@ -98,6 +106,8 @@ $topbar-height: 52px;
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
+    max-width: 100%;
+    min-width: 0;
   }
 
   &__header {
@@ -107,12 +117,15 @@ $topbar-height: 52px;
     background-color: $color-white;
     padding: $spacing-lg;
     box-shadow: $shadow-sm;
+    overflow: hidden;
   }
 
   &__client {
     display: flex;
     align-items: center;
     gap: $spacing-md;
+    min-width: 0;
+    width: 100%;
   }
 
   &__avatar {
@@ -164,6 +177,8 @@ $topbar-height: 52px;
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
+    flex: 1;
   }
 
   &__name {
@@ -182,6 +197,7 @@ $topbar-height: 52px;
     background-color: $color-white;
     box-shadow: $shadow-sm;
     padding: $spacing-lg;
+    overflow: hidden;
   }
 
   &__section-header {
@@ -198,11 +214,11 @@ $topbar-height: 52px;
 
   &__info-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: $spacing-md;
 
     @media (max-width: 600px) {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
@@ -210,6 +226,7 @@ $topbar-height: 52px;
     display: flex;
     align-items: flex-start;
     gap: $spacing-sm;
+    min-width: 0;
 
     &--full {
       grid-column: 1 / -1;
@@ -233,6 +250,7 @@ $topbar-height: 52px;
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+    flex: 1;
   }
 
   &__info-label {
@@ -304,11 +322,14 @@ $topbar-height: 52px;
       display: flex;
       flex-direction: column;
       gap: $spacing-sm;
+      width: 100%;
+      min-width: 0;
     }
 
     &-row {
       display: flex;
       gap: $spacing-sm;
+      min-width: 0;
 
       @media (max-width: 600px) {
         flex-direction: column;
@@ -319,6 +340,8 @@ $topbar-height: 52px;
   &__name-edit {
     display: flex;
     gap: $spacing-sm;
+    width: 100%;
+    min-width: 0;
 
     @media (max-width: 600px) {
       flex-direction: column;
@@ -334,6 +357,8 @@ $topbar-height: 52px;
     color: $color-gray-800;
     transition: border-color 0.2s, box-shadow 0.2s;
     width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
 
     &:focus {
       outline: none;
@@ -343,7 +368,8 @@ $topbar-height: 52px;
 
     &--small {
       width: 100px;
-      flex-shrink: 0;
+      min-width: 0;
+      flex-shrink: 1;
 
       @media (max-width: 600px) {
         width: 100%;
@@ -352,6 +378,7 @@ $topbar-height: 52px;
 
     &--flex {
       flex: 1;
+      min-width: 0;
     }
   }
 
@@ -366,6 +393,7 @@ $topbar-height: 52px;
     resize: vertical;
     font-family: inherit;
     transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
 
     &:focus {
       outline: none;

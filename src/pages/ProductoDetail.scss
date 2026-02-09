@@ -45,6 +45,13 @@ $topbar-height: 52px;
     padding-left: 0;
   }
 
+  &__top-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-left: auto;
+  }
+
   &__top-divider {
     width: 1px;
     height: 20px;

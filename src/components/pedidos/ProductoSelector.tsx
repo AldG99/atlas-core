@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { PiEyeBold, PiXBold, PiPackageBold } from 'react-icons/pi';
 import { useProductos } from '../../hooks/useProductos';
 import { useEtiquetas } from '../../hooks/useEtiquetas';
 import { useToast } from '../../hooks/useToast';
@@ -18,6 +19,7 @@ interface ProductoSelectorProps {
   onUpdateCantidad: (productoId: string, cantidad: number) => void;
   onRemoveItem: (productoId: string) => void;
   total: number;
+  disabled?: boolean;
 }
 
 const ProductoSelector = ({
@@ -25,7 +27,8 @@ const ProductoSelector = ({
   onAddItem,
   onUpdateCantidad,
   onRemoveItem,
-  total
+  total,
+  disabled = false
 }: ProductoSelectorProps) => {
   const { productos, loading, addProducto } = useProductos();
   const { etiquetas: todasEtiquetas } = useEtiquetas();
@@ -33,6 +36,7 @@ const ProductoSelector = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
   const [nombre, setNombre] = useState('');
   const [clave, setClave] = useState('');
   const [precio, setPrecio] = useState('');
@@ -89,8 +93,11 @@ const ProductoSelector = ({
   }, []);
 
   return (
-    <div className="producto-selector">
-      <label className="producto-selector__label">Productos</label>
+    <div className={`producto-selector${disabled ? ' producto-selector--disabled' : ''}`}>
+      <label className="producto-selector__label">
+        Productos
+        {disabled && <span className="producto-selector__label-hint">Selecciona un cliente primero</span>}
+      </label>
 
       <div className="producto-selector__search-row" ref={wrapperRef}>
         <div className="producto-selector__search-wrapper">
@@ -101,6 +108,7 @@ const ProductoSelector = ({
             onChange={(e) => handleSearch(e.target.value)}
             onFocus={() => searchTerm && setShowDropdown(true)}
             className="input producto-selector__search"
+            disabled={disabled}
           />
           {loading && <span className="producto-selector__spinner" />}
 
@@ -155,6 +163,7 @@ const ProductoSelector = ({
           className="btn btn--primary producto-selector__add-btn"
           onClick={() => setShowForm(!showForm)}
           title="Agregar nuevo producto"
+          disabled={disabled}
         >
           +
         </button>
@@ -214,18 +223,40 @@ const ProductoSelector = ({
                 <th>Precio</th>
                 <th>Cantidad</th>
                 <th>Subtotal</th>
-                <th></th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {items.map((item) => (
                 <tr key={item.producto.id}>
                   <td className="producto-selector__table-name">
-                    {item.producto.nombre}
                     {item.producto.clave && (
                       <span className="producto-selector__table-clave">
                         {item.producto.clave}
                       </span>
+                    )}
+                    <span className="producto-selector__table-name-text">
+                      {item.producto.nombre}
+                    </span>
+                    {item.producto.etiquetas && item.producto.etiquetas.length > 0 && (
+                      <div className="producto-selector__table-etiquetas">
+                        {item.producto.etiquetas.map(etId => {
+                          const et = todasEtiquetas.find(e => e.id === etId);
+                          if (!et) return null;
+                          const iconData = ETIQUETA_ICONS[et.icono];
+                          const Icon = iconData?.icon;
+                          return (
+                            <span
+                              key={et.id}
+                              className="producto-selector__table-etiqueta"
+                              style={{ backgroundColor: et.color }}
+                              title={et.nombre}
+                            >
+                              {Icon && <Icon size={10} />}
+                            </span>
+                          );
+                        })}
+                      </div>
                     )}
                   </td>
                   <td>${item.producto.precio.toFixed(2)}</td>
@@ -258,14 +289,24 @@ const ProductoSelector = ({
                     ${item.subtotal.toFixed(2)}
                   </td>
                   <td>
-                    <button
-                      type="button"
-                      className="producto-selector__remove-btn"
-                      onClick={() => onRemoveItem(item.producto.id)}
-                      title="Eliminar"
-                    >
-                      &times;
-                    </button>
+                    <div className="producto-selector__actions">
+                      <button
+                        type="button"
+                        className="producto-selector__eye-btn"
+                        title="Ver detalles"
+                        onClick={() => setSelectedProducto(item.producto)}
+                      >
+                        <PiEyeBold size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        className="producto-selector__remove-btn"
+                        onClick={() => onRemoveItem(item.producto.id)}
+                        title="Eliminar"
+                      >
+                        &times;
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -284,6 +325,61 @@ const ProductoSelector = ({
       {items.length === 0 && (
         <div className="producto-selector__empty">
           No hay productos agregados. Busca y selecciona productos para agregarlos al pedido.
+        </div>
+      )}
+
+      {selectedProducto && (
+        <div className="producto-selector__modal-overlay" onClick={() => setSelectedProducto(null)}>
+          <div className="producto-selector__modal" onClick={(e) => e.stopPropagation()}>
+            <div className="producto-selector__modal-header">
+              <h3>Detalles del producto</h3>
+              <button className="producto-selector__modal-close" onClick={() => setSelectedProducto(null)}>
+                <PiXBold size={18} />
+              </button>
+            </div>
+            <div className="producto-selector__modal-body">
+              <div className="producto-selector__modal-image">
+                {selectedProducto.imagen ? (
+                  <img src={selectedProducto.imagen} alt={selectedProducto.nombre} />
+                ) : (
+                  <div className="producto-selector__modal-placeholder">
+                    <PiPackageBold size={48} />
+                    <span>Sin imagen</span>
+                  </div>
+                )}
+              </div>
+              <div className="producto-selector__modal-section">
+                <h4>Información</h4>
+                <div className="producto-selector__modal-info">
+                  {selectedProducto.clave && (
+                    <div className="producto-selector__modal-row">
+                      <span className="producto-selector__modal-label">Clave</span>
+                      <span className="producto-selector__modal-value">{selectedProducto.clave}</span>
+                    </div>
+                  )}
+                  <div className="producto-selector__modal-row">
+                    <span className="producto-selector__modal-label">Nombre</span>
+                    <span className="producto-selector__modal-value">{selectedProducto.nombre}</span>
+                  </div>
+                  <div className="producto-selector__modal-row">
+                    <span className="producto-selector__modal-label">Precio</span>
+                    <span className="producto-selector__modal-value">${selectedProducto.precio.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+              {selectedProducto.descripcion && (
+                <div className="producto-selector__modal-section">
+                  <h4>Descripción</h4>
+                  <p>{selectedProducto.descripcion}</p>
+                </div>
+              )}
+            </div>
+            <div className="producto-selector__modal-footer">
+              <button className="btn btn--secondary btn--sm" onClick={() => setSelectedProducto(null)}>
+                Cerrar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
