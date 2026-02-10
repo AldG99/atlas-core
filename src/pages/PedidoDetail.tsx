@@ -6,7 +6,6 @@ import {
   PiCopyBold,
   PiPencilBold,
   PiCheckBold,
-  PiArchiveBold,
   PiPlusBold,
   PiEyeBold,
   PiXBold,
@@ -19,7 +18,7 @@ import type { Producto, Etiqueta } from '../types/Producto';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import { formatPedidoForWhatsApp, openWhatsApp, copyToClipboard } from '../utils/formatters';
-import { getPedidoById, updatePedidoStatus, updatePedido, addAbono, archivePedido, deletePedido } from '../services/pedidoService';
+import { getPedidoById, updatePedidoStatus, updatePedido, addAbono, deletePedido } from '../services/pedidoService';
 import { useClientes } from '../hooks/useClientes';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
@@ -229,17 +228,6 @@ const PedidoDetail = () => {
     }
   };
 
-  const handleArchive = async () => {
-    if (!pedido) return;
-    try {
-      await archivePedido(pedido.id);
-      showToast('Pedido archivado', 'success');
-      navigate(ROUTES.DASHBOARD);
-    } catch {
-      showToast('Error al archivar el pedido', 'error');
-    }
-  };
-
   const handleDelete = async () => {
     if (!pedido) return;
     if (!window.confirm('¿Estás seguro de eliminar este pedido? Esta acción no se puede deshacer.')) return;
@@ -327,6 +315,7 @@ const PedidoDetail = () => {
 
   const totalActual = isEditing ? editTotal : pedido.total;
   const restante = totalActual - pagado;
+  const liquidado = pagado >= totalActual;
   const puedeMarcarEntregado = pedido.estado === 'en_preparacion';
 
   return (
@@ -364,16 +353,6 @@ const PedidoDetail = () => {
                 >
                   <PiWhatsappLogoBold size={20} />
                 </button>
-                {!pedido.archivado && (
-                  <button
-                    onClick={handleArchive}
-                    className="pedido-detail__icon-btn"
-                    title="Archivar pedido"
-                  >
-                    <PiArchiveBold size={20} />
-                  </button>
-                )}
-                <span className="pedido-detail__top-divider" />
                 <button
                   onClick={handleCopy}
                   className={`pedido-detail__icon-btn ${copiedId ? 'pedido-detail__icon-btn--success' : ''}`}
@@ -381,6 +360,7 @@ const PedidoDetail = () => {
                 >
                   {copiedId ? <PiCheckBold size={20} /> : <PiCopyBold size={20} />}
                 </button>
+                <span className="pedido-detail__top-divider" />
                 <button
                   onClick={startEditing}
                   className="pedido-detail__icon-btn pedido-detail__icon-btn--primary"
@@ -673,7 +653,7 @@ const PedidoDetail = () => {
                 <select
                   value={abonoProducto}
                   onChange={(e) => setAbonoProducto(e.target.value)}
-                  disabled={isEditing}
+                  disabled={isEditing || liquidado}
                 >
                   <option value="general">General</option>
                   {pedido.productos.map((p, idx) => (
@@ -688,9 +668,9 @@ const PedidoDetail = () => {
                   value={abonoInput}
                   onChange={(e) => { setAbonoInput(e.target.value); setAbonoError(null); }}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleAddAbono(); }}
-                  disabled={isEditing}
+                  disabled={isEditing || liquidado}
                 />
-                <button className="btn btn--primary btn--sm" onClick={handleAddAbono} disabled={isEditing}>
+                <button className="btn btn--primary btn--sm" onClick={handleAddAbono} disabled={isEditing || liquidado}>
                   <PiPlusBold size={14} />
                   Abonar
                 </button>

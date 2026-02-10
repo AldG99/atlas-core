@@ -15,7 +15,7 @@ import ClienteDetail from './pages/ClienteDetail';
 import Productos from './pages/Productos';
 import ProductoDetail from './pages/ProductoDetail';
 import Reportes from './pages/Reportes';
-import Archivo from './pages/Archivo';
+import ClientePedidos from './pages/ClientePedidos';
 import Configuracion from './pages/Configuracion';
 import Soporte from './pages/Soporte';
 import './styles/main.scss';
@@ -102,10 +102,10 @@ function App() {
             }
           />
           <Route
-            path={ROUTES.ARCHIVO}
+            path={ROUTES.CLIENTE_PEDIDOS}
             element={
               <ProtectedRoute>
-                <Archivo />
+                <ClientePedidos />
               </ProtectedRoute>
             }
           />

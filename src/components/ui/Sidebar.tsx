@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { PiListBold, PiXBold, PiClipboardTextBold, PiUsersBold, PiPackageBold, PiChartBarBold, PiArchiveBold, PiGearBold, PiLifebuoyBold } from 'react-icons/pi';
+import { PiListBold, PiXBold, PiClipboardTextBold, PiUsersBold, PiPackageBold, PiChartBarBold, PiGearBold, PiLifebuoyBold } from 'react-icons/pi';
 import { ROUTES } from '../../config/routes';
 import './Sidebar.scss';
 
@@ -69,14 +69,6 @@ const Sidebar = () => {
             <span className="sidebar__link-text">Reportes</span>
           </NavLink>
 
-          <NavLink
-            to={ROUTES.ARCHIVO}
-            className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-            onClick={closeMobile}
-          >
-            <span className="sidebar__link-icon"><PiArchiveBold size={20} /></span>
-            <span className="sidebar__link-text">Archivo</span>
-          </NavLink>
         </nav>
 
         <div className="sidebar__footer">

@@ -9,10 +9,8 @@ import {
   PiPhoneBold,
   PiEnvelopeBold,
   PiEyeBold,
-  PiNoteBold,
-  PiCheckBold,
-  PiXBold,
-  PiCameraBold
+  PiCameraBold,
+  PiArchiveBold
 } from 'react-icons/pi';
 import type { Cliente, ClienteFormData } from '../types/Cliente';
 import { getClienteById, deleteCliente, updateCliente } from '../services/clienteService';
@@ -200,6 +198,13 @@ const ClienteDetail = () => {
                   title="Enviar WhatsApp"
                 >
                   <PiWhatsappLogoBold size={20} />
+                </button>
+                <button
+                  onClick={() => navigate(`/cliente/${id}/pedidos`)}
+                  className="cliente-detail__icon-btn"
+                  title="Historial de pedidos"
+                >
+                  <PiArchiveBold size={20} />
                 </button>
                 <span className="cliente-detail__top-divider" />
                 <button
@@ -469,6 +474,7 @@ const ClienteDetail = () => {
               )}
             </div>
           )}
+
         </div>
       </div>
 

@@ -12,16 +12,36 @@ interface PedidoFormProps {
   loading?: boolean;
   initialData?: PedidoFormData;
   submitText?: string;
+  defaultCliente?: Cliente;
+  defaultProductos?: ProductoItem[];
 }
 
 const PedidoForm = ({
   onSubmit,
   loading = false,
   initialData,
-  submitText = 'Crear pedido'
+  submitText = 'Crear pedido',
+  defaultCliente,
+  defaultProductos
 }: PedidoFormProps) => {
-  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
-  const [items, setItems] = useState<ItemPedido[]>([]);
+  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(defaultCliente || null);
+  const [items, setItems] = useState<ItemPedido[]>(() => {
+    if (defaultProductos && defaultProductos.length > 0) {
+      return defaultProductos.map((p, i) => ({
+        producto: {
+          id: `repeat-${i}`,
+          clave: p.clave || '',
+          nombre: p.nombre,
+          precio: p.precioUnitario,
+          userId: '',
+          fechaCreacion: new Date()
+        } as Producto,
+        cantidad: p.cantidad,
+        subtotal: p.subtotal
+      }));
+    }
+    return [];
+  });
   const [total, setTotal] = useState(0);
   const [notas, setNotas] = useState('');
   const [errors, setErrors] = useState<{ cliente?: string; productos?: string }>({});
