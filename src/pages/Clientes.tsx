@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { PiCloudArrowUpBold } from 'react-icons/pi';
+import { PiCloudArrowUpBold, PiStarFill, PiStarBold } from 'react-icons/pi';
 import { useClientes } from '../hooks/useClientes';
 import { useToast } from '../hooks/useToast';
 import type { ClienteFormData } from '../types/Cliente';
@@ -10,6 +10,7 @@ import './Clientes.scss';
 
 const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [soloFavoritos, setSoloFavoritos] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState<{ id: string; data: ClienteFormData } | null>(null);
 
@@ -20,17 +21,30 @@ const Clientes = () => {
   console.log('Clientes page - loading:', loading, 'error:', error, 'clientes:', clientes.length);
 
   const filteredClientes = useMemo(() => {
-    if (!searchTerm.trim()) return clientes;
+    let resultado = clientes;
 
-    const term = searchTerm.toLowerCase();
-    return clientes.filter(
-      (cliente) =>
-        cliente.nombre.toLowerCase().includes(term) ||
-        cliente.apellido.toLowerCase().includes(term) ||
-        `${cliente.nombre} ${cliente.apellido}`.toLowerCase().includes(term) ||
-        cliente.telefono.toLowerCase().includes(term)
-    );
-  }, [clientes, searchTerm]);
+    if (soloFavoritos) {
+      resultado = resultado.filter((c) => c.favorito);
+    }
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      resultado = resultado.filter(
+        (cliente) =>
+          cliente.nombre.toLowerCase().includes(term) ||
+          cliente.apellido.toLowerCase().includes(term) ||
+          `${cliente.nombre} ${cliente.apellido}`.toLowerCase().includes(term) ||
+          cliente.telefono.toLowerCase().includes(term)
+      );
+    }
+
+    // Favoritos primero
+    return resultado.sort((a, b) => {
+      if (a.favorito && !b.favorito) return -1;
+      if (!a.favorito && b.favorito) return 1;
+      return a.nombre.localeCompare(b.nombre);
+    });
+  }, [clientes, searchTerm, soloFavoritos]);
 
   const handleAdd = async (data: ClienteFormData) => {
     try {
@@ -100,6 +114,14 @@ const Clientes = () => {
               className="input"
             />
           </div>
+          <button
+            onClick={() => setSoloFavoritos(!soloFavoritos)}
+            className={`btn btn--outline clientes__fav-filter ${soloFavoritos ? 'clientes__fav-filter--active' : ''}`}
+            title={soloFavoritos ? 'Mostrar todos' : 'Solo favoritos'}
+          >
+            {soloFavoritos ? <PiStarFill size={16} /> : <PiStarBold size={16} />}
+            <span>Favoritos</span>
+          </button>
           <div className="clientes__count">
             {filteredClientes.length} {filteredClientes.length === 1 ? 'cliente' : 'clientes'}
           </div>

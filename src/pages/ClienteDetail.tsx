@@ -10,10 +10,12 @@ import {
   PiEnvelopeBold,
   PiEyeBold,
   PiCameraBold,
-  PiArchiveBold
+  PiArchiveBold,
+  PiStarFill,
+  PiStarBold
 } from 'react-icons/pi';
 import type { Cliente, ClienteFormData } from '../types/Cliente';
-import { getClienteById, deleteCliente, updateCliente } from '../services/clienteService';
+import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito } from '../services/clienteService';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
@@ -96,6 +98,17 @@ const ClienteDetail = () => {
       navigate(ROUTES.CLIENTES);
     } catch {
       showToast('Error al eliminar el cliente', 'error');
+    }
+  };
+
+  const handleToggleFavorito = async () => {
+    if (!cliente) return;
+    const nuevoValor = !cliente.favorito;
+    try {
+      await toggleClienteFavorito(cliente.id, nuevoValor);
+      setCliente({ ...cliente, favorito: nuevoValor });
+    } catch {
+      showToast('Error al actualizar favorito', 'error');
     }
   };
 
@@ -192,6 +205,13 @@ const ClienteDetail = () => {
               </div>
             ) : (
               <>
+                <button
+                  onClick={handleToggleFavorito}
+                  className={`cliente-detail__icon-btn ${cliente.favorito ? 'cliente-detail__icon-btn--fav-active' : ''}`}
+                  title={cliente.favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                >
+                  {cliente.favorito ? <PiStarFill size={20} /> : <PiStarBold size={20} />}
+                </button>
                 <button
                   onClick={handleWhatsApp}
                   className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp"

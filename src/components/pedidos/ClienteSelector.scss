@@ -131,6 +131,14 @@
   &__dropdown-name {
     font-weight: 500;
     color: $color-gray-800;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__dropdown-fav {
+    color: #f59e0b;
+    flex-shrink: 0;
   }
 
   &__dropdown-phone {

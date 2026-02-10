@@ -5,7 +5,8 @@ import {
   getClientes,
   createCliente,
   updateCliente,
-  deleteCliente
+  deleteCliente,
+  toggleClienteFavorito
 } from '../services/clienteService';
 
 export const useClientes = () => {
@@ -78,6 +79,16 @@ export const useClientes = () => {
     setClientes((prev) => prev.filter((c) => c.id !== id));
   };
 
+  const toggleFavorito = async (id: string) => {
+    const cliente = clientes.find((c) => c.id === id);
+    if (!cliente) return;
+    const nuevoValor = !cliente.favorito;
+    await toggleClienteFavorito(id, nuevoValor);
+    setClientes((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, favorito: nuevoValor } : c))
+    );
+  };
+
   return {
     clientes,
     loading,
@@ -85,6 +96,7 @@ export const useClientes = () => {
     addCliente,
     editCliente,
     removeCliente,
+    toggleFavorito,
     fetchClientes
   };
 };

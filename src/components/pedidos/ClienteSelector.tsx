@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { PiStarFill } from 'react-icons/pi';
 import { useClientes } from '../../hooks/useClientes';
 import { useToast } from '../../hooks/useToast';
 import type { Cliente } from '../../types/Cliente';
@@ -19,12 +20,18 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
   const [telefono, setTelefono] = useState('');
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const filteredClientes = clientes.filter(
-    (c) =>
-      c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.telefono.includes(searchTerm)
-  );
+  const filteredClientes = clientes
+    .filter(
+      (c) =>
+        c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.telefono.includes(searchTerm)
+    )
+    .sort((a, b) => {
+      if (a.favorito && !b.favorito) return -1;
+      if (!a.favorito && b.favorito) return 1;
+      return 0;
+    });
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -178,6 +185,7 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
                 <div className="cliente-selector__dropdown-info">
                   <span className="cliente-selector__dropdown-name">
                     {cliente.nombre} {cliente.apellido}
+                    {cliente.favorito && <PiStarFill size={12} className="cliente-selector__dropdown-fav" />}
                   </span>
                   <span className="cliente-selector__dropdown-phone">
                     {cliente.telefono}

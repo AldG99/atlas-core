@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { PiTrashBold, PiWhatsappLogoBold } from 'react-icons/pi';
+import { PiTrashBold, PiWhatsappLogoBold, PiStarFill } from 'react-icons/pi';
 import type { Cliente } from '../../types/Cliente';
 import './ClientesTable.scss';
 
@@ -29,6 +29,7 @@ const ClientesTable = ({ clientes, onDelete }: ClientesTableProps) => {
         <thead>
           <tr>
             <th>Cliente</th>
+            <th className="clientes-table__th-fav"></th>
             <th>Dirección</th>
             <th>C.P.</th>
             <th>Registro</th>
@@ -54,6 +55,9 @@ const ClientesTable = ({ clientes, onDelete }: ClientesTableProps) => {
                     <span className="clientes-table__phone-sub">{cliente.telefono}</span>
                   </div>
                 </div>
+              </td>
+              <td className="clientes-table__td-fav">
+                {cliente.favorito && <PiStarFill size={16} className="clientes-table__fav-icon" />}
               </td>
               <td>
                 <div className="clientes-table__address" title={`${cliente.calle} ${cliente.numeroExterior}, ${cliente.colonia}, ${cliente.ciudad}, CP ${cliente.codigoPostal}`}>
