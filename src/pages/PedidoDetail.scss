@@ -62,6 +62,81 @@ $bottombar-height: 64px;
     margin: 0 $spacing-xs;
   }
 
+  &__top-bar-abono {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    background-color: $color-gray-100;
+    border-radius: 8px;
+    padding: 2px;
+    margin-left: auto;
+
+    select,
+    input {
+      height: 32px;
+      padding: 0 $spacing-sm;
+      border: none;
+      font-size: $font-size-sm;
+      font-weight: 500;
+      outline: none;
+      background-color: transparent;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+
+      &:focus {
+        background-color: $color-white;
+        border-radius: 6px;
+      }
+    }
+
+    select {
+      cursor: pointer;
+      min-width: 100px;
+      color: $color-gray-700;
+      border-radius: 6px 0 0 6px;
+
+      &:hover {
+        background-color: rgba($color-white, 0.5);
+      }
+    }
+
+    input {
+      min-width: 140px;
+      width: 140px;
+      color: $color-gray-800;
+      text-align: right;
+
+      &::placeholder {
+        color: $color-gray-400;
+      }
+    }
+
+    .btn {
+      height: 32px;
+      border-radius: 6px;
+      font-weight: 600;
+      padding: 0 $spacing-sm;
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      white-space: nowrap;
+    }
+  }
+
+  &__top-bar-abono-error {
+    position: absolute;
+    top: 100%;
+    right: $spacing-md;
+    font-size: $font-size-xs;
+    color: #dc2626;
+    font-weight: 500;
+    padding: $spacing-xs $spacing-sm;
+    background-color: rgba(#dc2626, 0.1);
+    border-radius: 6px;
+    margin-top: $spacing-xs;
+    white-space: nowrap;
+  }
+
   &__icon-btn {
     display: flex;
     align-items: center;
@@ -148,7 +223,7 @@ $bottombar-height: 64px;
     padding: 0 $spacing-md;
     background-color: $color-gray-50;
     border-radius: 10px;
-    min-width: 240px;
+    min-width: 220px;
   }
 
   &__bottom-bar-label {
@@ -167,63 +242,6 @@ $bottombar-height: 64px;
     }
   }
 
-  &__bottom-bar-form {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-    background-color: $color-gray-100;
-    border-radius: 10px;
-    padding: 2px;
-
-    select,
-    input {
-      height: calc(#{$control-height} - 4px);
-      padding: 0 $spacing-sm;
-      border: none;
-      font-size: $font-size-sm;
-      font-weight: 500;
-      outline: none;
-      background-color: transparent;
-      box-sizing: border-box;
-      transition: all 0.2s ease;
-
-      &:focus {
-        background-color: $color-white;
-        border-radius: 8px;
-      }
-    }
-
-    select {
-      cursor: pointer;
-      min-width: 110px;
-      color: $color-gray-700;
-      border-radius: 8px 0 0 8px;
-
-      &:hover {
-        background-color: rgba($color-white, 0.5);
-      }
-    }
-
-    input {
-      min-width: 120px;
-      color: $color-gray-800;
-      text-align: right;
-
-      &::placeholder {
-        color: $color-gray-400;
-      }
-    }
-
-    .btn {
-      height: calc(#{$control-height} - 4px);
-      border-radius: 8px;
-      font-weight: 600;
-      padding: 0 $spacing-md;
-      display: flex;
-      align-items: center;
-      gap: $spacing-xs;
-    }
-  }
 
   &__header {
     display: flex;
@@ -676,22 +694,6 @@ $bottombar-height: 64px;
     }
   }
 
-  &__abono-error {
-    position: absolute;
-    bottom: 100%;
-    left: 60px;
-    font-size: $font-size-xs;
-    color: #dc2626;
-    font-weight: 500;
-    padding: $spacing-xs $spacing-sm;
-    background-color: rgba(#dc2626, 0.1);
-    border-radius: 6px;
-    margin-bottom: $spacing-xs;
-
-    @include md {
-      left: $spacing-lg;
-    }
-  }
 
   &__btn-entregado {
     display: inline-flex;
@@ -708,12 +710,6 @@ $bottombar-height: 64px;
     color: $color-gray-400;
     cursor: not-allowed;
     transition: all 0.2s ease;
-    position: absolute;
-    right: $spacing-md;
-
-    @include md {
-      right: $spacing-lg;
-    }
 
     &--active {
       background-color: #16a34a;

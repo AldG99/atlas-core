@@ -375,6 +375,38 @@ const PedidoDetail = () => {
                 >
                   <PiTrashBold size={20} />
                 </button>
+                {!pedido.archivado && (
+                  <>
+                    <span className="pedido-detail__top-divider" />
+                    <div className="pedido-detail__top-bar-abono">
+                      <select
+                        value={abonoProducto}
+                        onChange={(e) => setAbonoProducto(e.target.value)}
+                        disabled={liquidado}
+                      >
+                        <option value="general">General</option>
+                        {pedido.productos.map((p, idx) => (
+                          <option key={idx} value={idx}>{p.clave ? `[${p.clave}] ` : ''}{p.nombre}</option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="$0.00"
+                        value={abonoInput}
+                        onChange={(e) => { setAbonoInput(e.target.value); setAbonoError(null); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleAddAbono(); }}
+                        disabled={liquidado}
+                      />
+                      <button className="btn btn--primary btn--sm" onClick={handleAddAbono} disabled={liquidado}>
+                        <PiPlusBold size={14} />
+                        Abonar
+                      </button>
+                    </div>
+                    {abonoError && <span className="pedido-detail__top-bar-abono-error">{abonoError}</span>}
+                  </>
+                )}
               </>
             )}
           </div>
@@ -649,44 +681,17 @@ const PedidoDetail = () => {
                   {restante <= 0 ? 'Liquidado' : formatCurrency(restante)}
                 </span>
               </div>
-              <div className="pedido-detail__bottom-bar-form">
-                <select
-                  value={abonoProducto}
-                  onChange={(e) => setAbonoProducto(e.target.value)}
-                  disabled={isEditing || liquidado}
+              {pedido.estado !== 'entregado' && (
+                <button
+                  onClick={() => handleChangeStatus('entregado')}
+                  className={`pedido-detail__btn-entregado ${puedeMarcarEntregado && !isEditing ? 'pedido-detail__btn-entregado--active' : ''}`}
+                  disabled={!puedeMarcarEntregado || isEditing}
+                  title={!puedeMarcarEntregado ? 'Solo disponible cuando el pedido está en preparación' : ''}
                 >
-                  <option value="general">General</option>
-                  {pedido.productos.map((p, idx) => (
-                    <option key={idx} value={idx}>{p.clave ? `[${p.clave}] ` : ''}{p.nombre}</option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="$0.00"
-                  value={abonoInput}
-                  onChange={(e) => { setAbonoInput(e.target.value); setAbonoError(null); }}
-                  onKeyDown={(e) => { if (e.key === 'Enter') handleAddAbono(); }}
-                  disabled={isEditing || liquidado}
-                />
-                <button className="btn btn--primary btn--sm" onClick={handleAddAbono} disabled={isEditing || liquidado}>
-                  <PiPlusBold size={14} />
-                  Abonar
+                  <PiCheckBold size={16} />
+                  Entregado
                 </button>
-                {pedido.estado !== 'entregado' && (
-                  <button
-                    onClick={() => handleChangeStatus('entregado')}
-                    className={`pedido-detail__btn-entregado ${puedeMarcarEntregado && !isEditing ? 'pedido-detail__btn-entregado--active' : ''}`}
-                    disabled={!puedeMarcarEntregado || isEditing}
-                    title={!puedeMarcarEntregado ? 'Solo disponible cuando el pedido está en preparación' : ''}
-                  >
-                    <PiCheckBold size={16} />
-                    Entregado
-                  </button>
-                )}
-              </div>
-              {abonoError && <span className="pedido-detail__abono-error">{abonoError}</span>}
+              )}
             </div>
           </div>
         )}
