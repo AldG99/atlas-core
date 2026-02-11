@@ -206,13 +206,6 @@ const ClienteDetail = () => {
             ) : (
               <>
                 <button
-                  onClick={handleToggleFavorito}
-                  className={`cliente-detail__icon-btn ${cliente.favorito ? 'cliente-detail__icon-btn--fav-active' : ''}`}
-                  title={cliente.favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-                >
-                  {cliente.favorito ? <PiStarFill size={20} /> : <PiStarBold size={20} />}
-                </button>
-                <button
                   onClick={handleWhatsApp}
                   className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp"
                   title="Enviar WhatsApp"
@@ -227,6 +220,13 @@ const ClienteDetail = () => {
                   <PiArchiveBold size={20} />
                 </button>
                 <span className="cliente-detail__top-divider" />
+                <button
+                  onClick={handleToggleFavorito}
+                  className={`cliente-detail__icon-btn ${cliente.favorito ? 'cliente-detail__icon-btn--fav-active' : ''}`}
+                  title={cliente.favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                >
+                  {cliente.favorito ? <PiStarFill size={20} /> : <PiStarBold size={20} />}
+                </button>
                 <button
                   onClick={startEditing}
                   className="cliente-detail__icon-btn cliente-detail__icon-btn--primary"

@@ -101,6 +101,13 @@
     max-width: 100%;
   }
 
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+  }
+
   &__name {
     font-weight: 600;
     color: $color-gray-800;
@@ -157,15 +164,9 @@
     white-space: nowrap;
   }
 
-  &__th-fav,
-  &__td-fav {
-    width: 28px;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
   &__fav-icon {
     color: #f59e0b;
+    flex-shrink: 0;
   }
 
   &__actions {

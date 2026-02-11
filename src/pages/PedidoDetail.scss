@@ -115,7 +115,7 @@ $bottombar-height: 64px;
       height: 32px;
       border-radius: 6px;
       font-weight: 600;
-      padding: 0 $spacing-sm;
+      padding: 0 $spacing-lg;
       display: flex;
       align-items: center;
       gap: $spacing-xs;
@@ -242,7 +242,6 @@ $bottombar-height: 64px;
     }
   }
 
-
   &__header {
     display: flex;
     justify-content: space-between;
@@ -311,6 +310,7 @@ $bottombar-height: 64px;
     align-items: flex-end;
     gap: $spacing-xs;
   }
+
 
   &__status {
     display: inline-block;
@@ -613,7 +613,9 @@ $bottombar-height: 64px;
     background-color: $color-white;
     color: $color-gray-800;
     box-sizing: border-box;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
 
     &:focus {
       outline: none;
@@ -684,7 +686,9 @@ $bottombar-height: 64px;
     color: $color-gray-800;
     resize: vertical;
     font-family: inherit;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
     box-sizing: border-box;
 
     &:focus {
@@ -693,7 +697,6 @@ $bottombar-height: 64px;
       box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
     }
   }
-
 
   &__btn-entregado {
     display: inline-flex;

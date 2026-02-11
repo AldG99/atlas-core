@@ -1,17 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { PiPencilBold, PiTrashBold } from 'react-icons/pi';
-import type { Producto, ProductoFormData, Etiqueta } from '../../types/Producto';
+import type { Producto, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import './ProductosTable.scss';
 
 interface ProductosTableProps {
   productos: Producto[];
   etiquetas: Etiqueta[];
-  onEdit: (id: string, data: ProductoFormData) => void;
-  onDelete: (id: string) => void;
 }
 
-const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTableProps) => {
+const ProductosTable = ({ productos, etiquetas }: ProductosTableProps) => {
   const navigate = useNavigate();
 
   const formatPrice = (price: number) => {
@@ -38,6 +35,14 @@ const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTab
   return (
     <div className="productos-table-container">
       <table className="productos-table">
+        <colgroup>
+          <col style={{ width: '10%' }} />
+          <col style={{ width: '24%' }} />
+          <col style={{ width: '12%' }} />
+          <col style={{ width: '14%' }} />
+          <col style={{ width: '24%' }} />
+          <col style={{ width: '16%' }} />
+        </colgroup>
         <thead>
           <tr>
             <th>Clave</th>
@@ -46,7 +51,6 @@ const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTab
             <th>Etiquetas</th>
             <th>Descripción</th>
             <th>Fecha de registro</th>
-            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -90,34 +94,6 @@ const ProductosTable = ({ productos, etiquetas, onEdit, onDelete }: ProductosTab
                 </td>
                 <td>
                   <span className="productos-table__date">{formatDate(producto.fechaCreacion)}</span>
-                </td>
-                <td>
-                  <div className="productos-table__actions">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit(producto.id, {
-                          clave: producto.clave,
-                          nombre: producto.nombre,
-                          precio: producto.precio,
-                          descripcion: producto.descripcion,
-                          imagen: producto.imagen,
-                          etiquetas: producto.etiquetas
-                        });
-                      }}
-                      className="btn-icon btn-icon--secondary"
-                      title="Editar producto"
-                    >
-                      <PiPencilBold size={18} />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onDelete(producto.id); }}
-                      className="btn-icon btn-icon--danger"
-                      title="Eliminar producto"
-                    >
-                      <PiTrashBold size={18} />
-                    </button>
-                  </div>
                 </td>
               </tr>
             );

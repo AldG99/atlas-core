@@ -38,12 +38,7 @@ const Clientes = () => {
       );
     }
 
-    // Favoritos primero
-    return resultado.sort((a, b) => {
-      if (a.favorito && !b.favorito) return -1;
-      if (!a.favorito && b.favorito) return 1;
-      return a.nombre.localeCompare(b.nombre);
-    });
+    return resultado.sort((a, b) => a.nombre.localeCompare(b.nombre));
   }, [clientes, searchTerm, soloFavoritos]);
 
   const handleAdd = async (data: ClienteFormData) => {
@@ -152,7 +147,6 @@ const Clientes = () => {
         {!loading && !error && filteredClientes.length > 0 && (
           <ClientesTable
             clientes={filteredClientes}
-            onDelete={handleDelete}
           />
         )}
 

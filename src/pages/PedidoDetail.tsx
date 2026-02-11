@@ -11,14 +11,24 @@ import {
   PiXBold,
   PiPackageBold,
   PiTrashBold,
-  PiMinusBold
+  PiMinusBold,
 } from 'react-icons/pi';
 import type { Pedido, PedidoStatus, ProductoItem } from '../types/Pedido';
 import type { Producto, Etiqueta } from '../types/Producto';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
-import { formatPedidoForWhatsApp, openWhatsApp, copyToClipboard } from '../utils/formatters';
-import { getPedidoById, updatePedidoStatus, updatePedido, addAbono, deletePedido } from '../services/pedidoService';
+import {
+  formatPedidoForWhatsApp,
+  openWhatsApp,
+  copyToClipboard,
+} from '../utils/formatters';
+import {
+  getPedidoById,
+  updatePedidoStatus,
+  updatePedido,
+  addAbono,
+  deletePedido,
+} from '../services/pedidoService';
 import { useClientes } from '../hooks/useClientes';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
@@ -41,7 +51,9 @@ const PedidoDetail = () => {
   const [abonoInput, setAbonoInput] = useState('');
   const [abonoProducto, setAbonoProducto] = useState('general');
   const [abonoError, setAbonoError] = useState<string | null>(null);
-  const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
+  const [selectedProducto, setSelectedProducto] = useState<Producto | null>(
+    null
+  );
 
   // Editing state
   const [isEditing, setIsEditing] = useState(false);
@@ -92,11 +104,14 @@ const PedidoDetail = () => {
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(new Date(date));
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+    new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+    }).format(amount);
 
   const getTotalPagado = (p: Pedido) =>
     (p.abonos || []).reduce((sum, a) => sum + a.monto, 0);
@@ -144,10 +159,15 @@ const PedidoDetail = () => {
       const data = {
         productos: editProductos,
         total: newTotal,
-        notas: editNotas || undefined
+        notas: editNotas || undefined,
       };
       await updatePedido(pedido.id, data);
-      setPedido({ ...pedido, productos: editProductos, total: newTotal, notas: editNotas || undefined });
+      setPedido({
+        ...pedido,
+        productos: editProductos,
+        total: newTotal,
+        notas: editNotas || undefined,
+      });
       setIsEditing(false);
       setProductSearchTerm('');
       setShowProductDropdown(false);
@@ -180,22 +200,26 @@ const PedidoDetail = () => {
     if (existing >= 0) {
       updateProductoCantidad(existing, 1);
     } else {
-      setEditProductos(prev => [...prev, {
-        nombre: producto.nombre,
-        clave: producto.clave,
-        cantidad: 1,
-        precioUnitario: producto.precio,
-        subtotal: producto.precio
-      }]);
+      setEditProductos(prev => [
+        ...prev,
+        {
+          nombre: producto.nombre,
+          clave: producto.clave,
+          cantidad: 1,
+          precioUnitario: producto.precio,
+          subtotal: producto.precio,
+        },
+      ]);
     }
     setProductSearchTerm('');
     setShowProductDropdown(false);
   };
 
   const filteredProducts = productSearchTerm.trim()
-    ? catalogoProductos.filter(p =>
-        p.nombre.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
-        p.clave.toLowerCase().includes(productSearchTerm.toLowerCase())
+    ? catalogoProductos.filter(
+        p =>
+          p.nombre.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
+          p.clave.toLowerCase().includes(productSearchTerm.toLowerCase())
       )
     : [];
 
@@ -230,7 +254,12 @@ const PedidoDetail = () => {
 
   const handleDelete = async () => {
     if (!pedido) return;
-    if (!window.confirm('¿Estás seguro de eliminar este pedido? Esta acción no se puede deshacer.')) return;
+    if (
+      !window.confirm(
+        '¿Estás seguro de eliminar este pedido? Esta acción no se puede deshacer.'
+      )
+    )
+      return;
     try {
       await deletePedido(pedido.id);
       showToast('Pedido eliminado', 'success');
@@ -255,12 +284,15 @@ const PedidoDetail = () => {
     }
 
     if (monto > restante) {
-      setAbonoError(`El monto excede el saldo restante (${formatCurrency(restante)})`);
+      setAbonoError(
+        `El monto excede el saldo restante (${formatCurrency(restante)})`
+      );
       return;
     }
 
     try {
-      const productoIndex = abonoProducto === 'general' ? undefined : parseInt(abonoProducto, 10);
+      const productoIndex =
+        abonoProducto === 'general' ? undefined : parseInt(abonoProducto, 10);
       const nuevoAbono = await addAbono(pedido.id, monto, productoIndex);
       const updatedAbonos = [...(pedido.abonos || []), nuevoAbono];
       const nuevoPagado = updatedAbonos.reduce((sum, a) => sum + a.monto, 0);
@@ -297,8 +329,12 @@ const PedidoDetail = () => {
   const productosActuales = isEditing ? editProductos : pedido.productos;
   const asignadoPorProducto: number[] = productosActuales.map(() => 0);
   const abonosGenerales: number[] = [];
-  abonos.forEach((a) => {
-    if (typeof a.productoIndex === 'number' && a.productoIndex >= 0 && a.productoIndex < productosActuales.length) {
+  abonos.forEach(a => {
+    if (
+      typeof a.productoIndex === 'number' &&
+      a.productoIndex >= 0 &&
+      a.productoIndex < productosActuales.length
+    ) {
       asignadoPorProducto[a.productoIndex] += a.monto;
     } else {
       abonosGenerales.push(a.monto);
@@ -324,7 +360,11 @@ const PedidoDetail = () => {
         {/* Fixed Top Bar */}
         <div className="pedido-detail__top-bar">
           <div className="pedido-detail__top-bar-inner">
-            <button className="pedido-detail__icon-btn pedido-detail__icon-btn--back" onClick={() => navigate(ROUTES.DASHBOARD)} title="Volver">
+            <button
+              className="pedido-detail__icon-btn pedido-detail__icon-btn--back"
+              onClick={() => navigate(ROUTES.DASHBOARD)}
+              title="Volver"
+            >
               <PiArrowLeftBold size={20} />
             </button>
             {isEditing ? (
@@ -358,7 +398,11 @@ const PedidoDetail = () => {
                   className={`pedido-detail__icon-btn ${copiedId ? 'pedido-detail__icon-btn--success' : ''}`}
                   title={copiedId ? 'Copiado!' : 'Copiar al portapapeles'}
                 >
-                  {copiedId ? <PiCheckBold size={20} /> : <PiCopyBold size={20} />}
+                  {copiedId ? (
+                    <PiCheckBold size={20} />
+                  ) : (
+                    <PiCopyBold size={20} />
+                  )}
                 </button>
                 <span className="pedido-detail__top-divider" />
                 <button
@@ -381,12 +425,15 @@ const PedidoDetail = () => {
                     <div className="pedido-detail__top-bar-abono">
                       <select
                         value={abonoProducto}
-                        onChange={(e) => setAbonoProducto(e.target.value)}
+                        onChange={e => setAbonoProducto(e.target.value)}
                         disabled={liquidado}
                       >
                         <option value="general">General</option>
                         {pedido.productos.map((p, idx) => (
-                          <option key={idx} value={idx}>{p.clave ? `[${p.clave}] ` : ''}{p.nombre}</option>
+                          <option key={idx} value={idx}>
+                            {p.clave ? `[${p.clave}] ` : ''}
+                            {p.nombre}
+                          </option>
                         ))}
                       </select>
                       <input
@@ -395,16 +442,28 @@ const PedidoDetail = () => {
                         step="0.01"
                         placeholder="$0.00"
                         value={abonoInput}
-                        onChange={(e) => { setAbonoInput(e.target.value); setAbonoError(null); }}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handleAddAbono(); }}
+                        onChange={e => {
+                          setAbonoInput(e.target.value);
+                          setAbonoError(null);
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') handleAddAbono();
+                        }}
                         disabled={liquidado}
                       />
-                      <button className="btn btn--primary btn--sm" onClick={handleAddAbono} disabled={liquidado}>
-                        <PiPlusBold size={14} />
+                      <button
+                        className="btn btn--primary btn--sm"
+                        onClick={handleAddAbono}
+                        disabled={liquidado}
+                      >
                         Abonar
                       </button>
                     </div>
-                    {abonoError && <span className="pedido-detail__top-bar-abono-error">{abonoError}</span>}
+                    {abonoError && (
+                      <span className="pedido-detail__top-bar-abono-error">
+                        {abonoError}
+                      </span>
+                    )}
                   </>
                 )}
               </>
@@ -414,260 +473,333 @@ const PedidoDetail = () => {
 
         {/* Scrollable Content */}
         <div className="pedido-detail__content">
-        <div className="pedido-detail__header">
-          <div className="pedido-detail__client">
-            <div className="pedido-detail__avatar">
-              {getClienteFoto(pedido) ? (
-                <img src={getClienteFoto(pedido)} alt={pedido.clienteNombre} />
-              ) : (
-                <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
-              )}
-            </div>
-            <div className="pedido-detail__client-info">
-              <h1 className="pedido-detail__name">{pedido.clienteNombre}</h1>
-              <span className="pedido-detail__phone">{pedido.clienteTelefono}</span>
-              {pedido.clienteCodigoPostal && (
-                <span className="pedido-detail__cp">C.P. {pedido.clienteCodigoPostal}</span>
-              )}
-            </div>
-          </div>
-          <div className="pedido-detail__header-right">
-            <span
-              className="pedido-detail__status"
-              style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-            >
-              {PEDIDO_STATUS[pedido.estado]}
-            </span>
-            <span className="pedido-detail__date">{formatDate(pedido.fechaCreacion)}</span>
-          </div>
-        </div>
-
-        <div className="pedido-detail__section">
-          <div className="pedido-detail__section-header">
-            <strong>Productos y pagos</strong>
-            <span className="pedido-detail__payment-info">
-              {formatCurrency(pagado)} de {formatCurrency(totalActual)}
-            </span>
-          </div>
-
-          {isEditing && (
-            <div className="pedido-detail__product-search" ref={searchRef}>
-              <input
-                type="text"
-                placeholder="Buscar producto para agregar..."
-                value={productSearchTerm}
-                onChange={(e) => {
-                  setProductSearchTerm(e.target.value);
-                  setShowProductDropdown(e.target.value.trim().length > 0);
-                }}
-                onFocus={() => {
-                  if (productSearchTerm.trim()) setShowProductDropdown(true);
-                }}
-                className="pedido-detail__product-search-input"
-              />
-              {showProductDropdown && filteredProducts.length > 0 && (
-                <div className="pedido-detail__product-dropdown">
-                  {filteredProducts.map(p => (
-                    <button
-                      key={p.id}
-                      className="pedido-detail__product-dropdown-item"
-                      onClick={() => addProductoToEdit(p)}
-                    >
-                      <span className="pedido-detail__clave">{p.clave}</span>
-                      <span>{p.nombre}</span>
-                      <span className="pedido-detail__product-dropdown-price">{formatCurrency(p.precio)}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-              {showProductDropdown && productSearchTerm.trim() && filteredProducts.length === 0 && (
-                <div className="pedido-detail__product-dropdown">
-                  <div className="pedido-detail__product-dropdown-empty">Sin resultados</div>
-                </div>
-              )}
-            </div>
-          )}
-
-          <table className="pedido-detail__products-table">
-            <thead>
-              <tr>
-                <th>Clave</th>
-                <th>Cant.</th>
-                <th>Producto</th>
-                <th>Etiquetas</th>
-                {!isEditing && <th>Abonado</th>}
-                <th>Subtotal</th>
-                {!isEditing && <th>Estado</th>}
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {productosActuales.map((p, index) => {
-                const cubierto = Math.min(cobertura[index] || 0, p.subtotal);
-                const porcentaje = p.subtotal > 0 ? (cubierto / p.subtotal) * 100 : 0;
-                const status = porcentaje >= 100 ? 'paid' : porcentaje > 0 ? 'partial' : 'pending';
-                return (
-                  <tr key={index} className={`pedido-detail__product-row--${status}`}>
-                    <td>{p.clave ? <span className="pedido-detail__clave">{p.clave}</span> : '-'}</td>
-                    <td>
-                      {isEditing ? (
-                        <div className="pedido-detail__cantidad-edit">
-                          <button onClick={() => updateProductoCantidad(index, -1)} disabled={p.cantidad <= 1}>
-                            <PiMinusBold size={12} />
-                          </button>
-                          <span>{p.cantidad}</span>
-                          <button onClick={() => updateProductoCantidad(index, 1)}>
-                            <PiPlusBold size={12} />
-                          </button>
-                        </div>
-                      ) : (
-                        p.cantidad
-                      )}
-                    </td>
-                    <td>{p.nombre}</td>
-                    <td>
-                      <div className="pedido-detail__etiquetas">
-                        {getEtiquetasForClave(p.clave).map(et => {
-                          const iconData = ETIQUETA_ICONS[et.icono];
-                          const Icon = iconData?.icon;
-                          return (
-                            <span
-                              key={et.id}
-                              className="pedido-detail__etiqueta"
-                              style={{ backgroundColor: et.color }}
-                              title={et.nombre}
-                            >
-                              {Icon && <Icon size={12} />}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </td>
-                    {!isEditing && (
-                      <td>
-                        <div className="pedido-detail__product-paid-cell">
-                          <span>{formatCurrency(cubierto)}</span>
-                          <div className="pedido-detail__product-bar">
-                            <div
-                              className={`pedido-detail__product-bar-fill pedido-detail__product-bar-fill--${status}`}
-                              style={{ width: `${porcentaje}%` }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                    )}
-                    <td>{formatCurrency(p.subtotal)}</td>
-                    {!isEditing && (
-                      <td>
-                        <span className={`pedido-detail__product-status pedido-detail__product-status--${status}`}>
-                          {status === 'paid' ? 'Pagado' : status === 'partial' ? `${Math.round(porcentaje)}%` : 'Pendiente'}
-                        </span>
-                      </td>
-                    )}
-                    <td>
-                      {isEditing ? (
-                        <button
-                          className="pedido-detail__product-remove"
-                          title="Eliminar producto"
-                          onClick={() => removeProducto(index)}
-                        >
-                          <PiTrashBold size={16} />
-                        </button>
-                      ) : (
-                        <button
-                          className="pedido-detail__product-eye"
-                          title="Ver detalles"
-                          onClick={() => {
-                            const found = catalogoProductos.find(cp => cp.clave === p.clave);
-                            if (found) setSelectedProducto(found);
-                          }}
-                        >
-                          <PiEyeBold size={20} />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-              <tr className="pedido-detail__product-total-row">
-                <td><strong>Total</strong></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                {!isEditing && <td><strong>{formatCurrency(pagado)}</strong></td>}
-                <td><strong>{formatCurrency(totalActual)}</strong></td>
-                {!isEditing && (
-                  <td>
-                    <strong className={pagado >= totalActual ? 'pedido-detail__product-status--paid' : pagado > 0 ? 'pedido-detail__product-status--partial' : 'pedido-detail__product-status--pending'}>
-                      {pagado >= totalActual ? 'Liquidado' : formatCurrency(totalActual - pagado)}
-                    </strong>
-                  </td>
+          <div className="pedido-detail__header">
+            <div className="pedido-detail__client">
+              <div className="pedido-detail__avatar">
+                {getClienteFoto(pedido) ? (
+                  <img
+                    src={getClienteFoto(pedido)}
+                    alt={pedido.clienteNombre}
+                  />
+                ) : (
+                  <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
                 )}
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {isEditing ? (
-          <div className="pedido-detail__section">
-            <div className="pedido-detail__section-header">
-              <strong>Notas</strong>
-            </div>
-            <textarea
-              value={editNotas}
-              onChange={(e) => setEditNotas(e.target.value)}
-              placeholder="Notas del pedido..."
-              className="pedido-detail__textarea"
-              rows={3}
-            />
-          </div>
-        ) : (
-          pedido.notas && (
-            <div className="pedido-detail__section">
-              <div className="pedido-detail__notes">
-                <strong>Notas:</strong> {pedido.notas}
+              </div>
+              <div className="pedido-detail__client-info">
+                <h1 className="pedido-detail__name">{pedido.clienteNombre}</h1>
+                <span className="pedido-detail__phone">
+                  {pedido.clienteTelefono}
+                </span>
               </div>
             </div>
-          )
-        )}
+            <div className="pedido-detail__header-right">
+              <span
+                className="pedido-detail__status"
+                style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+              >
+                {PEDIDO_STATUS[pedido.estado]}
+              </span>
+              <span className="pedido-detail__date">
+                {formatDate(pedido.fechaCreacion)}
+              </span>
+            </div>
+          </div>
 
-        {abonos.length > 0 && (
           <div className="pedido-detail__section">
             <div className="pedido-detail__section-header">
-              <strong>Historial de abonos</strong>
+              <strong>Productos y pagos</strong>
+              <span className="pedido-detail__payment-info">
+                {formatCurrency(pagado)} de {formatCurrency(totalActual)}
+              </span>
             </div>
-            <table className="pedido-detail__abonos-table">
+
+            {isEditing && (
+              <div className="pedido-detail__product-search" ref={searchRef}>
+                <input
+                  type="text"
+                  placeholder="Buscar producto para agregar..."
+                  value={productSearchTerm}
+                  onChange={e => {
+                    setProductSearchTerm(e.target.value);
+                    setShowProductDropdown(e.target.value.trim().length > 0);
+                  }}
+                  onFocus={() => {
+                    if (productSearchTerm.trim()) setShowProductDropdown(true);
+                  }}
+                  className="pedido-detail__product-search-input"
+                />
+                {showProductDropdown && filteredProducts.length > 0 && (
+                  <div className="pedido-detail__product-dropdown">
+                    {filteredProducts.map(p => (
+                      <button
+                        key={p.id}
+                        className="pedido-detail__product-dropdown-item"
+                        onClick={() => addProductoToEdit(p)}
+                      >
+                        <span className="pedido-detail__clave">{p.clave}</span>
+                        <span>{p.nombre}</span>
+                        <span className="pedido-detail__product-dropdown-price">
+                          {formatCurrency(p.precio)}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {showProductDropdown &&
+                  productSearchTerm.trim() &&
+                  filteredProducts.length === 0 && (
+                    <div className="pedido-detail__product-dropdown">
+                      <div className="pedido-detail__product-dropdown-empty">
+                        Sin resultados
+                      </div>
+                    </div>
+                  )}
+              </div>
+            )}
+
+            <table className="pedido-detail__products-table">
               <thead>
                 <tr>
                   <th>Clave</th>
+                  <th>Cant.</th>
                   <th>Producto</th>
-                  <th>Monto</th>
-                  <th>Fecha</th>
+                  <th>Etiquetas</th>
+                  {!isEditing && <th>Abonado</th>}
+                  <th>Subtotal</th>
+                  {!isEditing && <th>Estado</th>}
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {[...abonos].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).map((abono, i) => (
-                  <tr key={i}>
+                {productosActuales.map((p, index) => {
+                  const cubierto = Math.min(cobertura[index] || 0, p.subtotal);
+                  const porcentaje =
+                    p.subtotal > 0 ? (cubierto / p.subtotal) * 100 : 0;
+                  const status =
+                    porcentaje >= 100
+                      ? 'paid'
+                      : porcentaje > 0
+                        ? 'partial'
+                        : 'pending';
+                  return (
+                    <tr
+                      key={index}
+                      className={`pedido-detail__product-row--${status}`}
+                    >
+                      <td>
+                        {p.clave ? (
+                          <span className="pedido-detail__clave">
+                            {p.clave}
+                          </span>
+                        ) : (
+                          '-'
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <div className="pedido-detail__cantidad-edit">
+                            <button
+                              onClick={() => updateProductoCantidad(index, -1)}
+                              disabled={p.cantidad <= 1}
+                            >
+                              <PiMinusBold size={12} />
+                            </button>
+                            <span>{p.cantidad}</span>
+                            <button
+                              onClick={() => updateProductoCantidad(index, 1)}
+                            >
+                              <PiPlusBold size={12} />
+                            </button>
+                          </div>
+                        ) : (
+                          p.cantidad
+                        )}
+                      </td>
+                      <td>{p.nombre}</td>
+                      <td>
+                        <div className="pedido-detail__etiquetas">
+                          {getEtiquetasForClave(p.clave).map(et => {
+                            const iconData = ETIQUETA_ICONS[et.icono];
+                            const Icon = iconData?.icon;
+                            return (
+                              <span
+                                key={et.id}
+                                className="pedido-detail__etiqueta"
+                                style={{ backgroundColor: et.color }}
+                                title={et.nombre}
+                              >
+                                {Icon && <Icon size={12} />}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </td>
+                      {!isEditing && (
+                        <td>
+                          <div className="pedido-detail__product-paid-cell">
+                            <span>{formatCurrency(cubierto)}</span>
+                            <div className="pedido-detail__product-bar">
+                              <div
+                                className={`pedido-detail__product-bar-fill pedido-detail__product-bar-fill--${status}`}
+                                style={{ width: `${porcentaje}%` }}
+                              />
+                            </div>
+                          </div>
+                        </td>
+                      )}
+                      <td>{formatCurrency(p.subtotal)}</td>
+                      {!isEditing && (
+                        <td>
+                          <span
+                            className={`pedido-detail__product-status pedido-detail__product-status--${status}`}
+                          >
+                            {status === 'paid'
+                              ? 'Pagado'
+                              : status === 'partial'
+                                ? `${Math.round(porcentaje)}%`
+                                : 'Pendiente'}
+                          </span>
+                        </td>
+                      )}
+                      <td>
+                        {isEditing ? (
+                          <button
+                            className="pedido-detail__product-remove"
+                            title="Eliminar producto"
+                            onClick={() => removeProducto(index)}
+                          >
+                            <PiTrashBold size={16} />
+                          </button>
+                        ) : (
+                          <button
+                            className="pedido-detail__product-eye"
+                            title="Ver detalles"
+                            onClick={() => {
+                              const found = catalogoProductos.find(
+                                cp => cp.clave === p.clave
+                              );
+                              if (found) setSelectedProducto(found);
+                            }}
+                          >
+                            <PiEyeBold size={20} />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+                <tr className="pedido-detail__product-total-row">
+                  <td>
+                    <strong>Total</strong>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  {!isEditing && (
                     <td>
-                      {typeof abono.productoIndex === 'number' && pedido.productos[abono.productoIndex]?.clave ? (
-                        <span className="pedido-detail__clave">{pedido.productos[abono.productoIndex].clave}</span>
-                      ) : '-'}
+                      <strong>{formatCurrency(pagado)}</strong>
                     </td>
+                  )}
+                  <td>
+                    <strong>{formatCurrency(totalActual)}</strong>
+                  </td>
+                  {!isEditing && (
                     <td>
-                      {typeof abono.productoIndex === 'number' && pedido.productos[abono.productoIndex]
-                        ? pedido.productos[abono.productoIndex].nombre
-                        : <span className="pedido-detail__general-label">General</span>}
+                      <strong
+                        className={
+                          pagado >= totalActual
+                            ? 'pedido-detail__product-status--paid'
+                            : pagado > 0
+                              ? 'pedido-detail__product-status--partial'
+                              : 'pedido-detail__product-status--pending'
+                        }
+                      >
+                        {pagado >= totalActual
+                          ? 'Liquidado'
+                          : formatCurrency(totalActual - pagado)}
+                      </strong>
                     </td>
-                    <td>{formatCurrency(abono.monto)}</td>
-                    <td>{formatDate(abono.fecha)}</td>
-                  </tr>
-                ))}
+                  )}
+                  <td></td>
+                </tr>
               </tbody>
             </table>
           </div>
-        )}
 
+          {isEditing ? (
+            <div className="pedido-detail__section">
+              <div className="pedido-detail__section-header">
+                <strong>Notas</strong>
+              </div>
+              <textarea
+                value={editNotas}
+                onChange={e => setEditNotas(e.target.value)}
+                placeholder="Notas del pedido..."
+                className="pedido-detail__textarea"
+                rows={3}
+              />
+            </div>
+          ) : (
+            pedido.notas && (
+              <div className="pedido-detail__section">
+                <div className="pedido-detail__notes">
+                  <strong>Notas:</strong> {pedido.notas}
+                </div>
+              </div>
+            )
+          )}
+
+          {abonos.length > 0 && (
+            <div className="pedido-detail__section">
+              <div className="pedido-detail__section-header">
+                <strong>Historial de abonos</strong>
+              </div>
+              <table className="pedido-detail__abonos-table">
+                <thead>
+                  <tr>
+                    <th>Clave</th>
+                    <th>Producto</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...abonos]
+                    .sort(
+                      (a, b) =>
+                        new Date(b.fecha).getTime() -
+                        new Date(a.fecha).getTime()
+                    )
+                    .map((abono, i) => (
+                      <tr key={i}>
+                        <td>
+                          {typeof abono.productoIndex === 'number' &&
+                          pedido.productos[abono.productoIndex]?.clave ? (
+                            <span className="pedido-detail__clave">
+                              {pedido.productos[abono.productoIndex].clave}
+                            </span>
+                          ) : (
+                            '-'
+                          )}
+                        </td>
+                        <td>
+                          {typeof abono.productoIndex === 'number' &&
+                          pedido.productos[abono.productoIndex] ? (
+                            pedido.productos[abono.productoIndex].nombre
+                          ) : (
+                            <span className="pedido-detail__general-label">
+                              General
+                            </span>
+                          )}
+                        </td>
+                        <td>{formatCurrency(abono.monto)}</td>
+                        <td>{formatDate(abono.fecha)}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
         {/* End Scrollable Content */}
 
@@ -676,8 +808,12 @@ const PedidoDetail = () => {
           <div className="pedido-detail__bottom-bar">
             <div className="pedido-detail__bottom-bar-inner">
               <div className="pedido-detail__bottom-bar-info">
-                <span className="pedido-detail__bottom-bar-label">Restante:</span>
-                <span className={`pedido-detail__bottom-bar-amount ${restante <= 0 ? 'pedido-detail__bottom-bar-amount--paid' : ''}`}>
+                <span className="pedido-detail__bottom-bar-label">
+                  Restante:
+                </span>
+                <span
+                  className={`pedido-detail__bottom-bar-amount ${restante <= 0 ? 'pedido-detail__bottom-bar-amount--paid' : ''}`}
+                >
                   {restante <= 0 ? 'Liquidado' : formatCurrency(restante)}
                 </span>
               </div>
@@ -686,9 +822,12 @@ const PedidoDetail = () => {
                   onClick={() => handleChangeStatus('entregado')}
                   className={`pedido-detail__btn-entregado ${puedeMarcarEntregado && !isEditing ? 'pedido-detail__btn-entregado--active' : ''}`}
                   disabled={!puedeMarcarEntregado || isEditing}
-                  title={!puedeMarcarEntregado ? 'Solo disponible cuando el pedido está en preparación' : ''}
+                  title={
+                    !puedeMarcarEntregado
+                      ? 'Solo disponible cuando el pedido está en preparación'
+                      : ''
+                  }
                 >
-                  <PiCheckBold size={16} />
                   Entregado
                 </button>
               )}
@@ -698,18 +837,30 @@ const PedidoDetail = () => {
       </div>
 
       {selectedProducto && (
-        <div className="pedido-detail__modal-overlay" onClick={() => setSelectedProducto(null)}>
-          <div className="pedido-detail__modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="pedido-detail__modal-overlay"
+          onClick={() => setSelectedProducto(null)}
+        >
+          <div
+            className="pedido-detail__modal"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="pedido-detail__modal-header">
               <h3>Detalles del producto</h3>
-              <button className="pedido-detail__modal-close" onClick={() => setSelectedProducto(null)}>
+              <button
+                className="pedido-detail__modal-close"
+                onClick={() => setSelectedProducto(null)}
+              >
                 <PiXBold size={18} />
               </button>
             </div>
             <div className="pedido-detail__modal-body">
               <div className="pedido-detail__modal-image">
                 {selectedProducto.imagen ? (
-                  <img src={selectedProducto.imagen} alt={selectedProducto.nombre} />
+                  <img
+                    src={selectedProducto.imagen}
+                    alt={selectedProducto.nombre}
+                  />
                 ) : (
                   <div className="pedido-detail__modal-placeholder">
                     <PiPackageBold size={48} />
@@ -722,15 +873,21 @@ const PedidoDetail = () => {
                 <div className="pedido-detail__modal-info">
                   <div className="pedido-detail__modal-row">
                     <span className="pedido-detail__modal-label">Clave</span>
-                    <span className="pedido-detail__modal-value">{selectedProducto.clave}</span>
+                    <span className="pedido-detail__modal-value">
+                      {selectedProducto.clave}
+                    </span>
                   </div>
                   <div className="pedido-detail__modal-row">
                     <span className="pedido-detail__modal-label">Nombre</span>
-                    <span className="pedido-detail__modal-value">{selectedProducto.nombre}</span>
+                    <span className="pedido-detail__modal-value">
+                      {selectedProducto.nombre}
+                    </span>
                   </div>
                   <div className="pedido-detail__modal-row">
                     <span className="pedido-detail__modal-label">Precio</span>
-                    <span className="pedido-detail__modal-value">{formatCurrency(selectedProducto.precio)}</span>
+                    <span className="pedido-detail__modal-value">
+                      {formatCurrency(selectedProducto.precio)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -740,7 +897,10 @@ const PedidoDetail = () => {
               </div>
             </div>
             <div className="pedido-detail__modal-footer">
-              <button className="btn btn--secondary btn--sm" onClick={() => setSelectedProducto(null)}>
+              <button
+                className="btn btn--secondary btn--sm"
+                onClick={() => setSelectedProducto(null)}
+              >
                 Cerrar
               </button>
             </div>

@@ -134,8 +134,6 @@ const Productos = () => {
           <ProductosTable
             productos={filteredProductos}
             etiquetas={etiquetas}
-            onEdit={openEditModal}
-            onDelete={handleDelete}
           />
         )}
 
