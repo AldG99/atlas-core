@@ -26,6 +26,16 @@ const ProductosTable = ({ productos, etiquetas }: ProductosTableProps) => {
     }).format(date);
   };
 
+  const isDescuentoActivo = (p: Producto): boolean => {
+    if (!p.descuento || p.descuento <= 0) return false;
+    if (!p.fechaFinDescuento) return false;
+    return new Date(p.fechaFinDescuento) >= new Date(new Date().toDateString());
+  };
+
+  const getPrecioConDescuento = (precio: number, descuento: number): number => {
+    return precio * (1 - descuento / 100);
+  };
+
   const getEtiquetasForProducto = (producto: Producto) => {
     return (producto.etiquetas || [])
       .map(id => etiquetas.find(e => e.id === id))
@@ -37,10 +47,10 @@ const ProductosTable = ({ productos, etiquetas }: ProductosTableProps) => {
       <table className="productos-table">
         <colgroup>
           <col style={{ width: '10%' }} />
-          <col style={{ width: '24%' }} />
-          <col style={{ width: '12%' }} />
+          <col style={{ width: '22%' }} />
+          <col style={{ width: '18%' }} />
           <col style={{ width: '14%' }} />
-          <col style={{ width: '24%' }} />
+          <col style={{ width: '20%' }} />
           <col style={{ width: '16%' }} />
         </colgroup>
         <thead>
@@ -65,7 +75,15 @@ const ProductosTable = ({ productos, etiquetas }: ProductosTableProps) => {
                   <span className="productos-table__name">{producto.nombre}</span>
                 </td>
                 <td>
-                  <span className="productos-table__price">{formatPrice(producto.precio)}</span>
+                  {isDescuentoActivo(producto) ? (
+                    <div className="productos-table__price-cell">
+                      <span className="productos-table__price-badge">-{producto.descuento}%</span>
+                      <span className="productos-table__price-original">{formatPrice(producto.precio)}</span>
+                      <span className="productos-table__price">{formatPrice(getPrecioConDescuento(producto.precio, producto.descuento!))}</span>
+                    </div>
+                  ) : (
+                    <span className="productos-table__price">{formatPrice(producto.precio)}</span>
+                  )}
                 </td>
                 <td>
                   <div className="productos-table__etiquetas">

@@ -101,6 +101,30 @@
     transition: color 0.2s ease;
   }
 
+  &__price-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__price-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background-color: #dc2626;
+    color: $color-white;
+    font-size: 10px;
+    font-weight: 700;
+    width: fit-content;
+  }
+
+  &__price-original {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    text-decoration: line-through;
+  }
+
   &__price {
     font-weight: 600;
     color: $color-success;
