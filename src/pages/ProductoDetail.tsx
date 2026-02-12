@@ -296,15 +296,53 @@ const ProductoDetail = () => {
             </div>
             <div className="producto-detail__price">
               {isEditing ? (
-                <input
-                  type="number"
-                  value={editData?.precio || 0}
-                  onChange={(e) => updateField('precio', parseFloat(e.target.value) || 0)}
-                  placeholder="Precio"
-                  className="producto-detail__input producto-detail__input--price"
-                  step="0.01"
-                  min="0"
-                />
+                <div className="producto-detail__price-edit">
+                  <input
+                    type="number"
+                    value={editData?.precio || 0}
+                    onChange={(e) => updateField('precio', parseFloat(e.target.value) || 0)}
+                    placeholder="Precio"
+                    className="producto-detail__input producto-detail__input--price"
+                    step="0.01"
+                    min="0"
+                  />
+                  <div className="producto-detail__price-edit-discount">
+                    <div className="producto-detail__price-edit-row">
+                      <div className="producto-detail__descuento-input-wrapper">
+                        <input
+                          type="number"
+                          value={editData?.descuento || ''}
+                          onChange={(e) => {
+                            const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+                            updateField('descuento', val);
+                          }}
+                          placeholder="0"
+                          className="producto-detail__input producto-detail__input--discount"
+                          min="0"
+                          max="100"
+                          step="1"
+                        />
+                        <span className="producto-detail__descuento-percent">%</span>
+                      </div>
+                      <input
+                        type="date"
+                        value={editData?.fechaFinDescuento as string || ''}
+                        onChange={(e) => updateField('fechaFinDescuento', e.target.value)}
+                        className="producto-detail__input producto-detail__input--date"
+                      />
+                    </div>
+                    {editData?.descuento && editData.descuento > 0 && (
+                      <div className="producto-detail__price-edit-preview">
+                        <span className="producto-detail__price-original">
+                          {formatCurrency(editData?.precio || producto.precio)}
+                        </span>
+                        <span className="producto-detail__price-final">
+                          {formatCurrency(getPrecioConDescuento(editData?.precio || producto.precio, editData.descuento))}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               ) : isDescuentoActivo(producto) ? (
                 <div className="producto-detail__price-discount">
                   <span className="producto-detail__price-badge">-{producto.descuento}%</span>
@@ -342,57 +380,6 @@ const ProductoDetail = () => {
               </div>
             </div>
           </div>
-
-          {/* Descuento Section - Solo en modo edición */}
-          {isEditing && (
-            <div className="producto-detail__section">
-              <div className="producto-detail__section-header">
-                <strong>Descuento</strong>
-              </div>
-              <div className="producto-detail__descuento-edit">
-                <div className="producto-detail__descuento-fields">
-                  <div className="producto-detail__descuento-field">
-                    <label className="producto-detail__info-label">Porcentaje de descuento</label>
-                    <div className="producto-detail__descuento-input-wrapper">
-                      <input
-                        type="number"
-                        value={editData?.descuento || ''}
-                        onChange={(e) => {
-                          const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
-                          updateField('descuento', val);
-                        }}
-                        placeholder="0"
-                        className="producto-detail__input"
-                        min="0"
-                        max="100"
-                        step="1"
-                      />
-                      <span className="producto-detail__descuento-percent">%</span>
-                    </div>
-                  </div>
-                  <div className="producto-detail__descuento-field">
-                    <label className="producto-detail__info-label">Fecha límite</label>
-                    <input
-                      type="date"
-                      value={editData?.fechaFinDescuento as string || ''}
-                      onChange={(e) => updateField('fechaFinDescuento', e.target.value)}
-                      className="producto-detail__input"
-                    />
-                  </div>
-                </div>
-                {editData?.descuento && editData.descuento > 0 && (
-                  <div className="producto-detail__descuento-preview">
-                    <span className="producto-detail__descuento-original">
-                      {formatCurrency(editData?.precio || producto.precio)}
-                    </span>
-                    <span className="producto-detail__descuento-final">
-                      {formatCurrency(getPrecioConDescuento(editData?.precio || producto.precio, editData.descuento))}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* Etiquetas Section */}
           {(isEditing || productoEtiquetas.length > 0) && (

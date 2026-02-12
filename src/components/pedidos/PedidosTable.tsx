@@ -88,9 +88,14 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
                 <span className="pedidos-table__cp">{pedido.clienteCodigoPostal || '-'}</span>
               </td>
               <td>
-                <span className="pedidos-table__product-count">
-                  {pedido.productos.reduce((sum, p) => sum + p.cantidad, 0)}
-                </span>
+                <div className="pedidos-table__product-cell">
+                  <span className="pedidos-table__product-count">
+                    {pedido.productos.reduce((sum, p) => sum + p.cantidad, 0)}
+                  </span>
+                  {pedido.productos.some(p => p.descuento && p.descuento > 0) && (
+                    <span className="pedidos-table__discount-indicator" title="Incluye descuento">%</span>
+                  )}
+                </div>
               </td>
               <td>
                 {(() => {

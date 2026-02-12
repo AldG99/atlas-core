@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { PiEyeBold, PiXBold, PiPackageBold } from 'react-icons/pi';
+import { PiEyeBold, PiXBold, PiPackageBold, PiCalendarBold } from 'react-icons/pi';
 import { useProductos } from '../../hooks/useProductos';
 import { useEtiquetas } from '../../hooks/useEtiquetas';
 import { useToast } from '../../hooks/useToast';
@@ -41,6 +41,26 @@ const ProductoSelector = ({
   const [clave, setClave] = useState('');
   const [precio, setPrecio] = useState('');
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const isDescuentoActivo = (p: Producto): boolean => {
+    if (!p.descuento || p.descuento <= 0) return false;
+    if (!p.fechaFinDescuento) return false;
+    return new Date(p.fechaFinDescuento) >= new Date(new Date().toDateString());
+  };
+
+  const getEffectivePrice = (p: Producto): number => {
+    if (isDescuentoActivo(p)) {
+      return p.precio * (1 - p.descuento! / 100);
+    }
+    return p.precio;
+  };
+
+  const formatDate = (date: Date) =>
+    new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }).format(new Date(date));
 
   const filteredProductos = productos.filter(
     (p) =>
@@ -145,9 +165,17 @@ const ProductoSelector = ({
                         );
                       })}
                     </div>
-                    <span className="producto-selector__dropdown-price">
-                      ${producto.precio.toFixed(2)}
-                    </span>
+                    {isDescuentoActivo(producto) ? (
+                      <span className="producto-selector__dropdown-discount">
+                        <span className="producto-selector__dropdown-badge">-{producto.descuento}%</span>
+                        <span className="producto-selector__dropdown-original">${producto.precio.toFixed(2)}</span>
+                        <span className="producto-selector__dropdown-final">${getEffectivePrice(producto).toFixed(2)}</span>
+                      </span>
+                    ) : (
+                      <span className="producto-selector__dropdown-price">
+                        ${producto.precio.toFixed(2)}
+                      </span>
+                    )}
                   </button>
                 ))
               ) : (
@@ -259,7 +287,17 @@ const ProductoSelector = ({
                       </div>
                     )}
                   </td>
-                  <td>${item.producto.precio.toFixed(2)}</td>
+                  <td>
+                    {isDescuentoActivo(item.producto) ? (
+                      <div className="producto-selector__table-price-discount">
+                        <span className="producto-selector__table-price-badge">-{item.producto.descuento}%</span>
+                        <span className="producto-selector__table-price-original">${item.producto.precio.toFixed(2)}</span>
+                        <span>${getEffectivePrice(item.producto).toFixed(2)}</span>
+                      </div>
+                    ) : (
+                      <span>${item.producto.precio.toFixed(2)}</span>
+                    )}
+                  </td>
                   <td>
                     <div className="producto-selector__cantidad">
                       <button
@@ -363,8 +401,25 @@ const ProductoSelector = ({
                   </div>
                   <div className="producto-selector__modal-row">
                     <span className="producto-selector__modal-label">Precio</span>
-                    <span className="producto-selector__modal-value">${selectedProducto.precio.toFixed(2)}</span>
+                    {isDescuentoActivo(selectedProducto) ? (
+                      <span className="producto-selector__modal-price-discount">
+                        <span className="producto-selector__modal-price-badge">-{selectedProducto.descuento}%</span>
+                        <span className="producto-selector__modal-price-original">${selectedProducto.precio.toFixed(2)}</span>
+                        <span className="producto-selector__modal-value">${getEffectivePrice(selectedProducto).toFixed(2)}</span>
+                      </span>
+                    ) : (
+                      <span className="producto-selector__modal-value">${selectedProducto.precio.toFixed(2)}</span>
+                    )}
                   </div>
+                  {isDescuentoActivo(selectedProducto) && selectedProducto.fechaFinDescuento && (
+                    <div className="producto-selector__modal-row">
+                      <span className="producto-selector__modal-label">Descuento válido hasta</span>
+                      <span className="producto-selector__modal-value producto-selector__modal-value--expiry">
+                        <PiCalendarBold size={12} />
+                        {formatDate(selectedProducto.fechaFinDescuento)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               {selectedProducto.descripcion && (

@@ -633,7 +633,23 @@ const PedidoDetail = () => {
                           p.cantidad
                         )}
                       </td>
-                      <td>{p.nombre}</td>
+                      <td>
+                        <div className="pedido-detail__product-name-cell">
+                          <span>{p.nombre}</span>
+                          {p.descuento && p.descuento > 0 && p.precioOriginal && (
+                            <div className="pedido-detail__product-discount-info">
+                              <span className="pedido-detail__product-discount-badge">-{p.descuento}%</span>
+                              <span className="pedido-detail__product-discount-original">
+                                {formatCurrency(p.precioOriginal)}
+                              </span>
+                              <span className="pedido-detail__product-discount-arrow">&rarr;</span>
+                              <span className="pedido-detail__product-discount-final">
+                                {formatCurrency(p.precioUnitario)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </td>
                       <td>
                         <div className="pedido-detail__etiquetas">
                           {getEtiquetasForClave(p.clave).map(et => {
@@ -665,7 +681,18 @@ const PedidoDetail = () => {
                           </div>
                         </td>
                       )}
-                      <td>{formatCurrency(p.subtotal)}</td>
+                      <td>
+                        {p.precioOriginal && p.descuento ? (
+                          <div className="pedido-detail__product-subtotal-discount">
+                            <span className="pedido-detail__product-subtotal-original">
+                              {formatCurrency(p.precioOriginal * p.cantidad)}
+                            </span>
+                            <span>{formatCurrency(p.subtotal)}</span>
+                          </div>
+                        ) : (
+                          formatCurrency(p.subtotal)
+                        )}
+                      </td>
                       {!isEditing && (
                         <td>
                           <span

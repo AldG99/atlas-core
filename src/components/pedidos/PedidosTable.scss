@@ -153,10 +153,30 @@
     transition: color 0.2s ease;
   }
 
+  &__product-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
   &__product-count {
     font-size: $font-size-sm;
     font-weight: 600;
     color: $color-gray-700;
+  }
+
+  &__discount-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #dc2626;
+    color: $color-white;
+    font-size: 10px;
+    font-weight: 700;
   }
 
   &__cp {

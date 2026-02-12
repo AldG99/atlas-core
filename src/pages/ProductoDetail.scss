@@ -205,6 +205,32 @@ $topbar-height: 52px;
     color: $color-success;
   }
 
+  &__price-edit {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: $spacing-sm;
+  }
+
+  &__price-edit-discount {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: $spacing-xs;
+  }
+
+  &__price-edit-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  &__price-edit-preview {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
   &__price-discount {
     display: flex;
     flex-direction: column;
@@ -515,6 +541,18 @@ $topbar-height: 52px;
       color: $color-success;
       width: 150px;
       text-align: right;
+    }
+
+    &--discount {
+      width: 70px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    &--date {
+      width: 140px;
+      font-size: $font-size-xs;
+      color: $color-gray-600;
     }
   }
 

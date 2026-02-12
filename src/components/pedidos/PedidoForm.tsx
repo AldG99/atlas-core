@@ -78,13 +78,21 @@ const PedidoForm = ({
 
     if (!validate()) return;
 
-    const productos: ProductoItem[] = items.map((item) => ({
-      nombre: item.producto.nombre,
-      clave: item.producto.clave || undefined,
-      cantidad: item.cantidad,
-      precioUnitario: item.producto.precio,
-      subtotal: item.subtotal
-    }));
+    const productos: ProductoItem[] = items.map((item) => {
+      const effective = getEffectivePrice(item.producto);
+      const hasDiscount = effective < item.producto.precio;
+      return {
+        nombre: item.producto.nombre,
+        clave: item.producto.clave || undefined,
+        cantidad: item.cantidad,
+        precioUnitario: effective,
+        subtotal: item.subtotal,
+        ...(hasDiscount && {
+          precioOriginal: item.producto.precio,
+          descuento: item.producto.descuento
+        })
+      };
+    });
 
     const data: PedidoFormData = {
       clienteNombre: selectedCliente!.nombre + ' ' + selectedCliente!.apellido,
@@ -113,7 +121,16 @@ const PedidoForm = ({
     }
   };
 
+  const getEffectivePrice = (p: Producto): number => {
+    if (p.descuento && p.descuento > 0 && p.fechaFinDescuento &&
+        new Date(p.fechaFinDescuento) >= new Date(new Date().toDateString())) {
+      return p.precio * (1 - p.descuento / 100);
+    }
+    return p.precio;
+  };
+
   const handleAddItem = (producto: Producto) => {
+    const effectivePrice = getEffectivePrice(producto);
     setItems((prev) => {
       const existingIndex = prev.findIndex((item) => item.producto.id === producto.id);
 
@@ -122,12 +139,12 @@ const PedidoForm = ({
         updated[existingIndex] = {
           ...updated[existingIndex],
           cantidad: updated[existingIndex].cantidad + 1,
-          subtotal: (updated[existingIndex].cantidad + 1) * producto.precio
+          subtotal: (updated[existingIndex].cantidad + 1) * effectivePrice
         };
         return updated;
       }
 
-      return [...prev, { producto, cantidad: 1, subtotal: producto.precio }];
+      return [...prev, { producto, cantidad: 1, subtotal: effectivePrice }];
     });
 
     if (errors.productos) {
@@ -144,7 +161,7 @@ const PedidoForm = ({
     setItems((prev) =>
       prev.map((item) =>
         item.producto.id === productoId
-          ? { ...item, cantidad, subtotal: cantidad * item.producto.precio }
+          ? { ...item, cantidad, subtotal: cantidad * getEffectivePrice(item.producto) }
           : item
       )
     );
