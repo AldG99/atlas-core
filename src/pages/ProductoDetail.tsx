@@ -101,7 +101,11 @@ const ProductoDetail = () => {
       precio: producto.precio,
       descripcion: producto.descripcion,
       imagen: producto.imagen,
-      etiquetas: producto.etiquetas
+      etiquetas: producto.etiquetas,
+      descuento: producto.descuento || 0,
+      fechaFinDescuento: producto.fechaFinDescuento
+        ? `${new Date(producto.fechaFinDescuento).getFullYear()}-${String(new Date(producto.fechaFinDescuento).getMonth() + 1).padStart(2, '0')}-${String(new Date(producto.fechaFinDescuento).getDate()).padStart(2, '0')}`
+        : ''
     });
     setIsEditing(true);
   };
@@ -115,8 +119,19 @@ const ProductoDetail = () => {
     if (!producto || !editData) return;
     try {
       setSaving(true);
-      await updateProducto(producto.id, editData);
-      setProducto({ ...producto, ...editData });
+      const dataToSave = { ...editData };
+      if (!dataToSave.descuento || dataToSave.descuento <= 0) {
+        dataToSave.descuento = 0;
+        dataToSave.fechaFinDescuento = '';
+      }
+      await updateProducto(producto.id, dataToSave);
+      setProducto({
+        ...producto,
+        ...dataToSave,
+        fechaFinDescuento: dataToSave.fechaFinDescuento
+          ? new Date(dataToSave.fechaFinDescuento + 'T00:00:00')
+          : undefined
+      });
       setIsEditing(false);
       setEditData(null);
       showToast('Producto actualizado correctamente', 'success');
@@ -125,6 +140,16 @@ const ProductoDetail = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const isDescuentoActivo = (p: Producto): boolean => {
+    if (!p.descuento || p.descuento <= 0) return false;
+    if (!p.fechaFinDescuento) return false;
+    return new Date(p.fechaFinDescuento) >= new Date(new Date().toDateString());
+  };
+
+  const getPrecioConDescuento = (precio: number, descuento: number): number => {
+    return precio * (1 - descuento / 100);
   };
 
   const updateField = (field: keyof ProductoFormData, value: string | number | string[]) => {
@@ -280,6 +305,20 @@ const ProductoDetail = () => {
                   step="0.01"
                   min="0"
                 />
+              ) : isDescuentoActivo(producto) ? (
+                <div className="producto-detail__price-discount">
+                  <span className="producto-detail__price-badge">-{producto.descuento}%</span>
+                  <span className="producto-detail__price-original">{formatCurrency(producto.precio)}</span>
+                  <span className="producto-detail__price-final">
+                    {formatCurrency(getPrecioConDescuento(producto.precio, producto.descuento!))}
+                  </span>
+                  {producto.fechaFinDescuento && (
+                    <span className="producto-detail__price-expiry">
+                      <PiCalendarBold size={12} />
+                      Hasta {formatDate(producto.fechaFinDescuento)}
+                    </span>
+                  )}
+                </div>
               ) : (
                 formatCurrency(producto.precio)
               )}
@@ -303,6 +342,57 @@ const ProductoDetail = () => {
               </div>
             </div>
           </div>
+
+          {/* Descuento Section - Solo en modo edición */}
+          {isEditing && (
+            <div className="producto-detail__section">
+              <div className="producto-detail__section-header">
+                <strong>Descuento</strong>
+              </div>
+              <div className="producto-detail__descuento-edit">
+                <div className="producto-detail__descuento-fields">
+                  <div className="producto-detail__descuento-field">
+                    <label className="producto-detail__info-label">Porcentaje de descuento</label>
+                    <div className="producto-detail__descuento-input-wrapper">
+                      <input
+                        type="number"
+                        value={editData?.descuento || ''}
+                        onChange={(e) => {
+                          const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+                          updateField('descuento', val);
+                        }}
+                        placeholder="0"
+                        className="producto-detail__input"
+                        min="0"
+                        max="100"
+                        step="1"
+                      />
+                      <span className="producto-detail__descuento-percent">%</span>
+                    </div>
+                  </div>
+                  <div className="producto-detail__descuento-field">
+                    <label className="producto-detail__info-label">Fecha límite</label>
+                    <input
+                      type="date"
+                      value={editData?.fechaFinDescuento as string || ''}
+                      onChange={(e) => updateField('fechaFinDescuento', e.target.value)}
+                      className="producto-detail__input"
+                    />
+                  </div>
+                </div>
+                {editData?.descuento && editData.descuento > 0 && (
+                  <div className="producto-detail__descuento-preview">
+                    <span className="producto-detail__descuento-original">
+                      {formatCurrency(editData?.precio || producto.precio)}
+                    </span>
+                    <span className="producto-detail__descuento-final">
+                      {formatCurrency(getPrecioConDescuento(editData?.precio || producto.precio, editData.descuento))}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Etiquetas Section */}
           {(isEditing || productoEtiquetas.length > 0) && (

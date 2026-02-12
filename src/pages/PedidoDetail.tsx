@@ -215,6 +215,16 @@ const PedidoDetail = () => {
     setShowProductDropdown(false);
   };
 
+  const isDescuentoActivo = (p: Producto): boolean => {
+    if (!p.descuento || p.descuento <= 0) return false;
+    if (!p.fechaFinDescuento) return false;
+    return new Date(p.fechaFinDescuento) >= new Date(new Date().toDateString());
+  };
+
+  const getPrecioConDescuento = (precio: number, descuento: number): number => {
+    return precio * (1 - descuento / 100);
+  };
+
   const filteredProducts = productSearchTerm.trim()
     ? catalogoProductos.filter(
         p =>
@@ -538,9 +548,17 @@ const PedidoDetail = () => {
                       >
                         <span className="pedido-detail__clave">{p.clave}</span>
                         <span>{p.nombre}</span>
-                        <span className="pedido-detail__product-dropdown-price">
-                          {formatCurrency(p.precio)}
-                        </span>
+                        {isDescuentoActivo(p) ? (
+                          <span className="pedido-detail__product-dropdown-discount">
+                            <span className="pedido-detail__product-dropdown-badge">-{p.descuento}%</span>
+                            <span className="pedido-detail__product-dropdown-original">{formatCurrency(p.precio)}</span>
+                            <span className="pedido-detail__product-dropdown-final">{formatCurrency(getPrecioConDescuento(p.precio, p.descuento!))}</span>
+                          </span>
+                        ) : (
+                          <span className="pedido-detail__product-dropdown-price">
+                            {formatCurrency(p.precio)}
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -885,9 +903,17 @@ const PedidoDetail = () => {
                   </div>
                   <div className="pedido-detail__modal-row">
                     <span className="pedido-detail__modal-label">Precio</span>
-                    <span className="pedido-detail__modal-value">
-                      {formatCurrency(selectedProducto.precio)}
-                    </span>
+                    {isDescuentoActivo(selectedProducto) ? (
+                      <span className="pedido-detail__modal-price-discount">
+                        <span className="pedido-detail__modal-price-badge">-{selectedProducto.descuento}%</span>
+                        <span className="pedido-detail__modal-price-original">{formatCurrency(selectedProducto.precio)}</span>
+                        <span className="pedido-detail__modal-value">{formatCurrency(getPrecioConDescuento(selectedProducto.precio, selectedProducto.descuento!))}</span>
+                      </span>
+                    ) : (
+                      <span className="pedido-detail__modal-value">
+                        {formatCurrency(selectedProducto.precio)}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

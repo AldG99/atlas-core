@@ -668,6 +668,36 @@ $bottombar-height: 64px;
     font-size: $font-size-sm;
   }
 
+  &__product-dropdown-discount {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  &__product-dropdown-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background-color: #dc2626;
+    color: $color-white;
+    font-size: $font-size-xs;
+    font-weight: 700;
+  }
+
+  &__product-dropdown-original {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    text-decoration: line-through;
+  }
+
+  &__product-dropdown-final {
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: #16a34a;
+  }
+
   &__product-dropdown-empty {
     padding: $spacing-sm;
     text-align: center;
@@ -866,6 +896,29 @@ $bottombar-height: 64px;
     font-size: $font-size-sm;
     color: $color-gray-800;
     font-weight: 600;
+  }
+
+  &__modal-price-discount {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__modal-price-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background-color: #dc2626;
+    color: $color-white;
+    font-size: $font-size-xs;
+    font-weight: 700;
+  }
+
+  &__modal-price-original {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    text-decoration: line-through;
   }
 
   &__modal-footer {
