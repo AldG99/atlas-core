@@ -55,6 +55,7 @@ const NewPedido = () => {
         <div className="new-pedido__form">
           <PedidoForm
             onSubmit={handleSubmit}
+            onCancel={() => navigate(-1)}
             loading={loading}
             defaultCliente={defaultCliente}
             defaultProductos={defaultProductos}

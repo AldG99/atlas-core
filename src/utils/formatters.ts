@@ -24,7 +24,10 @@ export const formatShortDate = (date: Date): string => {
   }).format(date);
 };
 
-import type { ProductoItem } from '../types/Pedido';
+import type { Pedido, ProductoItem } from '../types/Pedido';
+
+export const getTotalPagado = (pedido: Pedido): number =>
+  (pedido.abonos || []).reduce((sum, a) => sum + a.monto, 0);
 
 interface PedidoForWhatsApp {
   clienteNombre: string;

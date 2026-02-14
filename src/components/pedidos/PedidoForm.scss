@@ -13,4 +13,9 @@
     margin-top: -$spacing-sm;
     margin-bottom: $spacing-md;
   }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
 }

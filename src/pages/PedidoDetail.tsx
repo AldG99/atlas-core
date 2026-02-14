@@ -18,6 +18,9 @@ import type { Producto, Etiqueta } from '../types/Producto';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import {
+  formatCurrency,
+  formatDate,
+  getTotalPagado,
   formatPedidoForWhatsApp,
   openWhatsApp,
   copyToClipboard,
@@ -29,6 +32,7 @@ import {
   addAbono,
   deletePedido,
 } from '../services/pedidoService';
+import { useAuth } from '../hooks/useAuth';
 import { useClientes } from '../hooks/useClientes';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
@@ -40,6 +44,7 @@ import './PedidoDetail.scss';
 const PedidoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { showToast } = useToast();
   const { clientes } = useClientes();
   const { productos: catalogoProductos } = useProductos();
@@ -65,10 +70,10 @@ const PedidoDetail = () => {
   const searchRef = useRef<HTMLDivElement>(null);
 
   const fetchPedido = useCallback(async () => {
-    if (!id) return;
+    if (!id || !user) return;
     try {
       setLoading(true);
-      const data = await getPedidoById(id);
+      const data = await getPedidoById(id, user.uid);
       if (!data) {
         showToast('Pedido no encontrado', 'error');
         navigate(ROUTES.DASHBOARD);
@@ -81,7 +86,7 @@ const PedidoDetail = () => {
     } finally {
       setLoading(false);
     }
-  }, [id, navigate, showToast]);
+  }, [id, user, navigate, showToast]);
 
   useEffect(() => {
     fetchPedido();
@@ -97,24 +102,6 @@ const PedidoDetail = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const formatDate = (date: Date) =>
-    new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(new Date(date));
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN',
-    }).format(amount);
-
-  const getTotalPagado = (p: Pedido) =>
-    (p.abonos || []).reduce((sum, a) => sum + a.monto, 0);
 
   const getClienteFoto = (p: Pedido): string | undefined => {
     if (p.clienteFoto) return p.clienteFoto;
@@ -333,6 +320,7 @@ const PedidoDetail = () => {
   if (!pedido) return null;
 
   const pagado = getTotalPagado(pedido);
+  const clienteFoto = getClienteFoto(pedido);
   const abonos = pedido.abonos || [];
 
   // Calculate coverage per product
@@ -485,9 +473,9 @@ const PedidoDetail = () => {
           <div className="pedido-detail__header">
             <div className="pedido-detail__client">
               <div className="pedido-detail__avatar">
-                {getClienteFoto(pedido) ? (
+                {clienteFoto ? (
                   <img
-                    src={getClienteFoto(pedido)}
+                    src={clienteFoto}
                     alt={pedido.clienteNombre}
                   />
                 ) : (

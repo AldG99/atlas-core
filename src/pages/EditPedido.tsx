@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import type { PedidoFormData } from '../types/Pedido';
 import { ROUTES } from '../config/routes';
@@ -12,6 +13,7 @@ import './EditPedido.scss';
 const EditPedido = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { showToast } = useToast();
 
   const [initialData, setInitialData] = useState<PedidoFormData | null>(null);
@@ -21,10 +23,10 @@ const EditPedido = () => {
 
   useEffect(() => {
     const fetchPedido = async () => {
-      if (!id) return;
+      if (!id || !user) return;
 
       try {
-        const pedido = await getPedidoById(id);
+        const pedido = await getPedidoById(id, user.uid);
         if (pedido) {
           setInitialData({
             clienteNombre: pedido.clienteNombre,
@@ -44,7 +46,7 @@ const EditPedido = () => {
     };
 
     fetchPedido();
-  }, [id]);
+  }, [id, user]);
 
   const handleSubmit = async (data: PedidoFormData) => {
     if (!id) return;
@@ -79,6 +81,7 @@ const EditPedido = () => {
           <div className="edit-pedido__form">
             <PedidoForm
               onSubmit={handleSubmit}
+              onCancel={() => navigate(-1)}
               loading={saving}
               initialData={initialData}
               submitText="Guardar cambios"

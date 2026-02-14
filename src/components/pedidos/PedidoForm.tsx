@@ -9,6 +9,7 @@ import './PedidoForm.scss';
 
 interface PedidoFormProps {
   onSubmit: (data: PedidoFormData) => Promise<void>;
+  onCancel?: () => void;
   loading?: boolean;
   initialData?: PedidoFormData;
   submitText?: string;
@@ -18,6 +19,7 @@ interface PedidoFormProps {
 
 const PedidoForm = ({
   onSubmit,
+  onCancel,
   loading = false,
   initialData,
   submitText = 'Crear pedido',
@@ -206,13 +208,25 @@ const PedidoForm = ({
         />
       </div>
 
-      <button
-        type="submit"
-        className="btn btn--primary btn--full"
-        disabled={loading}
-      >
-        {loading ? 'Guardando...' : submitText}
-      </button>
+      <div className="pedido-form__actions">
+        {onCancel && (
+          <button
+            type="button"
+            className="btn btn--outline btn--full"
+            onClick={onCancel}
+            disabled={loading}
+          >
+            Cancelar
+          </button>
+        )}
+        <button
+          type="submit"
+          className="btn btn--primary btn--full"
+          disabled={loading}
+        >
+          {loading ? 'Guardando...' : submitText}
+        </button>
+      </div>
     </form>
   );
 };

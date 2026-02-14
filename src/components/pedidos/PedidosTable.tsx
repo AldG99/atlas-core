@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
+import { formatCurrency, formatShortDate, getTotalPagado } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
 import './PedidosTable.scss';
 
@@ -31,25 +32,6 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
     return cliente?.fotoPerfil;
   };
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN'
-    }).format(amount);
-  };
-
-  const getTotalPagado = (pedido: Pedido) =>
-    (pedido.abonos || []).reduce((sum, a) => sum + a.monto, 0);
-
   return (
     <div className="pedidos-table-container">
       <table className="pedidos-table">
@@ -74,7 +56,9 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {paginatedPedidos.map((pedido) => (
+          {paginatedPedidos.map((pedido) => {
+            const foto = getClienteFoto(pedido);
+            return (
             <tr
               key={pedido.id}
               className="pedidos-table__row"
@@ -83,8 +67,8 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
               <td>
                 <div className="pedidos-table__client">
                   <div className="pedidos-table__avatar">
-                    {getClienteFoto(pedido) ? (
-                      <img src={getClienteFoto(pedido)} alt={pedido.clienteNombre} />
+                    {foto ? (
+                      <img src={foto} alt={pedido.clienteNombre} />
                     ) : (
                       <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
                     )}
@@ -146,10 +130,11 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
                 />
               </td>
               <td>
-                <span className="pedidos-table__date">{formatDate(pedido.fechaCreacion)}</span>
+                <span className="pedidos-table__date">{formatShortDate(pedido.fechaCreacion)}</span>
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
 
