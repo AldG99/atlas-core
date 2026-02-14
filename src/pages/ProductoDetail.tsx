@@ -239,127 +239,130 @@ const ProductoDetail = () => {
 
         {/* Content */}
         <div className="producto-detail__content">
-          {/* Image Section */}
-          <div
-            className={`producto-detail__image-section ${isEditing ? 'producto-detail__image-section--editable' : ''}`}
-            onClick={() => isEditing && fileInputRef.current?.click()}
-          >
-            {(isEditing ? editData?.imagen : producto.imagen) ? (
-              <img src={(isEditing ? editData?.imagen : producto.imagen) || ''} alt={producto.nombre} />
-            ) : (
-              <div className="producto-detail__image-placeholder">
-                <PiPackageBold size={64} />
-                <span>Sin imagen</span>
-              </div>
-            )}
-            {isEditing && (
-              <div className="producto-detail__image-overlay">
-                <PiCameraBold size={32} />
-                <span>Cambiar imagen</span>
-              </div>
-            )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ display: 'none' }}
-            />
-          </div>
-
-          {/* Header */}
-          <div className="producto-detail__header">
-            <div className="producto-detail__title-section">
-              {isEditing ? (
-                <>
-                  <input
-                    type="text"
-                    value={editData?.clave || ''}
-                    onChange={(e) => updateField('clave', e.target.value)}
-                    placeholder="Clave"
-                    className="producto-detail__input producto-detail__input--clave"
-                  />
-                  <input
-                    type="text"
-                    value={editData?.nombre || ''}
-                    onChange={(e) => updateField('nombre', e.target.value)}
-                    placeholder="Nombre del producto"
-                    className="producto-detail__input producto-detail__input--name"
-                  />
-                </>
+          {/* Hero: Image + Info */}
+          <div className="producto-detail__hero">
+            {/* Image Section */}
+            <div
+              className={`producto-detail__image-section ${isEditing ? 'producto-detail__image-section--editable' : ''}`}
+              onClick={() => isEditing && fileInputRef.current?.click()}
+            >
+              {(isEditing ? editData?.imagen : producto.imagen) ? (
+                <img src={(isEditing ? editData?.imagen : producto.imagen) || ''} alt={producto.nombre} />
               ) : (
-                <>
-                  <span className="producto-detail__clave">{producto.clave}</span>
-                  <h1 className="producto-detail__name">{producto.nombre}</h1>
-                </>
+                <div className="producto-detail__image-placeholder">
+                  <PiPackageBold size={64} />
+                  <span>Sin imagen</span>
+                </div>
               )}
+              {isEditing && (
+                <div className="producto-detail__image-overlay">
+                  <PiCameraBold size={32} />
+                  <span>Cambiar imagen</span>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+              />
             </div>
-            <div className="producto-detail__price">
-              {isEditing ? (
-                <div className="producto-detail__price-edit">
-                  <input
-                    type="number"
-                    value={editData?.precio || 0}
-                    onChange={(e) => updateField('precio', parseFloat(e.target.value) || 0)}
-                    placeholder="Precio"
-                    className="producto-detail__input producto-detail__input--price"
-                    step="0.01"
-                    min="0"
-                  />
-                  <div className="producto-detail__price-edit-discount">
-                    <div className="producto-detail__price-edit-row">
-                      <div className="producto-detail__descuento-input-wrapper">
+
+            {/* Info Side */}
+            <div className="producto-detail__hero-info">
+              <div className="producto-detail__title-section">
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      value={editData?.clave || ''}
+                      onChange={(e) => updateField('clave', e.target.value)}
+                      placeholder="Clave"
+                      className="producto-detail__input producto-detail__input--clave"
+                    />
+                    <input
+                      type="text"
+                      value={editData?.nombre || ''}
+                      onChange={(e) => updateField('nombre', e.target.value)}
+                      placeholder="Nombre del producto"
+                      className="producto-detail__input producto-detail__input--name"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <span className="producto-detail__clave">{producto.clave}</span>
+                    <h1 className="producto-detail__name">{producto.nombre}</h1>
+                  </>
+                )}
+              </div>
+              <div className="producto-detail__price">
+                {isEditing ? (
+                  <div className="producto-detail__price-edit">
+                    <input
+                      type="number"
+                      value={editData?.precio || 0}
+                      onChange={(e) => updateField('precio', parseFloat(e.target.value) || 0)}
+                      placeholder="Precio"
+                      className="producto-detail__input producto-detail__input--price"
+                      step="0.01"
+                      min="0"
+                    />
+                    <div className="producto-detail__price-edit-discount">
+                      <div className="producto-detail__price-edit-row">
+                        <div className="producto-detail__descuento-input-wrapper">
+                          <input
+                            type="number"
+                            value={editData?.descuento || ''}
+                            onChange={(e) => {
+                              const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+                              updateField('descuento', val);
+                            }}
+                            placeholder="0"
+                            className="producto-detail__input producto-detail__input--discount"
+                            min="0"
+                            max="100"
+                            step="1"
+                          />
+                          <span className="producto-detail__descuento-percent">%</span>
+                        </div>
                         <input
-                          type="number"
-                          value={editData?.descuento || ''}
-                          onChange={(e) => {
-                            const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
-                            updateField('descuento', val);
-                          }}
-                          placeholder="0"
-                          className="producto-detail__input producto-detail__input--discount"
-                          min="0"
-                          max="100"
-                          step="1"
+                          type="date"
+                          value={editData?.fechaFinDescuento as string || ''}
+                          onChange={(e) => updateField('fechaFinDescuento', e.target.value)}
+                          className="producto-detail__input producto-detail__input--date"
                         />
-                        <span className="producto-detail__descuento-percent">%</span>
                       </div>
-                      <input
-                        type="date"
-                        value={editData?.fechaFinDescuento as string || ''}
-                        onChange={(e) => updateField('fechaFinDescuento', e.target.value)}
-                        className="producto-detail__input producto-detail__input--date"
-                      />
+                      {editData?.descuento && editData.descuento > 0 && (
+                        <div className="producto-detail__price-edit-preview">
+                          <span className="producto-detail__price-original">
+                            {formatCurrency(editData?.precio || producto.precio)}
+                          </span>
+                          <span className="producto-detail__price-final">
+                            {formatCurrency(getPrecioConDescuento(editData?.precio || producto.precio, editData.descuento))}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    {editData?.descuento && editData.descuento > 0 && (
-                      <div className="producto-detail__price-edit-preview">
-                        <span className="producto-detail__price-original">
-                          {formatCurrency(editData?.precio || producto.precio)}
-                        </span>
-                        <span className="producto-detail__price-final">
-                          {formatCurrency(getPrecioConDescuento(editData?.precio || producto.precio, editData.descuento))}
-                        </span>
-                      </div>
+                  </div>
+                ) : isDescuentoActivo(producto) ? (
+                  <div className="producto-detail__price-discount">
+                    <span className="producto-detail__price-badge">-{producto.descuento}%</span>
+                    <span className="producto-detail__price-original">{formatCurrency(producto.precio)}</span>
+                    <span className="producto-detail__price-final">
+                      {formatCurrency(getPrecioConDescuento(producto.precio, producto.descuento!))}
+                    </span>
+                    {producto.fechaFinDescuento && (
+                      <span className="producto-detail__price-expiry">
+                        <PiCalendarBold size={12} />
+                        Hasta {formatDate(producto.fechaFinDescuento)}
+                      </span>
                     )}
                   </div>
-                </div>
-              ) : isDescuentoActivo(producto) ? (
-                <div className="producto-detail__price-discount">
-                  <span className="producto-detail__price-badge">-{producto.descuento}%</span>
-                  <span className="producto-detail__price-original">{formatCurrency(producto.precio)}</span>
-                  <span className="producto-detail__price-final">
-                    {formatCurrency(getPrecioConDescuento(producto.precio, producto.descuento!))}
-                  </span>
-                  {producto.fechaFinDescuento && (
-                    <span className="producto-detail__price-expiry">
-                      <PiCalendarBold size={12} />
-                      Hasta {formatDate(producto.fechaFinDescuento)}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                formatCurrency(producto.precio)
-              )}
+                ) : (
+                  formatCurrency(producto.precio)
+                )}
+              </div>
             </div>
           </div>
 

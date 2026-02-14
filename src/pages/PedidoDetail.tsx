@@ -431,7 +431,6 @@ const PedidoDetail = () => {
                 </button>
                 {!pedido.archivado && (
                   <>
-                    <span className="pedido-detail__top-divider" />
                     <div className="pedido-detail__top-bar-abono">
                       <select
                         value={abonoProducto}

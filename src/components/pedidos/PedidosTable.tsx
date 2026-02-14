@@ -1,8 +1,12 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { useClientes } from '../../hooks/useClientes';
 import './PedidosTable.scss';
+
+const PAGE_SIZE = 10;
 
 interface PedidosTableProps {
   pedidos: Pedido[];
@@ -11,6 +15,15 @@ interface PedidosTableProps {
 const PedidosTable = ({ pedidos }: PedidosTableProps) => {
   const navigate = useNavigate();
   const { clientes } = useClientes();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [pedidos.length]);
+
+  const totalPages = Math.ceil(pedidos.length / PAGE_SIZE);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedPedidos = pedidos.slice(startIndex, startIndex + PAGE_SIZE);
 
   const getClienteFoto = (pedido: Pedido): string | undefined => {
     if (pedido.clienteFoto) return pedido.clienteFoto;
@@ -61,7 +74,7 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {pedidos.map((pedido) => (
+          {paginatedPedidos.map((pedido) => (
             <tr
               key={pedido.id}
               className="pedidos-table__row"
@@ -139,6 +152,28 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
           ))}
         </tbody>
       </table>
+
+      {totalPages > 1 && (
+        <div className="pedidos-table__pagination">
+          <button
+            className="pedidos-table__page-btn"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            <PiCaretLeftBold size={16} />
+          </button>
+          <span className="pedidos-table__page-info">
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            className="pedidos-table__page-btn"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            <PiCaretRightBold size={16} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

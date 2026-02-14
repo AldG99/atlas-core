@@ -230,4 +230,44 @@
     height: 8px;
     border-radius: 50%;
   }
+
+  &__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-md;
+    padding: $spacing-sm $spacing-md;
+    border-top: 1px solid $color-gray-200;
+  }
+
+  &__page-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid $color-gray-300;
+    border-radius: 6px;
+    background: $color-white;
+    color: $color-gray-700;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover:not(:disabled) {
+      background-color: $color-gray-50;
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+
+  &__page-info {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-gray-600;
+  }
 }

@@ -103,18 +103,46 @@ $topbar-height: 52px;
     gap: $spacing-md;
   }
 
-  // Image Section
-  &__image-section {
+  // Hero: Image + Info side by side
+  &__hero {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
     background-color: $color-white;
     box-shadow: $shadow-sm;
+    padding: $spacing-lg;
+
+    @include md {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+  &__hero-info {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Image Section
+  &__image-section {
+    background-color: $color-gray-100;
+    border-radius: 12px;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    max-height: 300px;
+    aspect-ratio: 1 / 1;
+    max-width: 280px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+    flex-shrink: 0;
+
+    @media (max-width: 767px) {
+      max-width: 200px;
+    }
 
     img {
       width: 100%;
@@ -165,7 +193,7 @@ $topbar-height: 52px;
     }
   }
 
-  // Header
+  // Header (legacy, now inside hero)
   &__header {
     display: flex;
     justify-content: space-between;
@@ -208,14 +236,14 @@ $topbar-height: 52px;
   &__price-edit {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: $spacing-sm;
   }
 
   &__price-edit-discount {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: $spacing-xs;
   }
 
@@ -234,7 +262,7 @@ $topbar-height: 52px;
   &__price-discount {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 4px;
   }
 
@@ -540,7 +568,7 @@ $topbar-height: 52px;
       font-weight: 700;
       color: $color-success;
       width: 150px;
-      text-align: right;
+      text-align: left;
     }
 
     &--discount {
