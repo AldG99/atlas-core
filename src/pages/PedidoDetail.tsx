@@ -474,10 +474,7 @@ const PedidoDetail = () => {
             <div className="pedido-detail__client">
               <div className="pedido-detail__avatar">
                 {clienteFoto ? (
-                  <img
-                    src={clienteFoto}
-                    alt={pedido.clienteNombre}
-                  />
+                  <img src={clienteFoto} alt={pedido.clienteNombre} />
                 ) : (
                   <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
                 )}
@@ -537,9 +534,17 @@ const PedidoDetail = () => {
                         <span>{p.nombre}</span>
                         {isDescuentoActivo(p) ? (
                           <span className="pedido-detail__product-dropdown-discount">
-                            <span className="pedido-detail__product-dropdown-badge">-{p.descuento}%</span>
-                            <span className="pedido-detail__product-dropdown-original">{formatCurrency(p.precio)}</span>
-                            <span className="pedido-detail__product-dropdown-final">{formatCurrency(getPrecioConDescuento(p.precio, p.descuento!))}</span>
+                            <span className="pedido-detail__product-dropdown-badge">
+                              -{p.descuento}%
+                            </span>
+                            <span className="pedido-detail__product-dropdown-original">
+                              {formatCurrency(p.precio)}
+                            </span>
+                            <span className="pedido-detail__product-dropdown-final">
+                              {formatCurrency(
+                                getPrecioConDescuento(p.precio, p.descuento!)
+                              )}
+                            </span>
                           </span>
                         ) : (
                           <span className="pedido-detail__product-dropdown-price">
@@ -623,18 +628,24 @@ const PedidoDetail = () => {
                       <td>
                         <div className="pedido-detail__product-name-cell">
                           <span>{p.nombre}</span>
-                          {p.descuento && p.descuento > 0 && p.precioOriginal && (
-                            <div className="pedido-detail__product-discount-info">
-                              <span className="pedido-detail__product-discount-badge">-{p.descuento}%</span>
-                              <span className="pedido-detail__product-discount-original">
-                                {formatCurrency(p.precioOriginal)}
-                              </span>
-                              <span className="pedido-detail__product-discount-arrow">&rarr;</span>
-                              <span className="pedido-detail__product-discount-final">
-                                {formatCurrency(p.precioUnitario)}
-                              </span>
-                            </div>
-                          )}
+                          {p.descuento &&
+                            p.descuento > 0 &&
+                            p.precioOriginal && (
+                              <div className="pedido-detail__product-discount-info">
+                                <span className="pedido-detail__product-discount-badge">
+                                  -{p.descuento}%
+                                </span>
+                                <span className="pedido-detail__product-discount-original">
+                                  {formatCurrency(p.precioOriginal)}
+                                </span>
+                                <span className="pedido-detail__product-discount-arrow">
+                                  &rarr;
+                                </span>
+                                <span className="pedido-detail__product-discount-final">
+                                  {formatCurrency(p.precioUnitario)}
+                                </span>
+                              </div>
+                            )}
                         </div>
                       </td>
                       <td>
@@ -919,9 +930,20 @@ const PedidoDetail = () => {
                     <span className="pedido-detail__modal-label">Precio</span>
                     {isDescuentoActivo(selectedProducto) ? (
                       <span className="pedido-detail__modal-price-discount">
-                        <span className="pedido-detail__modal-price-badge">-{selectedProducto.descuento}%</span>
-                        <span className="pedido-detail__modal-price-original">{formatCurrency(selectedProducto.precio)}</span>
-                        <span className="pedido-detail__modal-value">{formatCurrency(getPrecioConDescuento(selectedProducto.precio, selectedProducto.descuento!))}</span>
+                        <span className="pedido-detail__modal-price-badge">
+                          -{selectedProducto.descuento}%
+                        </span>
+                        <span className="pedido-detail__modal-price-original">
+                          {formatCurrency(selectedProducto.precio)}
+                        </span>
+                        <span className="pedido-detail__modal-value">
+                          {formatCurrency(
+                            getPrecioConDescuento(
+                              selectedProducto.precio,
+                              selectedProducto.descuento!
+                            )
+                          )}
+                        </span>
                       </span>
                     ) : (
                       <span className="pedido-detail__modal-value">

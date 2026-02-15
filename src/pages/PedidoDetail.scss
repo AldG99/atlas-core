@@ -364,15 +364,14 @@ $bottombar-height: 64px;
   &__abonos-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: auto;
 
     thead {
       background-color: $color-gray-50;
       border-bottom: 1px solid $color-gray-200;
 
       th {
-        padding: $spacing-sm $spacing-md;
-        font-size: $font-size-sm;
+        padding: $spacing-xs $spacing-sm;
+        font-size: $font-size-xs;
         font-weight: 600;
         color: $color-gray-500;
         text-align: left;
@@ -390,54 +389,30 @@ $bottombar-height: 64px;
       }
 
       td {
-        padding: $spacing-sm $spacing-md;
+        padding: $spacing-xs $spacing-sm;
         font-size: $font-size-sm;
         color: $color-gray-800;
         vertical-align: middle;
+        white-space: nowrap;
       }
     }
   }
 
   &__products-table {
-    thead th {
-      // Cant.
-      &:nth-child(2) {
-        text-align: center;
-      }
-      // Etiquetas
-      &:nth-child(4) {
-        text-align: center;
-      }
-      // Abonado
-      &:nth-child(5) {
-        text-align: right;
-      }
-      // Subtotal
-      &:nth-child(6) {
-        text-align: right;
-      }
+    thead th,
+    tbody td {
+      &:nth-child(2) { text-align: center; }   // Cant.
+      &:nth-child(4) { text-align: center; }   // Etiquetas
+      &:nth-child(5) { text-align: right; }     // Abonado
+      &:nth-child(6) { text-align: right; }     // Subtotal
+      &:nth-child(7) { text-align: center; }    // Estado
+      &:last-child { text-align: center; }      // Acciones
     }
 
     tbody td {
-      // Cant.
-      &:nth-child(2) {
-        text-align: center;
-        font-weight: 600;
-      }
-      // Etiquetas
-      &:nth-child(4) {
-        text-align: center;
-      }
-      // Abonado
-      &:nth-child(5) {
-        text-align: right;
-        font-weight: 600;
-      }
-      // Subtotal
-      &:nth-child(6) {
-        text-align: right;
-        font-weight: 600;
-      }
+      &:nth-child(2) { font-weight: 600; }     // Cant.
+      &:nth-child(5) { font-weight: 600; }     // Abonado
+      &:nth-child(6) { font-weight: 600; }     // Subtotal
     }
   }
 
@@ -452,8 +427,8 @@ $bottombar-height: 64px;
 
   &__clave {
     display: inline-block;
-    padding: 2px 6px;
-    font-size: $font-size-sm;
+    padding: 1px 5px;
+    font-size: $font-size-xs;
     font-weight: 500;
     color: $color-primary;
     background-color: rgba($color-primary, 0.1);
@@ -461,9 +436,8 @@ $bottombar-height: 64px;
   }
 
   &__etiquetas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
+    display: inline-flex;
+    gap: 2px;
     justify-content: center;
   }
 
@@ -471,58 +445,43 @@ $bottombar-height: 64px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     color: $color-white;
   }
 
   &__product-name-cell {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  &__product-discount-info {
-    display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    min-width: 180px;
+  }
+
+  &__product-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__product-discount-badge {
     display: inline-flex;
     align-items: center;
-    padding: 1px 6px;
+    padding: 1px 5px;
     border-radius: 10px;
     background-color: #dc2626;
     color: $color-white;
     font-size: 10px;
     font-weight: 700;
-    white-space: nowrap;
-  }
-
-  &__product-discount-original {
-    font-size: $font-size-xs;
-    color: $color-gray-400;
-    text-decoration: line-through;
-  }
-
-  &__product-discount-arrow {
-    font-size: $font-size-xs;
-    color: $color-gray-400;
-  }
-
-  &__product-discount-final {
-    font-size: $font-size-xs;
-    font-weight: 600;
-    color: #16a34a;
+    flex-shrink: 0;
   }
 
   &__product-subtotal-discount {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
   }
 
   &__product-subtotal-original {
@@ -533,55 +492,48 @@ $bottombar-height: 64px;
   }
 
   &__product-paid-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    min-width: 145px;
+    justify-content: flex-end;
   }
 
   &__product-bar {
-    width: 100%;
-    height: 4px;
+    width: 80px;
+    height: 5px;
     background-color: $color-gray-200;
     overflow: hidden;
+    flex-shrink: 0;
+    border-radius: 3px;
   }
 
   &__product-bar-fill {
     height: 100%;
+    border-radius: 2px;
     transition: width 0.3s ease;
 
-    &--paid {
-      background-color: #16a34a;
-    }
-    &--partial {
-      background-color: #ea580c;
-    }
-    &--pending {
-      background-color: $color-gray-300;
-    }
+    &--paid { background-color: #16a34a; }
+    &--partial { background-color: #ea580c; }
+    &--pending { background-color: $color-gray-300; }
   }
 
   &__product-status {
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     font-weight: 600;
 
-    &--paid {
-      color: #16a34a;
-    }
-    &--partial {
-      color: #ea580c;
-    }
-    &--pending {
-      color: $color-gray-400;
-    }
+    &--paid { color: #16a34a; }
+    &--partial { color: #ea580c; }
+    &--pending { color: $color-gray-400; }
   }
 
   &__product-eye {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 28px;
+    height: 28px;
     border: none;
     background: none;
     color: $color-primary;
@@ -640,8 +592,8 @@ $bottombar-height: 64px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 28px;
+    height: 28px;
     border: none;
     background: none;
     color: #dc2626;
