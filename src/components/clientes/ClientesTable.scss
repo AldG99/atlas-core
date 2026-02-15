@@ -3,28 +3,33 @@
 
 .clientes-table-container {
   background-color: $color-white;
-  border-radius: $border-radius-lg;
+  border-radius: 0;
   box-shadow: $shadow-sm;
-  overflow: hidden;
   overflow-x: auto;
 }
 
 .clientes-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1000px;
+  table-layout: fixed;
+  min-width: 700px;
 
   thead {
     background-color: $color-gray-50;
     border-bottom: 1px solid $color-gray-200;
 
     th {
-      padding: $spacing-md;
+      padding: $spacing-sm $spacing-md;
       text-align: left;
       font-size: $font-size-sm;
       font-weight: 600;
       color: $color-gray-600;
       white-space: nowrap;
+
+      // Registro
+      &:last-child {
+        text-align: right;
+      }
     }
   }
 
@@ -32,11 +37,6 @@
     tr {
       border-bottom: 1px solid $color-gray-100;
       transition: background-color $transition-fast;
-      height: 72px;
-
-      &:hover {
-        background-color: $color-gray-50;
-      }
 
       &:last-child {
         border-bottom: none;
@@ -44,19 +44,28 @@
     }
 
     td {
-      padding: $spacing-sm $spacing-md;
+      padding: $spacing-xs $spacing-md;
       font-size: $font-size-sm;
       color: $color-gray-700;
       vertical-align: middle;
-      height: 72px;
-      max-height: 72px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      // Registro
+      &:last-child {
+        text-align: right;
+      }
     }
   }
 
   &__row {
+    height: 56px;
     cursor: pointer;
 
     &:hover {
+      background-color: $color-gray-50;
+
       .clientes-table__name {
         color: $color-primary;
       }
@@ -67,11 +76,12 @@
     display: flex;
     align-items: center;
     gap: $spacing-sm;
+    overflow: hidden;
   }
 
   &__avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     overflow: hidden;
     background: linear-gradient(135deg, $color-primary, $color-primary-dark);
@@ -93,21 +103,6 @@
     }
   }
 
-  &__info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  &__name-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    min-width: 0;
-  }
-
   &__name {
     font-weight: 600;
     color: $color-gray-800;
@@ -117,62 +112,76 @@
     transition: color 0.2s ease;
   }
 
-  &__phone-sub {
-    font-size: $font-size-xs;
-    color: $color-gray-500;
-  }
-
-  &__address {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    max-width: 240px;
-    overflow: hidden;
-  }
-
-  &__address-main {
-    font-size: $font-size-sm;
-    font-weight: 500;
-    color: $color-gray-800;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__address-secondary {
-    font-size: $font-size-xs;
-    color: $color-gray-500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__cp {
-    font-size: $font-size-sm;
-    font-weight: 600;
-    color: $color-primary;
-  }
-
-  &__schedule {
-    font-size: $font-size-sm;
-    color: $color-gray-600;
-  }
-
-  &__date {
-    font-size: $font-size-xs;
-    color: $color-gray-500;
-    white-space: nowrap;
-  }
-
   &__fav-icon {
     color: #f59e0b;
     flex-shrink: 0;
   }
 
-  &__actions {
+  &__phone {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+    white-space: nowrap;
+  }
+
+  &__address {
+    font-size: $font-size-sm;
+    color: $color-gray-700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  &__cp {
+    font-size: $font-size-xs;
+    font-weight: 500;
+    color: $color-gray-600;
+    white-space: nowrap;
+  }
+
+  &__date {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+    white-space: nowrap;
+  }
+
+  &__pagination {
     display: flex;
-    gap: $spacing-xs;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    gap: $spacing-md;
+    padding: $spacing-sm $spacing-md;
+    border-top: 1px solid $color-gray-200;
+  }
+
+  &__page-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid $color-gray-300;
+    border-radius: 6px;
+    background: $color-white;
+    color: $color-gray-700;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover:not(:disabled) {
+      background-color: $color-gray-50;
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+
+  &__page-info {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-gray-600;
   }
 }

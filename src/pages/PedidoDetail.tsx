@@ -1,19 +1,16 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   PiArrowLeftBold,
   PiWhatsappLogoBold,
   PiCopyBold,
-  PiPencilBold,
   PiCheckBold,
-  PiPlusBold,
   PiEyeBold,
   PiXBold,
   PiPackageBold,
   PiTrashBold,
-  PiMinusBold,
 } from 'react-icons/pi';
-import type { Pedido, PedidoStatus, ProductoItem } from '../types/Pedido';
+import type { Pedido, PedidoStatus } from '../types/Pedido';
 import type { Producto, Etiqueta } from '../types/Producto';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
@@ -28,7 +25,6 @@ import {
 import {
   getPedidoById,
   updatePedidoStatus,
-  updatePedido,
   addAbono,
   deletePedido,
 } from '../services/pedidoService';
@@ -60,15 +56,6 @@ const PedidoDetail = () => {
     null
   );
 
-  // Editing state
-  const [isEditing, setIsEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [editProductos, setEditProductos] = useState<ProductoItem[]>([]);
-  const [editNotas, setEditNotas] = useState('');
-  const [productSearchTerm, setProductSearchTerm] = useState('');
-  const [showProductDropdown, setShowProductDropdown] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-
   const fetchPedido = useCallback(async () => {
     if (!id || !user) return;
     try {
@@ -92,17 +79,6 @@ const PedidoDetail = () => {
     fetchPedido();
   }, [fetchPedido]);
 
-  // Close product dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowProductDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const getClienteFoto = (p: Pedido): string | undefined => {
     if (p.clienteFoto) return p.clienteFoto;
     const cliente = clientes.find(c => c.telefono === p.clienteTelefono);
@@ -118,90 +94,6 @@ const PedidoDetail = () => {
       .filter((e): e is Etiqueta => !!e);
   };
 
-  // Editing helpers
-  const startEditing = () => {
-    if (!pedido) return;
-    setEditProductos(pedido.productos.map(p => ({ ...p })));
-    setEditNotas(pedido.notas || '');
-    setIsEditing(true);
-  };
-
-  const cancelEditing = () => {
-    setIsEditing(false);
-    setEditProductos([]);
-    setEditNotas('');
-    setProductSearchTerm('');
-    setShowProductDropdown(false);
-  };
-
-  const handleSave = async () => {
-    if (!pedido) return;
-    if (editProductos.length === 0) {
-      showToast('El pedido debe tener al menos un producto', 'error');
-      return;
-    }
-    try {
-      setSaving(true);
-      const newTotal = editProductos.reduce((sum, p) => sum + p.subtotal, 0);
-      const data = {
-        productos: editProductos,
-        total: newTotal,
-        notas: editNotas || undefined,
-      };
-      await updatePedido(pedido.id, data);
-      setPedido({
-        ...pedido,
-        productos: editProductos,
-        total: newTotal,
-        notas: editNotas || undefined,
-      });
-      setIsEditing(false);
-      setProductSearchTerm('');
-      setShowProductDropdown(false);
-      showToast('Pedido actualizado correctamente', 'success');
-    } catch {
-      showToast('Error al actualizar el pedido', 'error');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const updateProductoCantidad = (index: number, delta: number) => {
-    setEditProductos(prev => {
-      const updated = [...prev];
-      const p = { ...updated[index] };
-      const newCant = Math.max(1, p.cantidad + delta);
-      p.cantidad = newCant;
-      p.subtotal = newCant * p.precioUnitario;
-      updated[index] = p;
-      return updated;
-    });
-  };
-
-  const removeProducto = (index: number) => {
-    setEditProductos(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const addProductoToEdit = (producto: Producto) => {
-    const existing = editProductos.findIndex(p => p.clave === producto.clave);
-    if (existing >= 0) {
-      updateProductoCantidad(existing, 1);
-    } else {
-      setEditProductos(prev => [
-        ...prev,
-        {
-          nombre: producto.nombre,
-          clave: producto.clave,
-          cantidad: 1,
-          precioUnitario: producto.precio,
-          subtotal: producto.precio,
-        },
-      ]);
-    }
-    setProductSearchTerm('');
-    setShowProductDropdown(false);
-  };
-
   const isDescuentoActivo = (p: Producto): boolean => {
     if (!p.descuento || p.descuento <= 0) return false;
     if (!p.fechaFinDescuento) return false;
@@ -211,16 +103,6 @@ const PedidoDetail = () => {
   const getPrecioConDescuento = (precio: number, descuento: number): number => {
     return precio * (1 - descuento / 100);
   };
-
-  const filteredProducts = productSearchTerm.trim()
-    ? catalogoProductos.filter(
-        p =>
-          p.nombre.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
-          p.clave.toLowerCase().includes(productSearchTerm.toLowerCase())
-      )
-    : [];
-
-  const editTotal = editProductos.reduce((sum, p) => sum + p.subtotal, 0);
 
   const handleCopy = async () => {
     if (!pedido) return;
@@ -324,14 +206,13 @@ const PedidoDetail = () => {
   const abonos = pedido.abonos || [];
 
   // Calculate coverage per product
-  const productosActuales = isEditing ? editProductos : pedido.productos;
-  const asignadoPorProducto: number[] = productosActuales.map(() => 0);
+  const asignadoPorProducto: number[] = pedido.productos.map(() => 0);
   const abonosGenerales: number[] = [];
   abonos.forEach(a => {
     if (
       typeof a.productoIndex === 'number' &&
       a.productoIndex >= 0 &&
-      a.productoIndex < productosActuales.length
+      a.productoIndex < pedido.productos.length
     ) {
       asignadoPorProducto[a.productoIndex] += a.monto;
     } else {
@@ -340,16 +221,15 @@ const PedidoDetail = () => {
   });
   const cobertura = [...asignadoPorProducto];
   let generalPool = abonosGenerales.reduce((s, m) => s + m, 0);
-  productosActuales.forEach((p, idx) => {
+  pedido.productos.forEach((p, idx) => {
     const falta = Math.max(0, p.subtotal - cobertura[idx]);
     const porcion = Math.min(generalPool, falta);
     cobertura[idx] += porcion;
     generalPool -= porcion;
   });
 
-  const totalActual = isEditing ? editTotal : pedido.total;
-  const restante = totalActual - pagado;
-  const liquidado = pagado >= totalActual;
+  const restante = pedido.total - pagado;
+  const liquidado = pagado >= pedido.total;
   const puedeMarcarEntregado = pedido.estado === 'en_preparacion';
 
   return (
@@ -365,103 +245,75 @@ const PedidoDetail = () => {
             >
               <PiArrowLeftBold size={20} />
             </button>
-            {isEditing ? (
-              <div className="pedido-detail__top-bar-actions">
-                <button
-                  onClick={cancelEditing}
-                  className="btn btn--outline btn--sm"
-                  disabled={saving}
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleSave}
-                  className="btn btn--primary btn--sm"
-                  disabled={saving || editProductos.length === 0}
-                >
-                  {saving ? 'Guardando...' : 'Guardar'}
-                </button>
-              </div>
-            ) : (
+            <button
+              onClick={handleWhatsApp}
+              className="pedido-detail__icon-btn pedido-detail__icon-btn--whatsapp"
+              title="Enviar por WhatsApp"
+            >
+              <PiWhatsappLogoBold size={20} />
+            </button>
+            <button
+              onClick={handleCopy}
+              className={`pedido-detail__icon-btn ${copiedId ? 'pedido-detail__icon-btn--success' : ''}`}
+              title={copiedId ? 'Copiado!' : 'Copiar al portapapeles'}
+            >
+              {copiedId ? (
+                <PiCheckBold size={20} />
+              ) : (
+                <PiCopyBold size={20} />
+              )}
+            </button>
+            <span className="pedido-detail__top-divider" />
+            <button
+              onClick={handleDelete}
+              className="pedido-detail__icon-btn pedido-detail__icon-btn--danger"
+              title="Eliminar pedido"
+            >
+              <PiTrashBold size={20} />
+            </button>
+            {!pedido.archivado && (
               <>
-                <button
-                  onClick={handleWhatsApp}
-                  className="pedido-detail__icon-btn pedido-detail__icon-btn--whatsapp"
-                  title="Enviar por WhatsApp"
-                >
-                  <PiWhatsappLogoBold size={20} />
-                </button>
-                <button
-                  onClick={handleCopy}
-                  className={`pedido-detail__icon-btn ${copiedId ? 'pedido-detail__icon-btn--success' : ''}`}
-                  title={copiedId ? 'Copiado!' : 'Copiar al portapapeles'}
-                >
-                  {copiedId ? (
-                    <PiCheckBold size={20} />
-                  ) : (
-                    <PiCopyBold size={20} />
-                  )}
-                </button>
-                <span className="pedido-detail__top-divider" />
-                <button
-                  onClick={startEditing}
-                  className="pedido-detail__icon-btn pedido-detail__icon-btn--primary"
-                  title="Editar pedido"
-                >
-                  <PiPencilBold size={20} />
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="pedido-detail__icon-btn pedido-detail__icon-btn--danger"
-                  title="Eliminar pedido"
-                >
-                  <PiTrashBold size={20} />
-                </button>
-                {!pedido.archivado && (
-                  <>
-                    <div className="pedido-detail__top-bar-abono">
-                      <select
-                        value={abonoProducto}
-                        onChange={e => setAbonoProducto(e.target.value)}
-                        disabled={liquidado}
-                      >
-                        <option value="general">General</option>
-                        {pedido.productos.map((p, idx) => (
-                          <option key={idx} value={idx}>
-                            {p.clave ? `[${p.clave}] ` : ''}
-                            {p.nombre}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        placeholder="$0.00"
-                        value={abonoInput}
-                        onChange={e => {
-                          setAbonoInput(e.target.value);
-                          setAbonoError(null);
-                        }}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') handleAddAbono();
-                        }}
-                        disabled={liquidado}
-                      />
-                      <button
-                        className="btn btn--primary btn--sm"
-                        onClick={handleAddAbono}
-                        disabled={liquidado}
-                      >
-                        Abonar
-                      </button>
-                    </div>
-                    {abonoError && (
-                      <span className="pedido-detail__top-bar-abono-error">
-                        {abonoError}
-                      </span>
-                    )}
-                  </>
+                <div className="pedido-detail__top-bar-abono">
+                  <select
+                    value={abonoProducto}
+                    onChange={e => setAbonoProducto(e.target.value)}
+                    disabled={liquidado}
+                  >
+                    <option value="general">General</option>
+                    {pedido.productos.map((p, idx) => (
+                      <option key={idx} value={idx}>
+                        {p.clave ? `[${p.clave}] ` : ''}
+                        {p.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="$0.00"
+                    value={abonoInput}
+                    onChange={e => {
+                      setAbonoInput(e.target.value);
+                      setAbonoError(null);
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleAddAbono();
+                    }}
+                    disabled={liquidado}
+                  />
+                  <button
+                    className="btn btn--primary btn--sm"
+                    onClick={handleAddAbono}
+                    disabled={liquidado}
+                  >
+                    Abonar
+                  </button>
+                </div>
+                {abonoError && (
+                  <span className="pedido-detail__top-bar-abono-error">
+                    {abonoError}
+                  </span>
                 )}
               </>
             )}
@@ -503,85 +355,35 @@ const PedidoDetail = () => {
             <div className="pedido-detail__section-header">
               <strong>Productos y pagos</strong>
               <span className="pedido-detail__payment-info">
-                {formatCurrency(pagado)} de {formatCurrency(totalActual)}
+                {formatCurrency(pagado)} de {formatCurrency(pedido.total)}
               </span>
             </div>
 
-            {isEditing && (
-              <div className="pedido-detail__product-search" ref={searchRef}>
-                <input
-                  type="text"
-                  placeholder="Buscar producto para agregar..."
-                  value={productSearchTerm}
-                  onChange={e => {
-                    setProductSearchTerm(e.target.value);
-                    setShowProductDropdown(e.target.value.trim().length > 0);
-                  }}
-                  onFocus={() => {
-                    if (productSearchTerm.trim()) setShowProductDropdown(true);
-                  }}
-                  className="pedido-detail__product-search-input"
-                />
-                {showProductDropdown && filteredProducts.length > 0 && (
-                  <div className="pedido-detail__product-dropdown">
-                    {filteredProducts.map(p => (
-                      <button
-                        key={p.id}
-                        className="pedido-detail__product-dropdown-item"
-                        onClick={() => addProductoToEdit(p)}
-                      >
-                        <span className="pedido-detail__clave">{p.clave}</span>
-                        <span>{p.nombre}</span>
-                        {isDescuentoActivo(p) ? (
-                          <span className="pedido-detail__product-dropdown-discount">
-                            <span className="pedido-detail__product-dropdown-badge">
-                              -{p.descuento}%
-                            </span>
-                            <span className="pedido-detail__product-dropdown-original">
-                              {formatCurrency(p.precio)}
-                            </span>
-                            <span className="pedido-detail__product-dropdown-final">
-                              {formatCurrency(
-                                getPrecioConDescuento(p.precio, p.descuento!)
-                              )}
-                            </span>
-                          </span>
-                        ) : (
-                          <span className="pedido-detail__product-dropdown-price">
-                            {formatCurrency(p.precio)}
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {showProductDropdown &&
-                  productSearchTerm.trim() &&
-                  filteredProducts.length === 0 && (
-                    <div className="pedido-detail__product-dropdown">
-                      <div className="pedido-detail__product-dropdown-empty">
-                        Sin resultados
-                      </div>
-                    </div>
-                  )}
-              </div>
-            )}
-
             <table className="pedido-detail__products-table">
+              <colgroup>
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '5%' }} />
+                <col style={{ width: '22%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '21%' }} />
+                <col style={{ width: '14%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '8%' }} />
+              </colgroup>
               <thead>
                 <tr>
                   <th>Clave</th>
                   <th>Cant.</th>
                   <th>Producto</th>
                   <th>Etiquetas</th>
-                  {!isEditing && <th>Abonado</th>}
+                  <th>Abonado</th>
                   <th>Subtotal</th>
-                  {!isEditing && <th>Estado</th>}
+                  <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {productosActuales.map((p, index) => {
+                {pedido.productos.map((p, index) => {
                   const cubierto = Math.min(cobertura[index] || 0, p.subtotal);
                   const porcentaje =
                     p.subtotal > 0 ? (cubierto / p.subtotal) * 100 : 0;
@@ -605,47 +407,15 @@ const PedidoDetail = () => {
                           '-'
                         )}
                       </td>
-                      <td>
-                        {isEditing ? (
-                          <div className="pedido-detail__cantidad-edit">
-                            <button
-                              onClick={() => updateProductoCantidad(index, -1)}
-                              disabled={p.cantidad <= 1}
-                            >
-                              <PiMinusBold size={12} />
-                            </button>
-                            <span>{p.cantidad}</span>
-                            <button
-                              onClick={() => updateProductoCantidad(index, 1)}
-                            >
-                              <PiPlusBold size={12} />
-                            </button>
-                          </div>
-                        ) : (
-                          p.cantidad
-                        )}
-                      </td>
+                      <td>{p.cantidad}</td>
                       <td>
                         <div className="pedido-detail__product-name-cell">
-                          <span>{p.nombre}</span>
-                          {p.descuento &&
-                            p.descuento > 0 &&
-                            p.precioOriginal && (
-                              <div className="pedido-detail__product-discount-info">
-                                <span className="pedido-detail__product-discount-badge">
-                                  -{p.descuento}%
-                                </span>
-                                <span className="pedido-detail__product-discount-original">
-                                  {formatCurrency(p.precioOriginal)}
-                                </span>
-                                <span className="pedido-detail__product-discount-arrow">
-                                  &rarr;
-                                </span>
-                                <span className="pedido-detail__product-discount-final">
-                                  {formatCurrency(p.precioUnitario)}
-                                </span>
-                              </div>
-                            )}
+                          <span className="pedido-detail__product-name">{p.nombre}</span>
+                          {p.descuento && p.descuento > 0 && (
+                            <span className="pedido-detail__product-discount-badge">
+                              -{p.descuento}%
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td>
@@ -666,19 +436,17 @@ const PedidoDetail = () => {
                           })}
                         </div>
                       </td>
-                      {!isEditing && (
-                        <td>
-                          <div className="pedido-detail__product-paid-cell">
-                            <span>{formatCurrency(cubierto)}</span>
-                            <div className="pedido-detail__product-bar">
-                              <div
-                                className={`pedido-detail__product-bar-fill pedido-detail__product-bar-fill--${status}`}
-                                style={{ width: `${porcentaje}%` }}
-                              />
-                            </div>
+                      <td>
+                        <div className="pedido-detail__product-paid-cell">
+                          <span>{formatCurrency(cubierto)}</span>
+                          <div className="pedido-detail__product-bar">
+                            <div
+                              className={`pedido-detail__product-bar-fill pedido-detail__product-bar-fill--${status}`}
+                              style={{ width: `${porcentaje}%` }}
+                            />
                           </div>
-                        </td>
-                      )}
+                        </div>
+                      </td>
                       <td>
                         {p.precioOriginal && p.descuento ? (
                           <div className="pedido-detail__product-subtotal-discount">
@@ -691,42 +459,30 @@ const PedidoDetail = () => {
                           formatCurrency(p.subtotal)
                         )}
                       </td>
-                      {!isEditing && (
-                        <td>
-                          <span
-                            className={`pedido-detail__product-status pedido-detail__product-status--${status}`}
-                          >
-                            {status === 'paid'
-                              ? 'Pagado'
-                              : status === 'partial'
-                                ? `${Math.round(porcentaje)}%`
-                                : 'Pendiente'}
-                          </span>
-                        </td>
-                      )}
                       <td>
-                        {isEditing ? (
-                          <button
-                            className="pedido-detail__product-remove"
-                            title="Eliminar producto"
-                            onClick={() => removeProducto(index)}
-                          >
-                            <PiTrashBold size={16} />
-                          </button>
-                        ) : (
-                          <button
-                            className="pedido-detail__product-eye"
-                            title="Ver detalles"
-                            onClick={() => {
-                              const found = catalogoProductos.find(
-                                cp => cp.clave === p.clave
-                              );
-                              if (found) setSelectedProducto(found);
-                            }}
-                          >
-                            <PiEyeBold size={20} />
-                          </button>
-                        )}
+                        <span
+                          className={`pedido-detail__product-status pedido-detail__product-status--${status}`}
+                        >
+                          {status === 'paid'
+                            ? 'Pagado'
+                            : status === 'partial'
+                              ? `${Math.round(porcentaje)}%`
+                              : 'Pendiente'}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className="pedido-detail__product-eye"
+                          title="Ver detalles"
+                          onClick={() => {
+                            const found = catalogoProductos.find(
+                              cp => cp.clave === p.clave
+                            );
+                            if (found) setSelectedProducto(found);
+                          }}
+                        >
+                          <PiEyeBold size={20} />
+                        </button>
                       </td>
                     </tr>
                   );
@@ -738,58 +494,42 @@ const PedidoDetail = () => {
                   <td></td>
                   <td></td>
                   <td></td>
-                  {!isEditing && (
-                    <td>
-                      <strong>{formatCurrency(pagado)}</strong>
-                    </td>
-                  )}
                   <td>
-                    <strong>{formatCurrency(totalActual)}</strong>
+                    <div className="pedido-detail__product-paid-cell">
+                      <strong>{formatCurrency(pagado)}</strong>
+                      <div className="pedido-detail__product-bar" style={{ visibility: 'hidden' }} />
+                    </div>
                   </td>
-                  {!isEditing && (
-                    <td>
-                      <strong
-                        className={
-                          pagado >= totalActual
-                            ? 'pedido-detail__product-status--paid'
-                            : pagado > 0
-                              ? 'pedido-detail__product-status--partial'
-                              : 'pedido-detail__product-status--pending'
-                        }
-                      >
-                        {pagado >= totalActual
-                          ? 'Liquidado'
-                          : formatCurrency(totalActual - pagado)}
-                      </strong>
-                    </td>
-                  )}
+                  <td>
+                    <strong>{formatCurrency(pedido.total)}</strong>
+                  </td>
+                  <td>
+                    <strong
+                      className={
+                        pagado >= pedido.total
+                          ? 'pedido-detail__product-status--paid'
+                          : pagado > 0
+                            ? 'pedido-detail__product-status--partial'
+                            : 'pedido-detail__product-status--pending'
+                      }
+                    >
+                      {pagado >= pedido.total
+                        ? 'Liquidado'
+                        : formatCurrency(pedido.total - pagado)}
+                    </strong>
+                  </td>
                   <td></td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          {isEditing ? (
+          {pedido.notas && (
             <div className="pedido-detail__section">
-              <div className="pedido-detail__section-header">
-                <strong>Notas</strong>
+              <div className="pedido-detail__notes">
+                <strong>Notas:</strong> {pedido.notas}
               </div>
-              <textarea
-                value={editNotas}
-                onChange={e => setEditNotas(e.target.value)}
-                placeholder="Notas del pedido..."
-                className="pedido-detail__textarea"
-                rows={3}
-              />
             </div>
-          ) : (
-            pedido.notas && (
-              <div className="pedido-detail__section">
-                <div className="pedido-detail__notes">
-                  <strong>Notas:</strong> {pedido.notas}
-                </div>
-              </div>
-            )
           )}
 
           {abonos.length > 0 && (
@@ -844,7 +584,6 @@ const PedidoDetail = () => {
             </div>
           )}
         </div>
-        {/* End Scrollable Content */}
 
         {/* Fixed Bottom Bar */}
         {!pedido.archivado && (
@@ -863,8 +602,8 @@ const PedidoDetail = () => {
               {pedido.estado !== 'entregado' && (
                 <button
                   onClick={() => handleChangeStatus('entregado')}
-                  className={`pedido-detail__btn-entregado ${puedeMarcarEntregado && !isEditing ? 'pedido-detail__btn-entregado--active' : ''}`}
-                  disabled={!puedeMarcarEntregado || isEditing}
+                  className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''}`}
+                  disabled={!puedeMarcarEntregado}
                   title={
                     !puedeMarcarEntregado
                       ? 'Solo disponible cuando el pedido está en preparación'

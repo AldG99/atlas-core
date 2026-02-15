@@ -6,7 +6,7 @@ $topbar-height: 52px;
 $bottombar-height: 64px;
 
 .pedido-detail {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   padding-top: $topbar-height;
   padding-bottom: $bottombar-height;
@@ -40,19 +40,12 @@ $bottombar-height: 64px;
   }
 
   &__top-bar-inner {
-    max-width: 900px;
+    max-width: 1000px;
     width: 100%;
     display: flex;
     align-items: center;
     gap: $spacing-md;
     padding-left: 0;
-  }
-
-  &__top-bar-actions {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    margin-left: auto;
   }
 
   &__top-divider {
@@ -202,6 +195,7 @@ $bottombar-height: 64px;
     padding-left: 60px;
     display: flex;
     align-items: center;
+    justify-content: center;
 
     @include md {
       left: 220px;
@@ -210,6 +204,8 @@ $bottombar-height: 64px;
   }
 
   &__bottom-bar-inner {
+    max-width: 1000px;
+    width: 100%;
     display: flex;
     align-items: center;
     gap: $spacing-md;
@@ -364,6 +360,7 @@ $bottombar-height: 64px;
   &__abonos-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 
     thead {
       background-color: $color-gray-50;
@@ -371,7 +368,7 @@ $bottombar-height: 64px;
 
       th {
         padding: $spacing-xs $spacing-sm;
-        font-size: $font-size-xs;
+        font-size: $font-size-sm;
         font-weight: 600;
         color: $color-gray-500;
         text-align: left;
@@ -395,6 +392,14 @@ $bottombar-height: 64px;
         vertical-align: middle;
         white-space: nowrap;
       }
+    }
+  }
+
+  &__abonos-table {
+    thead th,
+    tbody td {
+      &:nth-child(3) { text-align: right; } // Monto
+      &:last-child { text-align: right; }  // Fecha
     }
   }
 
@@ -457,7 +462,6 @@ $bottombar-height: 64px;
     gap: 6px;
     white-space: nowrap;
     overflow: hidden;
-    min-width: 180px;
   }
 
   &__product-name {
@@ -549,191 +553,6 @@ $bottombar-height: 64px;
     color: $color-gray-400;
   }
 
-  // Inline editing: quantity controls
-  &__cantidad-edit {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-
-    button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
-      height: 24px;
-      border: 1px solid $color-gray-300;
-      border-radius: 4px;
-      background: $color-white;
-      color: $color-gray-600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-
-      &:hover:not(:disabled) {
-        border-color: $color-primary;
-        color: $color-primary;
-      }
-
-      &:disabled {
-        opacity: 0.35;
-        cursor: not-allowed;
-      }
-    }
-
-    span {
-      min-width: 20px;
-      text-align: center;
-      font-weight: 600;
-      font-size: $font-size-sm;
-    }
-  }
-
-  // Inline editing: product remove button
-  &__product-remove {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: none;
-    color: #dc2626;
-    cursor: pointer;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: #b91c1c;
-    }
-  }
-
-  // Inline editing: product search
-  &__product-search {
-    position: relative;
-    margin-bottom: $spacing-sm;
-  }
-
-  &__product-search-input {
-    width: 100%;
-    padding: $spacing-xs $spacing-sm;
-    font-size: $font-size-sm;
-    border: 1px solid $color-gray-300;
-    border-radius: 6px;
-    background-color: $color-white;
-    color: $color-gray-800;
-    box-sizing: border-box;
-    transition:
-      border-color 0.2s,
-      box-shadow 0.2s;
-
-    &:focus {
-      outline: none;
-      border-color: $color-primary;
-      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
-    }
-
-    &::placeholder {
-      color: $color-gray-400;
-    }
-  }
-
-  &__product-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    background-color: $color-white;
-    border: 1px solid $color-gray-200;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-height: 200px;
-    overflow-y: auto;
-    margin-top: 4px;
-  }
-
-  &__product-dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    width: 100%;
-    padding: $spacing-xs $spacing-sm;
-    border: none;
-    background: none;
-    font-size: $font-size-sm;
-    color: $color-gray-800;
-    cursor: pointer;
-    text-align: left;
-
-    &:hover {
-      background-color: $color-gray-50;
-    }
-  }
-
-  &__product-dropdown-price {
-    margin-left: auto;
-    font-weight: 600;
-    color: $color-gray-500;
-    font-size: $font-size-sm;
-  }
-
-  &__product-dropdown-discount {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: auto;
-  }
-
-  &__product-dropdown-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 1px 6px;
-    border-radius: 10px;
-    background-color: #dc2626;
-    color: $color-white;
-    font-size: $font-size-xs;
-    font-weight: 700;
-  }
-
-  &__product-dropdown-original {
-    font-size: $font-size-xs;
-    color: $color-gray-400;
-    text-decoration: line-through;
-  }
-
-  &__product-dropdown-final {
-    font-size: $font-size-sm;
-    font-weight: 700;
-    color: #16a34a;
-  }
-
-  &__product-dropdown-empty {
-    padding: $spacing-sm;
-    text-align: center;
-    font-size: $font-size-sm;
-    color: $color-gray-400;
-  }
-
-  // Inline editing: textarea
-  &__textarea {
-    width: 100%;
-    padding: $spacing-sm;
-    font-size: $font-size-sm;
-    border: 1px solid $color-gray-300;
-    border-radius: 6px;
-    background-color: $color-white;
-    color: $color-gray-800;
-    resize: vertical;
-    font-family: inherit;
-    transition:
-      border-color 0.2s,
-      box-shadow 0.2s;
-    box-sizing: border-box;
-
-    &:focus {
-      outline: none;
-      border-color: $color-primary;
-      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
-    }
-  }
 
   &__btn-entregado {
     display: inline-flex;
