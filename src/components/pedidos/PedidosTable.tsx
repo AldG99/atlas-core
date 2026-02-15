@@ -36,17 +36,19 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
     <div className="pedidos-table-container">
       <table className="pedidos-table">
         <colgroup>
-          <col style={{ width: '24%' }} />
+          <col style={{ width: '20%' }} />
+          <col style={{ width: '14%' }} />
           <col style={{ width: '7%' }} />
-          <col style={{ width: '9%' }} />
+          <col style={{ width: '8%' }} />
           <col style={{ width: '12%' }} />
           <col style={{ width: '10%' }} />
-          <col style={{ width: '8%' }} />
-          <col style={{ width: '16%' }} />
+          <col style={{ width: '7%' }} />
+          <col style={{ width: '12%' }} />
         </colgroup>
         <thead>
           <tr>
             <th>Cliente</th>
+            <th>Teléfono</th>
             <th>C.P.</th>
             <th>Productos</th>
             <th>Abonado</th>
@@ -73,13 +75,13 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
                       <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
                     )}
                   </div>
-                  <div className="pedidos-table__client-info">
-                    <span className="pedidos-table__name" title={pedido.clienteNombre}>
-                      {pedido.clienteNombre}
-                    </span>
-                    <span className="pedidos-table__phone">{pedido.clienteTelefono}</span>
-                  </div>
+                  <span className="pedidos-table__name" title={pedido.clienteNombre}>
+                    {pedido.clienteNombre}
+                  </span>
                 </div>
+              </td>
+              <td>
+                <span className="pedidos-table__phone">{pedido.clienteTelefono}</span>
               </td>
               <td>
                 <span className="pedidos-table__cp">{pedido.clienteCodigoPostal || '-'}</span>
