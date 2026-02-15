@@ -147,10 +147,11 @@
   }
 
   &__product-cell {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    position: relative;
+    min-width: 32px;
   }
 
   &__product-count {
@@ -160,15 +161,18 @@
   }
 
   &__discount-indicator {
+    position: absolute;
+    top: -6px;
+    right: -10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background-color: #dc2626;
     color: $color-white;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
   }
 
