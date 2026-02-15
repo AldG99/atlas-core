@@ -16,8 +16,7 @@ const Reportes = () => {
     period,
     loading,
     error,
-    setPeriod,
-    setCustomRange
+    setPeriod
   } = useReportes();
   const { showToast } = useToast();
 
@@ -44,35 +43,38 @@ const Reportes = () => {
           </button>
         </div>
 
-        <PeriodFilter
-          period={period}
-          onPeriodChange={setPeriod}
-          onCustomRange={setCustomRange}
-        />
+        <div className="reportes__filters">
+          <PeriodFilter
+            period={period}
+            onPeriodChange={setPeriod}
+          />
+        </div>
 
-        {loading && <p className="reportes__loading">Cargando datos...</p>}
+        <div className="reportes__content">
+          {loading && <p className="reportes__loading">Cargando datos...</p>}
 
-        {error && <p className="reportes__error">{error}</p>}
+          {error && <p className="reportes__error">{error}</p>}
 
-        {!loading && !error && (
-          <>
-            <KPICards kpis={reporteData.kpis} />
+          {!loading && !error && (
+            <>
+              <KPICards kpis={reporteData.kpis} />
 
-            <div className="reportes__grid">
-              <div className="reportes__chart">
-                <SalesChart
-                  data={reporteData.chartData}
-                  totalVentas={reporteData.kpis.ventasTotales}
-                  totalPedidos={reporteData.kpis.totalPedidos}
-                />
+              <div className="reportes__grid">
+                <div className="reportes__chart">
+                  <SalesChart
+                    data={reporteData.chartData}
+                    totalVentas={reporteData.kpis.ventasTotales}
+                    totalPedidos={reporteData.kpis.totalPedidos}
+                  />
+                </div>
+                <div className="reportes__sidebar">
+                  <StatusBreakdown breakdown={reporteData.statusBreakdown} />
+                  <TopClientes clientes={reporteData.topClientes} />
+                </div>
               </div>
-              <div className="reportes__sidebar">
-                <StatusBreakdown breakdown={reporteData.statusBreakdown} />
-                <TopClientes clientes={reporteData.topClientes} />
-              </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </MainLayout>
   );

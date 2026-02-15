@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { PiCloudArrowUpBold, PiStarFill, PiStarBold } from 'react-icons/pi';
+import { PiCloudArrowUpBold, PiStarFill, PiStarBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import { useClientes } from '../hooks/useClientes';
 import { useToast } from '../hooks/useToast';
 import type { ClienteFormData } from '../types/Cliente';
@@ -101,6 +101,7 @@ const Clientes = () => {
 
         <div className="clientes__controls">
           <div className="clientes__search">
+            <PiMagnifyingGlassBold size={16} className="clientes__search-icon" />
             <input
               type="text"
               placeholder="Buscar por nombre o teléfono..."
@@ -122,33 +123,12 @@ const Clientes = () => {
           </div>
         </div>
 
-        {loading && <p className="clientes__loading">Cargando clientes...</p>}
-
-        {error && <p className="clientes__error">{error}</p>}
-
-        {!loading && !error && clientes.length === 0 && (
-          <div className="clientes__empty">
-            <p>No hay clientes registrados</p>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="btn btn--primary"
-            >
-              Agregar primer cliente
-            </button>
-          </div>
-        )}
-
-        {!loading && !error && clientes.length > 0 && filteredClientes.length === 0 && (
-          <div className="clientes__empty">
-            <p>No se encontraron clientes para "{searchTerm}"</p>
-          </div>
-        )}
-
-        {!loading && !error && filteredClientes.length > 0 && (
-          <ClientesTable
-            clientes={filteredClientes}
-          />
-        )}
+        <ClientesTable
+          clientes={filteredClientes}
+          loading={loading}
+          error={error}
+          searchTerm={searchTerm}
+        />
 
         {isModalOpen && (
           <ClienteModal

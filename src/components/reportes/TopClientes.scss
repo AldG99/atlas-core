@@ -2,12 +2,15 @@
 @use '../../styles/abstracts/mixins' as *;
 
 .top-clientes {
-  @include card;
+  background-color: $color-white;
+  border-radius: 0;
+  box-shadow: none;
+  padding: $spacing-md;
 
   &__title {
-    font-size: $font-size-lg;
+    font-size: $font-size-base;
     font-weight: 600;
-    margin: 0 0 $spacing-md;
+    margin: 0 0 $spacing-sm;
     color: $color-gray-800;
   }
 
@@ -24,15 +27,15 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;
+    gap: $spacing-xs;
   }
 
   &__item {
     display: flex;
     align-items: center;
-    gap: $spacing-md;
-    padding: $spacing-sm;
-    border-radius: $border-radius-md;
+    gap: $spacing-sm;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: 0;
     background-color: $color-gray-50;
     transition: background-color $transition-fast;
 
@@ -42,12 +45,12 @@
   }
 
   &__rank {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background-color: $color-primary;
     color: $color-white;
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     font-weight: 600;
     @include flex-center;
     flex-shrink: 0;
@@ -73,6 +76,7 @@
   }
 
   &__name {
+    font-size: $font-size-sm;
     font-weight: 500;
     color: $color-gray-800;
     @include truncate;
@@ -84,6 +88,7 @@
   }
 
   &__total {
+    font-size: $font-size-sm;
     font-weight: 600;
     color: $color-success;
     white-space: nowrap;

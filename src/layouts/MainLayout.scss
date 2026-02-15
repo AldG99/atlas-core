@@ -9,8 +9,11 @@ $header-height: 70px;
   background-color: $color-gray-100;
 
   &__wrapper {
-    min-height: 100vh;
+    height: 100vh;
     padding-top: $header-height;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 
     @include md {
       margin-left: $sidebar-width;
@@ -39,11 +42,17 @@ $header-height: 70px;
 
   &__content {
     max-width: 1400px;
+    width: 100%;
     margin: 0 auto;
     padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 
     @include md {
-      padding: $spacing-lg;
+      padding: $spacing-md $spacing-lg;
     }
   }
 }

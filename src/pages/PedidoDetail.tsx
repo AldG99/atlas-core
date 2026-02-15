@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   PiArrowLeftBold,
   PiWhatsappLogoBold,
@@ -40,6 +40,8 @@ import './PedidoDetail.scss';
 const PedidoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const backRoute = (location.state as { from?: string })?.from || ROUTES.DASHBOARD;
   const { user } = useAuth();
   const { showToast } = useToast();
   const { clientes } = useClientes();
@@ -63,13 +65,13 @@ const PedidoDetail = () => {
       const data = await getPedidoById(id, user.uid);
       if (!data) {
         showToast('Pedido no encontrado', 'error');
-        navigate(ROUTES.DASHBOARD);
+        navigate(backRoute);
         return;
       }
       setPedido(data);
     } catch {
       showToast('Error al cargar el pedido', 'error');
-      navigate(ROUTES.DASHBOARD);
+      navigate(backRoute);
     } finally {
       setLoading(false);
     }
@@ -142,7 +144,7 @@ const PedidoDetail = () => {
     try {
       await deletePedido(pedido.id);
       showToast('Pedido eliminado', 'success');
-      navigate(ROUTES.DASHBOARD);
+      navigate(backRoute);
     } catch {
       showToast('Error al eliminar el pedido', 'error');
     }
@@ -240,7 +242,7 @@ const PedidoDetail = () => {
           <div className="pedido-detail__top-bar-inner">
             <button
               className="pedido-detail__icon-btn pedido-detail__icon-btn--back"
-              onClick={() => navigate(ROUTES.DASHBOARD)}
+              onClick={() => navigate(backRoute)}
               title="Volver"
             >
               <PiArrowLeftBold size={20} />
@@ -363,11 +365,11 @@ const PedidoDetail = () => {
               <colgroup>
                 <col style={{ width: '9%' }} />
                 <col style={{ width: '5%' }} />
-                <col style={{ width: '22%' }} />
+                <col style={{ width: '18%' }} />
                 <col style={{ width: '7%' }} />
                 <col style={{ width: '21%' }} />
-                <col style={{ width: '14%' }} />
-                <col style={{ width: '9%' }} />
+                <col style={{ width: '17%' }} />
+                <col style={{ width: '12%' }} />
                 <col style={{ width: '8%' }} />
               </colgroup>
               <thead>

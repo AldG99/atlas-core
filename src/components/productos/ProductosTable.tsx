@@ -1,15 +1,31 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
 import type { Producto, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import './ProductosTable.scss';
 
+const PAGE_SIZE = 10;
+
 interface ProductosTableProps {
   productos: Producto[];
   etiquetas: Etiqueta[];
+  loading?: boolean;
+  error?: string | null;
+  searchTerm?: string;
 }
 
-const ProductosTable = ({ productos, etiquetas }: ProductosTableProps) => {
+const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: ProductosTableProps) => {
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [productos.length]);
+
+  const totalPages = Math.ceil(productos.length / PAGE_SIZE);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedProductos = productos.slice(startIndex, startIndex + PAGE_SIZE);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-MX', {
@@ -42,29 +58,57 @@ const ProductosTable = ({ productos, etiquetas }: ProductosTableProps) => {
       .filter((e): e is Etiqueta => !!e);
   };
 
+  const colgroup = (
+    <colgroup>
+      <col style={{ width: '10%' }} />
+      <col style={{ width: '22%' }} />
+      <col style={{ width: '18%' }} />
+      <col style={{ width: '14%' }} />
+      <col style={{ width: '20%' }} />
+      <col style={{ width: '16%' }} />
+    </colgroup>
+  );
+
   return (
-    <div className="productos-table-container">
-      <table className="productos-table">
-        <colgroup>
-          <col style={{ width: '10%' }} />
-          <col style={{ width: '22%' }} />
-          <col style={{ width: '18%' }} />
-          <col style={{ width: '14%' }} />
-          <col style={{ width: '20%' }} />
-          <col style={{ width: '16%' }} />
-        </colgroup>
-        <thead>
-          <tr>
-            <th>Clave</th>
-            <th>Producto</th>
-            <th>Precio</th>
-            <th>Etiquetas</th>
-            <th>Descripción</th>
-            <th>Fecha de registro</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productos.map((producto) => {
+    <div className="productos-table-wrapper">
+      <div className="productos-table-header">
+        <table className="productos-table">
+          {colgroup}
+          <thead>
+            <tr>
+              <th>Clave</th>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Etiquetas</th>
+              <th>Descripción</th>
+              <th>Registro</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div className="productos-table-container">
+        <table className="productos-table">
+          {colgroup}
+          <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan={6} className="productos-table__empty">
+                Cargando productos...
+              </td>
+            </tr>
+          ) : error ? (
+            <tr>
+              <td colSpan={6} className="productos-table__empty productos-table__empty--error">
+                {error}
+              </td>
+            </tr>
+          ) : productos.length === 0 ? (
+            <tr>
+              <td colSpan={6} className="productos-table__empty">
+                {searchTerm?.trim() ? `No se encontraron productos para "${searchTerm}"` : 'No hay ningún producto registrado'}
+              </td>
+            </tr>
+          ) : paginatedProductos.map((producto) => {
             const productoEtiquetas = getEtiquetasForProducto(producto);
             return (
               <tr key={producto.id} className="productos-table__row" onClick={() => navigate(`/producto-detalle/${producto.id}`)}>
@@ -116,8 +160,29 @@ const ProductosTable = ({ productos, etiquetas }: ProductosTableProps) => {
               </tr>
             );
           })}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="productos-table__pagination">
+        <button
+          className="productos-table__page-btn"
+          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+        >
+          <PiCaretLeftBold size={16} />
+        </button>
+        <span className="productos-table__page-info">
+          {currentPage} / {totalPages || 1}
+        </span>
+        <button
+          className="productos-table__page-btn"
+          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages || totalPages === 0}
+        >
+          <PiCaretRightBold size={16} />
+        </button>
+      </div>
     </div>
   );
 };

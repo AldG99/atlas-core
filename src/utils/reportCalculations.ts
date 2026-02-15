@@ -4,11 +4,15 @@ import type {
   StatusBreakdownItem,
   TopCliente,
   ChartDataPoint,
-  DateRange,
   PeriodType
 } from '../types/Reporte';
 
-export const getDateRange = (period: PeriodType, customRange?: DateRange): DateRange => {
+export interface DateRange {
+  start: Date;
+  end: Date;
+}
+
+export const getDateRange = (period: PeriodType): DateRange => {
   const now = new Date();
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
@@ -26,12 +30,6 @@ export const getDateRange = (period: PeriodType, customRange?: DateRange): DateR
     case 'mes': {
       const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
       return { start, end };
-    }
-    case 'personalizado': {
-      if (customRange) {
-        return customRange;
-      }
-      return { start: end, end };
     }
     default:
       return { start: end, end };

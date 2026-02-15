@@ -2,12 +2,15 @@
 @use '../../styles/abstracts/mixins' as *;
 
 .status-breakdown {
-  @include card;
+  background-color: $color-white;
+  border-radius: 0;
+  box-shadow: none;
+  padding: $spacing-md;
 
   &__title {
-    font-size: $font-size-lg;
+    font-size: $font-size-base;
     font-weight: 600;
-    margin: 0 0 $spacing-md;
+    margin: 0 0 $spacing-sm;
     color: $color-gray-800;
   }
 
@@ -20,11 +23,11 @@
 
   &__bar {
     display: flex;
-    height: 12px;
-    border-radius: $border-radius-full;
+    height: 10px;
+    border-radius: 0;
     overflow: hidden;
     background-color: $color-gray-200;
-    margin-bottom: $spacing-md;
+    margin-bottom: $spacing-sm;
   }
 
   &__bar-segment {
@@ -37,7 +40,7 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;
+    gap: $spacing-xs;
   }
 
   &__item {

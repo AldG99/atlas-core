@@ -2,54 +2,135 @@
 @use '../../styles/abstracts/mixins' as *;
 
 .sales-chart {
-  @include card;
+  background-color: $color-white;
+  border-radius: 0;
+  box-shadow: none;
+  padding: $spacing-md;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 
   &--empty {
     @include flex-center;
-    min-height: 300px;
+    min-height: 160px;
     color: $color-gray-500;
+    font-size: $font-size-sm;
   }
 
-  &__title {
-    font-size: $font-size-lg;
-    font-weight: 600;
-    margin: 0 0 $spacing-md;
-    color: $color-gray-800;
+  &__label {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
-  &__container {
-    width: 100%;
-    overflow-x: auto;
+  &__amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: $color-gray-900;
+    letter-spacing: -1px;
     margin-bottom: $spacing-md;
   }
 
-  &__svg {
-    width: 100%;
-    min-width: 300px;
-    height: auto;
+  &__chart-area {
+    flex: 1;
+    min-height: 120px;
+    position: relative;
   }
 
-  &__summary {
-    display: flex;
-    gap: $spacing-lg;
-    padding-top: $spacing-md;
-    border-top: 1px solid $color-gray-200;
-  }
-
-  &__summary-item {
+  &__grid {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+    padding-bottom: 20px;
   }
 
-  &__summary-value {
-    font-size: $font-size-lg;
+  &__grid-line {
+    border-bottom: 1px solid $color-gray-200;
+    position: relative;
+  }
+
+  &__grid-value {
+    position: absolute;
+    right: 0;
+    top: -14px;
+    font-size: 10px;
+    color: $color-gray-600;
+    font-weight: 500;
+  }
+
+  &__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    padding-right: 52px;
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+
+  &__track {
+    width: 100%;
+    max-width: 16px;
+    margin: 0 auto;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  &__fill {
+    width: 100%;
+    background-color: #007aff;
+    border-radius: 8px;
+    transition: height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  &__day {
+    font-size: 10px;
+    color: $color-gray-600;
+    margin-top: 8px;
+    white-space: nowrap;
+    min-height: 12px;
+    font-weight: 500;
+  }
+
+  &__footer {
+    display: flex;
+    gap: $spacing-lg;
+    margin-top: $spacing-md;
+    padding-top: $spacing-sm;
+    border-top: 1px solid $color-gray-100;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__stat-value {
+    font-size: $font-size-base;
     font-weight: 600;
     color: $color-gray-900;
   }
 
-  &__summary-label {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
+  &__stat-label {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    font-weight: 500;
   }
 }

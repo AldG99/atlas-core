@@ -8,9 +8,12 @@ const PAGE_SIZE = 10;
 
 interface ClientesTableProps {
   clientes: Cliente[];
+  loading?: boolean;
+  error?: string | null;
+  searchTerm?: string;
 }
 
-const ClientesTable = ({ clientes }: ClientesTableProps) => {
+const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTableProps) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -31,28 +34,59 @@ const ClientesTable = ({ clientes }: ClientesTableProps) => {
   };
 
   return (
-    <div className="clientes-table-container">
-      <table className="clientes-table">
-        <colgroup>
-          <col style={{ width: '22%' }} />
-          <col style={{ width: '14%' }} />
-          <col style={{ width: '20%' }} />
-          <col style={{ width: '16%' }} />
-          <col style={{ width: '7%' }} />
-          <col style={{ width: '12%' }} />
-        </colgroup>
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Teléfono</th>
-            <th>Calle</th>
-            <th>Colonia / Ciudad</th>
-            <th>C.P.</th>
-            <th>Registro</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedClientes.map((cliente) => (
+    <div className="clientes-table-wrapper">
+      <div className="clientes-table-header">
+        <table className="clientes-table">
+          <colgroup>
+            <col style={{ width: '22%' }} />
+            <col style={{ width: '14%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '16%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '12%' }} />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Teléfono</th>
+              <th>Calle</th>
+              <th>Colonia / Ciudad</th>
+              <th>C.P.</th>
+              <th>Registro</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div className="clientes-table-container">
+        <table className="clientes-table">
+          <colgroup>
+            <col style={{ width: '22%' }} />
+            <col style={{ width: '14%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '16%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '12%' }} />
+          </colgroup>
+          <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan={6} className="clientes-table__empty">
+                Cargando clientes...
+              </td>
+            </tr>
+          ) : error ? (
+            <tr>
+              <td colSpan={6} className="clientes-table__empty clientes-table__empty--error">
+                {error}
+              </td>
+            </tr>
+          ) : clientes.length === 0 ? (
+            <tr>
+              <td colSpan={6} className="clientes-table__empty">
+                {searchTerm?.trim() ? `No se encontraron clientes para "${searchTerm}"` : 'No hay ningún cliente registrado'}
+              </td>
+            </tr>
+          ) : paginatedClientes.map((cliente) => (
             <tr key={cliente.id} className="clientes-table__row" onClick={() => navigate(`/cliente/${cliente.id}`)}>
               <td>
                 <div className="clientes-table__client">
@@ -94,9 +128,9 @@ const ClientesTable = ({ clientes }: ClientesTableProps) => {
           ))}
         </tbody>
       </table>
+    </div>
 
-      {totalPages > 1 && (
-        <div className="clientes-table__pagination">
+      <div className="clientes-table__pagination">
           <button
             className="clientes-table__page-btn"
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
@@ -114,8 +148,7 @@ const ClientesTable = ({ clientes }: ClientesTableProps) => {
           >
             <PiCaretRightBold size={16} />
           </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

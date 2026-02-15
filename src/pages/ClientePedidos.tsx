@@ -2,21 +2,15 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   PiArrowLeftBold,
-  PiArchiveBold,
-  PiClipboardTextBold,
   PiPlusBold,
-  PiArrowsClockwiseBold,
-  PiCurrencyDollarBold,
-  PiShoppingCartBold,
-  PiReceiptBold,
-  PiStarBold,
-  PiMagnifyingGlassBold
+  PiMagnifyingGlassBold,
+  PiArrowRightBold
 } from 'react-icons/pi';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import type { Cliente } from '../types/Cliente';
-import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { getClienteById } from '../services/clienteService';
 import { getPedidosByClientPhone } from '../services/pedidoService';
+import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import MainLayout from '../layouts/MainLayout';
@@ -30,7 +24,6 @@ const ClientePedidos = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { user } = useAuth();
-
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,8 +32,7 @@ const ClientePedidos = () => {
   const [busqueda, setBusqueda] = useState('');
   const [filtroEstado, setFiltroEstado] = useState<PedidoStatus | 'todos'>('todos');
   const [filtroFecha, setFiltroFecha] = useState<DateFilter>('todo');
-  const [ordenamiento, setOrdenamiento] = useState<SortOption>('recientes');
-
+  const [ordenamiento, setOrdenamiento] = useState<SortOption>('antiguos');
   const fetchData = useCallback(async () => {
     if (!id || !user) return;
     try {
@@ -75,6 +67,21 @@ const ClientePedidos = () => {
 
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+
+  const formatRelativeDate = (date: Date) => {
+    const now = new Date();
+    const diff = now.getTime() - new Date(date).getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (days === 0) return 'hoy';
+    if (days === 1) return 'ayer';
+    if (days < 7) return `hace ${days} días`;
+    if (days < 30) {
+      const weeks = Math.floor(days / 7);
+      return `hace ${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
+    }
+    const months = Math.floor(days / 30);
+    return `hace ${months} ${months === 1 ? 'mes' : 'meses'}`;
+  };
 
   // Stats
   const stats = useMemo(() => {
@@ -150,21 +157,22 @@ const ClientePedidos = () => {
     return resultado;
   }, [pedidos, busqueda, filtroEstado, filtroFecha, ordenamiento]);
 
-  const pedidosActivos = pedidosFiltrados.filter(p => !p.archivado);
-  const pedidosArchivados = pedidosFiltrados.filter(p => p.archivado);
+  // Acumulado global sobre TODOS los pedidos (no cambia con filtros)
+  const acumuladoMap = useMemo(() => {
+    const sorted = [...pedidos].sort(
+      (a, b) => new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime()
+    );
+    const map = new Map<string, number>();
+    let acumulado = 0;
+    sorted.forEach(p => {
+      acumulado += p.total;
+      map.set(p.id, acumulado);
+    });
+    return map;
+  }, [pedidos]);
 
   const handleNuevoPedido = () => {
     navigate('/pedido/nuevo', { state: { cliente } });
-  };
-
-  const handleRepetir = (pedido: Pedido, e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate('/pedido/nuevo', {
-      state: {
-        cliente,
-        productos: pedido.productos
-      }
-    });
   };
 
   if (loading) {
@@ -178,64 +186,6 @@ const ClientePedidos = () => {
   }
 
   if (!cliente) return null;
-
-  const renderCard = (pedido: Pedido, archived = false) => {
-    const pagado = (pedido.abonos || []).reduce((s, a) => s + a.monto, 0);
-    const porcentajePago = pedido.total > 0 ? Math.min((pagado / pedido.total) * 100, 100) : 0;
-    const liquidado = pagado >= pedido.total;
-
-    return (
-      <div
-        key={pedido.id}
-        className={`cliente-pedidos__card${archived ? ' cliente-pedidos__card--archived' : ''}`}
-        onClick={() => navigate(`/pedido/${pedido.id}`)}
-      >
-        <div className="cliente-pedidos__card-top">
-          <span
-            className="cliente-pedidos__status"
-            style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-          >
-            {PEDIDO_STATUS[pedido.estado]}
-          </span>
-          <span className="cliente-pedidos__date">{formatDate(pedido.fechaCreacion)}</span>
-        </div>
-        <div className="cliente-pedidos__card-body">
-          <span className="cliente-pedidos__productos">
-            {pedido.productos.map(p => `${p.cantidad}x ${p.nombre}`).join(', ')}
-          </span>
-        </div>
-
-        {/* Barra de progreso de pago */}
-        <div className="cliente-pedidos__pago">
-          <div className="cliente-pedidos__pago-bar">
-            <div
-              className={`cliente-pedidos__pago-fill${liquidado ? ' cliente-pedidos__pago-fill--complete' : ''}`}
-              style={{ width: `${porcentajePago}%` }}
-            />
-          </div>
-          <span className="cliente-pedidos__pago-text">
-            {liquidado
-              ? 'Liquidado'
-              : `${formatCurrency(pagado)} de ${formatCurrency(pedido.total)} — faltan ${formatCurrency(pedido.total - pagado)}`}
-          </span>
-        </div>
-
-        <div className="cliente-pedidos__card-bottom">
-          <span className="cliente-pedidos__total">{formatCurrency(pedido.total)}</span>
-          {!archived && (
-            <button
-              className="cliente-pedidos__btn-repetir"
-              onClick={(e) => handleRepetir(pedido, e)}
-              title="Repetir pedido"
-            >
-              <PiArrowsClockwiseBold size={14} />
-              Repetir
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <MainLayout>
@@ -264,48 +214,28 @@ const ClientePedidos = () => {
           </div>
         </div>
 
+        {/* Summary */}
+        <div className="cliente-pedidos__summary">
+          <div className="cliente-pedidos__summary-item">
+            <span className="cliente-pedidos__summary-label">Total gastado</span>
+            <span className="cliente-pedidos__summary-value">{formatCurrency(stats.totalGastado)}</span>
+          </div>
+          <div className="cliente-pedidos__summary-item">
+            <span className="cliente-pedidos__summary-label">Pedidos</span>
+            <span className="cliente-pedidos__summary-value">{stats.cantidadPedidos}</span>
+          </div>
+          <div className="cliente-pedidos__summary-item">
+            <span className="cliente-pedidos__summary-label">Ticket promedio</span>
+            <span className="cliente-pedidos__summary-value">{formatCurrency(stats.ticketPromedio)}</span>
+          </div>
+          <div className="cliente-pedidos__summary-item">
+            <span className="cliente-pedidos__summary-label">Producto favorito</span>
+            <span className="cliente-pedidos__summary-value">{stats.productoFavorito}</span>
+          </div>
+        </div>
+
         {/* Content */}
         <div className="cliente-pedidos__content">
-          {/* Stats */}
-          <div className="cliente-pedidos__stats">
-            <div className="cliente-pedidos__stat-card">
-              <div className="cliente-pedidos__stat-icon cliente-pedidos__stat-icon--green">
-                <PiCurrencyDollarBold size={18} />
-              </div>
-              <div className="cliente-pedidos__stat-info">
-                <span className="cliente-pedidos__stat-value">{formatCurrency(stats.totalGastado)}</span>
-                <span className="cliente-pedidos__stat-label">Total gastado</span>
-              </div>
-            </div>
-            <div className="cliente-pedidos__stat-card">
-              <div className="cliente-pedidos__stat-icon cliente-pedidos__stat-icon--blue">
-                <PiShoppingCartBold size={18} />
-              </div>
-              <div className="cliente-pedidos__stat-info">
-                <span className="cliente-pedidos__stat-value">{stats.cantidadPedidos}</span>
-                <span className="cliente-pedidos__stat-label">Pedidos</span>
-              </div>
-            </div>
-            <div className="cliente-pedidos__stat-card">
-              <div className="cliente-pedidos__stat-icon cliente-pedidos__stat-icon--amber">
-                <PiReceiptBold size={18} />
-              </div>
-              <div className="cliente-pedidos__stat-info">
-                <span className="cliente-pedidos__stat-value">{formatCurrency(stats.ticketPromedio)}</span>
-                <span className="cliente-pedidos__stat-label">Ticket promedio</span>
-              </div>
-            </div>
-            <div className="cliente-pedidos__stat-card">
-              <div className="cliente-pedidos__stat-icon cliente-pedidos__stat-icon--purple">
-                <PiStarBold size={18} />
-              </div>
-              <div className="cliente-pedidos__stat-info">
-                <span className="cliente-pedidos__stat-value cliente-pedidos__stat-value--text">{stats.productoFavorito}</span>
-                <span className="cliente-pedidos__stat-label">Producto favorito</span>
-              </div>
-            </div>
-          </div>
-
           {/* Filtros */}
           <div className="cliente-pedidos__filters">
             <div className="cliente-pedidos__search">
@@ -346,41 +276,102 @@ const ClientePedidos = () => {
             </select>
           </div>
 
-          {pedidosFiltrados.length === 0 ? (
-            <div className="cliente-pedidos__empty">
-              <PiClipboardTextBold size={48} />
-              <p>{pedidos.length === 0 ? 'Este cliente no tiene pedidos' : 'No se encontraron pedidos con los filtros aplicados'}</p>
+          <div className="cliente-pedidos__table-wrapper">
+            <div className="cliente-pedidos__table-header">
+              <table className="cliente-pedidos__table">
+                <colgroup>
+                  <col style={{ width: '22%' }} />
+                  <col style={{ width: '12%' }} />
+                  <col style={{ width: '10%' }} />
+                  <col style={{ width: '14%' }} />
+                  <col style={{ width: '14%' }} />
+                  <col style={{ width: '7%' }} />
+                  <col style={{ width: '5%' }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Productos</th>
+                    <th>Cant.</th>
+                    <th>Total</th>
+                    <th>Acumulado</th>
+                    <th>Estado</th>
+                    <th />
+                  </tr>
+                </thead>
+              </table>
             </div>
-          ) : (
-            <>
-              {/* Pedidos activos */}
-              {pedidosActivos.length > 0 && (
-                <div className="cliente-pedidos__group">
-                  <div className="cliente-pedidos__group-header">
-                    <PiClipboardTextBold size={16} />
-                    <span>Activos ({pedidosActivos.length})</span>
-                  </div>
-                  <div className="cliente-pedidos__list">
-                    {pedidosActivos.map(pedido => renderCard(pedido))}
-                  </div>
-                </div>
-              )}
-
-              {/* Pedidos archivados */}
-              {pedidosArchivados.length > 0 && (
-                <div className="cliente-pedidos__group">
-                  <div className="cliente-pedidos__group-header cliente-pedidos__group-header--archived">
-                    <PiArchiveBold size={16} />
-                    <span>Archivados ({pedidosArchivados.length})</span>
-                  </div>
-                  <div className="cliente-pedidos__list">
-                    {pedidosArchivados.map(pedido => renderCard(pedido, true))}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+            <div className="cliente-pedidos__table-container">
+              <table className="cliente-pedidos__table">
+                <colgroup>
+                  <col style={{ width: '22%' }} />
+                  <col style={{ width: '12%' }} />
+                  <col style={{ width: '10%' }} />
+                  <col style={{ width: '14%' }} />
+                  <col style={{ width: '14%' }} />
+                  <col style={{ width: '7%' }} />
+                  <col style={{ width: '5%' }} />
+                </colgroup>
+                <tbody>
+                  {pedidosFiltrados.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="cliente-pedidos__table-empty">
+                        {pedidos.length === 0 ? 'Este cliente no tiene pedidos' : 'No se encontraron pedidos con los filtros aplicados'}
+                      </td>
+                    </tr>
+                  ) : pedidosFiltrados.map((pedido) => (
+                    <tr key={pedido.id} className="cliente-pedidos__table-row">
+                      <td>
+                        <div className="cliente-pedidos__table-date">
+                          <span className="cliente-pedidos__table-date-main">{formatDate(pedido.fechaCreacion)}</span>
+                          <span className="cliente-pedidos__table-date-rel">{formatRelativeDate(pedido.fechaCreacion)}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span className="cliente-pedidos__table-products" title={pedido.productos.map(p => p.nombre).join(', ')}>
+                          {pedido.productos.map(p => p.nombre).join(', ')}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cliente-pedidos__table-qty">
+                          {pedido.productos.reduce((sum, p) => sum + p.cantidad, 0)}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="cliente-pedidos__table-total">{formatCurrency(pedido.total)}</span>
+                      </td>
+                      <td>
+                        <span className="cliente-pedidos__table-acumulado">{formatCurrency(acumuladoMap.get(pedido.id) ?? 0)}</span>
+                      </td>
+                      <td>
+                        <span
+                          className="cliente-pedidos__table-status"
+                          style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                          title={PEDIDO_STATUS[pedido.estado]}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          className="cliente-pedidos__table-detail-btn"
+                          onClick={() => navigate(`/pedido/${pedido.id}`, { state: { from: `/cliente/${id}/pedidos` } })}
+                          title="Ver detalle del pedido"
+                        >
+                          <PiArrowRightBold size={14} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="cliente-pedidos__table-footer">
+              <span className="cliente-pedidos__table-footer-info">
+                {pedidosFiltrados.length} {pedidosFiltrados.length === 1 ? 'pedido' : 'pedidos'}
+              </span>
+            </div>
+          </div>
         </div>
+
       </div>
     </MainLayout>
   );

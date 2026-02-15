@@ -1,11 +1,43 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
+.clientes-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.clientes-table-header {
+  flex-shrink: 0;
+  background-color: $color-gray-50;
+  overflow: hidden;
+  scrollbar-gutter: stable;
+  box-shadow: inset 0 -1px 0 $color-gray-200;
+}
+
 .clientes-table-container {
   background-color: $color-white;
-  border-radius: 0;
-  box-shadow: $shadow-sm;
   overflow-x: auto;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  scrollbar-gutter: stable;
+  scrollbar-color: $color-gray-300 $color-white;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    background: $color-white;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-gray-300;
+    border-radius: 4px;
+
+    &:hover {
+      background: $color-gray-400;
+    }
+  }
 }
 
 .clientes-table {
@@ -35,7 +67,7 @@
 
   tbody {
     tr {
-      border-bottom: 1px solid $color-gray-100;
+      border-bottom: 1px solid $color-gray-200;
       transition: background-color $transition-fast;
 
       &:last-child {
@@ -59,8 +91,19 @@
     }
   }
 
+  &__empty {
+    text-align: center;
+    padding: $spacing-xl $spacing-md;
+    color: $color-gray-500;
+    font-size: $font-size-sm;
+
+    &--error {
+      color: $color-danger;
+    }
+  }
+
   &__row {
-    height: 56px;
+    height: 50px;
     cursor: pointer;
 
     &:hover {
@@ -152,14 +195,16 @@
     gap: $spacing-md;
     padding: $spacing-sm $spacing-md;
     border-top: 1px solid $color-gray-200;
+    flex-shrink: 0;
+    background-color: $color-gray-50;
   }
 
   &__page-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     border: 1px solid $color-gray-300;
     border-radius: 6px;
     background: $color-white;

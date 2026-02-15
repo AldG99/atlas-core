@@ -2,11 +2,18 @@
 @use '../styles/abstracts/mixins' as *;
 
 .reportes {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+
   &__header {
     display: flex;
     flex-direction: column;
-    gap: $spacing-md;
-    margin-bottom: $spacing-lg;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-sm;
+    flex-shrink: 0;
 
     @include sm {
       flex-direction: row;
@@ -32,10 +39,38 @@
     }
   }
 
+  &__filters {
+    flex-shrink: 0;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    scrollbar-color: $color-gray-300 transparent;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 4px;
+
+      &:hover {
+        background: $color-gray-400;
+      }
+    }
+  }
+
   &__loading,
   &__error {
     text-align: center;
     padding: $spacing-xl;
+    font-size: $font-size-sm;
   }
 
   &__error {
@@ -45,8 +80,8 @@
   &__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: $spacing-lg;
-    margin-top: $spacing-lg;
+    gap: $spacing-sm;
+    margin-top: $spacing-sm;
 
     @include lg {
       grid-template-columns: 2fr 1fr;
@@ -60,6 +95,6 @@
   &__sidebar {
     display: flex;
     flex-direction: column;
-    gap: $spacing-lg;
+    gap: $spacing-sm;
   }
 }

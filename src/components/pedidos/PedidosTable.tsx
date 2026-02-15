@@ -11,9 +11,12 @@ const PAGE_SIZE = 10;
 
 interface PedidosTableProps {
   pedidos: Pedido[];
+  loading?: boolean;
+  error?: string | null;
+  searchTerm?: string;
 }
 
-const PedidosTable = ({ pedidos }: PedidosTableProps) => {
+const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps) => {
   const navigate = useNavigate();
   const { clientes } = useClientes();
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,32 +36,65 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
   };
 
   return (
-    <div className="pedidos-table-container">
-      <table className="pedidos-table">
-        <colgroup>
-          <col style={{ width: '20%' }} />
-          <col style={{ width: '14%' }} />
-          <col style={{ width: '7%' }} />
-          <col style={{ width: '8%' }} />
-          <col style={{ width: '12%' }} />
-          <col style={{ width: '10%' }} />
-          <col style={{ width: '7%' }} />
-          <col style={{ width: '12%' }} />
-        </colgroup>
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Teléfono</th>
-            <th>C.P.</th>
-            <th>Productos</th>
-            <th>Abonado</th>
-            <th>Total</th>
-            <th>Estado</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedPedidos.map((pedido) => {
+    <div className="pedidos-table-wrapper">
+      <div className="pedidos-table-header">
+        <table className="pedidos-table">
+          <colgroup>
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '14%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '8%' }} />
+            <col style={{ width: '12%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '12%' }} />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Teléfono</th>
+              <th>C.P.</th>
+              <th>Productos</th>
+              <th>Abonado</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div className="pedidos-table-container">
+        <table className="pedidos-table">
+          <colgroup>
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '14%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '8%' }} />
+            <col style={{ width: '12%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '12%' }} />
+          </colgroup>
+          <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan={8} className="pedidos-table__empty">
+                Cargando pedidos...
+              </td>
+            </tr>
+          ) : error ? (
+            <tr>
+              <td colSpan={8} className="pedidos-table__empty pedidos-table__empty--error">
+                {error}
+              </td>
+            </tr>
+          ) : pedidos.length === 0 ? (
+            <tr>
+              <td colSpan={8} className="pedidos-table__empty">
+                {searchTerm?.trim() ? `No se encontraron pedidos para "${searchTerm}"` : 'No hay ningún pedido agregado'}
+              </td>
+            </tr>
+          ) : paginatedPedidos.map((pedido) => {
             const foto = getClienteFoto(pedido);
             return (
             <tr
@@ -139,9 +175,9 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
           })}
         </tbody>
       </table>
+    </div>
 
-      {totalPages > 1 && (
-        <div className="pedidos-table__pagination">
+      <div className="pedidos-table__pagination">
           <button
             className="pedidos-table__page-btn"
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
@@ -159,8 +195,7 @@ const PedidosTable = ({ pedidos }: PedidosTableProps) => {
           >
             <PiCaretRightBold size={16} />
           </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

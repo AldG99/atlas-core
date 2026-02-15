@@ -4,9 +4,13 @@
 $topbar-height: 52px;
 
 .cliente-pedidos {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   padding-top: $topbar-height;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
 
   &__loading {
     text-align: center;
@@ -37,7 +41,7 @@ $topbar-height: 52px;
   }
 
   &__top-bar-inner {
-    max-width: 900px;
+    max-width: 1000px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -97,7 +101,7 @@ $topbar-height: 52px;
     border: none;
     border-radius: $border-radius-md;
     padding: 6px 12px;
-    font-size: $font-size-xs;
+    font-size: $font-size-sm;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
@@ -108,88 +112,51 @@ $topbar-height: 52px;
     }
   }
 
-  // Content
-  &__content {
+  // Summary
+  &__summary {
     display: flex;
-    flex-direction: column;
-    gap: $spacing-lg;
-  }
-
-  // Stats
-  &__stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: $spacing-sm;
-
-    @include md {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  &__stat-card {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    background-color: $color-white;
-    box-shadow: $shadow-sm;
-    padding: $spacing-md;
-    border-radius: $border-radius-md;
-  }
-
-  &__stat-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: $border-radius-md;
+    padding: $spacing-sm $spacing-md;
     flex-shrink: 0;
 
-    &--green {
-      background-color: rgba($color-success, 0.12);
-      color: $color-success;
-    }
-
-    &--blue {
-      background-color: rgba($color-primary, 0.12);
-      color: $color-primary;
-    }
-
-    &--amber {
-      background-color: rgba($color-warning, 0.12);
-      color: $color-warning;
-    }
-
-    &--purple {
-      background-color: rgba(#8b5cf6, 0.12);
-      color: #8b5cf6;
+    @include md {
+      padding: $spacing-sm 0;
     }
   }
 
-  &__stat-info {
+  &__summary-item {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    gap: 2px;
+    padding: $spacing-sm $spacing-md;
+    background-color: $color-white;
+    border: 1px solid $color-gray-200;
   }
 
-  &__stat-value {
+  &__summary-label {
+    font-size: $font-size-xs;
+    font-weight: 500;
+    color: $color-gray-500;
+  }
+
+  &__summary-value {
     font-size: $font-size-sm;
     font-weight: 700;
     color: $color-gray-800;
     white-space: nowrap;
-
-    &--text {
-      font-size: $font-size-xs;
-      font-weight: 600;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  &__stat-label {
-    font-size: $font-size-xs;
-    color: $color-gray-500;
+  // Content
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
 
   // Filters
@@ -205,7 +172,7 @@ $topbar-height: 52px;
       border: 1px solid $color-gray-200;
       border-radius: $border-radius-md;
       padding: 8px 28px 8px 10px;
-      font-size: $font-size-xs;
+      font-size: $font-size-sm;
       color: $color-gray-700;
       cursor: pointer;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
@@ -235,7 +202,7 @@ $topbar-height: 52px;
       border: none;
       outline: none;
       background: none;
-      font-size: $font-size-xs;
+      font-size: $font-size-sm;
       color: $color-gray-700;
       padding: 8px 0;
       width: 100%;
@@ -251,165 +218,198 @@ $topbar-height: 52px;
     }
   }
 
-  &__empty {
+  // Table
+  &__table-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: $spacing-sm;
-    padding: $spacing-2xl 0;
-    color: $color-gray-400;
-
-    p {
-      margin: 0;
-      font-size: $font-size-sm;
-    }
+    flex: 1;
+    min-height: 0;
   }
 
-  // Group
-  &__group {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
+  &__table-header {
+    flex-shrink: 0;
+    background-color: $color-gray-50;
+    overflow: hidden;
+    scrollbar-gutter: stable;
+    box-shadow: inset 0 -1px 0 $color-gray-200;
   }
 
-  &__group-header {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: $font-size-xs;
-    font-weight: 600;
-    color: $color-primary;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 0 $spacing-md;
-
-    &--archived {
-      color: $color-gray-500;
-    }
-  }
-
-  // Cards
-  &__list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  &__card {
+  &__table-container {
     background-color: $color-white;
-    box-shadow: $shadow-sm;
-    padding: $spacing-md;
-    cursor: pointer;
-    transition: box-shadow 0.15s ease, transform 0.15s ease;
+    overflow-x: auto;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    scrollbar-gutter: stable;
+    scrollbar-color: $color-gray-300 $color-white;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      background: $color-white;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 4px;
+
+      &:hover {
+        background: $color-gray-400;
+      }
+    }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 500px;
+
+    thead {
+      background-color: $color-gray-50;
+      border-bottom: 1px solid $color-gray-200;
+
+      th {
+        padding: $spacing-sm $spacing-md;
+        text-align: left;
+        font-size: $font-size-sm;
+        font-weight: 600;
+        color: $color-gray-600;
+        white-space: nowrap;
+
+        // Cant.
+        &:nth-child(3) { text-align: center; }
+        // Total
+        &:nth-child(4) { text-align: right; }
+        // Acumulado
+        &:nth-child(5) { text-align: right; }
+        // Estado
+        &:nth-child(6) { text-align: center; }
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $color-gray-200;
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+
+      td {
+        padding: $spacing-xs $spacing-md;
+        font-size: $font-size-sm;
+        color: $color-gray-700;
+        vertical-align: middle;
+
+        // Cant.
+        &:nth-child(3) { text-align: center; }
+        // Total
+        &:nth-child(4) { text-align: right; }
+        // Acumulado
+        &:nth-child(5) { text-align: right; }
+        // Estado
+        &:nth-child(6) { text-align: center; }
+      }
+    }
+  }
+
+  &__table-empty {
+    text-align: center;
+    padding: $spacing-xl $spacing-md;
+    color: $color-gray-500;
+    font-size: $font-size-sm;
+  }
+
+  &__table-row {
+    height: 50px;
+  }
+
+  &__table-date {
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;
-
-    &:hover {
-      box-shadow: $shadow-md;
-      transform: translateY(-1px);
-    }
-
-    &--archived {
-      opacity: 0.6;
-    }
+    gap: 1px;
   }
 
-  &__card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  &__status {
-    display: inline-block;
-    padding: 2px 8px;
-    font-size: $font-size-xs;
-    font-weight: 600;
-    color: $color-white;
-    border-radius: 4px;
+  &__table-date-main {
+    font-weight: 500;
+    color: $color-gray-700;
     white-space: nowrap;
   }
 
-  &__date {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
-  }
-
-  &__card-body {
-    min-width: 0;
-  }
-
-  &__productos {
-    font-size: $font-size-sm;
-    color: $color-gray-700;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  // Payment progress bar
-  &__pago {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  &__pago-bar {
-    width: 100%;
-    height: 6px;
-    background-color: $color-gray-100;
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  &__pago-fill {
-    height: 100%;
-    background-color: $color-primary;
-    border-radius: 3px;
-    transition: width $transition-base;
-
-    &--complete {
-      background-color: $color-success;
-    }
-  }
-
-  &__pago-text {
+  &__table-date-rel {
     font-size: $font-size-xs;
-    color: $color-gray-500;
+    color: $color-gray-400;
+    font-style: italic;
   }
 
-  &__card-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  &__total {
-    font-size: $font-size-sm;
-    font-weight: 700;
-    color: $color-gray-800;
-  }
-
-  // Repetir button
-  &__btn-repetir {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: none;
-    border: 1px solid $color-gray-200;
-    border-radius: $border-radius-md;
-    padding: 4px 10px;
-    font-size: $font-size-xs;
+  &__table-products {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
     color: $color-gray-600;
+  }
+
+  &__table-qty {
+    font-weight: 600;
+    color: $color-gray-700;
+  }
+
+  &__table-total {
+    font-weight: 600;
+    color: $color-gray-800;
+    white-space: nowrap;
+  }
+
+  &__table-acumulado {
+    font-weight: 600;
+    color: $color-primary;
+    white-space: nowrap;
+  }
+
+  &__table-status {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  &__table-detail-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid $color-gray-200;
+    border-radius: 6px;
+    background: $color-white;
+    color: $color-gray-400;
     cursor: pointer;
-    transition: all $transition-fast;
+    transition: all 0.15s ease;
 
     &:hover {
-      background-color: $color-gray-50;
-      border-color: $color-gray-300;
-      color: $color-gray-800;
+      border-color: $color-primary;
+      color: $color-primary;
+      background-color: rgba($color-primary, 0.05);
     }
   }
+
+  &__table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-sm $spacing-md;
+    border-top: 1px solid $color-gray-200;
+    flex-shrink: 0;
+    background-color: $color-gray-50;
+  }
+
+  &__table-footer-info {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-gray-600;
+  }
+
 }

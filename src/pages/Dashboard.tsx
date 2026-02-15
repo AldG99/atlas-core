@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold } from 'react-icons/pi';
+import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import { usePedidos } from '../hooks/usePedidos';
 import { useToast } from '../hooks/useToast';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
@@ -226,6 +226,7 @@ const Dashboard = () => {
 
         <div className="dashboard__controls">
           <div className="dashboard__search">
+            <PiMagnifyingGlassBold size={16} className="dashboard__search-icon" />
             <input
               type="text"
               placeholder="Buscar por nombre o teléfono..."
@@ -286,30 +287,12 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {loading && <p className="dashboard__loading">Cargando pedidos...</p>}
-
-        {error && <p className="dashboard__error">{error}</p>}
-
-        {!loading && !error && pedidos.length === 0 && (
-          <div className="dashboard__empty">
-            <p>No hay pedidos</p>
-            <Link to={ROUTES.NEW_PEDIDO} className="btn btn--primary">
-              Crear primer pedido
-            </Link>
-          </div>
-        )}
-
-        {!loading && !error && pedidos.length > 0 && filteredAndSortedPedidos.length === 0 && (
-          <div className="dashboard__empty">
-            <p>No se encontraron pedidos para "{searchTerm}"</p>
-          </div>
-        )}
-
-        {!loading && !error && filteredAndSortedPedidos.length > 0 && (
-          <PedidosTable
-            pedidos={filteredAndSortedPedidos}
-          />
-        )}
+        <PedidosTable
+          pedidos={filteredAndSortedPedidos}
+          loading={loading}
+          error={error}
+          searchTerm={searchTerm}
+        />
       </div>
     </MainLayout>
   );

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { PiCloudArrowUpBold, PiPackageBold } from 'react-icons/pi';
+import { PiCloudArrowUpBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
@@ -93,6 +93,7 @@ const Productos = () => {
 
         <div className="productos__controls">
           <div className="productos__search">
+            <PiMagnifyingGlassBold size={16} className="productos__search-icon" />
             <input
               type="text"
               placeholder="Buscar por clave, nombre o descripción..."
@@ -106,36 +107,13 @@ const Productos = () => {
           </div>
         </div>
 
-        {loading && <p className="productos__loading">Cargando productos...</p>}
-
-        {error && <p className="productos__error">{error}</p>}
-
-        {!loading && !error && productos.length === 0 && (
-          <div className="productos__empty">
-            <PiPackageBold size={48} />
-            <p>No hay productos registrados</p>
-            <span>Los productos te permiten seleccionar rápidamente al crear pedidos</span>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="btn btn--primary"
-            >
-              Agregar primer producto
-            </button>
-          </div>
-        )}
-
-        {!loading && !error && productos.length > 0 && filteredProductos.length === 0 && (
-          <div className="productos__empty">
-            <p>No se encontraron productos para "{searchTerm}"</p>
-          </div>
-        )}
-
-        {!loading && !error && filteredProductos.length > 0 && (
-          <ProductosTable
-            productos={filteredProductos}
-            etiquetas={etiquetas}
-          />
-        )}
+        <ProductosTable
+          productos={filteredProductos}
+          etiquetas={etiquetas}
+          loading={loading}
+          error={error}
+          searchTerm={searchTerm}
+        />
 
         {isModalOpen && (
           <ProductoModal

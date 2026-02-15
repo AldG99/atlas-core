@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import type { PeriodType, DateRange, ReporteData } from '../types/Reporte';
+import type { PeriodType, ReporteData } from '../types/Reporte';
 import { usePedidos } from './usePedidos';
 import {
   getDateRange,
@@ -13,11 +13,10 @@ import {
 export const useReportes = () => {
   const { pedidos: allPedidos, loading, error, fetchPedidos } = usePedidos();
   const [period, setPeriod] = useState<PeriodType>('semana');
-  const [customRange, setCustomRange] = useState<DateRange | undefined>();
 
   const dateRange = useMemo(() => {
-    return getDateRange(period, customRange);
-  }, [period, customRange]);
+    return getDateRange(period);
+  }, [period]);
 
   const filteredPedidos = useMemo(() => {
     return filterPedidosByDate(allPedidos, dateRange);
@@ -32,18 +31,6 @@ export const useReportes = () => {
     };
   }, [filteredPedidos, period, dateRange]);
 
-  const handlePeriodChange = (newPeriod: PeriodType) => {
-    setPeriod(newPeriod);
-    if (newPeriod !== 'personalizado') {
-      setCustomRange(undefined);
-    }
-  };
-
-  const handleCustomRange = (range: DateRange) => {
-    setCustomRange(range);
-    setPeriod('personalizado');
-  };
-
   useEffect(() => {
     fetchPedidos();
   }, [fetchPedidos]);
@@ -55,7 +42,6 @@ export const useReportes = () => {
     dateRange,
     loading,
     error,
-    setPeriod: handlePeriodChange,
-    setCustomRange: handleCustomRange
+    setPeriod
   };
 };
