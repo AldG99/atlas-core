@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   PiArrowLeftBold,
@@ -8,11 +8,15 @@ import {
 } from 'react-icons/pi';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import type { Cliente } from '../types/Cliente';
+import type { Etiqueta } from '../types/Producto';
 import { getClienteById } from '../services/clienteService';
 import { getPedidosByClientPhone } from '../services/pedidoService';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
+import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
+import { useProductos } from '../hooks/useProductos';
+import { useEtiquetas } from '../hooks/useEtiquetas';
 import MainLayout from '../layouts/MainLayout';
 import './ClientePedidos.scss';
 
@@ -24,6 +28,8 @@ const ClientePedidos = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { user } = useAuth();
+  const { productos: catalogoProductos } = useProductos();
+  const { etiquetas: todasEtiquetas } = useEtiquetas();
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +38,7 @@ const ClientePedidos = () => {
   const [busqueda, setBusqueda] = useState('');
   const [filtroEstado, setFiltroEstado] = useState<PedidoStatus | 'todos'>('todos');
   const [filtroFecha, setFiltroFecha] = useState<DateFilter>('todo');
-  const [ordenamiento, setOrdenamiento] = useState<SortOption>('antiguos');
+  const [ordenamiento, setOrdenamiento] = useState<SortOption>('recientes');
   const fetchData = useCallback(async () => {
     if (!id || !user) return;
     try {
@@ -68,19 +74,14 @@ const ClientePedidos = () => {
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
 
-  const formatRelativeDate = (date: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - new Date(date).getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    if (days === 0) return 'hoy';
-    if (days === 1) return 'ayer';
-    if (days < 7) return `hace ${days} días`;
-    if (days < 30) {
-      const weeks = Math.floor(days / 7);
-      return `hace ${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
-    }
-    const months = Math.floor(days / 30);
-    return `hace ${months} ${months === 1 ? 'mes' : 'meses'}`;
+
+  const getEtiquetasForClave = (clave?: string): Etiqueta[] => {
+    if (!clave) return [];
+    const producto = catalogoProductos.find(cp => cp.clave === clave);
+    if (!producto?.etiquetas) return [];
+    return producto.etiquetas
+      .map(etId => todasEtiquetas.find(e => e.id === etId))
+      .filter((e): e is Etiqueta => !!e);
   };
 
   // Stats
@@ -280,23 +281,23 @@ const ClientePedidos = () => {
             <div className="cliente-pedidos__table-header">
               <table className="cliente-pedidos__table">
                 <colgroup>
-                  <col style={{ width: '22%' }} />
-                  <col style={{ width: '12%' }} />
                   <col style={{ width: '10%' }} />
-                  <col style={{ width: '14%' }} />
-                  <col style={{ width: '14%' }} />
-                  <col style={{ width: '7%' }} />
-                  <col style={{ width: '5%' }} />
+                  <col style={{ width: '8%' }} />
+                  <col style={{ width: '26%' }} />
+                  <col style={{ width: '12%' }} />
+                  <col style={{ width: '13%' }} />
+                  <col style={{ width: '13%' }} />
+                  <col style={{ width: '8%' }} />
                 </colgroup>
                 <thead>
                   <tr>
-                    <th>Fecha</th>
-                    <th>Productos</th>
+                    <th>Clave</th>
                     <th>Cant.</th>
-                    <th>Total</th>
+                    <th>Producto</th>
+                    <th>Etiquetas</th>
+                    <th>Importe</th>
                     <th>Acumulado</th>
                     <th>Estado</th>
-                    <th />
                   </tr>
                 </thead>
               </table>
@@ -304,13 +305,13 @@ const ClientePedidos = () => {
             <div className="cliente-pedidos__table-container">
               <table className="cliente-pedidos__table">
                 <colgroup>
-                  <col style={{ width: '22%' }} />
-                  <col style={{ width: '12%' }} />
                   <col style={{ width: '10%' }} />
-                  <col style={{ width: '14%' }} />
-                  <col style={{ width: '14%' }} />
-                  <col style={{ width: '7%' }} />
-                  <col style={{ width: '5%' }} />
+                  <col style={{ width: '8%' }} />
+                  <col style={{ width: '26%' }} />
+                  <col style={{ width: '12%' }} />
+                  <col style={{ width: '13%' }} />
+                  <col style={{ width: '13%' }} />
+                  <col style={{ width: '8%' }} />
                 </colgroup>
                 <tbody>
                   {pedidosFiltrados.length === 0 ? (
@@ -320,46 +321,66 @@ const ClientePedidos = () => {
                       </td>
                     </tr>
                   ) : pedidosFiltrados.map((pedido) => (
-                    <tr key={pedido.id} className="cliente-pedidos__table-row">
-                      <td>
-                        <div className="cliente-pedidos__table-date">
-                          <span className="cliente-pedidos__table-date-main">{formatDate(pedido.fechaCreacion)}</span>
-                          <span className="cliente-pedidos__table-date-rel">{formatRelativeDate(pedido.fechaCreacion)}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="cliente-pedidos__table-products" title={pedido.productos.map(p => p.nombre).join(', ')}>
-                          {pedido.productos.map(p => p.nombre).join(', ')}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="cliente-pedidos__table-qty">
-                          {pedido.productos.reduce((sum, p) => sum + p.cantidad, 0)}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="cliente-pedidos__table-total">{formatCurrency(pedido.total)}</span>
-                      </td>
-                      <td>
-                        <span className="cliente-pedidos__table-acumulado">{formatCurrency(acumuladoMap.get(pedido.id) ?? 0)}</span>
-                      </td>
-                      <td>
-                        <span
-                          className="cliente-pedidos__table-status"
-                          style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-                          title={PEDIDO_STATUS[pedido.estado]}
-                        />
-                      </td>
-                      <td>
-                        <button
-                          className="cliente-pedidos__table-detail-btn"
-                          onClick={() => navigate(`/pedido/${pedido.id}`, { state: { from: `/cliente/${id}/pedidos` } })}
-                          title="Ver detalle del pedido"
-                        >
-                          <PiArrowRightBold size={14} />
-                        </button>
-                      </td>
-                    </tr>
+                    <React.Fragment key={pedido.id}>
+                      <tr className="cliente-pedidos__table-row">
+                        <td colSpan={7}>
+                          <div className="cliente-pedidos__table-row-inner">
+                            <span className="cliente-pedidos__table-date-main">{formatDate(pedido.fechaCreacion)}</span>
+                            <button
+                              className="cliente-pedidos__table-detail-btn"
+                              onClick={() => navigate(`/pedido/${pedido.id}`, { state: { from: `/cliente/${id}/pedidos` } })}
+                              title="Ver detalle del pedido"
+                            >
+                              <PiArrowRightBold size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      {pedido.productos.map((p, i) => (
+                        <tr key={i} className="cliente-pedidos__product-row">
+                          <td>{p.clave || '—'}</td>
+                          <td>{p.cantidad}</td>
+                          <td>{p.nombre}</td>
+                          <td>
+                            <div className="cliente-pedidos__etiquetas">
+                              {getEtiquetasForClave(p.clave).map(et => {
+                                const iconData = ETIQUETA_ICONS[et.icono];
+                                const Icon = iconData?.icon;
+                                return (
+                                  <span
+                                    key={et.id}
+                                    className="cliente-pedidos__etiqueta"
+                                    style={{ backgroundColor: et.color }}
+                                    title={et.nombre}
+                                  >
+                                    {Icon && <Icon size={12} />}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </td>
+                          <td>{formatCurrency(p.subtotal)}</td>
+                          {i === 0 ? (
+                            <>
+                              <td rowSpan={pedido.productos.length} />
+                              <td rowSpan={pedido.productos.length} className="cliente-pedidos__status-cell">
+                                <span
+                                  className="cliente-pedidos__table-status"
+                                  style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                                  title={PEDIDO_STATUS[pedido.estado]}
+                                />
+                              </td>
+                            </>
+                          ) : null}
+                        </tr>
+                      ))}
+                      <tr className="cliente-pedidos__total-row">
+                        <td colSpan={4} className="cliente-pedidos__total-label">Total</td>
+                        <td className="cliente-pedidos__total-value">{formatCurrency(pedido.total)}</td>
+                        <td className="cliente-pedidos__acumulado-value">{formatCurrency(acumuladoMap.get(pedido.id) ?? 0)}</td>
+                        <td />
+                      </tr>
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>

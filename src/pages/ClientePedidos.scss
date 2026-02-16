@@ -164,7 +164,7 @@ $topbar-height: 52px;
     display: flex;
     flex-wrap: wrap;
     gap: $spacing-sm;
-    padding: 0 $spacing-md;
+    flex-shrink: 0;
 
     select {
       appearance: none;
@@ -276,40 +276,32 @@ $topbar-height: 52px;
         color: $color-gray-600;
         white-space: nowrap;
 
-        // Cant.
+        // Etiquetas
         &:nth-child(3) { text-align: center; }
-        // Total
-        &:nth-child(4) { text-align: right; }
-        // Acumulado
+        // Cant.
+        &:nth-child(4) { text-align: center; }
+        // Importe
         &:nth-child(5) { text-align: right; }
+        // Acumulado
+        &:nth-child(6) { text-align: right; }
         // Estado
-        &:nth-child(6) { text-align: center; }
+        &:nth-child(7) { text-align: center; }
       }
     }
 
     tbody {
-      tr {
-        border-bottom: 1px solid $color-gray-200;
-
-        &:last-child {
-          border-bottom: none;
-        }
-      }
-
       td {
         padding: $spacing-xs $spacing-md;
         font-size: $font-size-sm;
         color: $color-gray-700;
         vertical-align: middle;
 
-        // Cant.
+        // Etiquetas
         &:nth-child(3) { text-align: center; }
-        // Total
-        &:nth-child(4) { text-align: right; }
-        // Acumulado
-        &:nth-child(5) { text-align: right; }
-        // Estado
-        &:nth-child(6) { text-align: center; }
+        // Cant.
+        &:nth-child(4) { text-align: center; font-weight: 600; }
+        // Importe
+        &:nth-child(5) { text-align: right; white-space: nowrap; }
       }
     }
   }
@@ -322,51 +314,96 @@ $topbar-height: 52px;
   }
 
   &__table-row {
-    height: 50px;
+    background-color: $color-gray-50;
+
+    > td {
+      padding: 0 !important;
+    }
   }
 
-  &__table-date {
+  &__table-row-inner {
     display: flex;
-    flex-direction: column;
-    gap: 1px;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-xs $spacing-md;
+  }
+
+  &__product-row {
+    border-bottom: 1px solid $color-gray-100;
+  }
+
+  &__etiquetas {
+    display: inline-flex;
+    gap: 2px;
+    justify-content: center;
+  }
+
+  &__etiqueta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: $color-white;
   }
 
   &__table-date-main {
     font-weight: 500;
+    font-size: $font-size-sm;
     color: $color-gray-700;
     white-space: nowrap;
-  }
-
-  &__table-date-rel {
-    font-size: $font-size-xs;
-    color: $color-gray-400;
-    font-style: italic;
-  }
-
-  &__table-products {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    color: $color-gray-600;
-  }
-
-  &__table-qty {
-    font-weight: 600;
-    color: $color-gray-700;
   }
 
   &__table-total {
     font-weight: 600;
+    font-size: $font-size-sm;
     color: $color-gray-800;
     white-space: nowrap;
   }
 
   &__table-acumulado {
+    font-size: $font-size-xs;
     font-weight: 600;
     color: $color-primary;
     white-space: nowrap;
+  }
+
+  &__total-row {
+    background-color: $color-gray-50;
+
+    td {
+      padding: $spacing-xs $spacing-md !important;
+      border-bottom: none;
+    }
+  }
+
+  &__total-label {
+    text-align: right !important;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-gray-500;
+  }
+
+  &__total-value {
+    text-align: right !important;
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-gray-800;
+    white-space: nowrap;
+  }
+
+  &__acumulado-value {
+    text-align: right !important;
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-primary;
+    white-space: nowrap;
+  }
+
+  &__status-cell {
+    text-align: center;
+    vertical-align: middle;
   }
 
   &__table-status {
@@ -380,13 +417,14 @@ $topbar-height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     border: 1px solid $color-gray-200;
     border-radius: 6px;
     background: $color-white;
     color: $color-gray-400;
     cursor: pointer;
+    margin-left: auto;
     transition: all 0.15s ease;
 
     &:hover {

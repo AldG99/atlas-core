@@ -1,5 +1,10 @@
 import { useState, useMemo } from 'react';
-import { PiCloudArrowUpBold, PiStarFill, PiStarBold, PiMagnifyingGlassBold } from 'react-icons/pi';
+import {
+  PiCloudArrowUpBold,
+  PiStarFill,
+  PiStarBold,
+  PiMagnifyingGlassBold,
+} from 'react-icons/pi';
 import { useClientes } from '../hooks/useClientes';
 import { useToast } from '../hooks/useToast';
 import type { ClienteFormData } from '../types/Cliente';
@@ -12,28 +17,41 @@ const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [soloFavoritos, setSoloFavoritos] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCliente, setEditingCliente] = useState<{ id: string; data: ClienteFormData } | null>(null);
+  const [editingCliente, setEditingCliente] = useState<{
+    id: string;
+    data: ClienteFormData;
+  } | null>(null);
 
-  const { clientes, loading, error, addCliente, editCliente, removeCliente } = useClientes();
+  const { clientes, loading, error, addCliente, editCliente } =
+    useClientes();
   const { showToast } = useToast();
 
   // Debug: verificar estado
-  console.log('Clientes page - loading:', loading, 'error:', error, 'clientes:', clientes.length);
+  console.log(
+    'Clientes page - loading:',
+    loading,
+    'error:',
+    error,
+    'clientes:',
+    clientes.length
+  );
 
   const filteredClientes = useMemo(() => {
     let resultado = clientes;
 
     if (soloFavoritos) {
-      resultado = resultado.filter((c) => c.favorito);
+      resultado = resultado.filter(c => c.favorito);
     }
 
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
       resultado = resultado.filter(
-        (cliente) =>
+        cliente =>
           cliente.nombre.toLowerCase().includes(term) ||
           cliente.apellido.toLowerCase().includes(term) ||
-          `${cliente.nombre} ${cliente.apellido}`.toLowerCase().includes(term) ||
+          `${cliente.nombre} ${cliente.apellido}`
+            .toLowerCase()
+            .includes(term) ||
           cliente.telefono.toLowerCase().includes(term)
       );
     }
@@ -64,18 +82,6 @@ const Clientes = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('¿Estás seguro de eliminar este cliente?')) {
-      try {
-        await removeCliente(id);
-        showToast('Cliente eliminado', 'success');
-      } catch {
-        showToast('Error al eliminar el cliente', 'error');
-      }
-    }
-  };
-
-
   return (
     <MainLayout>
       <div className="clientes">
@@ -101,12 +107,15 @@ const Clientes = () => {
 
         <div className="clientes__controls">
           <div className="clientes__search">
-            <PiMagnifyingGlassBold size={16} className="clientes__search-icon" />
+            <PiMagnifyingGlassBold
+              size={16}
+              className="clientes__search-icon"
+            />
             <input
               type="text"
               placeholder="Buscar por nombre o teléfono..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="input"
             />
           </div>
@@ -115,11 +124,16 @@ const Clientes = () => {
             className={`btn btn--outline clientes__fav-filter ${soloFavoritos ? 'clientes__fav-filter--active' : ''}`}
             title={soloFavoritos ? 'Mostrar todos' : 'Solo favoritos'}
           >
-            {soloFavoritos ? <PiStarFill size={16} /> : <PiStarBold size={16} />}
+            {soloFavoritos ? (
+              <PiStarFill size={16} />
+            ) : (
+              <PiStarBold size={16} />
+            )}
             <span>Favoritos</span>
           </button>
           <div className="clientes__count">
-            {filteredClientes.length} {filteredClientes.length === 1 ? 'cliente' : 'clientes'}
+            {filteredClientes.length}{' '}
+            {filteredClientes.length === 1 ? 'cliente' : 'clientes'}
           </div>
         </div>
 
