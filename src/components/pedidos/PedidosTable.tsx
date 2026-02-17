@@ -1,13 +1,9 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatCurrency, formatShortDate, getTotalPagado } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
 import './PedidosTable.scss';
-
-const PAGE_SIZE = 10;
 
 interface PedidosTableProps {
   pedidos: Pedido[];
@@ -19,15 +15,6 @@ interface PedidosTableProps {
 const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps) => {
   const navigate = useNavigate();
   const { clientes } = useClientes();
-  const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [pedidos.length]);
-
-  const totalPages = Math.ceil(pedidos.length / PAGE_SIZE);
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
-  const paginatedPedidos = pedidos.slice(startIndex, startIndex + PAGE_SIZE);
 
   const getClienteFoto = (pedido: Pedido): string | undefined => {
     if (pedido.clienteFoto) return pedido.clienteFoto;
@@ -94,7 +81,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                 {searchTerm?.trim() ? `No se encontraron pedidos para "${searchTerm}"` : 'No hay ningún pedido agregado'}
               </td>
             </tr>
-          ) : paginatedPedidos.map((pedido) => {
+          ) : pedidos.map((pedido) => {
             const foto = getClienteFoto(pedido);
             return (
             <tr
@@ -177,25 +164,13 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
       </table>
     </div>
 
-      <div className="pedidos-table__pagination">
-          <button
-            className="pedidos-table__page-btn"
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-          >
-            <PiCaretLeftBold size={16} />
-          </button>
+      {pedidos.length > 0 && (
+        <div className="pedidos-table__pagination">
           <span className="pedidos-table__page-info">
-            {currentPage} / {totalPages}
+            {pedidos.length} {pedidos.length === 1 ? 'pedido' : 'pedidos'}
           </span>
-          <button
-            className="pedidos-table__page-btn"
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-          >
-            <PiCaretRightBold size={16} />
-          </button>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

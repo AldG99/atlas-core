@@ -1,10 +1,7 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PiStarFill, PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
+import { PiStarFill } from 'react-icons/pi';
 import type { Cliente } from '../../types/Cliente';
 import './ClientesTable.scss';
-
-const PAGE_SIZE = 10;
 
 interface ClientesTableProps {
   clientes: Cliente[];
@@ -15,15 +12,6 @@ interface ClientesTableProps {
 
 const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTableProps) => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [clientes.length]);
-
-  const totalPages = Math.ceil(clientes.length / PAGE_SIZE);
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
-  const paginatedClientes = clientes.slice(startIndex, startIndex + PAGE_SIZE);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-MX', {
@@ -86,7 +74,7 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
                 {searchTerm?.trim() ? `No se encontraron clientes para "${searchTerm}"` : 'No hay ningún cliente registrado'}
               </td>
             </tr>
-          ) : paginatedClientes.map((cliente) => (
+          ) : clientes.map((cliente) => (
             <tr key={cliente.id} className="clientes-table__row" onClick={() => navigate(`/cliente/${cliente.id}`)}>
               <td>
                 <div className="clientes-table__client">
@@ -130,25 +118,13 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
       </table>
     </div>
 
-      <div className="clientes-table__pagination">
-          <button
-            className="clientes-table__page-btn"
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-          >
-            <PiCaretLeftBold size={16} />
-          </button>
+      {clientes.length > 0 && (
+        <div className="clientes-table__pagination">
           <span className="clientes-table__page-info">
-            {currentPage} / {totalPages}
+            {clientes.length} {clientes.length === 1 ? 'cliente' : 'clientes'}
           </span>
-          <button
-            className="clientes-table__page-btn"
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-          >
-            <PiCaretRightBold size={16} />
-          </button>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

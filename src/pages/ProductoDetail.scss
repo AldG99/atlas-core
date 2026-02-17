@@ -266,6 +266,25 @@ $topbar-height: 52px;
     gap: 4px;
   }
 
+  &__cancel-descuento {
+    border: 1px solid $color-gray-300;
+    background-color: $color-white;
+    color: $color-gray-600;
+    cursor: pointer;
+    padding: 4px $spacing-sm;
+    font-size: $font-size-xs;
+    font-weight: 500;
+    white-space: nowrap;
+    border-radius: 6px;
+    transition: all 0.2s;
+
+    &:hover {
+      color: #dc2626;
+      border-color: #dc2626;
+      background-color: rgba(#dc2626, 0.05);
+    }
+  }
+
   &__price-badge {
     display: inline-flex;
     align-items: center;
@@ -511,12 +530,11 @@ $topbar-height: 52px;
   &__etiqueta {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 20px;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
     color: $color-white;
-    font-size: $font-size-sm;
-    font-weight: 500;
   }
 
   // Description

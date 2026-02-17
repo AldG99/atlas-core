@@ -1,11 +1,7 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
 import type { Producto, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import './ProductosTable.scss';
-
-const PAGE_SIZE = 10;
 
 interface ProductosTableProps {
   productos: Producto[];
@@ -17,15 +13,6 @@ interface ProductosTableProps {
 
 const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: ProductosTableProps) => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [productos.length]);
-
-  const totalPages = Math.ceil(productos.length / PAGE_SIZE);
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
-  const paginatedProductos = productos.slice(startIndex, startIndex + PAGE_SIZE);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-MX', {
@@ -108,7 +95,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
                 {searchTerm?.trim() ? `No se encontraron productos para "${searchTerm}"` : 'No hay ningún producto registrado'}
               </td>
             </tr>
-          ) : paginatedProductos.map((producto) => {
+          ) : productos.map((producto) => {
             const productoEtiquetas = getEtiquetasForProducto(producto);
             return (
               <tr key={producto.id} className="productos-table__row" onClick={() => navigate(`/producto-detalle/${producto.id}`)}>
@@ -140,7 +127,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
                       >
                         {ETIQUETA_ICONS[et.icono] && (() => {
                           const Icon = ETIQUETA_ICONS[et.icono].icon;
-                          return <Icon size={11} />;
+                          return <Icon size={12} />;
                         })()}
                       </span>
                     ))}
@@ -164,25 +151,13 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
         </table>
       </div>
 
-      <div className="productos-table__pagination">
-        <button
-          className="productos-table__page-btn"
-          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-        >
-          <PiCaretLeftBold size={16} />
-        </button>
-        <span className="productos-table__page-info">
-          {currentPage} / {totalPages || 1}
-        </span>
-        <button
-          className="productos-table__page-btn"
-          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages || totalPages === 0}
-        >
-          <PiCaretRightBold size={16} />
-        </button>
-      </div>
+      {productos.length > 0 && (
+        <div className="productos-table__pagination">
+          <span className="productos-table__page-info">
+            {productos.length} {productos.length === 1 ? 'producto' : 'productos'}
+          </span>
+        </div>
+      )}
     </div>
   );
 };

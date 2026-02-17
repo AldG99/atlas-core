@@ -332,6 +332,18 @@ const ProductoDetail = () => {
                           onChange={(e) => updateField('fechaFinDescuento', e.target.value)}
                           className="producto-detail__input producto-detail__input--date"
                         />
+                        {editData?.descuento && editData.descuento > 0 && (
+                          <button
+                            type="button"
+                            className="producto-detail__cancel-descuento"
+                            onClick={() => {
+                              if (!editData) return;
+                              setEditData({ ...editData, descuento: 0, fechaFinDescuento: '' });
+                            }}
+                          >
+                            Cancelar descuento
+                          </button>
+                        )}
                       </div>
                       {editData?.descuento && editData.descuento > 0 && (
                         <div className="producto-detail__price-edit-preview">
@@ -406,9 +418,9 @@ const ProductoDetail = () => {
                         className={`producto-detail__etiqueta producto-detail__etiqueta--selectable ${isSelected ? '' : 'producto-detail__etiqueta--unselected'} ${isDisabled ? 'producto-detail__etiqueta--disabled' : ''}`}
                         style={{ backgroundColor: isSelected ? et.color : undefined }}
                         onClick={() => !isDisabled && toggleEtiqueta(et.id)}
+                        title={et.nombre}
                       >
-                        {Icon && <Icon size={14} />}
-                        <span>{et.nombre}</span>
+                        {Icon && <Icon size={12} />}
                       </span>
                     );
                   })
@@ -421,9 +433,9 @@ const ProductoDetail = () => {
                         key={et.id}
                         className="producto-detail__etiqueta"
                         style={{ backgroundColor: et.color }}
+                        title={et.nombre}
                       >
-                        {Icon && <Icon size={14} />}
-                        <span>{et.nombre}</span>
+                        {Icon && <Icon size={12} />}
                       </span>
                     );
                   })
