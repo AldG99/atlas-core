@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { PiCloudArrowUpBold, PiMagnifyingGlassBold } from 'react-icons/pi';
+import { PiCloudArrowUpBold, PiMagnifyingGlassBold, PiClockCounterClockwiseBold } from 'react-icons/pi';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
@@ -7,11 +7,13 @@ import type { ProductoFormData } from '../types/Producto';
 import MainLayout from '../layouts/MainLayout';
 import ProductosTable from '../components/productos/ProductosTable';
 import ProductoModal from '../components/productos/ProductoModal';
+import HistorialDescuentosModal from '../components/productos/HistorialDescuentosModal';
 import './Productos.scss';
 
 const Productos = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showHistorial, setShowHistorial] = useState(false);
   const [editingProducto, setEditingProducto] = useState<{ id: string; data: ProductoFormData } | null>(null);
 
   const { productos, loading, error, addProducto, editProducto, removeProducto } = useProductos();
@@ -75,6 +77,13 @@ const Productos = () => {
           <h1>Productos</h1>
           <div className="productos__header-actions">
             <button
+              onClick={() => setShowHistorial(true)}
+              className="btn btn--outline"
+            >
+              <PiClockCounterClockwiseBold size={18} style={{ marginRight: '6px' }} />
+              Registro de descuentos
+            </button>
+            <button
               onClick={() => {}}
               className="btn btn--outline"
               title="Exportar a Google Drive"
@@ -127,6 +136,13 @@ const Productos = () => {
             producto={editingProducto.data}
             onClose={() => setEditingProducto(null)}
             onSave={handleEdit}
+          />
+        )}
+
+        {showHistorial && (
+          <HistorialDescuentosModal
+            productos={productos}
+            onClose={() => setShowHistorial(false)}
           />
         )}
       </div>

@@ -11,6 +11,7 @@ import {
 } from 'react-icons/pi';
 import type { Producto, ProductoFormData } from '../types/Producto';
 import { getProductoById, deleteProducto, updateProducto } from '../services/productoService';
+import type { CancelDescuentoInfo } from '../services/productoService';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
@@ -120,18 +121,36 @@ const ProductoDetail = () => {
     try {
       setSaving(true);
       const dataToSave = { ...editData };
-      if (!dataToSave.descuento || dataToSave.descuento <= 0) {
+
+      let cancelledDescuento: CancelDescuentoInfo | undefined;
+      const hadDescuento = producto.descuento && producto.descuento > 0 && producto.fechaFinDescuento;
+      const removingDescuento = !dataToSave.descuento || dataToSave.descuento <= 0;
+
+      if (hadDescuento && removingDescuento) {
+        cancelledDescuento = {
+          porcentaje: producto.descuento!,
+          fechaFin: producto.fechaFinDescuento!
+        };
+      }
+
+      if (removingDescuento) {
         dataToSave.descuento = 0;
         dataToSave.fechaFinDescuento = '';
       }
-      await updateProducto(producto.id, dataToSave);
-      setProducto({
-        ...producto,
-        ...dataToSave,
-        fechaFinDescuento: dataToSave.fechaFinDescuento
-          ? new Date(dataToSave.fechaFinDescuento + 'T00:00:00')
-          : undefined
-      });
+
+      await updateProducto(producto.id, dataToSave, cancelledDescuento);
+
+      if (cancelledDescuento) {
+        await fetchProducto();
+      } else {
+        setProducto({
+          ...producto,
+          ...dataToSave,
+          fechaFinDescuento: dataToSave.fechaFinDescuento
+            ? new Date(dataToSave.fechaFinDescuento + 'T00:00:00')
+            : undefined
+        });
+      }
       setIsEditing(false);
       setEditData(null);
       showToast('Producto actualizado correctamente', 'success');
@@ -468,6 +487,7 @@ const ProductoDetail = () => {
               </div>
             )}
           </div>
+
         </div>
       </div>
 

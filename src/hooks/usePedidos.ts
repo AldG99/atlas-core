@@ -100,7 +100,12 @@ export const usePedidos = () => {
       setError(null);
       await updatePedidoStatus(pedidoId, estado);
       setPedidos((prev) =>
-        prev.map((p) => (p.id === pedidoId ? { ...p, estado } : p))
+        prev.map((p) => {
+          if (p.id !== pedidoId) return p;
+          const updated = { ...p, estado };
+          if (estado === 'entregado') updated.fechaEntrega = new Date();
+          return updated;
+        })
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cambiar estado');

@@ -1,14 +1,14 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { PiArchiveBold, PiCurrencyDollarBold, PiUsersBold } from 'react-icons/pi';
+import { Link, useNavigate } from 'react-router-dom';
+import { PiArchiveBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import type { Pedido } from '../types/Pedido';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { getArchivedPedidos, unarchivePedido, deletePedido } from '../services/pedidoService';
-import { exportToCSV, formatCurrency } from '../utils/formatters';
+import { getArchivedPedidos } from '../services/pedidoService';
+import { exportToCSV, formatCurrency, formatShortDate, getTotalPagado } from '../utils/formatters';
+import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
-import PedidosTable from '../components/pedidos/PedidosTable';
 import './Archivo.scss';
 
 type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc';
@@ -29,9 +29,28 @@ const DATE_FILTERS: Record<DateFilter, string> = {
   trimestre: 'Últimos 3 meses'
 };
 
+const getInitials = (name: string): string => {
+  return name
+    .split(' ')
+    .map(w => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+};
+
+const getProductosSummary = (pedido: Pedido): string => {
+  const total = pedido.productos.length;
+  if (total === 0) return 'Sin productos';
+  const first = pedido.productos[0].nombre;
+  if (total === 1) return first;
+  return `${first} +${total - 1}`;
+};
+
 const Archivo = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const navigate = useNavigate();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,18 +77,9 @@ const Archivo = () => {
     fetchArchived();
   }, [fetchArchived]);
 
-  const stats = useMemo(() => {
-    const total = pedidos.length;
-    const valorTotal = pedidos.reduce((sum, p) => sum + p.total, 0);
-    const clientesUnicos = new Set(pedidos.map(p => p.clienteNombre.toLowerCase().trim())).size;
-
-    return { total, valorTotal, clientesUnicos };
-  }, [pedidos]);
-
   const filteredAndSortedPedidos = useMemo(() => {
     let result = [...pedidos];
 
-    // Filtro por fecha
     if (dateFilter !== 'todos') {
       const now = new Date();
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -99,18 +109,15 @@ const Archivo = () => {
       });
     }
 
-    // Filtro por búsqueda
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
         (pedido) =>
           pedido.clienteNombre.toLowerCase().includes(term) ||
-          pedido.clienteTelefono.toLowerCase().includes(term) ||
-          pedido.productos.some(p => p.nombre.toLowerCase().includes(term) || p.clave?.toLowerCase().includes(term))
+          pedido.clienteTelefono.toLowerCase().includes(term)
       );
     }
 
-    // Ordenamiento
     result.sort((a, b) => {
       switch (sortBy) {
         case 'fecha_desc':
@@ -131,28 +138,6 @@ const Archivo = () => {
     return result;
   }, [pedidos, searchTerm, sortBy, dateFilter]);
 
-  const handleRestore = async (id: string) => {
-    try {
-      await unarchivePedido(id);
-      setPedidos((prev) => prev.filter((p) => p.id !== id));
-      showToast('Pedido restaurado correctamente', 'success');
-    } catch {
-      showToast('Error al restaurar el pedido', 'error');
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm('¿Estás seguro de eliminar este pedido permanentemente? Esta acción no se puede deshacer.')) {
-      try {
-        await deletePedido(id);
-        setPedidos((prev) => prev.filter((p) => p.id !== id));
-        showToast('Pedido eliminado permanentemente', 'success');
-      } catch {
-        showToast('Error al eliminar el pedido', 'error');
-      }
-    }
-  };
-
   const handleExport = () => {
     if (filteredAndSortedPedidos.length === 0) {
       showToast('No hay pedidos para exportar', 'warning');
@@ -162,30 +147,15 @@ const Archivo = () => {
     showToast('Archivo exportado correctamente', 'success');
   };
 
-  const handleRestoreAll = async () => {
-    if (filteredAndSortedPedidos.length === 0) {
-      showToast('No hay pedidos para restaurar', 'warning');
-      return;
-    }
-
-    if (!window.confirm(`¿Restaurar ${filteredAndSortedPedidos.length} pedidos?`)) {
-      return;
-    }
-
-    try {
-      await Promise.all(filteredAndSortedPedidos.map(p => unarchivePedido(p.id)));
-      setPedidos((prev) => prev.filter(p => !filteredAndSortedPedidos.some(fp => fp.id === p.id)));
-      showToast(`${filteredAndSortedPedidos.length} pedidos restaurados`, 'success');
-    } catch {
-      showToast('Error al restaurar los pedidos', 'error');
-    }
+  const handleRowClick = (id: string) => {
+    navigate(ROUTES.DETAIL_PEDIDO.replace(':id', id));
   };
 
   return (
     <MainLayout>
       <div className="archivo">
         <div className="archivo__header">
-          <h1>Archivo</h1>
+          <h1>Archivados</h1>
           <div className="archivo__header-actions">
             <button
               onClick={handleExport}
@@ -201,43 +171,12 @@ const Archivo = () => {
         </div>
 
         {!loading && pedidos.length > 0 && (
-          <div className="archivo__stats">
-            <div className="archivo__stat">
-              <div className="archivo__stat-icon">
-                <PiArchiveBold size={24} />
-              </div>
-              <div className="archivo__stat-content">
-                <span className="archivo__stat-value">{stats.total}</span>
-                <span className="archivo__stat-label">Pedidos archivados</span>
-              </div>
-            </div>
-            <div className="archivo__stat">
-              <div className="archivo__stat-icon archivo__stat-icon--money">
-                <PiCurrencyDollarBold size={24} />
-              </div>
-              <div className="archivo__stat-content">
-                <span className="archivo__stat-value">{formatCurrency(stats.valorTotal)}</span>
-                <span className="archivo__stat-label">Valor total</span>
-              </div>
-            </div>
-            <div className="archivo__stat">
-              <div className="archivo__stat-icon archivo__stat-icon--clients">
-                <PiUsersBold size={24} />
-              </div>
-              <div className="archivo__stat-content">
-                <span className="archivo__stat-value">{stats.clientesUnicos}</span>
-                <span className="archivo__stat-label">Clientes únicos</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!loading && pedidos.length > 0 && (
           <div className="archivo__controls">
             <div className="archivo__search">
+              <PiMagnifyingGlassBold size={16} className="archivo__search-icon" />
               <input
                 type="text"
-                placeholder="Buscar por cliente, teléfono o productos..."
+                placeholder="Buscar por nombre o teléfono..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="input"
@@ -269,13 +208,6 @@ const Archivo = () => {
                 ))}
               </select>
 
-              <button
-                onClick={handleRestoreAll}
-                className="btn btn--outline"
-                disabled={filteredAndSortedPedidos.length === 0}
-              >
-                Restaurar todos ({filteredAndSortedPedidos.length})
-              </button>
             </div>
           </div>
         )}
@@ -287,10 +219,10 @@ const Archivo = () => {
         {!loading && !error && pedidos.length === 0 && (
           <div className="archivo__empty">
             <div className="archivo__empty-icon">
-              <PiArchiveBold size={24} />
+              <PiArchiveBold />
             </div>
             <h2>El archivo está vacío</h2>
-            <p>Los pedidos que archives aparecerán aquí</p>
+            <p>Los pedidos que archives aparecerán aquí para que puedas consultarlos o restaurarlos en cualquier momento.</p>
             <Link to={ROUTES.DASHBOARD} className="btn btn--primary">
               Ir a pedidos
             </Link>
@@ -307,9 +239,124 @@ const Archivo = () => {
         )}
 
         {!loading && !error && filteredAndSortedPedidos.length > 0 && (
-          <PedidosTable
-            pedidos={filteredAndSortedPedidos}
-          />
+          <div className="archivo__table-wrapper">
+            <div className="archivo__table-header">
+              <table className="archivo__table">
+                <colgroup>
+                  <col style={{ width: '20%' }} />
+                  <col style={{ width: '14%' }} />
+                  <col style={{ width: '7%' }} />
+                  <col style={{ width: '8%' }} />
+                  <col style={{ width: '12%' }} />
+                  <col style={{ width: '10%' }} />
+                  <col style={{ width: '7%' }} />
+                  <col style={{ width: '12%' }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Teléfono</th>
+                    <th>C.P.</th>
+                    <th>Productos</th>
+                    <th>Abonado</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div className="archivo__table-body">
+              <table className="archivo__table">
+                <colgroup>
+                  <col style={{ width: '20%' }} />
+                  <col style={{ width: '14%' }} />
+                  <col style={{ width: '7%' }} />
+                  <col style={{ width: '8%' }} />
+                  <col style={{ width: '12%' }} />
+                  <col style={{ width: '10%' }} />
+                  <col style={{ width: '7%' }} />
+                  <col style={{ width: '12%' }} />
+                </colgroup>
+                <tbody>
+                  {filteredAndSortedPedidos.map((pedido) => {
+                    const pagado = getTotalPagado(pedido);
+                    const porcentaje = pedido.total > 0 ? Math.round((pagado / pedido.total) * 100) : 0;
+                    const paidStatus = pagado >= pedido.total ? 'paid' : pagado > 0 ? 'partial' : 'pending';
+                    const totalClass = pagado >= pedido.total
+                      ? 'archivo__total--paid'
+                      : pagado > 0
+                        ? 'archivo__total--pending'
+                        : '';
+                    return (
+                      <tr
+                        key={pedido.id}
+                        className="archivo__row"
+                        onClick={() => handleRowClick(pedido.id)}
+                      >
+                        <td>
+                          <div className="archivo__client">
+                            <div className="archivo__avatar">
+                              {pedido.clienteFoto ? (
+                                <img src={pedido.clienteFoto} alt={pedido.clienteNombre} />
+                              ) : (
+                                <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
+                              )}
+                            </div>
+                            <span className="archivo__name" title={pedido.clienteNombre}>
+                              {pedido.clienteNombre}
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="archivo__phone">{pedido.clienteTelefono}</span>
+                        </td>
+                        <td>
+                          <span className="archivo__cp">{pedido.clienteCodigoPostal || '-'}</span>
+                        </td>
+                        <td>
+                          <div className="archivo__product-cell">
+                            <span className="archivo__product-count">
+                              {pedido.productos.reduce((sum, p) => sum + p.cantidad, 0)}
+                            </span>
+                            {pedido.productos.some(p => p.descuento && p.descuento > 0) && (
+                              <span className="archivo__discount-indicator" title="Incluye descuento">%</span>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div className={`archivo__paid archivo__paid--${paidStatus}`}>
+                            <span className="archivo__paid-amount">{formatCurrency(pagado)}</span>
+                            <span className="archivo__paid-percent">{porcentaje}%</span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`archivo__total ${totalClass}`}>
+                            {formatCurrency(pedido.total)}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className="archivo__status-dot"
+                            style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                            title={PEDIDO_STATUS[pedido.estado]}
+                          />
+                        </td>
+                        <td>
+                          <span className="archivo__date">{formatShortDate(new Date(pedido.fechaCreacion))}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div className="archivo__table-footer">
+              <span className="archivo__page-info">
+                {filteredAndSortedPedidos.length} {filteredAndSortedPedidos.length === 1 ? 'pedido' : 'pedidos'}
+              </span>
+            </div>
+          </div>
         )}
       </div>
     </MainLayout>

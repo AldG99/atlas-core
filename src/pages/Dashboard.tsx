@@ -2,10 +2,12 @@ import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import { usePedidos } from '../hooks/usePedidos';
+import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ROUTES } from '../config/routes';
+import { autoArchiveOldDelivered } from '../services/pedidoService';
 import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
 import PedidosTable from '../components/pedidos/PedidosTable';
@@ -43,7 +45,21 @@ const Dashboard = () => {
     fetchPedidos,
     fetchByStatus
   } = usePedidos();
+  const { user } = useAuth();
   const { showToast } = useToast();
+
+  // Auto-archivar pedidos entregados con más de 7 días
+  useEffect(() => {
+    if (!user || loading) return;
+
+    autoArchiveOldDelivered(user.uid).then((count) => {
+      if (count > 0) {
+        showToast(`${count} pedido${count > 1 ? 's' : ''} archivado${count > 1 ? 's' : ''} automáticamente`, 'success');
+        fetchPedidos();
+      }
+    }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading]);
 
   // Guardar todos los pedidos cuando el filtro es 'todos'
   useEffect(() => {
