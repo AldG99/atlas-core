@@ -21,6 +21,7 @@ import {
   formatPedidoForWhatsApp,
   openWhatsApp,
   copyToClipboard,
+  formatTelefono,
 } from '../utils/formatters';
 import {
   getPedidoById,
@@ -336,7 +337,7 @@ const PedidoDetail = () => {
               <div className="pedido-detail__client-info">
                 <h1 className="pedido-detail__name">{pedido.clienteNombre}</h1>
                 <span className="pedido-detail__phone">
-                  {pedido.clienteTelefono}
+                  {formatTelefono(pedido.clienteTelefono)}
                 </span>
               </div>
             </div>

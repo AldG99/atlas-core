@@ -1,3 +1,11 @@
+// Formatea 10 dígitos como XXX XXX XXXX
+export const formatTelefono = (numero: string): string => {
+  const d = numero.replace(/\D/g, '');
+  if (d.length <= 3) return d;
+  if (d.length <= 6) return `${d.slice(0, 3)} ${d.slice(3)}`;
+  return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 10)}`;
+};
+
 export const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',

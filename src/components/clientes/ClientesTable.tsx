@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { PiStarFill } from 'react-icons/pi';
 import type { Cliente } from '../../types/Cliente';
+import { getCodigoPais } from '../../data/codigosPais';
+import { formatTelefono } from '../../utils/formatters';
 import './ClientesTable.scss';
 
 interface ClientesTableProps {
@@ -92,7 +94,11 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
                 </div>
               </td>
               <td>
-                <span className="clientes-table__phone">{cliente.telefono}</span>
+                <span className="clientes-table__phone">
+                  {cliente.telefonoCodigoPais
+                    ? `${getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefono)}`
+                    : formatTelefono(cliente.telefono)}
+                </span>
               </td>
               <td>
                 <span className="clientes-table__address" title={`${cliente.calle} ${cliente.numeroExterior}`}>

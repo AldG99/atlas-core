@@ -16,6 +16,8 @@ import {
 } from 'react-icons/pi';
 import type { Cliente, ClienteFormData } from '../types/Cliente';
 import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito } from '../services/clienteService';
+import { getCodigoPais } from '../data/codigosPais';
+import { formatTelefono } from '../utils/formatters';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
@@ -319,7 +321,11 @@ const ClienteDetail = () => {
                       className="cliente-detail__input"
                     />
                   ) : (
-                    <span className="cliente-detail__info-value">{cliente.telefono}</span>
+                    <span className="cliente-detail__info-value">
+                      {cliente.telefonoCodigoPais
+                        ? `${getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefono)}`
+                        : formatTelefono(cliente.telefono)}
+                    </span>
                   )}
                 </div>
               </div>
@@ -338,7 +344,11 @@ const ClienteDetail = () => {
                         className="cliente-detail__input"
                       />
                     ) : (
-                      <span className="cliente-detail__info-value">{cliente.telefonoSecundario}</span>
+                      <span className="cliente-detail__info-value">
+                        {cliente.telefonoSecundarioCodigoPais
+                          ? `${getCodigoPais(cliente.telefonoSecundarioCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefonoSecundario!)}`
+                          : formatTelefono(cliente.telefonoSecundario!)}
+                      </span>
                     )}
                   </div>
                 </div>

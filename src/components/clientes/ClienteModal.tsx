@@ -3,6 +3,7 @@ import { PiXBold, PiUserBold } from 'react-icons/pi';
 import type { ClienteFormData } from '../../types/Cliente';
 import { uploadClienteImage } from '../../services/clienteService';
 import { useAuth } from '../../hooks/useAuth';
+import PhoneInput from './PhoneInput';
 import './ClienteModal.scss';
 
 interface ClienteModalProps {
@@ -23,7 +24,9 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
     nombre: '',
     apellido: '',
     telefono: '',
+    telefonoCodigoPais: 'MX',
     telefonoSecundario: '',
+    telefonoSecundarioCodigoPais: 'MX',
     correo: '',
     calle: '',
     numeroExterior: '',
@@ -119,6 +122,17 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
+
+  const handlePhoneChange = (
+    field: 'telefono' | 'telefonoSecundario',
+    codigoField: 'telefonoCodigoPais' | 'telefonoSecundarioCodigoPais'
+  ) =>
+    (numero: string, iso: string) => {
+      setFormData((prev) => ({ ...prev, [field]: numero, [codigoField]: iso }));
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: undefined }));
+      }
+    };
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
@@ -219,13 +233,13 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
 
               <div className="form-group">
                 <label htmlFor="telefono">Teléfono *</label>
-                <input
-                  type="tel"
+                <PhoneInput
                   id="telefono"
                   name="telefono"
                   value={formData.telefono}
-                  onChange={handleChange}
-                  className={`input ${errors.telefono ? 'input--error' : ''}`}
+                  codigoPais={formData.telefonoCodigoPais}
+                  onChange={handlePhoneChange('telefono', 'telefonoCodigoPais')}
+                  hasError={!!errors.telefono}
                   placeholder="Número de teléfono"
                 />
                 {errors.telefono && <span className="form-error">{errors.telefono}</span>}
@@ -233,13 +247,12 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
 
               <div className="form-group">
                 <label htmlFor="telefonoSecundario">Teléfono secundario</label>
-                <input
-                  type="tel"
+                <PhoneInput
                   id="telefonoSecundario"
                   name="telefonoSecundario"
                   value={formData.telefonoSecundario || ''}
-                  onChange={handleChange}
-                  className="input"
+                  codigoPais={formData.telefonoSecundarioCodigoPais ?? 'MX'}
+                  onChange={handlePhoneChange('telefonoSecundario', 'telefonoSecundarioCodigoPais')}
                   placeholder="Número alternativo (opcional)"
                 />
               </div>

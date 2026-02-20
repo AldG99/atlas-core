@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
-import { formatCurrency, formatShortDate, getTotalPagado } from '../../utils/formatters';
+import { formatCurrency, formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
 import './PedidosTable.scss';
 
@@ -104,7 +104,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                 </div>
               </td>
               <td>
-                <span className="pedidos-table__phone">{pedido.clienteTelefono}</span>
+                <span className="pedidos-table__phone">{formatTelefono(pedido.clienteTelefono)}</span>
               </td>
               <td>
                 <span className="pedidos-table__cp">{pedido.clienteCodigoPostal || '-'}</span>

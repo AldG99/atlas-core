@@ -1,5 +1,7 @@
 import { PiXBold } from 'react-icons/pi';
 import type { Cliente } from '../../types/Cliente';
+import { getCodigoPais } from '../../data/codigosPais';
+import { formatTelefono } from '../../utils/formatters';
 import './ClienteDetailModal.scss';
 
 interface ClienteDetailModalProps {
@@ -63,12 +65,20 @@ const ClienteDetailModal = ({ cliente, onClose, onEdit, onWhatsApp }: ClienteDet
               <div className="cliente-detail-modal__grid">
                 <div className="cliente-detail-modal__field">
                   <label>Teléfono</label>
-                  <span>{cliente.telefono}</span>
+                  <span>
+                    {cliente.telefonoCodigoPais
+                      ? `${getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefono)}`
+                      : formatTelefono(cliente.telefono)}
+                  </span>
                 </div>
                 {cliente.telefonoSecundario && (
                   <div className="cliente-detail-modal__field">
                     <label>Teléfono secundario</label>
-                    <span>{cliente.telefonoSecundario}</span>
+                    <span>
+                      {cliente.telefonoSecundarioCodigoPais
+                        ? `${getCodigoPais(cliente.telefonoSecundarioCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefonoSecundario)}`
+                        : formatTelefono(cliente.telefonoSecundario)}
+                    </span>
                   </div>
                 )}
                 {cliente.correo && (
