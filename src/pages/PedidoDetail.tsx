@@ -366,14 +366,15 @@ const PedidoDetail = () => {
             <div className="pedido-detail__table-scroll">
             <table className="pedido-detail__products-table">
               <colgroup>
-                <col style={{ width: '9%' }} />
-                <col style={{ width: '5%' }} />
-                <col style={{ width: '18%' }} />
-                <col style={{ width: '7%' }} />
-                <col style={{ width: '21%' }} />
-                <col style={{ width: '17%' }} />
-                <col style={{ width: '12%' }} />
                 <col style={{ width: '8%' }} />
+                <col style={{ width: '5%' }} />
+                <col style={{ width: '17%' }} />
+                <col style={{ width: '6%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '19%' }} />
+                <col style={{ width: '15%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '9%' }} />
               </colgroup>
               <thead>
                 <tr>
@@ -381,6 +382,7 @@ const PedidoDetail = () => {
                   <th>Cant.</th>
                   <th>Producto</th>
                   <th>Etiquetas</th>
+                  <th>Precio</th>
                   <th>Abonado</th>
                   <th>Subtotal</th>
                   <th>Estado</th>
@@ -442,6 +444,18 @@ const PedidoDetail = () => {
                         </div>
                       </td>
                       <td>
+                        {p.precioOriginal && p.descuento ? (
+                          <div className="pedido-detail__product-subtotal-discount">
+                            <span className="pedido-detail__product-subtotal-original">
+                              {formatCurrency(p.precioOriginal)}
+                            </span>
+                            <span>{formatCurrency(p.precioUnitario)}</span>
+                          </div>
+                        ) : (
+                          formatCurrency(p.precioUnitario)
+                        )}
+                      </td>
+                      <td>
                         <div className="pedido-detail__product-paid-cell">
                           <span>{formatCurrency(cubierto)}</span>
                           <div className="pedido-detail__product-bar">
@@ -480,10 +494,14 @@ const PedidoDetail = () => {
                           className="pedido-detail__product-eye"
                           title="Ver detalles"
                           onClick={() => {
-                            const found = catalogoProductos.find(
-                              cp => cp.clave === p.clave
-                            );
-                            if (found) setSelectedProducto(found);
+                            const found = p.clave
+                              ? catalogoProductos.find(cp => cp.clave === p.clave)
+                              : undefined;
+                            if (found) {
+                              setSelectedProducto(found);
+                            } else {
+                              showToast('Producto no disponible en el catálogo', 'warning');
+                            }
                           }}
                         >
                           <PiEyeBold size={20} />
@@ -492,13 +510,14 @@ const PedidoDetail = () => {
                     </tr>
                   );
                 })}
-                <tr className="pedido-detail__spacer-row" aria-hidden="true"><td colSpan={8} /></tr>
+                <tr className="pedido-detail__spacer-row" aria-hidden="true"><td colSpan={9} /></tr>
               </tbody>
               <tfoot className="pedido-detail__products-tfoot">
                 <tr className="pedido-detail__product-total-row">
                   <td>
                     <strong>Total</strong>
                   </td>
+                  <td></td>
                   <td></td>
                   <td></td>
                   <td></td>

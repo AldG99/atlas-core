@@ -9,7 +9,7 @@ $bottombar-height: 64px;
   max-width: 1000px;
   margin: 0 auto;
   padding-top: $topbar-height;
-  padding-bottom: calc(#{$bottombar-height} + #{$spacing-md});
+  padding-bottom: $bottombar-height;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -180,15 +180,17 @@ $bottombar-height: 64px;
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    padding-bottom: $spacing-md;
+    overflow: hidden;
   }
 
   &__card {
     background-color: $color-white;
     box-shadow: $shadow-sm;
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
 
   // Fixed Bottom Bar
@@ -468,17 +470,18 @@ $bottombar-height: 64px;
     tbody td,
     tfoot td {
       &:nth-child(2) { text-align: center; }   // Cant.
-      &:nth-child(4) { text-align: center; }   // Etiquetas
-      &:nth-child(5) { text-align: right; }     // Abonado
-      &:nth-child(6) { text-align: right; }     // Subtotal
-      &:nth-child(7) { text-align: center; }    // Estado
-      &:last-child { text-align: center; }      // Acciones
+      &:nth-child(4) { text-align: left; }    // Etiquetas
+      &:nth-child(5) { text-align: right; }    // Precio
+      &:nth-child(6) { text-align: right; }    // Abonado
+      &:nth-child(7) { text-align: right; }    // Subtotal
+      &:nth-child(8) { text-align: center; }   // Estado
+      &:last-child { text-align: center; }     // Acciones
     }
 
     tbody td {
       &:nth-child(2) { font-weight: 600; }     // Cant.
-      &:nth-child(5) { font-weight: 600; }     // Abonado
-      &:nth-child(6) { font-weight: 600; }     // Subtotal
+      &:nth-child(6) { font-weight: 600; }     // Abonado
+      &:nth-child(7) { font-weight: 600; }     // Subtotal
     }
   }
 
@@ -500,8 +503,8 @@ $bottombar-height: 64px;
   }
 
   &__product-total-row {
-    td:nth-child(5),
-    td:nth-child(6) {
+    td:nth-child(6),
+    td:nth-child(7) {
       text-align: right;
     }
   }
@@ -519,7 +522,7 @@ $bottombar-height: 64px;
   &__etiquetas {
     display: inline-flex;
     gap: 2px;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   &__etiqueta {
