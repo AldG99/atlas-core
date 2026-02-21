@@ -325,6 +325,7 @@ const PedidoDetail = () => {
 
         {/* Scrollable Content */}
         <div className="pedido-detail__content">
+          <div className="pedido-detail__card">
           <div className="pedido-detail__header">
             <div className="pedido-detail__client">
               <div className="pedido-detail__avatar">
@@ -354,7 +355,7 @@ const PedidoDetail = () => {
             </div>
           </div>
 
-          <div className="pedido-detail__section">
+          <div className="pedido-detail__section pedido-detail__section--grow">
             <div className="pedido-detail__section-header">
               <strong>Productos y pagos</strong>
               <span className="pedido-detail__payment-info">
@@ -362,6 +363,7 @@ const PedidoDetail = () => {
               </span>
             </div>
 
+            <div className="pedido-detail__table-scroll">
             <table className="pedido-detail__products-table">
               <colgroup>
                 <col style={{ width: '9%' }} />
@@ -490,6 +492,9 @@ const PedidoDetail = () => {
                     </tr>
                   );
                 })}
+                <tr className="pedido-detail__spacer-row" aria-hidden="true"><td colSpan={8} /></tr>
+              </tbody>
+              <tfoot className="pedido-detail__products-tfoot">
                 <tr className="pedido-detail__product-total-row">
                   <td>
                     <strong>Total</strong>
@@ -523,23 +528,24 @@ const PedidoDetail = () => {
                   </td>
                   <td></td>
                 </tr>
-              </tbody>
+              </tfoot>
             </table>
+            </div>
           </div>
 
-          {pedido.notas && (
-            <div className="pedido-detail__section">
-              <div className="pedido-detail__notes">
-                <strong>Notas:</strong> {pedido.notas}
-              </div>
+          <div className="pedido-detail__section">
+            <div className="pedido-detail__notes">
+              <strong>Notas:</strong>{' '}
+              {pedido.notas ? pedido.notas : <span className="pedido-detail__notes--empty">Sin comentarios</span>}
             </div>
-          )}
+          </div>
 
           {abonos.length > 0 && (
             <div className="pedido-detail__section">
               <div className="pedido-detail__section-header">
                 <strong>Historial de abonos</strong>
               </div>
+              <div className="pedido-detail__table-scroll pedido-detail__table-scroll--fixed">
               <table className="pedido-detail__abonos-table">
                 <thead>
                   <tr>
@@ -584,8 +590,10 @@ const PedidoDetail = () => {
                     ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
+          </div>
         </div>
 
         {/* Fixed Bottom Bar */}

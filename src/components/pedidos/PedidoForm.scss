@@ -1,9 +1,17 @@
 @use '../../styles/abstracts/variables' as *;
 
 .pedido-form {
-  textarea.input {
-    resize: vertical;
-    min-height: 80px;
+  &__notas {
+    resize: none !important;
+    height: 80px !important;
+  }
+
+  &__notas-counter {
+    display: block;
+    text-align: right;
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    margin-top: 4px;
   }
 
   .error-message {

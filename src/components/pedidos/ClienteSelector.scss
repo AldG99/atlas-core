@@ -192,87 +192,55 @@
 
   // Estado seleccionado
   &--selected {
-    padding: 0;
+    margin-bottom: $spacing-md;
   }
 
-  &__selected-header {
+  &__selected-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: $spacing-sm;
-  }
-
-  &__selected-info {
-    display: flex;
-    align-items: flex-start;
     gap: $spacing-md;
-    background-color: $color-white;
-    border-radius: $border-radius-sm;
-    padding: $spacing-sm $spacing-md;
-    border: 1px solid $color-gray-200;
   }
 
-  &__selected-avatar {
-    width: 50px;
-    height: 50px;
+  &__avatar {
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     overflow: hidden;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    background-color: $color-gray-200;
 
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
+    span {
+      color: $color-white;
+      font-size: $font-size-base;
+      font-weight: 600;
+    }
   }
 
-  &__selected-avatar-placeholder {
-    width: 100%;
-    height: 100%;
+  &__client-info {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: $color-primary;
-    color: $color-white;
-    font-weight: 600;
-    font-size: $font-size-lg;
-  }
-
-  &__selected-details {
+    flex-direction: column;
+    gap: 2px;
     flex: 1;
   }
 
-  &__selected-name {
+  &__client-name {
+    font-size: $font-size-lg;
     font-weight: 600;
     color: $color-gray-800;
-    font-size: $font-size-base;
   }
 
-  &__selected-phone {
-    color: $color-primary;
+  &__client-phone {
     font-size: $font-size-sm;
-    margin-top: $spacing-xs;
+    color: $color-gray-500;
   }
 
-  &__selected-address {
-    display: flex;
-    flex-direction: column;
-    margin-top: $spacing-xs;
-
-    p {
-      margin: 0;
-      font-size: $font-size-sm;
-      color: $color-gray-800;
-      font-weight: 500;
-      line-height: 1.5;
-    }
-
-    &-ref {
-      margin-top: $spacing-xs !important;
-      font-style: italic;
-      color: $color-gray-500 !important;
-      font-weight: 400 !important;
-    }
-  }
 }

@@ -242,8 +242,8 @@ const ProductoSelector = ({
         </div>
       )}
 
-      {items.length > 0 && (
-        <div className="producto-selector__items">
+      <div className="producto-selector__items">
+          <div className="producto-selector__table-scroll">
           <table className="producto-selector__table">
             <thead>
               <tr>
@@ -255,6 +255,13 @@ const ProductoSelector = ({
               </tr>
             </thead>
             <tbody>
+              {items.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="producto-selector__empty-row">
+                    No hay productos agregados. Busca y selecciona productos para agregarlos al pedido.
+                  </td>
+                </tr>
+              )}
               {items.map((item) => (
                 <tr key={item.producto.id}>
                   <td className="producto-selector__table-name">
@@ -350,6 +357,7 @@ const ProductoSelector = ({
               ))}
             </tbody>
           </table>
+          </div>
 
           <div className="producto-selector__total">
             <span className="producto-selector__total-label">Total:</span>
@@ -358,13 +366,6 @@ const ProductoSelector = ({
             </span>
           </div>
         </div>
-      )}
-
-      {items.length === 0 && (
-        <div className="producto-selector__empty">
-          No hay productos agregados. Busca y selecciona productos para agregarlos al pedido.
-        </div>
-      )}
 
       {selectedProducto && (
         <div className="producto-selector__modal-overlay" onClick={() => setSelectedProducto(null)}>

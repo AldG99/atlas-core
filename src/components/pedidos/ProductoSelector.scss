@@ -230,15 +230,34 @@
 
   &__items {
     margin-top: $spacing-md;
+  }
+
+  &__table-scroll {
+    height: 160px;
+    overflow-y: auto;
     overflow-x: auto;
+    border: 1px solid $color-gray-200;
+    scrollbar-gutter: stable;
+    scrollbar-color: $color-gray-300 $color-white;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      background: $color-white;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 4px;
+
+      &:hover {
+        background: $color-gray-400;
+      }
+    }
   }
 
   &__table {
     width: 100%;
     border-collapse: collapse;
-    background-color: $color-white;
-    border-radius: $border-radius-sm;
-    overflow: hidden;
     min-width: 400px;
 
     th,
@@ -249,10 +268,13 @@
     }
 
     th {
-      background-color: $color-gray-100;
+      background-color: $color-gray-50;
       font-size: $font-size-sm;
       font-weight: 600;
-      color: $color-gray-700;
+      color: $color-gray-500;
+      position: sticky;
+      top: 0;
+      z-index: 1;
     }
 
     td {
@@ -431,12 +453,12 @@
     }
   }
 
-  &__empty {
-    margin-top: $spacing-md;
-    padding: $spacing-lg;
+  &__empty-row {
     text-align: center;
-    color: $color-gray-500;
+    color: $color-gray-400;
     font-size: $font-size-sm;
+    font-style: italic;
+    padding: $spacing-lg !important;
   }
 
   // Modal detalles producto

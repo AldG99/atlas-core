@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { PiStarFill } from 'react-icons/pi';
 import { useClientes } from '../../hooks/useClientes';
 import { useToast } from '../../hooks/useToast';
+import { formatTelefono } from '../../utils/formatters';
 import type { Cliente } from '../../types/Cliente';
 import './ClienteSelector.scss';
 
@@ -55,6 +56,7 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
         nombre: nombre.trim(),
         apellido: '',
         telefono: telefono.trim(),
+        telefonoCodigoPais: '',
         calle: '',
         numeroExterior: '',
         colonia: '',
@@ -92,8 +94,22 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
   if (selectedCliente) {
     return (
       <div className="cliente-selector cliente-selector--selected">
-        <div className="cliente-selector__selected-header">
-          <span className="cliente-selector__label">Cliente</span>
+        <div className="cliente-selector__selected-row">
+          <div className="cliente-selector__avatar">
+            {selectedCliente.fotoPerfil ? (
+              <img src={selectedCliente.fotoPerfil} alt={selectedCliente.nombre} />
+            ) : (
+              <span>{selectedCliente.nombre.charAt(0).toUpperCase()}</span>
+            )}
+          </div>
+          <div className="cliente-selector__client-info">
+            <span className="cliente-selector__client-name">
+              {selectedCliente.nombre} {selectedCliente.apellido}
+            </span>
+            <span className="cliente-selector__client-phone">
+              {formatTelefono(selectedCliente.telefono)}
+            </span>
+          </div>
           <button
             type="button"
             className="btn btn--outline btn--sm"
@@ -101,37 +117,6 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
           >
             Cambiar
           </button>
-        </div>
-        <div className="cliente-selector__selected-info">
-          <div className="cliente-selector__selected-avatar">
-            {selectedCliente.fotoPerfil ? (
-              <img src={selectedCliente.fotoPerfil} alt={selectedCliente.nombre} />
-            ) : (
-              <span className="cliente-selector__selected-avatar-placeholder">
-                {selectedCliente.nombre.charAt(0).toUpperCase()}
-              </span>
-            )}
-          </div>
-          <div className="cliente-selector__selected-details">
-            <div className="cliente-selector__selected-name">
-              {selectedCliente.nombre} {selectedCliente.apellido}
-            </div>
-            <div className="cliente-selector__selected-phone">
-              {selectedCliente.telefono}
-            </div>
-            {selectedCliente.calle && (
-              <div className="cliente-selector__selected-address">
-                <p>{selectedCliente.calle} {selectedCliente.numeroExterior}{selectedCliente.numeroInterior ? `, Int. ${selectedCliente.numeroInterior}` : ''}</p>
-                {selectedCliente.colonia && <p>{selectedCliente.colonia}</p>}
-                {(selectedCliente.ciudad || selectedCliente.codigoPostal) && (
-                  <p>{selectedCliente.ciudad}{selectedCliente.codigoPostal ? `, CP ${selectedCliente.codigoPostal}` : ''}</p>
-                )}
-                {selectedCliente.referencia && (
-                  <p className="cliente-selector__selected-address-ref">Ref: {selectedCliente.referencia}</p>
-                )}
-              </div>
-            )}
-          </div>
         </div>
       </div>
     );

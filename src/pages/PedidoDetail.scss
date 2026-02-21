@@ -9,7 +9,10 @@ $bottombar-height: 64px;
   max-width: 1000px;
   margin: 0 auto;
   padding-top: $topbar-height;
-  padding-bottom: $bottombar-height;
+  padding-bottom: calc(#{$bottombar-height} + #{$spacing-md});
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   &__loading {
     text-align: center;
@@ -175,7 +178,17 @@ $bottombar-height: 64px;
   &__content {
     display: flex;
     flex-direction: column;
-    gap: $spacing-md;
+    flex: 1;
+    min-height: 0;
+    padding-bottom: $spacing-md;
+  }
+
+  &__card {
+    background-color: $color-white;
+    box-shadow: $shadow-sm;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   // Fixed Bottom Bar
@@ -242,9 +255,8 @@ $bottombar-height: 64px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background-color: $color-white;
     padding: $spacing-md;
-    box-shadow: $shadow-sm;
+    border-bottom: 1px solid $color-gray-100;
   }
 
   &__client {
@@ -323,9 +335,17 @@ $bottombar-height: 64px;
   }
 
   &__section {
-    background-color: $color-white;
-    box-shadow: $shadow-sm;
     padding: $spacing-md;
+    border-top: 1px solid $color-gray-100;
+    flex-shrink: 0;
+
+    &--grow {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 1;
+    }
   }
 
   &__section-header {
@@ -353,6 +373,40 @@ $bottombar-height: 64px;
     strong {
       color: $color-gray-700;
     }
+
+    &--empty {
+      font-style: italic;
+      color: $color-gray-400;
+    }
+  }
+
+  // Scrollable table wrapper
+  &__table-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    scrollbar-color: $color-gray-300 $color-white;
+    border: 1px solid $color-gray-200;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      background: $color-white;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 4px;
+
+      &:hover {
+        background: $color-gray-400;
+      }
+    }
+
+    &--fixed {
+      flex: none;
+      max-height: 160px;
+    }
   }
 
   // Products table
@@ -365,6 +419,9 @@ $bottombar-height: 64px;
     thead {
       background-color: $color-gray-50;
       border-bottom: 1px solid $color-gray-200;
+      position: sticky;
+      top: 0;
+      z-index: 1;
 
       th {
         padding: $spacing-xs $spacing-sm;
@@ -384,14 +441,15 @@ $bottombar-height: 64px;
           border-bottom: none;
         }
       }
+    }
 
-      td {
-        padding: $spacing-xs $spacing-sm;
-        font-size: $font-size-sm;
-        color: $color-gray-800;
-        vertical-align: middle;
-        white-space: nowrap;
-      }
+    tbody td,
+    tfoot td {
+      padding: $spacing-xs $spacing-sm;
+      font-size: $font-size-sm;
+      color: $color-gray-800;
+      vertical-align: middle;
+      white-space: nowrap;
     }
   }
 
@@ -404,8 +462,11 @@ $bottombar-height: 64px;
   }
 
   &__products-table {
+    min-height: 100%;
+
     thead th,
-    tbody td {
+    tbody td,
+    tfoot td {
       &:nth-child(2) { text-align: center; }   // Cant.
       &:nth-child(4) { text-align: center; }   // Etiquetas
       &:nth-child(5) { text-align: right; }     // Abonado
@@ -421,9 +482,24 @@ $bottombar-height: 64px;
     }
   }
 
-  &__product-total-row {
-    border-top: 1px solid $color-gray-200 !important;
+  &__spacer-row {
+    height: 100%;
 
+    td {
+      padding: 0 !important;
+      border: none !important;
+    }
+  }
+
+  &__products-tfoot {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    background-color: $color-white;
+    box-shadow: inset 0 1px 0 $color-gray-200;
+  }
+
+  &__product-total-row {
     td:nth-child(5),
     td:nth-child(6) {
       text-align: right;

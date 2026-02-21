@@ -46,20 +46,22 @@ const NewPedido = () => {
   return (
     <MainLayout>
       <div className="new-pedido">
-        <div className="new-pedido__header">
-          <h1>Nuevo Pedido</h1>
-        </div>
+        <div className="new-pedido__card">
+          <div className="new-pedido__header">
+            <h1>Nuevo Pedido</h1>
+          </div>
 
-        {error && <div className="new-pedido__error">{error}</div>}
+          {error && <div className="new-pedido__error">{error}</div>}
 
-        <div className="new-pedido__form">
-          <PedidoForm
-            onSubmit={handleSubmit}
-            onCancel={() => navigate(-1)}
-            loading={loading}
-            defaultCliente={defaultCliente}
-            defaultProductos={defaultProductos}
-          />
+          <div className="new-pedido__form">
+            <PedidoForm
+              onSubmit={handleSubmit}
+              onCancel={() => navigate(-1)}
+              loading={loading}
+              defaultCliente={defaultCliente}
+              defaultProductos={defaultProductos}
+            />
+          </div>
         </div>
       </div>
     </MainLayout>

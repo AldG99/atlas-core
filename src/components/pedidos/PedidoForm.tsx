@@ -202,10 +202,11 @@ const PedidoForm = ({
           name="notas"
           value={notas}
           onChange={(e) => setNotas(e.target.value)}
-          className="input"
+          className="input pedido-form__notas"
           placeholder="Notas adicionales"
-          rows={2}
+          maxLength={300}
         />
+        <span className="pedido-form__notas-counter">{notas.length}/300</span>
       </div>
 
       <div className="pedido-form__actions">
