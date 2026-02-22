@@ -364,192 +364,219 @@ const PedidoDetail = () => {
               </span>
             </div>
 
-            <div className="pedido-detail__table-scroll">
-            <table className="pedido-detail__products-table">
-              <colgroup>
-                <col style={{ width: '8%' }} />
-                <col style={{ width: '5%' }} />
-                <col style={{ width: '17%' }} />
-                <col style={{ width: '9%' }} />
-                <col style={{ width: '10%' }} />
-                <col style={{ width: '19%' }} />
-                <col style={{ width: '12%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '9%' }} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>Clave</th>
-                  <th>Cant.</th>
-                  <th>Producto</th>
-                  <th>Etiquetas</th>
-                  <th>Precio</th>
-                  <th>Abonado</th>
-                  <th>Subtotal</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pedido.productos.map((p, index) => {
-                  const cubierto = Math.min(cobertura[index] || 0, p.subtotal);
-                  const porcentaje =
-                    p.subtotal > 0 ? (cubierto / p.subtotal) * 100 : 0;
-                  const status =
-                    porcentaje >= 100
-                      ? 'paid'
-                      : porcentaje > 0
-                        ? 'partial'
-                        : 'pending';
-                  return (
-                    <tr
-                      key={index}
-                      className={`pedido-detail__product-row--${status}`}
-                    >
-                      <td>
-                        {p.clave ? (
-                          <span className="pedido-detail__clave">
-                            {p.clave}
-                          </span>
-                        ) : (
-                          '-'
-                        )}
-                      </td>
-                      <td>{p.cantidad}</td>
-                      <td>
-                        <div className="pedido-detail__product-name-cell">
-                          <span className="pedido-detail__product-name">{p.nombre}</span>
-                          {p.descuento && p.descuento > 0 && (
-                            <span className="pedido-detail__product-discount-badge">
-                              -{p.descuento}%
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="pedido-detail__etiquetas">
-                          {getEtiquetasForClave(p.clave).map(et => {
-                            const iconData = ETIQUETA_ICONS[et.icono];
-                            const Icon = iconData?.icon;
-                            return (
-                              <span
-                                key={et.id}
-                                className="pedido-detail__etiqueta"
-                                style={{ backgroundColor: et.color }}
-                                title={et.nombre}
-                              >
-                                {Icon && <Icon size={12} />}
+            <div className="pedido-detail__table-wrapper">
+              {/* Header fijo */}
+              <div className="pedido-detail__table-head">
+                <table className="pedido-detail__products-table">
+                  <colgroup>
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '9%' }} />
+                    <col style={{ width: '14%' }} />
+                    <col style={{ width: '13%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '9%' }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>Clave</th>
+                      <th>Cant.</th>
+                      <th>Producto</th>
+                      <th>Etiquetas</th>
+                      <th>Precio</th>
+                      <th>Abonado</th>
+                      <th>Subtotal</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              {/* Cuerpo scrolleable */}
+              <div className="pedido-detail__table-scroll pedido-detail__table-scroll--grow">
+                <table className="pedido-detail__products-table">
+                  <colgroup>
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '9%' }} />
+                    <col style={{ width: '14%' }} />
+                    <col style={{ width: '13%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '9%' }} />
+                  </colgroup>
+                  <tbody>
+                    {pedido.productos.map((p, index) => {
+                      const cubierto = Math.min(cobertura[index] || 0, p.subtotal);
+                      const porcentaje =
+                        p.subtotal > 0 ? (cubierto / p.subtotal) * 100 : 0;
+                      const status =
+                        porcentaje >= 100
+                          ? 'paid'
+                          : porcentaje > 0
+                            ? 'partial'
+                            : 'pending';
+                      return (
+                        <tr
+                          key={index}
+                          className={`pedido-detail__product-row--${status}`}
+                        >
+                          <td>
+                            {p.clave ? (
+                              <span className="pedido-detail__clave">
+                                {p.clave}
                               </span>
-                            );
-                          })}
-                        </div>
-                      </td>
-                      <td>
-                        {p.precioOriginal && p.descuento ? (
-                          <div className="pedido-detail__product-subtotal-discount">
-                            <span className="pedido-detail__product-subtotal-original">
-                              {formatCurrency(p.precioOriginal)}
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+                          <td>{p.cantidad}</td>
+                          <td>
+                            <div className="pedido-detail__product-name-cell">
+                              <span className="pedido-detail__product-name">{p.nombre}</span>
+                              {p.descuento && p.descuento > 0 && (
+                                <span className="pedido-detail__product-discount-badge">
+                                  -{p.descuento}%
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="pedido-detail__etiquetas">
+                              {getEtiquetasForClave(p.clave).map(et => {
+                                const iconData = ETIQUETA_ICONS[et.icono];
+                                const Icon = iconData?.icon;
+                                return (
+                                  <span
+                                    key={et.id}
+                                    className="pedido-detail__etiqueta"
+                                    style={{ backgroundColor: et.color }}
+                                    title={et.nombre}
+                                  >
+                                    {Icon && <Icon size={12} />}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </td>
+                          <td>
+                            {p.precioOriginal && p.descuento ? (
+                              <div className="pedido-detail__product-subtotal-discount">
+                                <span className="pedido-detail__product-subtotal-original">
+                                  {formatCurrency(p.precioOriginal)}
+                                </span>
+                                <span>{formatCurrency(p.precioUnitario)}</span>
+                              </div>
+                            ) : (
+                              formatCurrency(p.precioUnitario)
+                            )}
+                          </td>
+                          <td>
+                            <div className="pedido-detail__product-paid-cell">
+                              <span>{formatCurrency(cubierto)}</span>
+                            </div>
+                          </td>
+                          <td>
+                            {p.precioOriginal && p.descuento ? (
+                              <div className="pedido-detail__product-subtotal-discount">
+                                <span className="pedido-detail__product-subtotal-original">
+                                  {formatCurrency(p.precioOriginal * p.cantidad)}
+                                </span>
+                                <span>{formatCurrency(p.subtotal)}</span>
+                              </div>
+                            ) : (
+                              formatCurrency(p.subtotal)
+                            )}
+                          </td>
+                          <td>
+                            <span
+                              className={`pedido-detail__product-status pedido-detail__product-status--${status}`}
+                            >
+                              {status === 'paid'
+                                ? 'Pagado'
+                                : status === 'partial'
+                                  ? `${Math.round(porcentaje)}%`
+                                  : 'Pendiente'}
                             </span>
-                            <span>{formatCurrency(p.precioUnitario)}</span>
-                          </div>
-                        ) : (
-                          formatCurrency(p.precioUnitario)
-                        )}
+                          </td>
+                          <td>
+                            <button
+                              className="pedido-detail__product-eye"
+                              title="Ver detalles"
+                              onClick={() => {
+                                const found = p.clave
+                                  ? catalogoProductos.find(cp => cp.clave === p.clave)
+                                  : undefined;
+                                if (found) {
+                                  setSelectedProducto(found);
+                                } else {
+                                  showToast('Producto no disponible en el catálogo', 'warning');
+                                }
+                              }}
+                            >
+                              <PiEyeBold size={20} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              {/* Pie fijo (total) */}
+              <div className="pedido-detail__table-foot">
+                <table className="pedido-detail__products-table">
+                  <colgroup>
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '9%' }} />
+                    <col style={{ width: '14%' }} />
+                    <col style={{ width: '13%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '9%' }} />
+                  </colgroup>
+                  <tfoot className="pedido-detail__products-tfoot">
+                    <tr className="pedido-detail__product-total-row">
+                      <td>
+                        <strong>Total</strong>
                       </td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
                       <td>
                         <div className="pedido-detail__product-paid-cell">
-                          <span>{formatCurrency(cubierto)}</span>
-                          <div className="pedido-detail__product-bar">
-                            <div
-                              className={`pedido-detail__product-bar-fill pedido-detail__product-bar-fill--${status}`}
-                              style={{ width: `${porcentaje}%` }}
-                            />
-                          </div>
+                          <strong>{formatCurrency(pagado)}</strong>
                         </div>
                       </td>
                       <td>
-                        {p.precioOriginal && p.descuento ? (
-                          <div className="pedido-detail__product-subtotal-discount">
-                            <span className="pedido-detail__product-subtotal-original">
-                              {formatCurrency(p.precioOriginal * p.cantidad)}
-                            </span>
-                            <span>{formatCurrency(p.subtotal)}</span>
-                          </div>
-                        ) : (
-                          formatCurrency(p.subtotal)
-                        )}
+                        <strong>{formatCurrency(pedido.total)}</strong>
                       </td>
                       <td>
-                        <span
-                          className={`pedido-detail__product-status pedido-detail__product-status--${status}`}
+                        <strong
+                          className={
+                            pagado >= pedido.total
+                              ? 'pedido-detail__product-status--paid'
+                              : pagado > 0
+                                ? 'pedido-detail__product-status--partial'
+                                : 'pedido-detail__product-status--pending'
+                          }
                         >
-                          {status === 'paid'
-                            ? 'Pagado'
-                            : status === 'partial'
-                              ? `${Math.round(porcentaje)}%`
-                              : 'Pendiente'}
-                        </span>
+                          {pagado >= pedido.total
+                            ? 'Liquidado'
+                            : formatCurrency(pedido.total - pagado)}
+                        </strong>
                       </td>
-                      <td>
-                        <button
-                          className="pedido-detail__product-eye"
-                          title="Ver detalles"
-                          onClick={() => {
-                            const found = p.clave
-                              ? catalogoProductos.find(cp => cp.clave === p.clave)
-                              : undefined;
-                            if (found) {
-                              setSelectedProducto(found);
-                            } else {
-                              showToast('Producto no disponible en el catálogo', 'warning');
-                            }
-                          }}
-                        >
-                          <PiEyeBold size={20} />
-                        </button>
-                      </td>
+                      <td></td>
                     </tr>
-                  );
-                })}
-                <tr className="pedido-detail__spacer-row" aria-hidden="true"><td colSpan={9} /></tr>
-              </tbody>
-              <tfoot className="pedido-detail__products-tfoot">
-                <tr className="pedido-detail__product-total-row">
-                  <td>
-                    <strong>Total</strong>
-                  </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>
-                    <div className="pedido-detail__product-paid-cell">
-                      <strong>{formatCurrency(pagado)}</strong>
-                      <div className="pedido-detail__product-bar" style={{ visibility: 'hidden' }} />
-                    </div>
-                  </td>
-                  <td>
-                    <strong>{formatCurrency(pedido.total)}</strong>
-                  </td>
-                  <td>
-                    <strong
-                      className={
-                        pagado >= pedido.total
-                          ? 'pedido-detail__product-status--paid'
-                          : pagado > 0
-                            ? 'pedido-detail__product-status--partial'
-                            : 'pedido-detail__product-status--pending'
-                      }
-                    >
-                      {pagado >= pedido.total
-                        ? 'Liquidado'
-                        : formatCurrency(pedido.total - pagado)}
-                    </strong>
-                  </td>
-                  <td></td>
-                </tr>
-              </tfoot>
-            </table>
+                  </tfoot>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -565,51 +592,71 @@ const PedidoDetail = () => {
               <div className="pedido-detail__section-header">
                 <strong>Historial de abonos</strong>
               </div>
-              <div className="pedido-detail__table-scroll pedido-detail__table-scroll--fixed">
-              <table className="pedido-detail__abonos-table">
-                <thead>
-                  <tr>
-                    <th>Clave</th>
-                    <th>Producto</th>
-                    <th>Monto</th>
-                    <th>Fecha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...abonos]
-                    .sort(
-                      (a, b) =>
-                        new Date(b.fecha).getTime() -
-                        new Date(a.fecha).getTime()
-                    )
-                    .map((abono, i) => (
-                      <tr key={i}>
-                        <td>
-                          {typeof abono.productoIndex === 'number' &&
-                          pedido.productos[abono.productoIndex]?.clave ? (
-                            <span className="pedido-detail__clave">
-                              {pedido.productos[abono.productoIndex].clave}
-                            </span>
-                          ) : (
-                            '-'
-                          )}
-                        </td>
-                        <td>
-                          {typeof abono.productoIndex === 'number' &&
-                          pedido.productos[abono.productoIndex] ? (
-                            pedido.productos[abono.productoIndex].nombre
-                          ) : (
-                            <span className="pedido-detail__general-label">
-                              General
-                            </span>
-                          )}
-                        </td>
-                        <td>{formatCurrency(abono.monto)}</td>
-                        <td>{formatDate(abono.fecha)}</td>
+              <div className="pedido-detail__table-wrapper">
+                {/* Header fijo */}
+                <div className="pedido-detail__table-head">
+                  <table className="pedido-detail__abonos-table">
+                    <colgroup>
+                      <col style={{ width: '15%' }} />
+                      <col style={{ width: '40%' }} />
+                      <col style={{ width: '20%' }} />
+                      <col style={{ width: '25%' }} />
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th>Clave</th>
+                        <th>Producto</th>
+                        <th>Monto</th>
+                        <th>Fecha</th>
                       </tr>
-                    ))}
-                </tbody>
-              </table>
+                    </thead>
+                  </table>
+                </div>
+                {/* Cuerpo scrolleable */}
+                <div className="pedido-detail__table-scroll pedido-detail__table-scroll--fixed">
+                  <table className="pedido-detail__abonos-table">
+                    <colgroup>
+                      <col style={{ width: '15%' }} />
+                      <col style={{ width: '40%' }} />
+                      <col style={{ width: '20%' }} />
+                      <col style={{ width: '25%' }} />
+                    </colgroup>
+                    <tbody>
+                      {[...abonos]
+                        .sort(
+                          (a, b) =>
+                            new Date(b.fecha).getTime() -
+                            new Date(a.fecha).getTime()
+                        )
+                        .map((abono, i) => (
+                          <tr key={i}>
+                            <td>
+                              {typeof abono.productoIndex === 'number' &&
+                              pedido.productos[abono.productoIndex]?.clave ? (
+                                <span className="pedido-detail__clave">
+                                  {pedido.productos[abono.productoIndex].clave}
+                                </span>
+                              ) : (
+                                '-'
+                              )}
+                            </td>
+                            <td>
+                              {typeof abono.productoIndex === 'number' &&
+                              pedido.productos[abono.productoIndex] ? (
+                                pedido.productos[abono.productoIndex].nombre
+                              ) : (
+                                <span className="pedido-detail__general-label">
+                                  General
+                                </span>
+                              )}
+                            </td>
+                            <td>{formatCurrency(abono.monto)}</td>
+                            <td>{formatDate(abono.fecha)}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

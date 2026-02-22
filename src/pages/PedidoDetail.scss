@@ -342,6 +342,8 @@ $bottombar-height: 64px;
     flex-shrink: 0;
 
     &--grow {
+      flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
     }
@@ -379,13 +381,36 @@ $bottombar-height: 64px;
     }
   }
 
-  // Scrollable table wrapper
+  // Table layout: wrapper > head + scroll + foot
+  &__table-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    border: 1px solid $color-gray-200;
+  }
+
+  &__table-head {
+    flex-shrink: 0;
+    background-color: $color-gray-50;
+    overflow: hidden;
+    scrollbar-gutter: stable;
+    box-shadow: inset 0 -1px 0 $color-gray-200;
+  }
+
+  &__table-foot {
+    flex-shrink: 0;
+    background-color: $color-white;
+    overflow: hidden;
+    scrollbar-gutter: stable;
+    box-shadow: inset 0 1px 0 $color-gray-200;
+  }
+
+  // Scrollable body only
   &__table-scroll {
-    height: 260px;
     overflow-y: auto;
     scrollbar-gutter: stable;
     scrollbar-color: $color-gray-300 $color-white;
-    border: 1px solid $color-gray-200;
 
     &::-webkit-scrollbar {
       width: 8px;
@@ -399,6 +424,11 @@ $bottombar-height: 64px;
       &:hover {
         background: $color-gray-400;
       }
+    }
+
+    &--grow {
+      flex: 1;
+      min-height: 0;
     }
 
     &--fixed {
@@ -416,9 +446,6 @@ $bottombar-height: 64px;
     thead {
       background-color: $color-gray-50;
       border-bottom: 1px solid $color-gray-200;
-      position: sticky;
-      top: 0;
-      z-index: 1;
 
       th {
         padding: $spacing-xs $spacing-sm;
@@ -490,11 +517,7 @@ $bottombar-height: 64px;
   }
 
   &__products-tfoot {
-    position: sticky;
-    bottom: 0;
-    z-index: 1;
     background-color: $color-white;
-    box-shadow: inset 0 1px 0 $color-gray-200;
   }
 
   &__product-total-row {
@@ -572,29 +595,8 @@ $bottombar-height: 64px;
   &__product-paid-cell {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
     white-space: nowrap;
-    min-width: 145px;
     justify-content: flex-end;
-  }
-
-  &__product-bar {
-    width: 80px;
-    height: 5px;
-    background-color: $color-gray-200;
-    overflow: hidden;
-    flex-shrink: 0;
-    border-radius: 3px;
-  }
-
-  &__product-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.3s ease;
-
-    &--paid { background-color: #16a34a; }
-    &--partial { background-color: #ea580c; }
-    &--pending { background-color: $color-gray-300; }
   }
 
   &__product-status {
