@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   PiArrowLeftBold,
@@ -59,6 +59,10 @@ const PedidoDetail = () => {
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(
     null
   );
+  const [focusedRow, setFocusedRow] = useState<number | null>(null);
+  const [focusedAbonoRow, setFocusedAbonoRow] = useState<number | null>(null);
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+  const abonoScrollRef = useRef<HTMLDivElement>(null);
 
   const fetchPedido = useCallback(async () => {
     if (!id || !user) return;
@@ -82,6 +86,84 @@ const PedidoDetail = () => {
   useEffect(() => {
     fetchPedido();
   }, [fetchPedido]);
+
+  useEffect(() => {
+    if (!pedido) return;
+    const productosLen = pedido.productos.length;
+    const abonosLen = (pedido.abonos || []).length;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (['input', 'select', 'textarea'].includes(tag)) return;
+
+      const updateProductoModal = (newIndex: number) => {
+        if (!selectedProducto) return;
+        const p = pedido.productos[newIndex];
+        const found = p?.clave ? catalogoProductos.find(cp => cp.clave === p.clave) : undefined;
+        setSelectedProducto(found ?? null);
+      };
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (focusedAbonoRow !== null) {
+          setFocusedAbonoRow(prev => Math.min((prev ?? 0) + 1, abonosLen - 1));
+        } else if (focusedRow === productosLen - 1 && abonosLen > 0) {
+          setFocusedRow(null);
+          setFocusedAbonoRow(0);
+          setSelectedProducto(null);
+        } else {
+          const newRow = focusedRow === null ? 0 : Math.min(focusedRow + 1, productosLen - 1);
+          setFocusedRow(newRow);
+          updateProductoModal(newRow);
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (focusedAbonoRow === 0) {
+          setFocusedAbonoRow(null);
+          setFocusedRow(productosLen - 1);
+        } else if (focusedAbonoRow !== null) {
+          setFocusedAbonoRow(prev => Math.max((prev ?? 0) - 1, 0));
+        } else {
+          const newRow = focusedRow === null ? 0 : Math.max(focusedRow - 1, 0);
+          setFocusedRow(newRow);
+          updateProductoModal(newRow);
+        }
+      } else if (e.key === 'Enter' && focusedRow !== null) {
+        e.preventDefault();
+        if (selectedProducto) {
+          setSelectedProducto(null);
+        } else {
+          const p = pedido.productos[focusedRow];
+          const found = p.clave
+            ? catalogoProductos.find(cp => cp.clave === p.clave)
+            : undefined;
+          if (found) {
+            setSelectedProducto(found);
+          } else {
+            showToast('Producto no disponible en el catálogo', 'warning');
+          }
+        }
+      } else if (e.key === 'Escape' && selectedProducto) {
+        setSelectedProducto(null);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [pedido, focusedRow, focusedAbonoRow, selectedProducto, catalogoProductos, showToast]);
+
+  useEffect(() => {
+    if (focusedRow === null || !tableScrollRef.current) return;
+    const rows = tableScrollRef.current.querySelectorAll('tr');
+    const row = rows[focusedRow];
+    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focusedRow]);
+
+  useEffect(() => {
+    if (focusedAbonoRow === null || !abonoScrollRef.current) return;
+    const rows = abonoScrollRef.current.querySelectorAll('tr');
+    const row = rows[focusedAbonoRow];
+    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focusedAbonoRow]);
 
   const getClienteFoto = (p: Pedido): string | undefined => {
     if (p.clienteFoto) return p.clienteFoto;
@@ -344,26 +426,19 @@ const PedidoDetail = () => {
               </div>
             </div>
             <div className="pedido-detail__header-right">
+              <span className="pedido-detail__date">
+                {formatDate(pedido.fechaCreacion)}
+              </span>
               <span
                 className="pedido-detail__status"
                 style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
               >
                 {PEDIDO_STATUS[pedido.estado]}
               </span>
-              <span className="pedido-detail__date">
-                {formatDate(pedido.fechaCreacion)}
-              </span>
             </div>
           </div>
 
           <div className="pedido-detail__section pedido-detail__section--grow">
-            <div className="pedido-detail__section-header">
-              <strong>Productos y pagos</strong>
-              <span className="pedido-detail__payment-info">
-                {formatCurrency(pagado)} de {formatCurrency(pedido.total)}
-              </span>
-            </div>
-
             <div className="pedido-detail__table-wrapper">
               {/* Header fijo */}
               <div className="pedido-detail__table-head">
@@ -395,7 +470,7 @@ const PedidoDetail = () => {
                 </table>
               </div>
               {/* Cuerpo scrolleable */}
-              <div className="pedido-detail__table-scroll pedido-detail__table-scroll--grow">
+              <div ref={tableScrollRef} className="pedido-detail__table-scroll pedido-detail__table-scroll--grow">
                 <table className="pedido-detail__products-table">
                   <colgroup>
                     <col style={{ width: '8%' }} />
@@ -422,7 +497,8 @@ const PedidoDetail = () => {
                       return (
                         <tr
                           key={index}
-                          className={`pedido-detail__product-row--${status}`}
+                          className={`pedido-detail__product-row--${status}${focusedRow === index ? ' pedido-detail__product-row--focused' : ''}`}
+                          onClick={() => { setFocusedRow(index); setFocusedAbonoRow(null); }}
                         >
                           <td>
                             {p.clave ? (
@@ -588,10 +664,7 @@ const PedidoDetail = () => {
           </div>
 
           {abonos.length > 0 && (
-            <div className="pedido-detail__section">
-              <div className="pedido-detail__section-header">
-                <strong>Historial de abonos</strong>
-              </div>
+            <div className="pedido-detail__section pedido-detail__section--no-pad">
               <div className="pedido-detail__table-wrapper">
                 {/* Header fijo */}
                 <div className="pedido-detail__table-head">
@@ -613,7 +686,7 @@ const PedidoDetail = () => {
                   </table>
                 </div>
                 {/* Cuerpo scrolleable */}
-                <div className="pedido-detail__table-scroll pedido-detail__table-scroll--fixed">
+                <div ref={abonoScrollRef} className="pedido-detail__table-scroll pedido-detail__table-scroll--fixed">
                   <table className="pedido-detail__abonos-table">
                     <colgroup>
                       <col style={{ width: '15%' }} />
@@ -629,7 +702,11 @@ const PedidoDetail = () => {
                             new Date(a.fecha).getTime()
                         )
                         .map((abono, i) => (
-                          <tr key={i}>
+                          <tr
+                            key={i}
+                            className={focusedAbonoRow === i ? 'pedido-detail__product-row--focused' : ''}
+                            onClick={() => { setFocusedAbonoRow(i); setFocusedRow(null); }}
+                          >
                             <td>
                               {typeof abono.productoIndex === 'number' &&
                               pedido.productos[abono.productoIndex]?.clave ? (

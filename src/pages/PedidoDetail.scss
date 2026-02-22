@@ -316,9 +316,9 @@ $bottombar-height: 64px;
 
   &__header-right {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: $spacing-xs;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: $spacing-sm;
   }
 
 
@@ -346,6 +346,16 @@ $bottombar-height: 64px;
       min-height: 0;
       display: flex;
       flex-direction: column;
+      padding: 0;
+    }
+
+    &--no-pad {
+      padding: 0;
+      padding-bottom: $spacing-xl;
+
+      > .pedido-detail__table-wrapper {
+        border-bottom: 1px solid $color-gray-100;
+      }
     }
   }
 
@@ -387,7 +397,6 @@ $bottombar-height: 64px;
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    border: 1px solid $color-gray-200;
   }
 
   &__table-head {
@@ -428,11 +437,11 @@ $bottombar-height: 64px;
 
     &--grow {
       flex: 1;
-      min-height: 0;
+      min-height: 120px;
     }
 
     &--fixed {
-      height: 150px;
+      height: 170px;
     }
   }
 
@@ -475,6 +484,12 @@ $bottombar-height: 64px;
       vertical-align: middle;
       white-space: nowrap;
     }
+
+    thead th:first-child,
+    tbody td:first-child,
+    tfoot td:first-child {
+      padding-left: $spacing-md;
+    }
   }
 
   &__abonos-table {
@@ -486,7 +501,6 @@ $bottombar-height: 64px;
   }
 
   &__products-table {
-    min-height: 100%;
 
     thead th,
     tbody td,
@@ -518,6 +532,7 @@ $bottombar-height: 64px;
 
   &__products-tfoot {
     background-color: $color-white;
+    border-top: 1px solid $color-gray-100;
   }
 
   &__product-total-row {
@@ -525,6 +540,10 @@ $bottombar-height: 64px;
     td:nth-child(7) {
       text-align: right;
     }
+  }
+
+  &__product-row--focused {
+    background-color: rgba($color-primary, 0.06);
   }
 
   &__clave {
@@ -612,6 +631,7 @@ $bottombar-height: 64px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    vertical-align: middle;
     border: none;
     background: none;
     color: $color-primary;
