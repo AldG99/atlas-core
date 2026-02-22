@@ -52,6 +52,7 @@ const PedidoDetail = () => {
   const [pedido, setPedido] = useState<Pedido | null>(null);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [abonoInput, setAbonoInput] = useState('');
   const [abonoProducto, setAbonoProducto] = useState('general');
   const [abonoError, setAbonoError] = useState<string | null>(null);
@@ -134,14 +135,14 @@ const PedidoDetail = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!pedido) return;
-    if (
-      !window.confirm(
-        '¿Estás seguro de eliminar este pedido? Esta acción no se puede deshacer.'
-      )
-    )
-      return;
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!pedido) return;
+    setShowDeleteModal(false);
     try {
       await deletePedido(pedido.id);
       showToast('Pedido eliminado', 'success');
@@ -369,10 +370,10 @@ const PedidoDetail = () => {
                 <col style={{ width: '8%' }} />
                 <col style={{ width: '5%' }} />
                 <col style={{ width: '17%' }} />
-                <col style={{ width: '6%' }} />
+                <col style={{ width: '9%' }} />
                 <col style={{ width: '10%' }} />
                 <col style={{ width: '19%' }} />
-                <col style={{ width: '15%' }} />
+                <col style={{ width: '12%' }} />
                 <col style={{ width: '11%' }} />
                 <col style={{ width: '9%' }} />
               </colgroup>
@@ -647,6 +648,45 @@ const PedidoDetail = () => {
           </div>
         )}
       </div>
+
+      {showDeleteModal && (
+        <div
+          className="pedido-detail__modal-overlay"
+          onClick={() => setShowDeleteModal(false)}
+        >
+          <div
+            className="pedido-detail__modal pedido-detail__modal--confirm"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="pedido-detail__modal-header">
+              <h3>Eliminar pedido</h3>
+              <button
+                className="pedido-detail__modal-close"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                <PiXBold size={18} />
+              </button>
+            </div>
+            <div className="pedido-detail__modal-body pedido-detail__modal-body--confirm">
+              <p>¿Estás seguro de eliminar este pedido? Esta acción no se puede deshacer.</p>
+            </div>
+            <div className="pedido-detail__modal-footer">
+              <button
+                className="btn btn--secondary btn--sm"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn btn--danger btn--sm"
+                onClick={confirmDelete}
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedProducto && (
         <div
