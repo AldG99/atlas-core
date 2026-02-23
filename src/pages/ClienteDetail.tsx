@@ -1,39 +1,59 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   PiArrowLeftBold,
+  PiArrowRightBold,
   PiWhatsappLogoBold,
   PiPencilBold,
   PiTrashBold,
-  PiMapPinBold,
-  PiPhoneBold,
-  PiEnvelopeBold,
-  PiEyeBold,
   PiCameraBold,
   PiArchiveBold,
   PiStarFill,
-  PiStarBold
+  PiStarBold,
+  PiMagnifyingGlassBold
 } from 'react-icons/pi';
 import type { Cliente, ClienteFormData } from '../types/Cliente';
+import type { Pedido, PedidoStatus } from '../types/Pedido';
+import type { Etiqueta } from '../types/Producto';
 import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito } from '../services/clienteService';
+import { getPedidosByClientPhone } from '../services/pedidoService';
 import { getCodigoPais } from '../data/codigosPais';
-import { formatTelefono } from '../utils/formatters';
+import { formatTelefono, formatCurrency } from '../utils/formatters';
+import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
+import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
+import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
+import { useProductos } from '../hooks/useProductos';
+import { useEtiquetas } from '../hooks/useEtiquetas';
 import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
 import './ClienteDetail.scss';
+
+type SortOption = 'recientes' | 'antiguos' | 'mayor_total' | 'menor_total';
+type DateFilter = 'todo' | 'semana' | 'mes' | '3meses';
 
 const ClienteDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user } = useAuth();
+  const { productos: catalogoProductos } = useProductos();
+  const { etiquetas: todasEtiquetas } = useEtiquetas();
 
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ClienteFormData | null>(null);
   const [saving, setSaving] = useState(false);
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [pedidosLoading, setPedidosLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Filtros y ordenamiento
+  const [busqueda, setBusqueda] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState<PedidoStatus | 'todos'>('todos');
+  const [filtroFecha, setFiltroFecha] = useState<DateFilter>('todo');
+  const [ordenamiento, setOrdenamiento] = useState<SortOption>('recientes');
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,10 +89,104 @@ const ClienteDetail = () => {
     fetchCliente();
   }, [fetchCliente]);
 
+  const fetchPedidos = useCallback(async (telefono: string) => {
+    if (!user) return;
+    try {
+      setPedidosLoading(true);
+      const data = await getPedidosByClientPhone(user.uid, telefono);
+      setPedidos(data);
+    } catch {
+      // silently fail
+    } finally {
+      setPedidosLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (cliente) fetchPedidos(cliente.telefono);
+  }, [cliente, fetchPedidos]);
+
+  // Stats (sobre todos los pedidos, sin filtros)
+  const cantidadPedidos = pedidos.length;
+  const totalGastado = pedidos.reduce((sum, p) => sum + p.total, 0);
+  const ticketPromedio = cantidadPedidos > 0 ? totalGastado / cantidadPedidos : 0;
+
+  // Pedidos filtrados y ordenados
+  const pedidosFiltrados = useMemo(() => {
+    let resultado = [...pedidos];
+
+    if (busqueda.trim()) {
+      const q = busqueda.toLowerCase();
+      resultado = resultado.filter(p =>
+        p.productos.some(prod =>
+          prod.nombre.toLowerCase().includes(q) ||
+          (prod.clave && prod.clave.toLowerCase().includes(q))
+        )
+      );
+    }
+
+    if (filtroEstado !== 'todos') {
+      resultado = resultado.filter(p => p.estado === filtroEstado);
+    }
+
+    if (filtroFecha !== 'todo') {
+      const ahora = new Date();
+      let desde: Date;
+      switch (filtroFecha) {
+        case 'semana': desde = new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000); break;
+        case 'mes':    desde = new Date(ahora.getTime() - 30 * 24 * 60 * 60 * 1000); break;
+        case '3meses': desde = new Date(ahora.getTime() - 90 * 24 * 60 * 60 * 1000); break;
+      }
+      resultado = resultado.filter(p => new Date(p.fechaCreacion) >= desde!);
+    }
+
+    resultado.sort((a, b) => {
+      switch (ordenamiento) {
+        case 'recientes':   return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
+        case 'antiguos':    return new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
+        case 'mayor_total': return b.total - a.total;
+        case 'menor_total': return a.total - b.total;
+        default: return 0;
+      }
+    });
+
+    return resultado;
+  }, [pedidos, busqueda, filtroEstado, filtroFecha, ordenamiento]);
+
+  // Acumulado global (sobre todos los pedidos, por orden cronológico)
+  const acumuladoMap = useMemo(() => {
+    const sorted = [...pedidos].sort(
+      (a, b) => new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime()
+    );
+    const map = new Map<string, number>();
+    let acumulado = 0;
+    sorted.forEach(p => {
+      acumulado += p.total;
+      map.set(p.id, acumulado);
+    });
+    return map;
+  }, [pedidos]);
+
+  const getEtiquetasForClave = (clave?: string): Etiqueta[] => {
+    if (!clave) return [];
+    const producto = catalogoProductos.find(cp => cp.clave === clave);
+    if (!producto?.etiquetas) return [];
+    return producto.etiquetas
+      .map(etId => todasEtiquetas.find(e => e.id === etId))
+      .filter((e): e is Etiqueta => !!e);
+  };
+
   const formatDate = (date: Date) =>
     new Intl.DateTimeFormat('es-MX', {
       day: '2-digit',
       month: 'long',
+      year: 'numeric'
+    }).format(new Date(date));
+
+  const formatPedidoDate = (date: Date) =>
+    new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit',
+      month: 'short',
       year: 'numeric'
     }).format(new Date(date));
 
@@ -81,7 +195,9 @@ const ClienteDetail = () => {
     return {
       line1: `${c.calle} ${c.numeroExterior}${numInterior}`,
       line2: c.colonia,
-      line3: `${c.ciudad}, CP ${c.codigoPostal}`
+      line3: c.ciudad,
+      line4: `CP ${c.codigoPostal}`,
+      line5: c.pais
     };
   };
 
@@ -121,7 +237,6 @@ const ClienteDetail = () => {
       nombre: cliente.nombre,
       apellido: cliente.apellido,
       telefono: cliente.telefono,
-      telefonoSecundario: cliente.telefonoSecundario,
       correo: cliente.correo,
       calle: cliente.calle,
       numeroExterior: cliente.numeroExterior,
@@ -129,10 +244,8 @@ const ClienteDetail = () => {
       colonia: cliente.colonia,
       ciudad: cliente.ciudad,
       codigoPostal: cliente.codigoPostal,
-      referencia: cliente.referencia,
-      numeroVisible: cliente.numeroVisible,
-      horarioEntrega: cliente.horarioEntrega,
-      notas: cliente.notas
+      pais: cliente.pais,
+      referencia: cliente.referencia
     });
     setIsEditing(true);
   };
@@ -175,6 +288,8 @@ const ClienteDetail = () => {
 
   if (!cliente) return null;
 
+  const addr = getPostalAddress(cliente);
+
   return (
     <MainLayout>
       <div className="cliente-detail">
@@ -190,35 +305,19 @@ const ClienteDetail = () => {
             </button>
             {isEditing ? (
               <div className="cliente-detail__top-bar-actions">
-                <button
-                  onClick={cancelEditing}
-                  className="btn btn--outline btn--sm"
-                  disabled={saving}
-                >
+                <button onClick={cancelEditing} className="btn btn--outline btn--sm" disabled={saving}>
                   Cancelar
                 </button>
-                <button
-                  onClick={handleSave}
-                  className="btn btn--primary btn--sm"
-                  disabled={saving}
-                >
+                <button onClick={handleSave} className="btn btn--primary btn--sm" disabled={saving}>
                   {saving ? 'Guardando...' : 'Guardar'}
                 </button>
               </div>
             ) : (
               <>
-                <button
-                  onClick={handleWhatsApp}
-                  className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp"
-                  title="Enviar WhatsApp"
-                >
+                <button onClick={handleWhatsApp} className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp" title="Enviar WhatsApp">
                   <PiWhatsappLogoBold size={20} />
                 </button>
-                <button
-                  onClick={() => navigate(`/cliente/${id}/pedidos`)}
-                  className="cliente-detail__icon-btn"
-                  title="Historial de pedidos"
-                >
+                <button onClick={() => navigate(`/cliente/${id}/pedidos`)} className="cliente-detail__icon-btn" title="Historial de pedidos">
                   <PiArchiveBold size={20} />
                 </button>
                 <span className="cliente-detail__top-divider" />
@@ -229,18 +328,10 @@ const ClienteDetail = () => {
                 >
                   {cliente.favorito ? <PiStarFill size={20} /> : <PiStarBold size={20} />}
                 </button>
-                <button
-                  onClick={startEditing}
-                  className="cliente-detail__icon-btn cliente-detail__icon-btn--primary"
-                  title="Editar cliente"
-                >
+                <button onClick={startEditing} className="cliente-detail__icon-btn cliente-detail__icon-btn--primary" title="Editar cliente">
                   <PiPencilBold size={20} />
                 </button>
-                <button
-                  onClick={handleDelete}
-                  className="cliente-detail__icon-btn cliente-detail__icon-btn--danger"
-                  title="Eliminar cliente"
-                >
+                <button onClick={handleDelete} className="cliente-detail__icon-btn cliente-detail__icon-btn--danger" title="Eliminar cliente">
                   <PiTrashBold size={20} />
                 </button>
               </>
@@ -250,264 +341,259 @@ const ClienteDetail = () => {
 
         {/* Content */}
         <div className="cliente-detail__content">
-          {/* Header */}
-          <div className="cliente-detail__header">
-            <div className="cliente-detail__client">
-              <div
-                className={`cliente-detail__avatar ${isEditing ? 'cliente-detail__avatar--editable' : ''}`}
-                onClick={() => isEditing && fileInputRef.current?.click()}
-              >
-                {(isEditing ? editData?.fotoPerfil : cliente.fotoPerfil) ? (
-                  <img src={(isEditing ? editData?.fotoPerfil : cliente.fotoPerfil) || ''} alt={cliente.nombre} />
-                ) : (
-                  <span>{(editData?.nombre || cliente.nombre)[0]}{(editData?.apellido || cliente.apellido)?.[0] ?? ''}</span>
-                )}
-                {isEditing && (
-                  <div className="cliente-detail__avatar-overlay">
-                    <PiCameraBold size={24} />
-                  </div>
-                )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  style={{ display: 'none' }}
-                />
-              </div>
-              <div className="cliente-detail__client-info">
-                {isEditing ? (
-                  <div className="cliente-detail__name-edit">
-                    <input
-                      type="text"
-                      value={editData?.nombre || ''}
-                      onChange={(e) => updateField('nombre', e.target.value)}
-                      placeholder="Nombre"
-                      className="cliente-detail__input"
-                    />
-                    <input
-                      type="text"
-                      value={editData?.apellido || ''}
-                      onChange={(e) => updateField('apellido', e.target.value)}
-                      placeholder="Apellido"
-                      className="cliente-detail__input"
-                    />
-                  </div>
-                ) : (
-                  <h1 className="cliente-detail__name">{cliente.nombre} {cliente.apellido}</h1>
-                )}
-                <span className="cliente-detail__date">Cliente desde {formatDate(cliente.fechaCreacion)}</span>
-              </div>
-            </div>
-          </div>
+          <div className="cliente-detail__card">
 
-          {/* Contact Section */}
-          <div className="cliente-detail__section">
-            <div className="cliente-detail__section-header">
-              <strong>Contacto</strong>
-            </div>
-            <div className="cliente-detail__info-grid">
-              <div className="cliente-detail__info-item">
-                <div className="cliente-detail__info-icon">
-                  <PiPhoneBold size={18} />
-                </div>
-                <div className="cliente-detail__info-content">
-                  <span className="cliente-detail__info-label">Teléfono</span>
-                  {isEditing ? (
-                    <input
-                      type="tel"
-                      value={editData?.telefono || ''}
-                      onChange={(e) => updateField('telefono', e.target.value)}
-                      className="cliente-detail__input"
-                    />
+            {/* Header: avatar + nombre + info del cliente */}
+            <div className="cliente-detail__header">
+              {/* Avatar + nombre + fecha + info */}
+              <div className="cliente-detail__client">
+                <div
+                  className={`cliente-detail__avatar ${isEditing ? 'cliente-detail__avatar--editable' : ''}`}
+                  onClick={() => isEditing && fileInputRef.current?.click()}
+                >
+                  {(isEditing ? editData?.fotoPerfil : cliente.fotoPerfil) ? (
+                    <img src={(isEditing ? editData?.fotoPerfil : cliente.fotoPerfil) || ''} alt={cliente.nombre} />
                   ) : (
-                    <span className="cliente-detail__info-value">
-                      {cliente.telefonoCodigoPais
-                        ? `${getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefono)}`
-                        : formatTelefono(cliente.telefono)}
-                    </span>
+                    <span>{(editData?.nombre || cliente.nombre)[0]}{(editData?.apellido || cliente.apellido)?.[0] ?? ''}</span>
                   )}
+                  {isEditing && (
+                    <div className="cliente-detail__avatar-overlay"><PiCameraBold size={20} /></div>
+                  )}
+                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
+                </div>
+                <div className="cliente-detail__client-info">
+                  <div className="cliente-detail__client-name-row">
+                    <div className="cliente-detail__client-name-group">
+                      {isEditing ? (
+                        <div className="cliente-detail__name-edit">
+                          <input type="text" value={editData?.nombre || ''} onChange={(e) => updateField('nombre', e.target.value)} placeholder="Nombre" className="cliente-detail__input" />
+                          <input type="text" value={editData?.apellido || ''} onChange={(e) => updateField('apellido', e.target.value)} placeholder="Apellido" className="cliente-detail__input" />
+                        </div>
+                      ) : (
+                        <h1 className="cliente-detail__name">{cliente.nombre} {cliente.apellido}</h1>
+                      )}
+                      <span className="cliente-detail__date">Cliente desde {formatDate(cliente.fechaCreacion)}</span>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-              {(isEditing || cliente.telefonoSecundario) && (
-                <div className="cliente-detail__info-item">
-                  <div className="cliente-detail__info-icon">
-                    <PiPhoneBold size={18} />
+
+              {!isEditing && (
+                <div className="cliente-detail__header-fields">
+                  <div className="cliente-detail__header-field">
+                    <span className="cliente-detail__info-label">Dirección</span>
+                    <span className="cliente-detail__info-value">{addr.line1}</span>
+                    <span className="cliente-detail__info-value">{addr.line2}</span>
+                    <span className="cliente-detail__info-value">{addr.line3}{addr.line5 ? `, ${addr.line5}` : ''}</span>
+                    <span className="cliente-detail__info-value">{addr.line4}</span>
                   </div>
-                  <div className="cliente-detail__info-content">
-                    <span className="cliente-detail__info-label">Teléfono secundario</span>
-                    {isEditing ? (
-                      <input
-                        type="tel"
-                        value={editData?.telefonoSecundario || ''}
-                        onChange={(e) => updateField('telefonoSecundario', e.target.value)}
-                        className="cliente-detail__input"
-                      />
-                    ) : (
+                  <div className="cliente-detail__header-contact">
+                    <div className="cliente-detail__header-field">
+                      <span className="cliente-detail__info-label">Teléfono</span>
                       <span className="cliente-detail__info-value">
-                        {cliente.telefonoSecundarioCodigoPais
-                          ? `${getCodigoPais(cliente.telefonoSecundarioCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefonoSecundario!)}`
-                          : formatTelefono(cliente.telefonoSecundario!)}
+                        {cliente.telefonoCodigoPais
+                          ? `${getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefono)}`
+                          : formatTelefono(cliente.telefono)}
                       </span>
-                    )}
+                    </div>
+                    <div className="cliente-detail__header-field">
+                      <span className="cliente-detail__info-label">Correo electrónico</span>
+                      <span className={`cliente-detail__info-value ${!cliente.correo ? 'cliente-detail__info-value--empty' : ''}`}>
+                        {cliente.correo || 'Sin correo registrado'}
+                      </span>
+                    </div>
+                    <div className="cliente-detail__header-field cliente-detail__header-field--full">
+                      <span className="cliente-detail__info-label">Referencia</span>
+                      <span className={`cliente-detail__info-value ${!cliente.referencia ? 'cliente-detail__info-value--empty' : ''}`}>
+                        {cliente.referencia || 'Sin referencia'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
-              {(isEditing || cliente.correo) && (
-                <div className="cliente-detail__info-item">
-                  <div className="cliente-detail__info-icon">
-                    <PiEnvelopeBold size={18} />
-                  </div>
-                  <div className="cliente-detail__info-content">
-                    <span className="cliente-detail__info-label">Correo electrónico</span>
-                    {isEditing ? (
-                      <input
-                        type="email"
-                        value={editData?.correo || ''}
-                        onChange={(e) => updateField('correo', e.target.value)}
-                        className="cliente-detail__input"
-                      />
-                    ) : (
-                      <span className="cliente-detail__info-value">{cliente.correo}</span>
-                    )}
+
+              {isEditing && (
+                <div className="cliente-detail__edit-fields">
+                  <div className="cliente-detail__edit-grid">
+                    <div className="cliente-detail__edit-col">
+                      <input type="tel" value={editData?.telefono || ''} onChange={(e) => updateField('telefono', e.target.value)} placeholder="Teléfono" className="cliente-detail__input" />
+                      <input type="email" value={editData?.correo || ''} onChange={(e) => updateField('correo', e.target.value)} placeholder="Correo electrónico" className="cliente-detail__input" />
+                    </div>
+                    <div className="cliente-detail__edit-col">
+                      <div className="cliente-detail__address-row">
+                        <input type="text" value={editData?.calle || ''} onChange={(e) => updateField('calle', e.target.value)} placeholder="Calle" className="cliente-detail__input cliente-detail__input--flex" />
+                        <input type="text" value={editData?.numeroExterior || ''} onChange={(e) => updateField('numeroExterior', e.target.value)} placeholder="No. Ext" className="cliente-detail__input cliente-detail__input--small" />
+                        <input type="text" value={editData?.numeroInterior || ''} onChange={(e) => updateField('numeroInterior', e.target.value)} placeholder="No. Int" className="cliente-detail__input cliente-detail__input--small" />
+                      </div>
+                      <div className="cliente-detail__address-row">
+                        <input type="text" value={editData?.colonia || ''} onChange={(e) => updateField('colonia', e.target.value)} placeholder="Colonia" className="cliente-detail__input" />
+                        <input type="text" value={editData?.ciudad || ''} onChange={(e) => updateField('ciudad', e.target.value)} placeholder="Ciudad" className="cliente-detail__input" />
+                        <input type="text" value={editData?.codigoPostal || ''} onChange={(e) => updateField('codigoPostal', e.target.value)} placeholder="CP" className="cliente-detail__input cliente-detail__input--small" />
+                        <input type="text" value={editData?.pais || ''} onChange={(e) => updateField('pais', e.target.value)} placeholder="País" className="cliente-detail__input" />
+                      </div>
+                      <textarea value={editData?.referencia || ''} onChange={(e) => updateField('referencia', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} />
+                    </div>
                   </div>
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Address Section */}
-          <div className="cliente-detail__section">
-            <div className="cliente-detail__section-header">
-              <strong>Dirección</strong>
-            </div>
-            {isEditing ? (
-              <div className="cliente-detail__address-edit">
-                <div className="cliente-detail__address-row">
-                  <input
-                    type="text"
-                    value={editData?.calle || ''}
-                    onChange={(e) => updateField('calle', e.target.value)}
-                    placeholder="Calle"
-                    className="cliente-detail__input cliente-detail__input--flex"
-                  />
-                  <input
-                    type="text"
-                    value={editData?.numeroExterior || ''}
-                    onChange={(e) => updateField('numeroExterior', e.target.value)}
-                    placeholder="No. Ext"
-                    className="cliente-detail__input cliente-detail__input--small"
-                  />
-                  <input
-                    type="text"
-                    value={editData?.numeroInterior || ''}
-                    onChange={(e) => updateField('numeroInterior', e.target.value)}
-                    placeholder="No. Int"
-                    className="cliente-detail__input cliente-detail__input--small"
-                  />
+            {/* Tabla de pedidos: ocupa el resto del card */}
+            <div className="cliente-detail__main">
+                {/* Filtros */}
+                <div className="cliente-detail__pedidos-filters">
+                  <div className="cliente-detail__pedidos-search">
+                    <PiMagnifyingGlassBold size={16} />
+                    <input
+                      type="text"
+                      placeholder="Buscar producto o clave..."
+                      value={busqueda}
+                      onChange={e => setBusqueda(e.target.value)}
+                    />
+                  </div>
+                  <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value as PedidoStatus | 'todos')}>
+                    <option value="todos">Todos los estados</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en_preparacion">En preparación</option>
+                    <option value="entregado">Entregado</option>
+                  </select>
+                  <select value={filtroFecha} onChange={e => setFiltroFecha(e.target.value as DateFilter)}>
+                    <option value="todo">Todo el tiempo</option>
+                    <option value="semana">Última semana</option>
+                    <option value="mes">Último mes</option>
+                    <option value="3meses">Últimos 3 meses</option>
+                  </select>
+                  <select value={ordenamiento} onChange={e => setOrdenamiento(e.target.value as SortOption)}>
+                    <option value="recientes">Más recientes</option>
+                    <option value="antiguos">Más antiguos</option>
+                    <option value="mayor_total">Mayor total</option>
+                    <option value="menor_total">Menor total</option>
+                  </select>
                 </div>
-                <div className="cliente-detail__address-row">
-                  <input
-                    type="text"
-                    value={editData?.colonia || ''}
-                    onChange={(e) => updateField('colonia', e.target.value)}
-                    placeholder="Colonia"
-                    className="cliente-detail__input"
-                  />
-                  <input
-                    type="text"
-                    value={editData?.ciudad || ''}
-                    onChange={(e) => updateField('ciudad', e.target.value)}
-                    placeholder="Ciudad"
-                    className="cliente-detail__input"
-                  />
-                  <input
-                    type="text"
-                    value={editData?.codigoPostal || ''}
-                    onChange={(e) => updateField('codigoPostal', e.target.value)}
-                    placeholder="CP"
-                    className="cliente-detail__input cliente-detail__input--small"
-                  />
-                </div>
-                <textarea
-                  value={editData?.referencia || ''}
-                  onChange={(e) => updateField('referencia', e.target.value)}
-                  placeholder="Ej: Casa color azul, entre calle X y calle Y"
-                  className="cliente-detail__textarea cliente-detail__textarea--small"
-                  rows={2}
-                />
-              </div>
-            ) : (
-              <div className="cliente-detail__info-item cliente-detail__info-item--full">
-                <div className="cliente-detail__info-icon">
-                  <PiMapPinBold size={18} />
-                </div>
-                <div className="cliente-detail__address">
-                  <p>{getPostalAddress(cliente).line1}</p>
-                  <p>{getPostalAddress(cliente).line2}</p>
-                  <p>{getPostalAddress(cliente).line3}</p>
-                  {cliente.referencia && (
-                    <p className="cliente-detail__address-ref">Ref: {cliente.referencia}</p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
 
-          {/* Delivery Section */}
-          <div className="cliente-detail__section">
-            <div className="cliente-detail__section-header">
-              <strong>Información de entrega</strong>
-            </div>
-            <div className="cliente-detail__info-grid">
-              <div className="cliente-detail__info-item">
-                <div className="cliente-detail__info-icon">
-                  <PiEyeBold size={18} />
-                </div>
-                <div className="cliente-detail__info-content">
-                  <span className="cliente-detail__info-label">Número visible</span>
-                  {isEditing ? (
-                    <label className="cliente-detail__toggle">
-                      <input
-                        type="checkbox"
-                        checked={editData?.numeroVisible || false}
-                        onChange={(e) => updateField('numeroVisible', e.target.checked)}
-                      />
-                      <span>{editData?.numeroVisible ? 'Sí, es visible' : 'No es visible'}</span>
-                    </label>
-                  ) : (
-                    <span className={`cliente-detail__info-value ${cliente.numeroVisible ? 'cliente-detail__info-value--success' : 'cliente-detail__info-value--warning'}`}>
-                      {cliente.numeroVisible ? 'Sí, es visible' : 'No es visible'}
+                {/* Tabla */}
+                <div className="cliente-detail__pedidos-table-wrapper">
+                  <div className="cliente-detail__pedidos-table-head">
+                    <table className="cliente-detail__pedidos-table">
+                      <colgroup>
+                        <col style={{ width: '10%' }} />
+                        <col style={{ width: '8%' }} />
+                        <col style={{ width: '26%' }} />
+                        <col style={{ width: '12%' }} />
+                        <col style={{ width: '13%' }} />
+                        <col style={{ width: '13%' }} />
+                        <col style={{ width: '8%' }} />
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <th>Clave</th>
+                          <th>Cant.</th>
+                          <th>Producto</th>
+                          <th>Etiquetas</th>
+                          <th>Importe</th>
+                          <th>Acumulado</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                    </table>
+                  </div>
+                  <div className="cliente-detail__pedidos-table-body">
+                    <table className="cliente-detail__pedidos-table">
+                      <colgroup>
+                        <col style={{ width: '10%' }} />
+                        <col style={{ width: '8%' }} />
+                        <col style={{ width: '26%' }} />
+                        <col style={{ width: '12%' }} />
+                        <col style={{ width: '13%' }} />
+                        <col style={{ width: '13%' }} />
+                        <col style={{ width: '8%' }} />
+                      </colgroup>
+                      <tbody>
+                        {pedidosLoading ? (
+                          <tr>
+                            <td colSpan={7} className="cliente-detail__pedidos-table-empty">Cargando pedidos...</td>
+                          </tr>
+                        ) : pedidosFiltrados.length === 0 ? (
+                          <tr>
+                            <td colSpan={7} className="cliente-detail__pedidos-table-empty">
+                              {pedidos.length === 0 ? 'Este cliente no tiene pedidos' : 'No se encontraron pedidos con los filtros aplicados'}
+                            </td>
+                          </tr>
+                        ) : pedidosFiltrados.map((pedido) => (
+                          <React.Fragment key={pedido.id}>
+                            {/* Fila de fecha del pedido */}
+                            <tr className="cliente-detail__pedidos-date-row">
+                              <td colSpan={7}>
+                                <div className="cliente-detail__pedidos-date-row-inner">
+                                  <span className="cliente-detail__pedidos-date-main">{formatPedidoDate(pedido.fechaCreacion)}</span>
+                                  <button
+                                    className="cliente-detail__pedidos-detail-btn"
+                                    onClick={() => navigate(ROUTES.DETAIL_PEDIDO.replace(':id', pedido.id), { state: { from: `/cliente/${id}` } })}
+                                    title="Ver detalle del pedido"
+                                  >
+                                    <PiArrowRightBold size={14} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                            {/* Filas de productos */}
+                            {pedido.productos.map((p, i) => (
+                              <tr key={i} className="cliente-detail__pedidos-product-row">
+                                <td>{p.clave || '—'}</td>
+                                <td>{p.cantidad}</td>
+                                <td>{p.nombre}</td>
+                                <td>
+                                  <div className="cliente-detail__pedidos-etiquetas">
+                                    {getEtiquetasForClave(p.clave).map(et => {
+                                      const iconData = ETIQUETA_ICONS[et.icono];
+                                      const Icon = iconData?.icon;
+                                      return (
+                                        <span key={et.id} className="cliente-detail__pedidos-etiqueta" style={{ backgroundColor: et.color }} title={et.nombre}>
+                                          {Icon && <Icon size={12} />}
+                                        </span>
+                                      );
+                                    })}
+                                  </div>
+                                </td>
+                                <td>{formatCurrency(p.subtotal)}</td>
+                                {i === 0 ? (
+                                  <>
+                                    <td rowSpan={pedido.productos.length} />
+                                    <td rowSpan={pedido.productos.length} className="cliente-detail__pedidos-status-cell">
+                                      <span
+                                        className="cliente-detail__pedidos-table-status"
+                                        style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                                        title={PEDIDO_STATUS[pedido.estado]}
+                                      />
+                                    </td>
+                                  </>
+                                ) : null}
+                              </tr>
+                            ))}
+                            {/* Fila de total */}
+                            <tr className="cliente-detail__pedidos-total-row">
+                              <td colSpan={4} className="cliente-detail__pedidos-total-label">Total</td>
+                              <td className="cliente-detail__pedidos-total-value">{formatCurrency(pedido.total)}</td>
+                              <td className="cliente-detail__pedidos-acumulado-value">{formatCurrency(acumuladoMap.get(pedido.id) ?? 0)}</td>
+                              <td />
+                            </tr>
+                          </React.Fragment>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="cliente-detail__pedidos-table-footer">
+                    <span className="cliente-detail__pedidos-footer-info">
+                      {pedidosFiltrados.length} {pedidosFiltrados.length === 1 ? 'pedido' : 'pedidos'}
                     </span>
-                  )}
+                  </div>
                 </div>
               </div>
-            </div>
+
           </div>
-
-          {/* Notes Section */}
-          {(isEditing || cliente.notas) && (
-            <div className="cliente-detail__section">
-              <div className="cliente-detail__section-header">
-                <strong>Notas</strong>
-              </div>
-              {isEditing ? (
-                <textarea
-                  value={editData?.notas || ''}
-                  onChange={(e) => updateField('notas', e.target.value)}
-                  placeholder="Notas sobre el cliente..."
-                  className="cliente-detail__textarea"
-                  rows={3}
-                />
-              ) : (
-                <p className="cliente-detail__notes">{cliente.notas}</p>
-              )}
-            </div>
-          )}
-
         </div>
       </div>
-
     </MainLayout>
   );
 };

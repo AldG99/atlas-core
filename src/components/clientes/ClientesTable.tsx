@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { PiStarFill } from 'react-icons/pi';
 import type { Cliente } from '../../types/Cliente';
 import { getCodigoPais } from '../../data/codigosPais';
@@ -14,6 +15,9 @@ interface ClientesTableProps {
 
 const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTableProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [focusedRow, setFocusedRow] = useState<number | null>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-MX', {
@@ -22,6 +26,34 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
       year: 'numeric'
     }).format(date);
   };
+
+  useEffect(() => {
+    if (!clientes.length) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (['input', 'select', 'textarea'].includes(tag)) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, clientes.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
+      } else if (e.key === 'Enter' && focusedRow !== null) {
+        e.preventDefault();
+        navigate(`/cliente/${clientes[focusedRow].id}`, { state: { from: location.pathname } });
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [clientes, focusedRow, navigate, location.pathname]);
+
+  useEffect(() => {
+    if (focusedRow === null || !tableContainerRef.current) return;
+    const rows = tableContainerRef.current.querySelectorAll('tr');
+    const row = rows[focusedRow];
+    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focusedRow]);
 
   return (
     <div className="clientes-table-wrapper">
@@ -47,7 +79,7 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
           </thead>
         </table>
       </div>
-      <div className="clientes-table-container">
+      <div ref={tableContainerRef} className="clientes-table-container">
         <table className="clientes-table">
           <colgroup>
             <col style={{ width: '22%' }} />
@@ -76,8 +108,13 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
                 {searchTerm?.trim() ? `No se encontraron clientes para "${searchTerm}"` : 'No hay ningún cliente registrado'}
               </td>
             </tr>
-          ) : clientes.map((cliente) => (
-            <tr key={cliente.id} className="clientes-table__row" onClick={() => navigate(`/cliente/${cliente.id}`)}>
+          ) : clientes.map((cliente, index) => (
+            <tr
+              key={cliente.id}
+              className={`clientes-table__row${focusedRow === index ? ' clientes-table__row--focused' : ''}`}
+              onClick={() => navigate(`/cliente/${cliente.id}`, { state: { from: location.pathname } })}
+              onMouseEnter={() => setFocusedRow(index)}
+            >
               <td>
                 <div className="clientes-table__client">
                   <div className="clientes-table__avatar">

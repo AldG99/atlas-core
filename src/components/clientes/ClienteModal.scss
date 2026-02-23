@@ -141,6 +141,12 @@
     margin-bottom: 0;
   }
 
+  &--full {
+    @include md {
+      grid-column: 1 / -1;
+    }
+  }
+
   label {
     display: block;
     margin-bottom: $spacing-xs;

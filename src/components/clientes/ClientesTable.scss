@@ -114,6 +114,14 @@
         color: $color-primary;
       }
     }
+
+    &--focused {
+      background-color: rgba($color-primary, 0.06);
+
+      .clientes-table__name {
+        color: $color-primary;
+      }
+    }
   }
 
   &__client {

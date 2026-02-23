@@ -25,8 +25,6 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
     apellido: '',
     telefono: '',
     telefonoCodigoPais: 'MX',
-    telefonoSecundario: '',
-    telefonoSecundarioCodigoPais: 'MX',
     correo: '',
     calle: '',
     numeroExterior: '',
@@ -34,10 +32,8 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
     colonia: '',
     ciudad: '',
     codigoPostal: '',
-    referencia: '',
-    numeroVisible: true,
-    horarioEntrega: '',
-    notas: ''
+    pais: '',
+    referencia: ''
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof ClienteFormData, string>>>({});
@@ -124,8 +120,8 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
   };
 
   const handlePhoneChange = (
-    field: 'telefono' | 'telefonoSecundario',
-    codigoField: 'telefonoCodigoPais' | 'telefonoSecundarioCodigoPais'
+    field: 'telefono',
+    codigoField: 'telefonoCodigoPais'
   ) =>
     (numero: string, iso: string) => {
       setFormData((prev) => ({ ...prev, [field]: numero, [codigoField]: iso }));
@@ -245,17 +241,6 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
                 {errors.telefono && <span className="form-error">{errors.telefono}</span>}
               </div>
 
-              <div className="form-group">
-                <label htmlFor="telefonoSecundario">Teléfono secundario</label>
-                <PhoneInput
-                  id="telefonoSecundario"
-                  name="telefonoSecundario"
-                  value={formData.telefonoSecundario || ''}
-                  codigoPais={formData.telefonoSecundarioCodigoPais ?? 'MX'}
-                  onChange={handlePhoneChange('telefonoSecundario', 'telefonoSecundarioCodigoPais')}
-                  placeholder="Número alternativo (opcional)"
-                />
-              </div>
 
               <div className="form-group">
                 <label htmlFor="correo">Correo electrónico</label>
@@ -360,6 +345,19 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
                 />
                 {errors.codigoPostal && <span className="form-error">{errors.codigoPostal}</span>}
               </div>
+
+              <div className="form-group">
+                <label htmlFor="pais">País</label>
+                <input
+                  type="text"
+                  id="pais"
+                  name="pais"
+                  value={formData.pais || ''}
+                  onChange={handleChange}
+                  className="input"
+                  placeholder="Ej: México"
+                />
+              </div>
             </div>
 
             <div className="form-group">
@@ -372,22 +370,6 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
                 className="input"
                 placeholder="Ej: Casa color azul, entre calle X y calle Y"
                 rows={2}
-              />
-            </div>
-          </div>
-
-          {/* Notas adicionales */}
-          <div className="form-section">
-            <h3 className="form-section__title">Notas adicionales</h3>
-            <div className="form-group">
-              <textarea
-                id="notas"
-                name="notas"
-                value={formData.notas || ''}
-                onChange={handleChange}
-                className="input"
-                placeholder="Información adicional sobre el cliente..."
-                rows={3}
               />
             </div>
           </div>

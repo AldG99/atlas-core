@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { PiArchiveBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import type { Pedido } from '../types/Pedido';
 import { useAuth } from '../hooks/useAuth';
@@ -51,12 +51,15 @@ const Archivo = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
   const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
+  const [focusedRow, setFocusedRow] = useState<number | null>(null);
+  const tableBodyRef = useRef<HTMLDivElement>(null);
 
   const fetchArchived = useCallback(async () => {
     if (!user) return;
@@ -137,6 +140,34 @@ const Archivo = () => {
 
     return result;
   }, [pedidos, searchTerm, sortBy, dateFilter]);
+
+  useEffect(() => {
+    if (!filteredAndSortedPedidos.length) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (['input', 'select', 'textarea'].includes(tag)) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, filteredAndSortedPedidos.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
+      } else if (e.key === 'Enter' && focusedRow !== null) {
+        e.preventDefault();
+        navigate(ROUTES.DETAIL_PEDIDO.replace(':id', filteredAndSortedPedidos[focusedRow].id), { state: { from: location.pathname } });
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [filteredAndSortedPedidos, focusedRow, navigate, location.pathname]);
+
+  useEffect(() => {
+    if (focusedRow === null || !tableBodyRef.current) return;
+    const rows = tableBodyRef.current.querySelectorAll('tr');
+    const row = rows[focusedRow];
+    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focusedRow]);
 
   const handleExport = () => {
     if (filteredAndSortedPedidos.length === 0) {
@@ -266,7 +297,7 @@ const Archivo = () => {
                 </thead>
               </table>
             </div>
-            <div className="archivo__table-body">
+            <div ref={tableBodyRef} className="archivo__table-body">
               <table className="archivo__table">
                 <colgroup>
                   <col style={{ width: '20%' }} />
@@ -279,7 +310,7 @@ const Archivo = () => {
                   <col style={{ width: '12%' }} />
                 </colgroup>
                 <tbody>
-                  {filteredAndSortedPedidos.map((pedido) => {
+                  {filteredAndSortedPedidos.map((pedido, index) => {
                     const pagado = getTotalPagado(pedido);
                     const porcentaje = pedido.total > 0 ? Math.round((pagado / pedido.total) * 100) : 0;
                     const paidStatus = pagado >= pedido.total ? 'paid' : pagado > 0 ? 'partial' : 'pending';
@@ -291,8 +322,9 @@ const Archivo = () => {
                     return (
                       <tr
                         key={pedido.id}
-                        className="archivo__row"
+                        className={`archivo__row${focusedRow === index ? ' archivo__row--focused' : ''}`}
                         onClick={() => handleRowClick(pedido.id)}
+                        onMouseEnter={() => setFocusedRow(index)}
                       >
                         <td>
                           <div className="archivo__client">

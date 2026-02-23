@@ -9,6 +9,7 @@ import {
   PiXBold,
   PiPackageBold,
   PiTrashBold,
+  PiStarFill,
 } from 'react-icons/pi';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import type { Producto, Etiqueta } from '../types/Producto';
@@ -289,6 +290,8 @@ const PedidoDetail = () => {
 
   const pagado = getTotalPagado(pedido);
   const clienteFoto = getClienteFoto(pedido);
+  const clienteData = clientes.find(c => c.telefono === pedido.clienteTelefono);
+  const clienteFavorito = clienteData?.favorito ?? false;
   const abonos = pedido.abonos || [];
 
   // Calculate coverage per product
@@ -419,7 +422,10 @@ const PedidoDetail = () => {
                 )}
               </div>
               <div className="pedido-detail__client-info">
-                <h1 className="pedido-detail__name">{pedido.clienteNombre}</h1>
+                <div className="pedido-detail__name-row">
+                  <h1 className="pedido-detail__name">{pedido.clienteNombre}</h1>
+                  {clienteFavorito && <PiStarFill size={14} className="pedido-detail__fav-icon" />}
+                </div>
                 <span className="pedido-detail__phone">
                   {formatTelefono(pedido.clienteTelefono)}
                 </span>

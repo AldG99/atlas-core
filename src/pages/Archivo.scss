@@ -269,6 +269,14 @@
         color: $color-primary;
       }
     }
+
+    &--focused {
+      background-color: rgba($color-primary, 0.06);
+
+      .archivo__name {
+        color: $color-primary;
+      }
+    }
   }
 
   &__client {

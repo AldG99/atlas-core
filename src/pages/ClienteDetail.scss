@@ -8,6 +8,9 @@ $topbar-height: 52px;
   width: 100%;
   margin: 0 auto;
   padding-top: $topbar-height;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   &__loading {
     text-align: center;
@@ -107,34 +110,45 @@ $topbar-height: 52px;
 
   // Content
   &__content {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-md;
     max-width: 100%;
     min-width: 0;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__card {
+    background-color: $color-white;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   &__header {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
-    background-color: $color-white;
-    padding: $spacing-lg;
-    box-shadow: $shadow-sm;
-    overflow: hidden;
+    gap: $spacing-sm $spacing-lg;
+    padding: $spacing-sm $spacing-md;
+    border-bottom: 1px solid $color-gray-100;
+    flex-shrink: 0;
+    flex-wrap: wrap;
   }
 
   &__client {
     display: flex;
     align-items: center;
-    gap: $spacing-md;
+    gap: $spacing-sm;
     min-width: 0;
     width: 100%;
   }
 
   &__avatar {
-    width: 64px;
-    height: 64px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     overflow: hidden;
     background: linear-gradient(135deg, $color-primary, $color-primary-dark);
@@ -152,7 +166,7 @@ $topbar-height: 52px;
 
     span {
       color: $color-white;
-      font-size: $font-size-xl;
+      font-size: $font-size-sm;
       font-weight: 600;
     }
 
@@ -180,13 +194,33 @@ $topbar-height: 52px;
   &__client-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
     min-width: 0;
     flex: 1;
   }
 
+  &__client-name-row {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-lg;
+    flex-wrap: wrap;
+  }
+
+  &__client-name-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__name-row-contact {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-lg;
+    margin-left: auto;
+  }
+
   &__name {
-    font-size: $font-size-xl;
+    font-size: $font-size-base;
     font-weight: 600;
     color: $color-gray-800;
     margin: 0;
@@ -198,10 +232,8 @@ $topbar-height: 52px;
   }
 
   &__section {
-    background-color: $color-white;
-    box-shadow: $shadow-sm;
     padding: $spacing-lg;
-    overflow: hidden;
+    border-top: 1px solid $color-gray-100;
   }
 
   &__section-header {
@@ -275,6 +307,12 @@ $topbar-height: 52px;
     &--warning {
       color: #ea580c;
     }
+
+    &--empty {
+      color: $color-gray-400;
+      font-weight: 400;
+      font-style: italic;
+    }
   }
 
   &__badge {
@@ -317,6 +355,7 @@ $topbar-height: 52px;
 
     &-ref {
       margin-top: $spacing-xs !important;
+      font-size: $font-size-sm !important;
       font-style: italic;
       color: $color-gray-500 !important;
       font-weight: 400 !important;
@@ -424,5 +463,334 @@ $topbar-height: 52px;
       accent-color: $color-primary;
       cursor: pointer;
     }
+  }
+
+  // Info del cliente en el header (modo vista)
+  &__header-fields {
+    display: grid;
+    grid-template-columns: 3fr 4fr;
+    gap: $spacing-sm $spacing-lg;
+    width: 100%;
+    border-top: 1px solid $color-gray-100;
+    margin-left: -$spacing-md;
+    margin-right: -$spacing-md;
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
+    padding-top: $spacing-sm;
+  }
+
+  &__header-contact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-sm $spacing-lg;
+  }
+
+  &__header-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    &--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  // Formulario de edición en el header
+  &__edit-fields {
+    flex: 1;
+    border-top: 1px solid $color-gray-100;
+    margin-left: -$spacing-md;
+    margin-right: -$spacing-md;
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
+    padding-top: $spacing-sm;
+    min-width: 0;
+  }
+
+  &__edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+  }
+
+  &__edit-col {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  // Tabla: ocupa todo el espacio restante del card
+  &__main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  // Tabla de pedidos (columna derecha)
+  &__pedidos-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    flex-shrink: 0;
+    border-bottom: 1px solid $color-gray-100;
+
+    select {
+      appearance: none;
+      background-color: $color-white;
+      border: 1px solid $color-gray-200;
+      border-radius: $border-radius-md;
+      padding: 6px 28px 6px 10px;
+      font-size: $font-size-sm;
+      color: $color-gray-700;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+
+      &:focus {
+        outline: none;
+        border-color: $color-primary;
+      }
+    }
+  }
+
+  &__pedidos-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: $color-white;
+    border: 1px solid $color-gray-200;
+    border-radius: $border-radius-md;
+    padding: 0 10px;
+    flex: 1;
+    min-width: 160px;
+    color: $color-gray-400;
+
+    input {
+      border: none;
+      outline: none;
+      background: none;
+      font-size: $font-size-sm;
+      color: $color-gray-700;
+      padding: 6px 0;
+      width: 100%;
+
+      &::placeholder {
+        color: $color-gray-400;
+      }
+    }
+
+    &:focus-within {
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+  }
+
+  &__pedidos-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__pedidos-table-head {
+    flex-shrink: 0;
+    background-color: $color-gray-50;
+    overflow: hidden;
+    scrollbar-gutter: stable;
+    box-shadow: inset 0 -1px 0 $color-gray-200;
+  }
+
+  &__pedidos-table-body {
+    flex: 1;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    scrollbar-color: $color-gray-300 $color-white;
+    background-color: $color-white;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      background: $color-white;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 4px;
+
+      &:hover {
+        background: $color-gray-400;
+      }
+    }
+  }
+
+  &__pedidos-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 500px;
+
+    thead {
+      th {
+        padding: $spacing-sm $spacing-md;
+        text-align: left;
+        font-size: $font-size-sm;
+        font-weight: 600;
+        color: $color-gray-600;
+        white-space: nowrap;
+
+        &:nth-child(4) { text-align: center; }  // Etiquetas
+        &:nth-child(5) { text-align: right; }   // Importe
+        &:nth-child(6) { text-align: right; }   // Acumulado
+        &:nth-child(7) { text-align: center; }  // Estado
+      }
+    }
+
+    tbody {
+      td {
+        padding: $spacing-xs $spacing-md;
+        font-size: $font-size-sm;
+        color: $color-gray-700;
+        vertical-align: middle;
+
+        &:nth-child(4) { text-align: center; }                     // Etiquetas
+        &:nth-child(5) { text-align: right; white-space: nowrap; } // Importe
+      }
+    }
+  }
+
+  &__pedidos-table-empty {
+    text-align: center;
+    padding: $spacing-xl $spacing-md;
+    color: $color-gray-500;
+    font-size: $font-size-sm;
+  }
+
+  &__pedidos-date-row {
+    background-color: $color-gray-50;
+
+    > td {
+      padding: 0 !important;
+    }
+  }
+
+  &__pedidos-date-row-inner {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-xs $spacing-md;
+  }
+
+  &__pedidos-date-main {
+    font-weight: 500;
+    font-size: $font-size-sm;
+    color: $color-gray-700;
+    white-space: nowrap;
+  }
+
+  &__pedidos-detail-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid $color-gray-200;
+    border-radius: 6px;
+    background: $color-white;
+    color: $color-gray-400;
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+      background-color: rgba($color-primary, 0.05);
+    }
+  }
+
+  &__pedidos-product-row {
+    border-bottom: 1px solid $color-gray-100;
+  }
+
+  &__pedidos-etiquetas {
+    display: inline-flex;
+    gap: 2px;
+    justify-content: center;
+  }
+
+  &__pedidos-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: $color-white;
+  }
+
+  &__pedidos-total-row {
+    background-color: $color-gray-50;
+
+    td {
+      padding: $spacing-xs $spacing-md !important;
+      border-bottom: none;
+    }
+  }
+
+  &__pedidos-total-label {
+    text-align: right !important;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-gray-500;
+  }
+
+  &__pedidos-total-value {
+    text-align: right !important;
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-gray-800;
+    white-space: nowrap;
+  }
+
+  &__pedidos-acumulado-value {
+    text-align: right !important;
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-primary;
+    white-space: nowrap;
+  }
+
+  &__pedidos-status-cell {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  &__pedidos-table-status {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  &__pedidos-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-sm $spacing-md;
+    border-top: 1px solid $color-gray-200;
+    flex-shrink: 0;
+    background-color: $color-gray-50;
+  }
+
+  &__pedidos-footer-info {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-gray-600;
   }
 }

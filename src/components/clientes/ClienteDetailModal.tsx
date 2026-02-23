@@ -25,7 +25,9 @@ const ClienteDetailModal = ({ cliente, onClose, onEdit, onWhatsApp }: ClienteDet
     return {
       line1: `${cliente.calle} ${cliente.numeroExterior}${numInterior}`,
       line2: cliente.colonia,
-      line3: `${cliente.ciudad}, CP ${cliente.codigoPostal}`
+      line3: cliente.ciudad,
+      line4: `CP ${cliente.codigoPostal}`,
+      line5: cliente.pais
     };
   };
 
@@ -71,16 +73,6 @@ const ClienteDetailModal = ({ cliente, onClose, onEdit, onWhatsApp }: ClienteDet
                       : formatTelefono(cliente.telefono)}
                   </span>
                 </div>
-                {cliente.telefonoSecundario && (
-                  <div className="cliente-detail-modal__field">
-                    <label>Teléfono secundario</label>
-                    <span>
-                      {cliente.telefonoSecundarioCodigoPais
-                        ? `${getCodigoPais(cliente.telefonoSecundarioCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefonoSecundario)}`
-                        : formatTelefono(cliente.telefonoSecundario)}
-                    </span>
-                  </div>
-                )}
                 {cliente.correo && (
                   <div className="cliente-detail-modal__field">
                     <label>Correo</label>
@@ -93,44 +85,24 @@ const ClienteDetailModal = ({ cliente, onClose, onEdit, onWhatsApp }: ClienteDet
             {/* Dirección */}
             <div className="cliente-detail-modal__section">
               <h4>Dirección</h4>
-              <div className="cliente-detail-modal__address">
-                <p>{getPostalAddress().line1}</p>
-                <p>{getPostalAddress().line2}</p>
-                <p>{getPostalAddress().line3}</p>
-                {cliente.referencia && (
-                  <p className="cliente-detail-modal__address-ref">Ref: {cliente.referencia}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Entrega */}
-            <div className="cliente-detail-modal__section">
-              <h4>Información de entrega</h4>
-              <div className="cliente-detail-modal__grid">
-                <div className="cliente-detail-modal__field">
-                  <label>Número visible</label>
-                  <span className={cliente.numeroVisible ? 'cliente-detail-modal__text--success' : 'cliente-detail-modal__text--warning'}>
-                    {cliente.numeroVisible ? 'Sí, es visible' : 'No es visible'}
-                  </span>
-                </div>
-                {cliente.horarioEntrega && (
-                  <div className="cliente-detail-modal__field">
-                    <label>Horario preferido</label>
-                    <span>{cliente.horarioEntrega}</span>
+              {(() => {
+                const addr = getPostalAddress();
+                return (
+                  <div className="cliente-detail-modal__address">
+                    <p>{addr.line1}</p>
+                    <p>{addr.line2}</p>
+                    <p>{addr.line3}</p>
+                    <p>{addr.line4}</p>
+                    {addr.line5 && <p>{addr.line5}</p>}
+                    {cliente.referencia && (
+                      <p className="cliente-detail-modal__address-ref">Ref: {cliente.referencia}</p>
+                    )}
                   </div>
-                )}
-              </div>
+                );
+              })()}
             </div>
 
-            {/* Notas */}
-            {cliente.notas && (
-              <div className="cliente-detail-modal__section">
-                <h4>Notas</h4>
-                <div className="cliente-detail-modal__field cliente-detail-modal__field--full">
-                  <p className="cliente-detail-modal__notes">{cliente.notas}</p>
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
 

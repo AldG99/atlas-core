@@ -61,8 +61,7 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
         numeroExterior: '',
         colonia: '',
         ciudad: '',
-        codigoPostal: '',
-        numeroVisible: true
+        codigoPostal: ''
       });
       if (newCliente) {
         onSelect(newCliente);
@@ -109,6 +108,16 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
             <span className="cliente-selector__client-phone">
               {formatTelefono(selectedCliente.telefono)}
             </span>
+            {selectedCliente.calle && (
+              <span className="cliente-selector__client-address">
+                {selectedCliente.calle} {selectedCliente.numeroExterior}
+              </span>
+            )}
+            {selectedCliente.pais && (
+              <span className="cliente-selector__client-address">
+                {selectedCliente.pais}
+              </span>
+            )}
           </div>
           <button
             type="button"

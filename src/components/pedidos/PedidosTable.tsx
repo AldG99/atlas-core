@@ -1,4 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { PiStarFill } from 'react-icons/pi';
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatCurrency, formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
@@ -14,13 +16,49 @@ interface PedidosTableProps {
 
 const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { clientes } = useClientes();
+  const [focusedRow, setFocusedRow] = useState<number | null>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const getClienteFoto = (pedido: Pedido): string | undefined => {
     if (pedido.clienteFoto) return pedido.clienteFoto;
     const cliente = clientes.find(c => c.telefono === pedido.clienteTelefono);
     return cliente?.fotoPerfil;
   };
+
+  const getClienteFavorito = (pedido: Pedido): boolean => {
+    const cliente = clientes.find(c => c.telefono === pedido.clienteTelefono);
+    return cliente?.favorito ?? false;
+  };
+
+  useEffect(() => {
+    if (!pedidos.length) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (['input', 'select', 'textarea'].includes(tag)) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, pedidos.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
+      } else if (e.key === 'Enter' && focusedRow !== null) {
+        e.preventDefault();
+        navigate(`/pedido/${pedidos[focusedRow].id}`, { state: { from: location.pathname } });
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [pedidos, focusedRow, navigate, location.pathname]);
+
+  useEffect(() => {
+    if (focusedRow === null || !tableContainerRef.current) return;
+    const rows = tableContainerRef.current.querySelectorAll('tr');
+    const row = rows[focusedRow];
+    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focusedRow]);
 
   return (
     <div className="pedidos-table-wrapper">
@@ -50,7 +88,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
           </thead>
         </table>
       </div>
-      <div className="pedidos-table-container">
+      <div ref={tableContainerRef} className="pedidos-table-container">
         <table className="pedidos-table">
           <colgroup>
             <col style={{ width: '20%' }} />
@@ -81,13 +119,15 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                 {searchTerm?.trim() ? `No se encontraron pedidos para "${searchTerm}"` : 'No hay ningún pedido agregado'}
               </td>
             </tr>
-          ) : pedidos.map((pedido) => {
+          ) : pedidos.map((pedido, index) => {
             const foto = getClienteFoto(pedido);
+            const favorito = getClienteFavorito(pedido);
             return (
             <tr
               key={pedido.id}
-              className="pedidos-table__row"
-              onClick={() => navigate(`/pedido/${pedido.id}`)}
+              className={`pedidos-table__row${focusedRow === index ? ' pedidos-table__row--focused' : ''}`}
+              onClick={() => navigate(`/pedido/${pedido.id}`, { state: { from: location.pathname } })}
+              onMouseEnter={() => setFocusedRow(index)}
             >
               <td>
                 <div className="pedidos-table__client">
@@ -101,6 +141,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                   <span className="pedidos-table__name" title={pedido.clienteNombre}>
                     {pedido.clienteNombre}
                   </span>
+                  {favorito && <PiStarFill size={14} className="pedidos-table__fav-icon" />}
                 </div>
               </td>
               <td>

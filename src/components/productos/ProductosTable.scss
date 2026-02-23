@@ -101,6 +101,14 @@
         color: $color-primary;
       }
     }
+
+    &--focused {
+      background-color: rgba($color-primary, 0.06);
+
+      .productos-table__name {
+        color: $color-primary;
+      }
+    }
   }
 
   &__clave {

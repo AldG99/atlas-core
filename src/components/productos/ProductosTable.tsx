@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { Producto, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import './ProductosTable.scss';
@@ -13,6 +14,9 @@ interface ProductosTableProps {
 
 const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: ProductosTableProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [focusedRow, setFocusedRow] = useState<number | null>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-MX', {
@@ -45,6 +49,34 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
       .filter((e): e is Etiqueta => !!e);
   };
 
+  useEffect(() => {
+    if (!productos.length) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (['input', 'select', 'textarea'].includes(tag)) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, productos.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
+      } else if (e.key === 'Enter' && focusedRow !== null) {
+        e.preventDefault();
+        navigate(`/producto-detalle/${productos[focusedRow].id}`, { state: { from: location.pathname } });
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [productos, focusedRow, navigate, location.pathname]);
+
+  useEffect(() => {
+    if (focusedRow === null || !tableContainerRef.current) return;
+    const rows = tableContainerRef.current.querySelectorAll('tr');
+    const row = rows[focusedRow];
+    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focusedRow]);
+
   const colgroup = (
     <colgroup>
       <col style={{ width: '10%' }} />
@@ -73,7 +105,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
           </thead>
         </table>
       </div>
-      <div className="productos-table-container">
+      <div ref={tableContainerRef} className="productos-table-container">
         <table className="productos-table">
           {colgroup}
           <tbody>
@@ -95,10 +127,15 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
                 {searchTerm?.trim() ? `No se encontraron productos para "${searchTerm}"` : 'No hay ningún producto registrado'}
               </td>
             </tr>
-          ) : productos.map((producto) => {
+          ) : productos.map((producto, index) => {
             const productoEtiquetas = getEtiquetasForProducto(producto);
             return (
-              <tr key={producto.id} className="productos-table__row" onClick={() => navigate(`/producto-detalle/${producto.id}`)}>
+              <tr
+                key={producto.id}
+                className={`productos-table__row${focusedRow === index ? ' productos-table__row--focused' : ''}`}
+                onClick={() => navigate(`/producto-detalle/${producto.id}`, { state: { from: location.pathname } })}
+                onMouseEnter={() => setFocusedRow(index)}
+              >
                 <td>
                   <span className="productos-table__clave">{producto.clave}</span>
                 </td>
