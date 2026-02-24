@@ -13,13 +13,13 @@ import {
   PiMagnifyingGlassBold
 } from 'react-icons/pi';
 import type { Cliente, ClienteFormData } from '../types/Cliente';
-import type { Pedido, PedidoStatus } from '../types/Pedido';
+import type { Pedido } from '../types/Pedido';
 import type { Etiqueta } from '../types/Producto';
 import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito } from '../services/clienteService';
+import PhoneInput from '../components/clientes/PhoneInput';
 import { getPedidosByClientPhone } from '../services/pedidoService';
 import { getCodigoPais } from '../data/codigosPais';
 import { formatTelefono, formatCurrency } from '../utils/formatters';
-import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -29,7 +29,6 @@ import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
 import './ClienteDetail.scss';
 
-type SortOption = 'recientes' | 'antiguos' | 'mayor_total' | 'menor_total';
 type DateFilter = 'todo' | 'semana' | 'mes' | '3meses';
 
 const ClienteDetail = () => {
@@ -49,11 +48,9 @@ const ClienteDetail = () => {
   const [pedidosLoading, setPedidosLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Filtros y ordenamiento
+  // Filtros
   const [busqueda, setBusqueda] = useState('');
-  const [filtroEstado, setFiltroEstado] = useState<PedidoStatus | 'todos'>('todos');
   const [filtroFecha, setFiltroFecha] = useState<DateFilter>('todo');
-  const [ordenamiento, setOrdenamiento] = useState<SortOption>('recientes');
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -106,11 +103,6 @@ const ClienteDetail = () => {
     if (cliente) fetchPedidos(cliente.telefono);
   }, [cliente, fetchPedidos]);
 
-  // Stats (sobre todos los pedidos, sin filtros)
-  const cantidadPedidos = pedidos.length;
-  const totalGastado = pedidos.reduce((sum, p) => sum + p.total, 0);
-  const ticketPromedio = cantidadPedidos > 0 ? totalGastado / cantidadPedidos : 0;
-
   // Pedidos filtrados y ordenados
   const pedidosFiltrados = useMemo(() => {
     let resultado = [...pedidos];
@@ -125,9 +117,7 @@ const ClienteDetail = () => {
       );
     }
 
-    if (filtroEstado !== 'todos') {
-      resultado = resultado.filter(p => p.estado === filtroEstado);
-    }
+    resultado = resultado.filter(p => p.estado === 'entregado');
 
     if (filtroFecha !== 'todo') {
       const ahora = new Date();
@@ -140,24 +130,18 @@ const ClienteDetail = () => {
       resultado = resultado.filter(p => new Date(p.fechaCreacion) >= desde!);
     }
 
-    resultado.sort((a, b) => {
-      switch (ordenamiento) {
-        case 'recientes':   return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
-        case 'antiguos':    return new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
-        case 'mayor_total': return b.total - a.total;
-        case 'menor_total': return a.total - b.total;
-        default: return 0;
-      }
-    });
+    resultado.sort((a, b) =>
+      new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime()
+    );
 
     return resultado;
-  }, [pedidos, busqueda, filtroEstado, filtroFecha, ordenamiento]);
+  }, [pedidos, busqueda, filtroFecha]);
 
-  // Acumulado global (sobre todos los pedidos, por orden cronológico)
+  // Acumulado solo de pedidos entregados, por orden cronológico
   const acumuladoMap = useMemo(() => {
-    const sorted = [...pedidos].sort(
-      (a, b) => new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime()
-    );
+    const sorted = [...pedidos]
+      .filter(p => p.estado === 'entregado')
+      .sort((a, b) => new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime());
     const map = new Map<string, number>();
     let acumulado = 0;
     sorted.forEach(p => {
@@ -237,6 +221,7 @@ const ClienteDetail = () => {
       nombre: cliente.nombre,
       apellido: cliente.apellido,
       telefono: cliente.telefono,
+      telefonoCodigoPais: cliente.telefonoCodigoPais ?? 'MX',
       correo: cliente.correo,
       calle: cliente.calle,
       numeroExterior: cliente.numeroExterior,
@@ -259,10 +244,20 @@ const ClienteDetail = () => {
     if (!cliente || !editData) return;
     try {
       setSaving(true);
-      await updateCliente(cliente.id, editData);
-      setCliente({ ...cliente, ...editData });
-      setIsEditing(false);
+      const dataToSave: ClienteFormData = {
+        ...editData,
+        calle: editData.calle?.toUpperCase() ?? editData.calle,
+        numeroExterior: editData.numeroExterior?.toUpperCase() ?? editData.numeroExterior,
+        numeroInterior: editData.numeroInterior?.toUpperCase() ?? editData.numeroInterior,
+        colonia: editData.colonia?.toUpperCase() ?? editData.colonia,
+        ciudad: editData.ciudad?.toUpperCase() ?? editData.ciudad,
+        codigoPostal: editData.codigoPostal?.toUpperCase() ?? editData.codigoPostal,
+        pais: editData.pais?.toUpperCase() ?? editData.pais,
+      };
+      await updateCliente(cliente.id, dataToSave);
+      setCliente({ ...cliente, ...dataToSave });
       setEditData(null);
+      setIsEditing(false);
       showToast('Cliente actualizado correctamente', 'success');
     } catch {
       showToast('Error al actualizar el cliente', 'error');
@@ -274,6 +269,11 @@ const ClienteDetail = () => {
   const updateField = (field: keyof ClienteFormData, value: string | boolean) => {
     if (!editData) return;
     setEditData({ ...editData, [field]: value });
+  };
+
+  const handlePhoneChange = (numero: string, iso: string) => {
+    if (!editData) return;
+    setEditData({ ...editData, telefono: numero, telefonoCodigoPais: iso });
   };
 
   if (loading) {
@@ -417,7 +417,12 @@ const ClienteDetail = () => {
                 <div className="cliente-detail__edit-fields">
                   <div className="cliente-detail__edit-grid">
                     <div className="cliente-detail__edit-col">
-                      <input type="tel" value={editData?.telefono || ''} onChange={(e) => updateField('telefono', e.target.value)} placeholder="Teléfono" className="cliente-detail__input" />
+                      <PhoneInput
+                        value={editData?.telefono || ''}
+                        codigoPais={editData?.telefonoCodigoPais ?? 'MX'}
+                        onChange={handlePhoneChange}
+                        placeholder="Teléfono"
+                      />
                       <input type="email" value={editData?.correo || ''} onChange={(e) => updateField('correo', e.target.value)} placeholder="Correo electrónico" className="cliente-detail__input" />
                     </div>
                     <div className="cliente-detail__edit-col">
@@ -452,23 +457,11 @@ const ClienteDetail = () => {
                       onChange={e => setBusqueda(e.target.value)}
                     />
                   </div>
-                  <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value as PedidoStatus | 'todos')}>
-                    <option value="todos">Todos los estados</option>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="en_preparacion">En preparación</option>
-                    <option value="entregado">Entregado</option>
-                  </select>
                   <select value={filtroFecha} onChange={e => setFiltroFecha(e.target.value as DateFilter)}>
                     <option value="todo">Todo el tiempo</option>
                     <option value="semana">Última semana</option>
                     <option value="mes">Último mes</option>
                     <option value="3meses">Últimos 3 meses</option>
-                  </select>
-                  <select value={ordenamiento} onChange={e => setOrdenamiento(e.target.value as SortOption)}>
-                    <option value="recientes">Más recientes</option>
-                    <option value="antiguos">Más antiguos</option>
-                    <option value="mayor_total">Mayor total</option>
-                    <option value="menor_total">Menor total</option>
                   </select>
                 </div>
 
@@ -479,11 +472,10 @@ const ClienteDetail = () => {
                       <colgroup>
                         <col style={{ width: '10%' }} />
                         <col style={{ width: '8%' }} />
-                        <col style={{ width: '26%' }} />
+                        <col style={{ width: '34%' }} />
                         <col style={{ width: '12%' }} />
-                        <col style={{ width: '13%' }} />
-                        <col style={{ width: '13%' }} />
-                        <col style={{ width: '8%' }} />
+                        <col style={{ width: '18%' }} />
+                        <col style={{ width: '18%' }} />
                       </colgroup>
                       <thead>
                         <tr>
@@ -493,7 +485,6 @@ const ClienteDetail = () => {
                           <th>Etiquetas</th>
                           <th>Importe</th>
                           <th>Acumulado</th>
-                          <th>Estado</th>
                         </tr>
                       </thead>
                     </table>
@@ -503,20 +494,19 @@ const ClienteDetail = () => {
                       <colgroup>
                         <col style={{ width: '10%' }} />
                         <col style={{ width: '8%' }} />
-                        <col style={{ width: '26%' }} />
+                        <col style={{ width: '34%' }} />
                         <col style={{ width: '12%' }} />
-                        <col style={{ width: '13%' }} />
-                        <col style={{ width: '13%' }} />
-                        <col style={{ width: '8%' }} />
+                        <col style={{ width: '18%' }} />
+                        <col style={{ width: '18%' }} />
                       </colgroup>
                       <tbody>
                         {pedidosLoading ? (
                           <tr>
-                            <td colSpan={7} className="cliente-detail__pedidos-table-empty">Cargando pedidos...</td>
+                            <td colSpan={6} className="cliente-detail__pedidos-table-empty">Cargando pedidos...</td>
                           </tr>
                         ) : pedidosFiltrados.length === 0 ? (
                           <tr>
-                            <td colSpan={7} className="cliente-detail__pedidos-table-empty">
+                            <td colSpan={6} className="cliente-detail__pedidos-table-empty">
                               {pedidos.length === 0 ? 'Este cliente no tiene pedidos' : 'No se encontraron pedidos con los filtros aplicados'}
                             </td>
                           </tr>
@@ -524,7 +514,7 @@ const ClienteDetail = () => {
                           <React.Fragment key={pedido.id}>
                             {/* Fila de fecha del pedido */}
                             <tr className="cliente-detail__pedidos-date-row">
-                              <td colSpan={7}>
+                              <td colSpan={6}>
                                 <div className="cliente-detail__pedidos-date-row-inner">
                                   <span className="cliente-detail__pedidos-date-main">{formatPedidoDate(pedido.fechaCreacion)}</span>
                                   <button
@@ -540,7 +530,11 @@ const ClienteDetail = () => {
                             {/* Filas de productos */}
                             {pedido.productos.map((p, i) => (
                               <tr key={i} className="cliente-detail__pedidos-product-row">
-                                <td>{p.clave || '—'}</td>
+                                <td>
+                                  {p.clave
+                                    ? <span className="cliente-detail__clave">{p.clave}</span>
+                                    : '—'}
+                                </td>
                                 <td>{p.cantidad}</td>
                                 <td>{p.nombre}</td>
                                 <td>
@@ -558,16 +552,7 @@ const ClienteDetail = () => {
                                 </td>
                                 <td>{formatCurrency(p.subtotal)}</td>
                                 {i === 0 ? (
-                                  <>
-                                    <td rowSpan={pedido.productos.length} />
-                                    <td rowSpan={pedido.productos.length} className="cliente-detail__pedidos-status-cell">
-                                      <span
-                                        className="cliente-detail__pedidos-table-status"
-                                        style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-                                        title={PEDIDO_STATUS[pedido.estado]}
-                                      />
-                                    </td>
-                                  </>
+                                  <td rowSpan={pedido.productos.length} />
                                 ) : null}
                               </tr>
                             ))}
@@ -576,18 +561,31 @@ const ClienteDetail = () => {
                               <td colSpan={4} className="cliente-detail__pedidos-total-label">Total</td>
                               <td className="cliente-detail__pedidos-total-value">{formatCurrency(pedido.total)}</td>
                               <td className="cliente-detail__pedidos-acumulado-value">{formatCurrency(acumuladoMap.get(pedido.id) ?? 0)}</td>
-                              <td />
                             </tr>
                           </React.Fragment>
                         ))}
                       </tbody>
                     </table>
                   </div>
-                  <div className="cliente-detail__pedidos-table-footer">
-                    <span className="cliente-detail__pedidos-footer-info">
-                      {pedidosFiltrados.length} {pedidosFiltrados.length === 1 ? 'pedido' : 'pedidos'}
-                    </span>
+                  <div className="cliente-detail__pedidos-table-total">
+                    <table className="cliente-detail__pedidos-table">
+                      <colgroup>
+                        <col style={{ width: '10%' }} />
+                        <col style={{ width: '8%' }} />
+                        <col style={{ width: '34%' }} />
+                        <col style={{ width: '12%' }} />
+                        <col style={{ width: '18%' }} />
+                        <col style={{ width: '18%' }} />
+                      </colgroup>
+                      <tfoot>
+                        <tr>
+                          <td colSpan={5} className="cliente-detail__pedidos-table-total-label">Total acumulado</td>
+                          <td className="cliente-detail__pedidos-table-total-value">{formatCurrency(pedidos.filter(p => p.estado === 'entregado').reduce((s, p) => s + p.total, 0))}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
                   </div>
+                  <div className="cliente-detail__pedidos-table-footer" />
                 </div>
               </div>
 
