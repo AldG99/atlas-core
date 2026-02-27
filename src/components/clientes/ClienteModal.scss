@@ -23,25 +23,29 @@
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 
   &--large {
-    max-width: 700px;
+    width: min(700px, 90vw);
+    max-width: none;
+    height: min(700px, 90vh);
+    max-height: none;
+    overflow: hidden;
   }
 
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: $spacing-lg;
+    padding: $spacing-md $spacing-lg;
     border-bottom: 1px solid $color-gray-200;
-    position: sticky;
-    top: 0;
-    background-color: $color-white;
-    z-index: 10;
+    flex-shrink: 0;
 
     h2 {
       margin: 0;
-      font-size: $font-size-xl;
+      font-size: $font-size-base;
+      font-weight: 600;
       color: $color-gray-800;
     }
   }
@@ -50,8 +54,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     background: none;
     border: none;
     color: $color-gray-500;
@@ -66,39 +70,35 @@
   }
 
   &__body {
-    padding: $spacing-lg;
+    padding: $spacing-md $spacing-lg;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-color: $color-gray-300 $color-white;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 3px;
+    }
   }
 
   &__actions {
     display: flex;
-    flex-direction: column-reverse;
     gap: $spacing-sm;
-    margin-top: $spacing-lg;
-    padding-top: $spacing-lg;
+    padding: $spacing-md $spacing-lg;
     border-top: 1px solid $color-gray-200;
-    position: sticky;
-    bottom: 0;
-    background-color: $color-white;
-
-    .btn {
-      width: 100%;
-    }
-
-    @include sm {
-      flex-direction: row;
-      justify-content: flex-end;
-
-      .btn {
-        width: auto;
-      }
-    }
+    justify-content: flex-end;
+    flex-shrink: 0;
   }
 }
 
 // Form sections
 .form-section {
-  margin-bottom: $spacing-lg;
-  padding-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
   border-bottom: 1px solid $color-gray-100;
 
   &:last-of-type {
@@ -108,51 +108,47 @@
   }
 
   &__title {
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
     font-weight: 600;
-    color: $color-gray-800;
-    margin: 0 0 $spacing-md;
+    color: $color-gray-700;
+    margin: 0 0 $spacing-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 }
 
 // Form grid
 .form-grid {
   display: grid;
-  gap: $spacing-md;
+  gap: $spacing-sm;
 
   &--2 {
-    @include md {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    grid-template-columns: repeat(2, 1fr);
   }
 
   &--3 {
-    @include md {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 // Form group
 .form-group {
-  margin-bottom: $spacing-md;
+  margin-bottom: $spacing-sm;
 
   &:last-child {
     margin-bottom: 0;
   }
 
   &--full {
-    @include md {
-      grid-column: 1 / -1;
-    }
+    grid-column: 1 / -1;
   }
 
   label {
     display: block;
-    margin-bottom: $spacing-xs;
-    font-size: $font-size-sm;
+    margin-bottom: 3px;
+    font-size: $font-size-xs;
     font-weight: 500;
-    color: $color-gray-700;
+    color: $color-gray-500;
   }
 
   .input,
@@ -161,8 +157,8 @@
   }
 
   textarea.input {
-    resize: vertical;
-    min-height: 80px;
+    resize: none;
+    min-height: 60px;
   }
 }
 
@@ -171,15 +167,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-md;
+  gap: $spacing-sm;
 
   &__preview {
-    width: 120px;
-    height: 120px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     overflow: hidden;
     cursor: pointer;
-    border: 3px dashed $color-gray-300;
+    border: 2px dashed $color-gray-300;
     transition: all $transition-fast;
 
     &:hover {
@@ -197,16 +193,22 @@
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: $spacing-xs;
     background-color: $color-gray-100;
-    color: $color-gray-500;
+    color: $color-gray-400;
+  }
 
-    span {
-      font-size: $font-size-xs;
-    }
+  &__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  &__hint {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
   }
 }
 
@@ -234,6 +236,15 @@
     font-size: $font-size-sm;
     color: $color-gray-700;
   }
+}
+
+// Char count
+.form-char-count {
+  display: block;
+  text-align: right;
+  font-size: $font-size-xs;
+  color: $color-gray-400;
+  margin-top: 2px;
 }
 
 // Form error

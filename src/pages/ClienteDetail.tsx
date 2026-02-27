@@ -7,7 +7,6 @@ import {
   PiPencilBold,
   PiTrashBold,
   PiCameraBold,
-  PiArchiveBold,
   PiStarFill,
   PiStarBold,
   PiMagnifyingGlassBold
@@ -317,9 +316,6 @@ const ClienteDetail = () => {
                 <button onClick={handleWhatsApp} className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp" title="Enviar WhatsApp">
                   <PiWhatsappLogoBold size={20} />
                 </button>
-                <button onClick={() => navigate(`/cliente/${id}/pedidos`)} className="cliente-detail__icon-btn" title="Historial de pedidos">
-                  <PiArchiveBold size={20} />
-                </button>
                 <span className="cliente-detail__top-divider" />
                 <button
                   onClick={handleToggleFavorito}
@@ -366,8 +362,8 @@ const ClienteDetail = () => {
                     <div className="cliente-detail__client-name-group">
                       {isEditing ? (
                         <div className="cliente-detail__name-edit">
-                          <input type="text" value={editData?.nombre || ''} onChange={(e) => updateField('nombre', e.target.value)} placeholder="Nombre" className="cliente-detail__input" />
-                          <input type="text" value={editData?.apellido || ''} onChange={(e) => updateField('apellido', e.target.value)} placeholder="Apellido" className="cliente-detail__input" />
+                          <input type="text" value={editData?.nombre || ''} onChange={(e) => updateField('nombre', e.target.value)} placeholder="Nombre *" className="cliente-detail__input" />
+                          <input type="text" value={editData?.apellido || ''} onChange={(e) => updateField('apellido', e.target.value)} placeholder="Apellido *" className="cliente-detail__input" />
                         </div>
                       ) : (
                         <h1 className="cliente-detail__name">{cliente.nombre} {cliente.apellido}</h1>
@@ -381,7 +377,7 @@ const ClienteDetail = () => {
 
               <div className="cliente-detail__header-fields">
                 <div className="cliente-detail__header-field">
-                  <span className="cliente-detail__info-label">Dirección</span>
+                  <span className="cliente-detail__info-label">{isEditing ? 'Dirección *' : 'Dirección'}</span>
                   {isEditing ? (
                     <>
                       <div className="cliente-detail__address-row">
@@ -407,7 +403,7 @@ const ClienteDetail = () => {
                 </div>
                 <div className="cliente-detail__header-contact">
                   <div className="cliente-detail__header-field">
-                    <span className="cliente-detail__info-label">Teléfono</span>
+                    <span className="cliente-detail__info-label">{isEditing ? 'Teléfono *' : 'Teléfono'}</span>
                     {isEditing ? (
                       <PhoneInput
                         value={editData?.telefono || ''}
@@ -434,11 +430,11 @@ const ClienteDetail = () => {
                     )}
                   </div>
                   <div className="cliente-detail__header-field cliente-detail__header-field--full">
-                    <span className="cliente-detail__info-label">Referencia</span>
+                    <span className="cliente-detail__info-label">{isEditing ? 'Referencia *' : 'Referencia'}</span>
                     {isEditing ? (
                       <>
-                        <textarea value={editData?.referencia || ''} onChange={(e) => updateField('referencia', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} maxLength={150} style={{ resize: 'none' }} />
-                        <span className="cliente-detail__char-count">{(editData?.referencia || '').length}/150</span>
+                        <textarea value={editData?.referencia || ''} onChange={(e) => updateField('referencia', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} maxLength={80} style={{ resize: 'none' }} />
+                        <span className="cliente-detail__char-count">{(editData?.referencia || '').length}/80</span>
                       </>
                     ) : (
                       <span className={`cliente-detail__info-value ${!cliente.referencia ? 'cliente-detail__info-value--empty' : ''}`}>

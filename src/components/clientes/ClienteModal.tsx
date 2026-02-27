@@ -62,9 +62,6 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
     if (!formData.calle.trim()) {
       newErrors.calle = 'La calle es requerida';
     }
-    if (!formData.numeroExterior.trim()) {
-      newErrors.numeroExterior = 'El número exterior es requerido';
-    }
     if (!formData.colonia.trim()) {
       newErrors.colonia = 'La colonia es requerida';
     }
@@ -76,6 +73,9 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
     }
     if (formData.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) {
       newErrors.correo = 'El correo no es válido';
+    }
+    if (!formData.referencia?.trim()) {
+      newErrors.referencia = 'La referencia es requerida';
     }
 
     setErrors(newErrors);
@@ -175,8 +175,7 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
                   <img src={previewImage} alt="Preview" />
                 ) : (
                   <div className="form-avatar__placeholder">
-                    <PiUserBold size={32} />
-                    <span>Agregar foto</span>
+                    <PiUserBold size={24} />
                   </div>
                 )}
               </div>
@@ -187,11 +186,16 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
                 onChange={handleImageChange}
                 style={{ display: 'none' }}
               />
-              {previewImage && (
-                <button type="button" className="btn btn--sm btn--danger" onClick={removeImage}>
-                  Eliminar foto
-                </button>
-              )}
+              <div className="form-avatar__info">
+                <span className="form-avatar__hint">
+                  {previewImage ? 'Haz clic en la foto para cambiarla' : 'Haz clic para agregar una foto'}
+                </span>
+                {previewImage && (
+                  <button type="button" className="btn btn--sm btn--danger" onClick={removeImage}>
+                    Eliminar foto
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -263,58 +267,16 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
             <h3 className="form-section__title">Dirección de entrega</h3>
             <div className="form-grid form-grid--2">
               <div className="form-group">
-                <label htmlFor="calle">Calle *</label>
+                <label htmlFor="pais">País</label>
                 <input
                   type="text"
-                  id="calle"
-                  name="calle"
-                  value={formData.calle}
-                  onChange={handleChange}
-                  className={`input ${errors.calle ? 'input--error' : ''}`}
-                  placeholder="Nombre de la calle"
-                />
-                {errors.calle && <span className="form-error">{errors.calle}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="numeroExterior">Número exterior *</label>
-                <input
-                  type="text"
-                  id="numeroExterior"
-                  name="numeroExterior"
-                  value={formData.numeroExterior}
-                  onChange={handleChange}
-                  className={`input ${errors.numeroExterior ? 'input--error' : ''}`}
-                  placeholder="Ej: 123"
-                />
-                {errors.numeroExterior && <span className="form-error">{errors.numeroExterior}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="numeroInterior">Número interior</label>
-                <input
-                  type="text"
-                  id="numeroInterior"
-                  name="numeroInterior"
-                  value={formData.numeroInterior || ''}
+                  id="pais"
+                  name="pais"
+                  value={formData.pais || ''}
                   onChange={handleChange}
                   className="input"
-                  placeholder="Ej: Depto 4 (opcional)"
+                  placeholder="Ej: México"
                 />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="colonia">Colonia *</label>
-                <input
-                  type="text"
-                  id="colonia"
-                  name="colonia"
-                  value={formData.colonia}
-                  onChange={handleChange}
-                  className={`input ${errors.colonia ? 'input--error' : ''}`}
-                  placeholder="Nombre de la colonia"
-                />
-                {errors.colonia && <span className="form-error">{errors.colonia}</span>}
               </div>
 
               <div className="form-group">
@@ -332,6 +294,60 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
               </div>
 
               <div className="form-group">
+                <label htmlFor="colonia">Colonia *</label>
+                <input
+                  type="text"
+                  id="colonia"
+                  name="colonia"
+                  value={formData.colonia}
+                  onChange={handleChange}
+                  className={`input ${errors.colonia ? 'input--error' : ''}`}
+                  placeholder="Nombre de la colonia"
+                />
+                {errors.colonia && <span className="form-error">{errors.colonia}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="calle">Calle *</label>
+                <input
+                  type="text"
+                  id="calle"
+                  name="calle"
+                  value={formData.calle}
+                  onChange={handleChange}
+                  className={`input ${errors.calle ? 'input--error' : ''}`}
+                  placeholder="Nombre de la calle"
+                />
+                {errors.calle && <span className="form-error">{errors.calle}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="numeroExterior">Número exterior</label>
+                <input
+                  type="text"
+                  id="numeroExterior"
+                  name="numeroExterior"
+                  value={formData.numeroExterior}
+                  onChange={handleChange}
+                  className="input"
+                  placeholder="Ej: 123"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="numeroInterior">Número interior</label>
+                <input
+                  type="text"
+                  id="numeroInterior"
+                  name="numeroInterior"
+                  value={formData.numeroInterior || ''}
+                  onChange={handleChange}
+                  className="input"
+                  placeholder="Ej: Depto 4 (opcional)"
+                />
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="codigoPostal">Código postal *</label>
                 <input
                   type="text"
@@ -346,31 +362,22 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
                 {errors.codigoPostal && <span className="form-error">{errors.codigoPostal}</span>}
               </div>
 
-              <div className="form-group">
-                <label htmlFor="pais">País</label>
-                <input
-                  type="text"
-                  id="pais"
-                  name="pais"
-                  value={formData.pais || ''}
+              <div className="form-group form-group--full">
+                <label htmlFor="referencia">Referencia del domicilio *</label>
+                <textarea
+                  id="referencia"
+                  name="referencia"
+                  value={formData.referencia || ''}
                   onChange={handleChange}
-                  className="input"
-                  placeholder="Ej: México"
+                  className={`input ${errors.referencia ? 'input--error' : ''}`}
+                  placeholder="Ej: Casa color azul, entre calle X y calle Y"
+                  rows={2}
+                  maxLength={80}
+                  style={{ resize: 'none' }}
                 />
+                <span className="form-char-count">{(formData.referencia || '').length}/80</span>
+                {errors.referencia && <span className="form-error">{errors.referencia}</span>}
               </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="referencia">Referencia del domicilio</label>
-              <textarea
-                id="referencia"
-                name="referencia"
-                value={formData.referencia || ''}
-                onChange={handleChange}
-                className="input"
-                placeholder="Ej: Casa color azul, entre calle X y calle Y"
-                rows={2}
-              />
             </div>
           </div>
 

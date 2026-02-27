@@ -15,7 +15,6 @@ import ClienteDetail from './pages/ClienteDetail';
 import Productos from './pages/Productos';
 import ProductoDetail from './pages/ProductoDetail';
 import Reportes from './pages/Reportes';
-import ClientePedidos from './pages/ClientePedidos';
 import Configuracion from './pages/Configuracion';
 import Archivo from './pages/Archivo';
 import Soporte from './pages/Soporte';
@@ -99,14 +98,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <Reportes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.CLIENTE_PEDIDOS}
-            element={
-              <ProtectedRoute>
-                <ClientePedidos />
               </ProtectedRoute>
             }
           />

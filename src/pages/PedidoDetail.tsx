@@ -62,6 +62,7 @@ const PedidoDetail = () => {
   );
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const [focusedAbonoRow, setFocusedAbonoRow] = useState<number | null>(null);
+  const [discountTooltip, setDiscountTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const tableScrollRef = useRef<HTMLDivElement>(null);
   const abonoScrollRef = useRef<HTMLDivElement>(null);
 
@@ -519,11 +520,26 @@ const PedidoDetail = () => {
                           <td>
                             <div className="pedido-detail__product-name-cell">
                               <span className="pedido-detail__product-name">{p.nombre}</span>
-                              {p.descuento && p.descuento > 0 && (
-                                <span className="pedido-detail__product-discount-badge">
-                                  -{p.descuento}%
-                                </span>
-                              )}
+                              {p.descuento && p.descuento > 0 && (() => {
+                                const fechaFin = p.clave
+                                  ? catalogoProductos.find(cp => cp.clave === p.clave)?.fechaFinDescuento
+                                  : undefined;
+                                const tooltipText = fechaFin
+                                  ? `Válido hasta el ${formatDate(new Date(fechaFin))}`
+                                  : undefined;
+                                return (
+                                  <span
+                                    className="pedido-detail__product-discount-badge"
+                                    onMouseEnter={tooltipText ? (e) => {
+                                      const rect = e.currentTarget.getBoundingClientRect();
+                                      setDiscountTooltip({ text: tooltipText, x: rect.left + rect.width / 2, y: rect.top });
+                                    } : undefined}
+                                    onMouseLeave={() => setDiscountTooltip(null)}
+                                  >
+                                    -{p.descuento}%
+                                  </span>
+                                );
+                              })()}
                             </div>
                           </td>
                           <td>
@@ -912,6 +928,14 @@ const PedidoDetail = () => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+      {discountTooltip && (
+        <div
+          className="pedido-detail__discount-tooltip"
+          style={{ left: discountTooltip.x, top: discountTooltip.y }}
+        >
+          {discountTooltip.text}
         </div>
       )}
     </MainLayout>
