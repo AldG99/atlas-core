@@ -379,69 +379,75 @@ const ClienteDetail = () => {
                 </div>
               </div>
 
-              {!isEditing && (
-                <div className="cliente-detail__header-fields">
-                  <div className="cliente-detail__header-field">
-                    <span className="cliente-detail__info-label">Dirección</span>
-                    <span className="cliente-detail__info-value">{addr.line1}</span>
-                    <span className="cliente-detail__info-value">{addr.line2}</span>
-                    <span className="cliente-detail__info-value">{addr.line3}{addr.line5 ? `, ${addr.line5}` : ''}</span>
-                    <span className="cliente-detail__info-value">{addr.line4}</span>
-                  </div>
-                  <div className="cliente-detail__header-contact">
-                    <div className="cliente-detail__header-field">
-                      <span className="cliente-detail__info-label">Teléfono</span>
-                      <span className="cliente-detail__info-value">
-                        {cliente.telefonoCodigoPais
-                          ? `${getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefono)}`
-                          : formatTelefono(cliente.telefono)}
-                      </span>
-                    </div>
-                    <div className="cliente-detail__header-field">
-                      <span className="cliente-detail__info-label">Correo electrónico</span>
-                      <span className={`cliente-detail__info-value ${!cliente.correo ? 'cliente-detail__info-value--empty' : ''}`}>
-                        {cliente.correo || 'Sin correo registrado'}
-                      </span>
-                    </div>
-                    <div className="cliente-detail__header-field cliente-detail__header-field--full">
-                      <span className="cliente-detail__info-label">Referencia</span>
-                      <span className={`cliente-detail__info-value ${!cliente.referencia ? 'cliente-detail__info-value--empty' : ''}`}>
-                        {cliente.referencia || 'Sin referencia'}
-                      </span>
-                    </div>
-                  </div>
+              <div className="cliente-detail__header-fields">
+                <div className="cliente-detail__header-field">
+                  <span className="cliente-detail__info-label">Dirección</span>
+                  {isEditing ? (
+                    <>
+                      <div className="cliente-detail__address-row">
+                        <input type="text" value={editData?.calle || ''} onChange={(e) => updateField('calle', e.target.value)} placeholder="Calle" className="cliente-detail__input cliente-detail__input--flex" />
+                        <input type="text" value={editData?.numeroExterior || ''} onChange={(e) => updateField('numeroExterior', e.target.value)} placeholder="No. Ext" className="cliente-detail__input cliente-detail__input--small" />
+                        <input type="text" value={editData?.numeroInterior || ''} onChange={(e) => updateField('numeroInterior', e.target.value)} placeholder="No. Int" className="cliente-detail__input cliente-detail__input--small" />
+                      </div>
+                      <input type="text" value={editData?.colonia || ''} onChange={(e) => updateField('colonia', e.target.value)} placeholder="Colonia" className="cliente-detail__input" />
+                      <div className="cliente-detail__address-row">
+                        <input type="text" value={editData?.ciudad || ''} onChange={(e) => updateField('ciudad', e.target.value)} placeholder="Ciudad" className="cliente-detail__input cliente-detail__input--flex" />
+                        <input type="text" value={editData?.pais || ''} onChange={(e) => updateField('pais', e.target.value)} placeholder="País" className="cliente-detail__input cliente-detail__input--flex" />
+                      </div>
+                      <input type="text" value={editData?.codigoPostal || ''} onChange={(e) => updateField('codigoPostal', e.target.value)} placeholder="CP" className="cliente-detail__input cliente-detail__input--small" />
+                    </>
+                  ) : (
+                    <>
+                      <span className="cliente-detail__info-value">{addr.line1}</span>
+                      <span className="cliente-detail__info-value">{addr.line2}</span>
+                      <span className="cliente-detail__info-value">{addr.line3}{addr.line5 ? `, ${addr.line5}` : ''}</span>
+                      <span className="cliente-detail__info-value">{addr.line4}</span>
+                    </>
+                  )}
                 </div>
-              )}
-
-              {isEditing && (
-                <div className="cliente-detail__edit-fields">
-                  <div className="cliente-detail__edit-grid">
-                    <div className="cliente-detail__edit-col">
+                <div className="cliente-detail__header-contact">
+                  <div className="cliente-detail__header-field">
+                    <span className="cliente-detail__info-label">Teléfono</span>
+                    {isEditing ? (
                       <PhoneInput
                         value={editData?.telefono || ''}
                         codigoPais={editData?.telefonoCodigoPais ?? 'MX'}
                         onChange={handlePhoneChange}
                         placeholder="Teléfono"
                       />
+                    ) : (
+                      <span className="cliente-detail__info-value">
+                        {cliente.telefonoCodigoPais
+                          ? `${getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefono)}`
+                          : formatTelefono(cliente.telefono)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="cliente-detail__header-field">
+                    <span className="cliente-detail__info-label">Correo electrónico</span>
+                    {isEditing ? (
                       <input type="email" value={editData?.correo || ''} onChange={(e) => updateField('correo', e.target.value)} placeholder="Correo electrónico" className="cliente-detail__input" />
-                    </div>
-                    <div className="cliente-detail__edit-col">
-                      <div className="cliente-detail__address-row">
-                        <input type="text" value={editData?.calle || ''} onChange={(e) => updateField('calle', e.target.value)} placeholder="Calle" className="cliente-detail__input cliente-detail__input--flex" />
-                        <input type="text" value={editData?.numeroExterior || ''} onChange={(e) => updateField('numeroExterior', e.target.value)} placeholder="No. Ext" className="cliente-detail__input cliente-detail__input--small" />
-                        <input type="text" value={editData?.numeroInterior || ''} onChange={(e) => updateField('numeroInterior', e.target.value)} placeholder="No. Int" className="cliente-detail__input cliente-detail__input--small" />
-                      </div>
-                      <div className="cliente-detail__address-row">
-                        <input type="text" value={editData?.colonia || ''} onChange={(e) => updateField('colonia', e.target.value)} placeholder="Colonia" className="cliente-detail__input" />
-                        <input type="text" value={editData?.ciudad || ''} onChange={(e) => updateField('ciudad', e.target.value)} placeholder="Ciudad" className="cliente-detail__input" />
-                        <input type="text" value={editData?.codigoPostal || ''} onChange={(e) => updateField('codigoPostal', e.target.value)} placeholder="CP" className="cliente-detail__input cliente-detail__input--small" />
-                        <input type="text" value={editData?.pais || ''} onChange={(e) => updateField('pais', e.target.value)} placeholder="País" className="cliente-detail__input" />
-                      </div>
-                      <textarea value={editData?.referencia || ''} onChange={(e) => updateField('referencia', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} />
-                    </div>
+                    ) : (
+                      <span className={`cliente-detail__info-value ${!cliente.correo ? 'cliente-detail__info-value--empty' : ''}`}>
+                        {cliente.correo || 'Sin correo registrado'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="cliente-detail__header-field cliente-detail__header-field--full">
+                    <span className="cliente-detail__info-label">Referencia</span>
+                    {isEditing ? (
+                      <>
+                        <textarea value={editData?.referencia || ''} onChange={(e) => updateField('referencia', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} maxLength={150} style={{ resize: 'none' }} />
+                        <span className="cliente-detail__char-count">{(editData?.referencia || '').length}/150</span>
+                      </>
+                    ) : (
+                      <span className={`cliente-detail__info-value ${!cliente.referencia ? 'cliente-detail__info-value--empty' : ''}`}>
+                        {cliente.referencia || 'Sin referencia'}
+                      </span>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Tabla de pedidos: ocupa el resto del card */}

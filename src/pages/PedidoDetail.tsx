@@ -669,8 +669,7 @@ const PedidoDetail = () => {
             </div>
           </div>
 
-          {abonos.length > 0 && (
-            <div className="pedido-detail__section pedido-detail__section--no-pad">
+          <div className="pedido-detail__section pedido-detail__section--no-pad">
               <div className="pedido-detail__table-wrapper">
                 {/* Header fijo */}
                 <div className="pedido-detail__table-head">
@@ -701,48 +700,55 @@ const PedidoDetail = () => {
                       <col style={{ width: '25%' }} />
                     </colgroup>
                     <tbody>
-                      {[...abonos]
-                        .sort(
-                          (a, b) =>
-                            new Date(b.fecha).getTime() -
-                            new Date(a.fecha).getTime()
-                        )
-                        .map((abono, i) => (
-                          <tr
-                            key={i}
-                            className={focusedAbonoRow === i ? 'pedido-detail__product-row--focused' : ''}
-                            onClick={() => { setFocusedAbonoRow(i); setFocusedRow(null); }}
-                          >
-                            <td>
-                              {typeof abono.productoIndex === 'number' &&
-                              pedido.productos[abono.productoIndex]?.clave ? (
-                                <span className="pedido-detail__clave">
-                                  {pedido.productos[abono.productoIndex].clave}
-                                </span>
-                              ) : (
-                                '-'
-                              )}
-                            </td>
-                            <td>
-                              {typeof abono.productoIndex === 'number' &&
-                              pedido.productos[abono.productoIndex] ? (
-                                pedido.productos[abono.productoIndex].nombre
-                              ) : (
-                                <span className="pedido-detail__general-label">
-                                  General
-                                </span>
-                              )}
-                            </td>
-                            <td>{formatCurrency(abono.monto)}</td>
-                            <td>{formatDate(abono.fecha)}</td>
-                          </tr>
-                        ))}
+                      {abonos.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="pedido-detail__abonos-empty">
+                            Sin abonos registrados
+                          </td>
+                        </tr>
+                      ) : (
+                        [...abonos]
+                          .sort(
+                            (a, b) =>
+                              new Date(b.fecha).getTime() -
+                              new Date(a.fecha).getTime()
+                          )
+                          .map((abono, i) => (
+                            <tr
+                              key={i}
+                              className={focusedAbonoRow === i ? 'pedido-detail__product-row--focused' : ''}
+                              onClick={() => { setFocusedAbonoRow(i); setFocusedRow(null); }}
+                            >
+                              <td>
+                                {typeof abono.productoIndex === 'number' &&
+                                pedido.productos[abono.productoIndex]?.clave ? (
+                                  <span className="pedido-detail__clave">
+                                    {pedido.productos[abono.productoIndex].clave}
+                                  </span>
+                                ) : (
+                                  '-'
+                                )}
+                              </td>
+                              <td>
+                                {typeof abono.productoIndex === 'number' &&
+                                pedido.productos[abono.productoIndex] ? (
+                                  pedido.productos[abono.productoIndex].nombre
+                                ) : (
+                                  <span className="pedido-detail__general-label">
+                                    General
+                                  </span>
+                                )}
+                              </td>
+                              <td>{formatCurrency(abono.monto)}</td>
+                              <td>{formatDate(abono.fecha)}</td>
+                            </tr>
+                          ))
+                      )}
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
-          )}
           </div>
         </div>
 

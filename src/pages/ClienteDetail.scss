@@ -425,6 +425,14 @@ $topbar-height: 52px;
     }
   }
 
+  &__char-count {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    text-align: right;
+    display: block;
+    margin-top: 2px;
+  }
+
   &__textarea {
     width: 100%;
     padding: $spacing-sm;

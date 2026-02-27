@@ -658,6 +658,13 @@ $bottombar-height: 64px;
     color: $color-gray-400;
   }
 
+  &__abonos-empty {
+    text-align: center;
+    color: $color-gray-400;
+    font-style: italic;
+    padding: $spacing-md !important;
+  }
+
 
   &__btn-entregado {
     display: inline-flex;
