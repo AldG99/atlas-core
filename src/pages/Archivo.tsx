@@ -1,14 +1,14 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { PiArchiveBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import type { Pedido } from '../types/Pedido';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { getArchivedPedidos } from '../services/pedidoService';
-import { exportToCSV, formatCurrency, formatShortDate, getTotalPagado } from '../utils/formatters';
-import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
+import { exportToCSV } from '../utils/formatters';
 import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
+import PedidosTable from '../components/pedidos/PedidosTable';
 import './Archivo.scss';
 
 type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc';
@@ -29,37 +29,15 @@ const DATE_FILTERS: Record<DateFilter, string> = {
   trimestre: 'Últimos 3 meses'
 };
 
-const getInitials = (name: string): string => {
-  return name
-    .split(' ')
-    .map(w => w[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
-};
-
-const getProductosSummary = (pedido: Pedido): string => {
-  const total = pedido.productos.length;
-  if (total === 0) return 'Sin productos';
-  const first = pedido.productos[0].nombre;
-  if (total === 1) return first;
-  return `${first} +${total - 1}`;
-};
-
 const Archivo = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
   const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
-  const [focusedRow, setFocusedRow] = useState<number | null>(null);
-  const tableBodyRef = useRef<HTMLDivElement>(null);
 
   const fetchArchived = useCallback(async () => {
     if (!user) return;
@@ -141,34 +119,6 @@ const Archivo = () => {
     return result;
   }, [pedidos, searchTerm, sortBy, dateFilter]);
 
-  useEffect(() => {
-    if (!filteredAndSortedPedidos.length) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement).tagName.toLowerCase();
-      if (['input', 'select', 'textarea'].includes(tag)) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, filteredAndSortedPedidos.length - 1));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
-      } else if (e.key === 'Enter' && focusedRow !== null) {
-        e.preventDefault();
-        navigate(ROUTES.DETAIL_PEDIDO.replace(':id', filteredAndSortedPedidos[focusedRow].id), { state: { from: location.pathname } });
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [filteredAndSortedPedidos, focusedRow, navigate, location.pathname]);
-
-  useEffect(() => {
-    if (focusedRow === null || !tableBodyRef.current) return;
-    const rows = tableBodyRef.current.querySelectorAll('tr');
-    const row = rows[focusedRow];
-    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }, [focusedRow]);
-
   const handleExport = () => {
     if (filteredAndSortedPedidos.length === 0) {
       showToast('No hay pedidos para exportar', 'warning');
@@ -176,10 +126,6 @@ const Archivo = () => {
     }
     exportToCSV(filteredAndSortedPedidos, 'pedidos_archivados');
     showToast('Archivo exportado correctamente', 'success');
-  };
-
-  const handleRowClick = (id: string) => {
-    navigate(ROUTES.DETAIL_PEDIDO.replace(':id', id));
   };
 
   return (
@@ -238,14 +184,9 @@ const Archivo = () => {
                   </option>
                 ))}
               </select>
-
             </div>
           </div>
         )}
-
-        {loading && <p className="archivo__loading">Cargando archivo...</p>}
-
-        {error && <p className="archivo__error">{error}</p>}
 
         {!loading && !error && pedidos.length === 0 && (
           <div className="archivo__empty">
@@ -269,126 +210,13 @@ const Archivo = () => {
           </div>
         )}
 
-        {!loading && !error && filteredAndSortedPedidos.length > 0 && (
-          <div className="archivo__table-wrapper">
-            <div className="archivo__table-header">
-              <table className="archivo__table">
-                <colgroup>
-                  <col style={{ width: '20%' }} />
-                  <col style={{ width: '14%' }} />
-                  <col style={{ width: '7%' }} />
-                  <col style={{ width: '8%' }} />
-                  <col style={{ width: '12%' }} />
-                  <col style={{ width: '10%' }} />
-                  <col style={{ width: '7%' }} />
-                  <col style={{ width: '12%' }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th>Cliente</th>
-                    <th>Teléfono</th>
-                    <th>C.P.</th>
-                    <th>Productos</th>
-                    <th>Abonado</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Fecha</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-            <div ref={tableBodyRef} className="archivo__table-body">
-              <table className="archivo__table">
-                <colgroup>
-                  <col style={{ width: '20%' }} />
-                  <col style={{ width: '14%' }} />
-                  <col style={{ width: '7%' }} />
-                  <col style={{ width: '8%' }} />
-                  <col style={{ width: '12%' }} />
-                  <col style={{ width: '10%' }} />
-                  <col style={{ width: '7%' }} />
-                  <col style={{ width: '12%' }} />
-                </colgroup>
-                <tbody>
-                  {filteredAndSortedPedidos.map((pedido, index) => {
-                    const pagado = getTotalPagado(pedido);
-                    const porcentaje = pedido.total > 0 ? Math.round((pagado / pedido.total) * 100) : 0;
-                    const paidStatus = pagado >= pedido.total ? 'paid' : pagado > 0 ? 'partial' : 'pending';
-                    const totalClass = pagado >= pedido.total
-                      ? 'archivo__total--paid'
-                      : pagado > 0
-                        ? 'archivo__total--pending'
-                        : '';
-                    return (
-                      <tr
-                        key={pedido.id}
-                        className={`archivo__row${focusedRow === index ? ' archivo__row--focused' : ''}`}
-                        onClick={() => handleRowClick(pedido.id)}
-                        onMouseEnter={() => setFocusedRow(index)}
-                      >
-                        <td>
-                          <div className="archivo__client">
-                            <div className="archivo__avatar">
-                              {pedido.clienteFoto ? (
-                                <img src={pedido.clienteFoto} alt={pedido.clienteNombre} />
-                              ) : (
-                                <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
-                              )}
-                            </div>
-                            <span className="archivo__name" title={pedido.clienteNombre}>
-                              {pedido.clienteNombre}
-                            </span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className="archivo__phone">{pedido.clienteTelefono}</span>
-                        </td>
-                        <td>
-                          <span className="archivo__cp">{pedido.clienteCodigoPostal || '-'}</span>
-                        </td>
-                        <td>
-                          <div className="archivo__product-cell">
-                            <span className="archivo__product-count">
-                              {pedido.productos.reduce((sum, p) => sum + p.cantidad, 0)}
-                            </span>
-                            {pedido.productos.some(p => p.descuento && p.descuento > 0) && (
-                              <span className="archivo__discount-indicator" title="Incluye descuento">%</span>
-                            )}
-                          </div>
-                        </td>
-                        <td>
-                          <div className={`archivo__paid archivo__paid--${paidStatus}`}>
-                            <span className="archivo__paid-amount">{formatCurrency(pagado)}</span>
-                            <span className="archivo__paid-percent">{porcentaje}%</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className={`archivo__total ${totalClass}`}>
-                            {formatCurrency(pedido.total)}
-                          </span>
-                        </td>
-                        <td>
-                          <span
-                            className="archivo__status-dot"
-                            style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-                            title={PEDIDO_STATUS[pedido.estado]}
-                          />
-                        </td>
-                        <td>
-                          <span className="archivo__date">{formatShortDate(new Date(pedido.fechaCreacion))}</span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            <div className="archivo__table-footer">
-              <span className="archivo__page-info">
-                {filteredAndSortedPedidos.length} {filteredAndSortedPedidos.length === 1 ? 'pedido' : 'pedidos'}
-              </span>
-            </div>
-          </div>
+        {(loading || error || pedidos.length > 0) && (
+          <PedidosTable
+            pedidos={filteredAndSortedPedidos}
+            loading={loading}
+            error={error}
+            searchTerm={searchTerm}
+          />
         )}
       </div>
     </MainLayout>

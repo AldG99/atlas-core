@@ -17,24 +17,9 @@ const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [soloFavoritos, setSoloFavoritos] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCliente, setEditingCliente] = useState<{
-    id: string;
-    data: ClienteFormData;
-  } | null>(null);
 
-  const { clientes, loading, error, addCliente, editCliente } =
-    useClientes();
+  const { clientes, loading, error, addCliente } = useClientes();
   const { showToast } = useToast();
-
-  // Debug: verificar estado
-  console.log(
-    'Clientes page - loading:',
-    loading,
-    'error:',
-    error,
-    'clientes:',
-    clientes.length
-  );
 
   const filteredClientes = useMemo(() => {
     let resultado = clientes;
@@ -64,21 +49,8 @@ const Clientes = () => {
       await addCliente(data);
       showToast('Cliente agregado correctamente', 'success');
       setIsModalOpen(false);
-    } catch (err) {
-      console.error('Error al agregar cliente:', err);
-      showToast('Error al agregar el cliente', 'error');
-    }
-  };
-
-  const handleEdit = async (data: ClienteFormData) => {
-    if (!editingCliente) return;
-
-    try {
-      await editCliente(editingCliente.id, data);
-      showToast('Cliente actualizado correctamente', 'success');
-      setEditingCliente(null);
     } catch {
-      showToast('Error al actualizar el cliente', 'error');
+      showToast('Error al agregar el cliente', 'error');
     }
   };
 
@@ -148,14 +120,6 @@ const Clientes = () => {
           <ClienteModal
             onClose={() => setIsModalOpen(false)}
             onSave={handleAdd}
-          />
-        )}
-
-        {editingCliente && (
-          <ClienteModal
-            cliente={editingCliente.data}
-            onClose={() => setEditingCliente(null)}
-            onSave={handleEdit}
           />
         )}
       </div>

@@ -16,9 +16,7 @@ export const useClientes = () => {
   const { user } = useAuth();
 
   const fetchClientes = useCallback(async () => {
-    console.log('useClientes - fetchClientes called, user:', user?.uid);
     if (!user) {
-      console.log('useClientes - No user, skipping fetch');
       setLoading(false);
       return;
     }

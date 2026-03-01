@@ -62,6 +62,9 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
     if (!formData.calle.trim()) {
       newErrors.calle = 'La calle es requerida';
     }
+    if (!formData.numeroExterior.trim()) {
+      newErrors.numeroExterior = 'El número exterior es requerido';
+    }
     if (!formData.colonia.trim()) {
       newErrors.colonia = 'La colonia es requerida';
     }
@@ -101,7 +104,16 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
       setIsUploading(false);
     }
 
-    onSave(finalData);
+    onSave({
+      ...finalData,
+      calle: finalData.calle?.toUpperCase(),
+      numeroExterior: finalData.numeroExterior?.toUpperCase(),
+      numeroInterior: finalData.numeroInterior?.toUpperCase(),
+      colonia: finalData.colonia?.toUpperCase(),
+      ciudad: finalData.ciudad?.toUpperCase(),
+      codigoPostal: finalData.codigoPostal?.toUpperCase(),
+      pais: finalData.pais?.toUpperCase(),
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -322,16 +334,17 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="numeroExterior">Número exterior</label>
+                <label htmlFor="numeroExterior">Número exterior *</label>
                 <input
                   type="text"
                   id="numeroExterior"
                   name="numeroExterior"
                   value={formData.numeroExterior}
                   onChange={handleChange}
-                  className="input"
+                  className={`input ${errors.numeroExterior ? 'input--error' : ''}`}
                   placeholder="Ej: 123"
                 />
+                {errors.numeroExterior && <span className="form-error">{errors.numeroExterior}</span>}
               </div>
 
               <div className="form-group">

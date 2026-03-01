@@ -25,6 +25,7 @@ import {
   copyToClipboard,
   formatTelefono,
 } from '../utils/formatters';
+import { getCodigoPais } from '../data/codigosPais';
 import {
   getPedidoById,
   updatePedidoStatus,
@@ -429,7 +430,9 @@ const PedidoDetail = () => {
                   {clienteFavorito && <PiStarFill size={14} className="pedido-detail__fav-icon" />}
                 </div>
                 <span className="pedido-detail__phone">
-                  {formatTelefono(pedido.clienteTelefono)}
+                  {clienteData?.telefonoCodigoPais
+                    ? `${getCodigoPais(clienteData.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(pedido.clienteTelefono)}`
+                    : formatTelefono(pedido.clienteTelefono)}
                 </span>
               </div>
             </div>

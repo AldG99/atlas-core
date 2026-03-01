@@ -226,7 +226,10 @@ const ClienteDetail = () => {
   const handleWhatsApp = () => {
     if (!cliente) return;
     const cleanPhone = cliente.telefono.replace(/\D/g, '');
-    window.open(`https://wa.me/${cleanPhone}`, '_blank');
+    const dialCode = cliente.telefonoCodigoPais
+      ? (getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? '').replace('+', '')
+      : '';
+    window.open(`https://wa.me/${dialCode}${cleanPhone}`, '_blank');
   };
 
   const handleDelete = async () => {

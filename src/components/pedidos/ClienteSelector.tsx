@@ -3,6 +3,7 @@ import { PiStarFill } from 'react-icons/pi';
 import { useClientes } from '../../hooks/useClientes';
 import { useToast } from '../../hooks/useToast';
 import { formatTelefono } from '../../utils/formatters';
+import { getCodigoPais } from '../../data/codigosPais';
 import type { Cliente } from '../../types/Cliente';
 import './ClienteSelector.scss';
 
@@ -106,7 +107,9 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
               {selectedCliente.nombre} {selectedCliente.apellido}
             </span>
             <span className="cliente-selector__client-phone">
-              {formatTelefono(selectedCliente.telefono)}
+              {selectedCliente.telefonoCodigoPais
+                ? `${getCodigoPais(selectedCliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(selectedCliente.telefono)}`
+                : formatTelefono(selectedCliente.telefono)}
             </span>
             {selectedCliente.calle && (
               <span className="cliente-selector__client-address">
@@ -182,7 +185,9 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
                     {cliente.favorito && <PiStarFill size={12} className="cliente-selector__dropdown-fav" />}
                   </span>
                   <span className="cliente-selector__dropdown-phone">
-                    {cliente.telefono}
+                    {cliente.telefonoCodigoPais
+                      ? `${getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefono)}`
+                      : formatTelefono(cliente.telefono)}
                   </span>
                 </div>
               </button>
