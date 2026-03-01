@@ -853,7 +853,7 @@ const PedidoDetail = () => {
           onClick={() => setSelectedProducto(null)}
         >
           <div
-            className="pedido-detail__modal"
+            className="pedido-detail__modal pedido-detail__modal--product"
             onClick={e => e.stopPropagation()}
           >
             <div className="pedido-detail__modal-header">
@@ -879,51 +879,81 @@ const PedidoDetail = () => {
                   </div>
                 )}
               </div>
-              <div className="pedido-detail__modal-section">
-                <h4>Información</h4>
-                <div className="pedido-detail__modal-info">
-                  <div className="pedido-detail__modal-row">
-                    <span className="pedido-detail__modal-label">Clave</span>
-                    <span className="pedido-detail__modal-value">
-                      {selectedProducto.clave}
-                    </span>
-                  </div>
-                  <div className="pedido-detail__modal-row">
-                    <span className="pedido-detail__modal-label">Nombre</span>
-                    <span className="pedido-detail__modal-value">
-                      {selectedProducto.nombre}
-                    </span>
-                  </div>
-                  <div className="pedido-detail__modal-row">
-                    <span className="pedido-detail__modal-label">Precio</span>
-                    {isDescuentoActivo(selectedProducto) ? (
-                      <span className="pedido-detail__modal-price-discount">
-                        <span className="pedido-detail__modal-price-badge">
-                          -{selectedProducto.descuento}%
+              <div className="pedido-detail__modal-right">
+                <div className="pedido-detail__modal-section">
+                  <h4>Información</h4>
+                  <div className="pedido-detail__modal-info">
+                    <div className="pedido-detail__modal-row">
+                      <span className="pedido-detail__modal-label">Clave</span>
+                      <span className="pedido-detail__modal-value">
+                        {selectedProducto.clave}
+                      </span>
+                    </div>
+                    <div className="pedido-detail__modal-row">
+                      <span className="pedido-detail__modal-label">Nombre</span>
+                      <span className="pedido-detail__modal-value">
+                        {selectedProducto.nombre}
+                      </span>
+                    </div>
+                    <div className="pedido-detail__modal-row">
+                      <span className="pedido-detail__modal-label">Precio</span>
+                      {isDescuentoActivo(selectedProducto) ? (
+                        <span className="pedido-detail__modal-price-discount">
+                          <span className="pedido-detail__modal-price-badge">
+                            -{selectedProducto.descuento}%
+                          </span>
+                          <span className="pedido-detail__modal-price-original">
+                            {formatCurrency(selectedProducto.precio)}
+                          </span>
+                          <span className="pedido-detail__modal-value">
+                            {formatCurrency(
+                              getPrecioConDescuento(
+                                selectedProducto.precio,
+                                selectedProducto.descuento!
+                              )
+                            )}
+                          </span>
                         </span>
-                        <span className="pedido-detail__modal-price-original">
+                      ) : (
+                        <span className="pedido-detail__modal-value">
                           {formatCurrency(selectedProducto.precio)}
                         </span>
-                        <span className="pedido-detail__modal-value">
-                          {formatCurrency(
-                            getPrecioConDescuento(
-                              selectedProducto.precio,
-                              selectedProducto.descuento!
-                            )
+                      )}
+                    </div>
+                    {(() => {
+                      const ets = getEtiquetasForClave(selectedProducto.clave);
+                      return (
+                        <div className="pedido-detail__modal-row">
+                          <span className="pedido-detail__modal-label">Etiquetas</span>
+                          {ets.length === 0 ? (
+                            <span className="pedido-detail__modal-empty">Sin etiquetas</span>
+                          ) : (
+                            <div className="pedido-detail__etiquetas">
+                              {ets.map(et => {
+                                const iconData = ETIQUETA_ICONS[et.icono];
+                                const Icon = iconData?.icon;
+                                return (
+                                  <span
+                                    key={et.id}
+                                    className="pedido-detail__etiqueta"
+                                    style={{ backgroundColor: et.color }}
+                                    title={et.nombre}
+                                  >
+                                    {Icon && <Icon size={12} />}
+                                  </span>
+                                );
+                              })}
+                            </div>
                           )}
-                        </span>
-                      </span>
-                    ) : (
-                      <span className="pedido-detail__modal-value">
-                        {formatCurrency(selectedProducto.precio)}
-                      </span>
-                    )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
-              </div>
-              <div className="pedido-detail__modal-section">
-                <h4>Descripción</h4>
-                <p>{selectedProducto.descripcion || 'Sin descripción'}</p>
+                <div className="pedido-detail__modal-section">
+                  <h4>Descripción</h4>
+                  <p>{selectedProducto.descripcion || 'Sin descripción'}</p>
+                </div>
               </div>
             </div>
             <div className="pedido-detail__modal-footer">

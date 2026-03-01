@@ -281,10 +281,10 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                 className="input"
                 placeholder="Describe el producto..."
                 rows={3}
-                maxLength={500}
+                maxLength={240}
                 style={{ resize: 'none' }}
               />
-              <span className="form-char-count">{(formData.descripcion || '').length}/500</span>
+              <span className="form-char-count">{(formData.descripcion || '').length}/240</span>
             </div>
           </div>
 

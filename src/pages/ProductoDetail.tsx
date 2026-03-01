@@ -464,10 +464,10 @@ const ProductoDetail = () => {
                     onChange={(e) => updateField('descripcion', e.target.value)}
                     placeholder="Descripción del producto..."
                     className="producto-detail__textarea"
-                    maxLength={500}
+                    maxLength={240}
                   />
                   <span className="producto-detail__char-count">
-                    {(editData?.descripcion || '').length}/500
+                    {(editData?.descripcion || '').length}/240
                   </span>
                 </>
               ) : (
