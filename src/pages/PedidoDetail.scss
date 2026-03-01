@@ -327,8 +327,14 @@ $bottombar-height: 64px;
 
   &__header-right {
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  &__date-status-row {
+    display: flex;
+    align-items: center;
     gap: $spacing-sm;
   }
 
@@ -345,6 +351,11 @@ $bottombar-height: 64px;
   &__date {
     font-size: $font-size-sm;
     color: $color-gray-500;
+
+    &--entrega {
+      color: #16a34a;
+      font-weight: 500;
+    }
   }
 
   &__section {
@@ -692,6 +703,13 @@ $bottombar-height: 64px;
   }
 
 
+  &__fecha-entrega {
+    font-size: $font-size-sm;
+    color: #16a34a;
+    font-weight: 500;
+    margin-left: auto;
+  }
+
   &__btn-entregado {
     display: inline-flex;
     align-items: center;
@@ -724,6 +742,12 @@ $bottombar-height: 64px;
         transform: translateY(0);
         box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
       }
+    }
+
+    &--done {
+      background-color: rgba(22, 163, 74, 0.12);
+      color: #16a34a;
+      cursor: default;
     }
   }
 

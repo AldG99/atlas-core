@@ -60,7 +60,7 @@ export const usePedidos = () => {
       setLoading(true);
       setError(null);
       const data = await getPedidosByStatus(user.uid, estado);
-      setPedidos(data);
+      setPedidos(data.filter((p) => !p.archivado));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar pedidos');
     } finally {

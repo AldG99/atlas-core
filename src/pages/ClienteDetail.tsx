@@ -519,6 +519,14 @@ const ClienteDetail = () => {
                               <td colSpan={6}>
                                 <div className="cliente-detail__pedidos-date-row-inner">
                                   <span className="cliente-detail__pedidos-date-main">{formatPedidoDate(pedido.fechaCreacion)}</span>
+                                  {pedido.fechaEntrega && (
+                                    <PiArrowRightBold size={12} className="cliente-detail__pedidos-date-arrow" />
+                                  )}
+                                  {pedido.fechaEntrega && (
+                                    <span className="cliente-detail__pedidos-date-entrega">
+                                      {formatPedidoDate(pedido.fechaEntrega)}
+                                    </span>
+                                  )}
                                   <button
                                     className="cliente-detail__pedidos-detail-btn"
                                     onClick={() => navigate(ROUTES.DETAIL_PEDIDO.replace(':id', pedido.id), { state: { from: `/cliente/${id}` } })}

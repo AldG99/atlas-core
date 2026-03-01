@@ -361,7 +361,7 @@ const PedidoDetail = () => {
             >
               <PiTrashBold size={20} />
             </button>
-            {!pedido.archivado && (
+            {(!pedido.archivado || pedido.estado === 'entregado') && (
               <>
                 <div className="pedido-detail__top-bar-abono">
                   <select
@@ -433,15 +433,17 @@ const PedidoDetail = () => {
               </div>
             </div>
             <div className="pedido-detail__header-right">
-              <span className="pedido-detail__date">
-                {formatDate(pedido.fechaCreacion)}
-              </span>
-              <span
-                className="pedido-detail__status"
-                style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-              >
-                {PEDIDO_STATUS[pedido.estado]}
-              </span>
+              <div className="pedido-detail__date-status-row">
+                <span className="pedido-detail__date">
+                  {formatDate(pedido.fechaCreacion)}
+                </span>
+                <span
+                  className="pedido-detail__status"
+                  style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                >
+                  {PEDIDO_STATUS[pedido.estado]}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -769,7 +771,7 @@ const PedidoDetail = () => {
         </div>
 
         {/* Fixed Bottom Bar */}
-        {!pedido.archivado && (
+        {(!pedido.archivado || pedido.estado === 'entregado') && (
           <div className="pedido-detail__bottom-bar">
             <div className="pedido-detail__bottom-bar-inner">
               <div className="pedido-detail__bottom-bar-info">
@@ -782,19 +784,24 @@ const PedidoDetail = () => {
                   {restante <= 0 ? 'Liquidado' : formatCurrency(restante)}
                 </span>
               </div>
-              {pedido.estado !== 'entregado' && (
-                <button
-                  onClick={() => handleChangeStatus('entregado')}
-                  className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''}`}
-                  disabled={!puedeMarcarEntregado}
-                  title={
-                    !puedeMarcarEntregado
+              <button
+                onClick={() => handleChangeStatus('entregado')}
+                className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''} ${pedido.estado === 'entregado' ? 'pedido-detail__btn-entregado--done' : ''}`}
+                disabled={!puedeMarcarEntregado}
+                title={
+                  pedido.estado === 'entregado'
+                    ? 'Pedido ya entregado'
+                    : !puedeMarcarEntregado
                       ? 'Solo disponible cuando el pedido está en preparación'
                       : ''
-                  }
-                >
-                  Entregado
-                </button>
+                }
+              >
+                Entregado
+              </button>
+              {pedido.fechaEntrega && (
+                <span className="pedido-detail__fecha-entrega">
+                  {formatDate(pedido.fechaEntrega)}
+                </span>
               )}
             </div>
           </div>

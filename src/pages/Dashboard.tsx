@@ -7,7 +7,7 @@ import { useToast } from '../hooks/useToast';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ROUTES } from '../config/routes';
-import { autoArchiveOldDelivered } from '../services/pedidoService';
+import { archiveAllDelivered } from '../services/pedidoService';
 import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
 import PedidosTable from '../components/pedidos/PedidosTable';
@@ -48,11 +48,11 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
 
-  // Auto-archivar pedidos entregados con más de 7 días
+  // Auto-archivar pedidos entregados hace más de 48 horas
   useEffect(() => {
     if (!user || loading) return;
 
-    autoArchiveOldDelivered(user.uid).then((count) => {
+    archiveAllDelivered(user.uid).then((count) => {
       if (count > 0) {
         showToast(`${count} pedido${count > 1 ? 's' : ''} archivado${count > 1 ? 's' : ''} automáticamente`, 'success');
         fetchPedidos();

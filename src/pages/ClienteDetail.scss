@@ -714,6 +714,18 @@ $topbar-height: 52px;
     white-space: nowrap;
   }
 
+  &__pedidos-date-arrow {
+    color: #16a34a;
+    flex-shrink: 0;
+  }
+
+  &__pedidos-date-entrega {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: #16a34a;
+    white-space: nowrap;
+  }
+
   &__pedidos-detail-btn {
     display: flex;
     align-items: center;
