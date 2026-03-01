@@ -45,7 +45,9 @@ const ClienteDetail = () => {
   const [saving, setSaving] = useState(false);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [pedidosLoading, setPedidosLoading] = useState(false);
+  const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const tableBodyRef = useRef<HTMLDivElement>(null);
 
   // Filtros
   const [busqueda, setBusqueda] = useState('');
@@ -149,6 +151,43 @@ const ClienteDetail = () => {
     });
     return map;
   }, [pedidos]);
+
+  useEffect(() => {
+    if (!pedidosFiltrados.length) return;
+    const totalRows = pedidosFiltrados.reduce((sum, p) => sum + p.productos.length + 2, 0);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (['input', 'select', 'textarea'].includes(tag)) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, totalRows - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
+      } else if (e.key === 'Enter' && focusedRow !== null) {
+        e.preventDefault();
+        let ri = 0;
+        for (const pedido of pedidosFiltrados) {
+          if (focusedRow === ri) {
+            navigate(ROUTES.DETAIL_PEDIDO.replace(':id', pedido.id), { state: { from: `/cliente/${id}` } });
+            break;
+          }
+          ri += pedido.productos.length + 2;
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [pedidosFiltrados, focusedRow, navigate, id]);
+
+  useEffect(() => {
+    if (focusedRow === null || !tableBodyRef.current) return;
+    const rows = tableBodyRef.current.querySelectorAll('tr');
+    const row = rows[focusedRow];
+    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focusedRow]);
 
   const getEtiquetasForClave = (clave?: string): Etiqueta[] => {
     if (!clave) return [];
@@ -491,7 +530,7 @@ const ClienteDetail = () => {
                       </thead>
                     </table>
                   </div>
-                  <div className="cliente-detail__pedidos-table-body">
+                  <div ref={tableBodyRef} className="cliente-detail__pedidos-table-body">
                     <table className="cliente-detail__pedidos-table">
                       <colgroup>
                         <col style={{ width: '10%' }} />
@@ -512,12 +551,24 @@ const ClienteDetail = () => {
                               {pedidos.length === 0 ? 'Este cliente no tiene pedidos' : 'No se encontraron pedidos con los filtros aplicados'}
                             </td>
                           </tr>
-                        ) : pedidosFiltrados.map((pedido) => (
+                        ) : (() => {
+                          let rowIdx = 0;
+                          return pedidosFiltrados.map((pedido) => {
+                            const dateIdx = rowIdx++;
+                            const productIndices = pedido.productos.map(() => rowIdx++);
+                            const totalIdx = rowIdx++;
+                            return (
                           <React.Fragment key={pedido.id}>
                             {/* Fila de fecha del pedido */}
-                            <tr className="cliente-detail__pedidos-date-row">
+                            <tr
+                              className={`cliente-detail__pedidos-date-row${focusedRow === dateIdx ? ' cliente-detail__pedidos-date-row--focused' : ''}`}
+                              onMouseEnter={() => setFocusedRow(dateIdx)}
+                            >
                               <td colSpan={6}>
                                 <div className="cliente-detail__pedidos-date-row-inner">
+                                  {pedido.folio && (
+                                    <span className="cliente-detail__pedidos-folio">{pedido.folio}</span>
+                                  )}
                                   <span className="cliente-detail__pedidos-date-main">{formatPedidoDate(pedido.fechaCreacion)}</span>
                                   {pedido.fechaEntrega && (
                                     <PiArrowRightBold size={12} className="cliente-detail__pedidos-date-arrow" />
@@ -539,7 +590,10 @@ const ClienteDetail = () => {
                             </tr>
                             {/* Filas de productos */}
                             {pedido.productos.map((p, i) => (
-                              <tr key={i} className="cliente-detail__pedidos-product-row">
+                              <tr key={i}
+                                className={`cliente-detail__pedidos-product-row${focusedRow === productIndices[i] ? ' cliente-detail__pedidos-product-row--focused' : ''}`}
+                                onMouseEnter={() => setFocusedRow(productIndices[i])}
+                              >
                                 <td>
                                   {p.clave
                                     ? <span className="cliente-detail__clave">{p.clave}</span>
@@ -561,19 +615,22 @@ const ClienteDetail = () => {
                                   </div>
                                 </td>
                                 <td>{formatCurrency(p.subtotal)}</td>
-                                {i === 0 ? (
-                                  <td rowSpan={pedido.productos.length} />
-                                ) : null}
+                                <td />
                               </tr>
                             ))}
                             {/* Fila de total */}
-                            <tr className="cliente-detail__pedidos-total-row">
+                            <tr
+                              className={`cliente-detail__pedidos-total-row${focusedRow === totalIdx ? ' cliente-detail__pedidos-total-row--focused' : ''}`}
+                              onMouseEnter={() => setFocusedRow(totalIdx)}
+                            >
                               <td colSpan={4} className="cliente-detail__pedidos-total-label">Total</td>
                               <td className="cliente-detail__pedidos-total-value">{formatCurrency(pedido.total)}</td>
                               <td className="cliente-detail__pedidos-acumulado-value">{formatCurrency(acumuladoMap.get(pedido.id) ?? 0)}</td>
                             </tr>
                           </React.Fragment>
-                        ))}
+                            );
+                          });
+                        })()}
                       </tbody>
                     </table>
                   </div>

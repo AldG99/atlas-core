@@ -256,7 +256,7 @@ $bottombar-height: 64px;
   &__header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     padding: $spacing-sm $spacing-md;
     border-bottom: 1px solid $color-gray-100;
   }
@@ -329,7 +329,7 @@ $bottombar-height: 64px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 4px;
+    gap: 2px;
   }
 
   &__date-status-row {
@@ -348,6 +348,14 @@ $bottombar-height: 64px;
     white-space: nowrap;
   }
 
+  &__status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
   &__date {
     font-size: $font-size-sm;
     color: $color-gray-500;
@@ -356,6 +364,19 @@ $bottombar-height: 64px;
       color: #16a34a;
       font-weight: 500;
     }
+  }
+
+  &__date-arrow {
+    color: #16a34a;
+    flex-shrink: 0;
+  }
+
+  &__folio {
+    font-size: $font-size-sm;
+    font-family: monospace;
+    font-weight: 600;
+    color: $color-gray-400;
+    letter-spacing: 0.5px;
   }
 
   &__section {

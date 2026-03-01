@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   PiArrowLeftBold,
+  PiArrowRightBold,
   PiWhatsappLogoBold,
   PiCopyBold,
   PiCheckBold,
@@ -433,16 +434,26 @@ const PedidoDetail = () => {
               </div>
             </div>
             <div className="pedido-detail__header-right">
+              {pedido.folio && (
+                <span className="pedido-detail__folio">{pedido.folio}</span>
+              )}
               <div className="pedido-detail__date-status-row">
                 <span className="pedido-detail__date">
                   {formatDate(pedido.fechaCreacion)}
                 </span>
+                {pedido.fechaEntrega && (
+                  <>
+                    <PiArrowRightBold size={12} className="pedido-detail__date-arrow" />
+                    <span className="pedido-detail__date pedido-detail__date--entrega">
+                      {formatDate(pedido.fechaEntrega)}
+                    </span>
+                  </>
+                )}
                 <span
-                  className="pedido-detail__status"
+                  className="pedido-detail__status-dot"
                   style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-                >
-                  {PEDIDO_STATUS[pedido.estado]}
-                </span>
+                  title={PEDIDO_STATUS[pedido.estado]}
+                />
               </div>
             </div>
           </div>
@@ -798,11 +809,6 @@ const PedidoDetail = () => {
               >
                 Entregado
               </button>
-              {pedido.fechaEntrega && (
-                <span className="pedido-detail__fecha-entrega">
-                  {formatDate(pedido.fechaEntrega)}
-                </span>
-              )}
             </div>
           </div>
         )}

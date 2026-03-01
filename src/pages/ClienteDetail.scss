@@ -697,14 +697,24 @@ $topbar-height: 52px;
     > td {
       padding: 0 !important;
     }
+
+    &--focused {
+      background-color: rgba($color-primary, 0.06);
+
+      .cliente-detail__pedidos-detail-btn {
+        border-color: $color-primary;
+        color: $color-primary;
+      }
+    }
   }
 
   &__pedidos-date-row-inner {
+    position: relative;
     display: flex;
     align-items: center;
     gap: $spacing-md;
     padding: $spacing-xs $spacing-sm;
-    padding-left: $spacing-md;
+    padding-left: calc(18% + #{$spacing-sm});
   }
 
   &__pedidos-date-main {
@@ -712,6 +722,16 @@ $topbar-height: 52px;
     font-size: $font-size-sm;
     color: $color-gray-600;
     white-space: nowrap;
+  }
+
+  &__pedidos-folio {
+    position: absolute;
+    left: $spacing-md;
+    font-size: $font-size-sm;
+    font-family: monospace;
+    font-weight: 600;
+    color: $color-gray-400;
+    letter-spacing: 0.3px;
   }
 
   &__pedidos-date-arrow {
@@ -759,6 +779,10 @@ $topbar-height: 52px;
 
   &__pedidos-product-row {
     border-bottom: 1px solid $color-gray-100;
+
+    &--focused {
+      background-color: rgba($color-primary, 0.06);
+    }
   }
 
   &__pedidos-etiquetas {
@@ -780,6 +804,10 @@ $topbar-height: 52px;
   &__pedidos-total-row {
     background-color: $color-white;
     box-shadow: inset 0 1px 0 $color-gray-200;
+
+    &--focused {
+      background-color: rgba($color-primary, 0.06);
+    }
 
     td {
       border-bottom: none;
