@@ -20,7 +20,9 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
   const [showForm, setShowForm] = useState(false);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const filteredClientes = clientes
     .filter(
@@ -38,12 +40,44 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     setShowDropdown(value.length > 0);
+    setFocusedIndex(-1);
   };
 
   const handleSelectCliente = (cliente: Cliente) => {
     onSelect(cliente);
     setSearchTerm('');
     setShowDropdown(false);
+    setFocusedIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showDropdown || filteredClientes.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setFocusedIndex(prev => {
+        const next = Math.min(prev + 1, filteredClientes.length - 1);
+        scrollItemIntoView(next);
+        return next;
+      });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setFocusedIndex(prev => {
+        const next = Math.max(prev - 1, 0);
+        scrollItemIntoView(next);
+        return next;
+      });
+    } else if (e.key === 'Enter' && focusedIndex >= 0) {
+      e.preventDefault();
+      handleSelectCliente(filteredClientes[focusedIndex]);
+    } else if (e.key === 'Escape') {
+      setShowDropdown(false);
+      setFocusedIndex(-1);
+    }
+  };
+
+  const scrollItemIntoView = (index: number) => {
+    const items = dropdownRef.current?.querySelectorAll<HTMLElement>('.cliente-selector__dropdown-item');
+    items?.[index]?.scrollIntoView({ block: 'nearest' });
   };
 
   const handleAddNew = async () => {
@@ -105,22 +139,13 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
           <div className="cliente-selector__client-info">
             <span className="cliente-selector__client-name">
               {selectedCliente.nombre} {selectedCliente.apellido}
+              {selectedCliente.favorito && <PiStarFill size={12} className="cliente-selector__dropdown-fav" />}
             </span>
             <span className="cliente-selector__client-phone">
               {selectedCliente.telefonoCodigoPais
                 ? `${getCodigoPais(selectedCliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(selectedCliente.telefono)}`
                 : formatTelefono(selectedCliente.telefono)}
             </span>
-            {selectedCliente.calle && (
-              <span className="cliente-selector__client-address">
-                {selectedCliente.calle} {selectedCliente.numeroExterior}
-              </span>
-            )}
-            {selectedCliente.pais && (
-              <span className="cliente-selector__client-address">
-                {selectedCliente.pais}
-              </span>
-            )}
           </div>
           <button
             type="button"
@@ -146,6 +171,7 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             onFocus={() => searchTerm && setShowDropdown(true)}
+            onKeyDown={handleKeyDown}
             className="input cliente-selector__search"
           />
           {loading && <span className="cliente-selector__spinner" />}
@@ -161,14 +187,15 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
       </div>
 
       {showDropdown && (
-        <div className="cliente-selector__dropdown">
+        <div className="cliente-selector__dropdown" ref={dropdownRef}>
           {filteredClientes.length > 0 ? (
-            filteredClientes.map((cliente) => (
+            filteredClientes.map((cliente, index) => (
               <button
                 key={cliente.id}
                 type="button"
-                className="cliente-selector__dropdown-item"
+                className={`cliente-selector__dropdown-item${focusedIndex === index ? ' cliente-selector__dropdown-item--focused' : ''}`}
                 onClick={() => handleSelectCliente(cliente)}
+                onMouseEnter={() => setFocusedIndex(index)}
               >
                 <div className="cliente-selector__dropdown-avatar">
                   {cliente.fotoPerfil ? (

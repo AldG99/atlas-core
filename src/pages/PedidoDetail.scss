@@ -511,6 +511,7 @@ $bottombar-height: 64px;
 
     tbody {
       tr {
+        height: 36px;
         border-bottom: 1px solid $color-gray-100;
 
         &:last-child {
@@ -819,8 +820,8 @@ $bottombar-height: 64px;
       }
 
       .pedido-detail__modal-image {
-        width: 320px;
-        height: 320px;
+        width: 340px;
+        height: 340px;
         aspect-ratio: unset;
         flex-shrink: 0;
         border-right: 1px solid $color-gray-100;
@@ -983,6 +984,23 @@ $bottombar-height: 64px;
     font-size: $font-size-sm;
     color: $color-gray-400;
     font-style: italic;
+  }
+
+  &__modal-stock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    background-color: rgba($color-success, 0.12);
+    color: $color-success;
+
+    &--empty {
+      background-color: $color-gray-100;
+      color: $color-gray-500;
+    }
   }
 
   &__modal-value {

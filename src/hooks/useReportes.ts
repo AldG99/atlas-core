@@ -1,17 +1,22 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { PeriodType, ReporteData } from '../types/Reporte';
 import { usePedidos } from './usePedidos';
+import { useProductos } from './useProductos';
 import {
   getDateRange,
+  getYearAgoDateRange,
   filterPedidosByDate,
   calculateKPIs,
   calculateStatusBreakdown,
   calculateTopClientes,
+  calculateTopProductos,
+  calculateInventarioStats,
   calculateChartData
 } from '../utils/reportCalculations';
 
 export const useReportes = () => {
   const { pedidos: allPedidos, loading, error, fetchPedidos } = usePedidos();
+  const { productos } = useProductos();
   const [period, setPeriod] = useState<PeriodType>('semana');
 
   const dateRange = useMemo(() => {
@@ -22,14 +27,22 @@ export const useReportes = () => {
     return filterPedidosByDate(allPedidos, dateRange);
   }, [allPedidos, dateRange]);
 
+  const yearAgoPedidos = useMemo(() => {
+    const yearAgoRange = getYearAgoDateRange(dateRange);
+    return filterPedidosByDate(allPedidos, yearAgoRange);
+  }, [allPedidos, dateRange]);
+
   const reporteData: ReporteData = useMemo(() => {
     return {
       kpis: calculateKPIs(filteredPedidos),
+      comparisonKPIs: calculateKPIs(yearAgoPedidos),
       statusBreakdown: calculateStatusBreakdown(filteredPedidos),
       topClientes: calculateTopClientes(filteredPedidos),
-      chartData: calculateChartData(filteredPedidos, period, dateRange)
+      topProductos: calculateTopProductos(filteredPedidos),
+      chartData: calculateChartData(filteredPedidos, period, dateRange),
+      inventario: calculateInventarioStats(productos)
     };
-  }, [filteredPedidos, period, dateRange]);
+  }, [filteredPedidos, yearAgoPedidos, period, dateRange, productos]);
 
   useEffect(() => {
     fetchPedidos();

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { PiEyeBold, PiXBold, PiPackageBold, PiCalendarBold } from 'react-icons/pi';
+import { PiEyeBold, PiXBold, PiPackageBold, PiCalendarBold, PiWarehouseBold } from 'react-icons/pi';
 import { useProductos } from '../../hooks/useProductos';
 import { useEtiquetas } from '../../hooks/useEtiquetas';
 import { useToast } from '../../hooks/useToast';
@@ -40,7 +40,11 @@ const ProductoSelector = ({
   const [nombre, setNombre] = useState('');
   const [clave, setClave] = useState('');
   const [precio, setPrecio] = useState('');
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const tableScrollRef = useRef<HTMLDivElement>(null);
 
   const isDescuentoActivo = (p: Producto): boolean => {
     if (!p.descuento || p.descuento <= 0) return false;
@@ -71,9 +75,45 @@ const ProductoSelector = ({
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     setShowDropdown(value.length > 0);
+    setFocusedIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showDropdown || filteredProductos.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setFocusedIndex(prev => {
+        const next = Math.min(prev + 1, filteredProductos.length - 1);
+        dropdownRef.current?.querySelectorAll<HTMLElement>('.producto-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
+        return next;
+      });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setFocusedIndex(prev => {
+        const next = Math.max(prev - 1, 0);
+        dropdownRef.current?.querySelectorAll<HTMLElement>('.producto-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
+        return next;
+      });
+    } else if (e.key === 'Enter' && focusedIndex >= 0) {
+      e.preventDefault();
+      handleSelectProducto(filteredProductos[focusedIndex]);
+    } else if (e.key === 'Escape') {
+      setShowDropdown(false);
+      setFocusedIndex(-1);
+    }
   };
 
   const handleSelectProducto = (producto: Producto) => {
+    if (producto.controlStock) {
+      const itemActual = items.find(i => i.producto.id === producto.id);
+      const cantidadActual = itemActual?.cantidad ?? 0;
+      if (cantidadActual >= (producto.stock ?? 0)) {
+        showToast('No hay más existencias de este producto', 'warning');
+        setSearchTerm('');
+        setShowDropdown(false);
+        return;
+      }
+    }
     onAddItem(producto);
     setSearchTerm('');
     setShowDropdown(false);
@@ -102,6 +142,44 @@ const ProductoSelector = ({
   };
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (['input', 'select', 'textarea'].includes(tag)) return;
+      if (items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = focusedRow === null ? 0 : Math.min(focusedRow + 1, items.length - 1);
+        setFocusedRow(next);
+        if (selectedProducto) setSelectedProducto(items[next].producto);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const next = focusedRow === null ? 0 : Math.max(focusedRow - 1, 0);
+        setFocusedRow(next);
+        if (selectedProducto) setSelectedProducto(items[next].producto);
+      } else if (e.key === 'Enter' && focusedRow !== null) {
+        e.preventDefault();
+        if (selectedProducto) {
+          setSelectedProducto(null);
+        } else {
+          setSelectedProducto(items[focusedRow].producto);
+        }
+      } else if (e.key === 'Escape' && selectedProducto) {
+        setSelectedProducto(null);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [items, focusedRow, selectedProducto]);
+
+  useEffect(() => {
+    if (focusedRow === null || !tableScrollRef.current) return;
+    const rows = tableScrollRef.current.querySelectorAll('tr');
+    const row = rows[focusedRow];
+    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [focusedRow]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setShowDropdown(false);
@@ -127,26 +205,34 @@ const ProductoSelector = ({
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             onFocus={() => searchTerm && setShowDropdown(true)}
+            onKeyDown={handleKeyDown}
             className="input producto-selector__search"
             disabled={disabled}
           />
           {loading && <span className="producto-selector__spinner" />}
 
           {showDropdown && (
-            <div className="producto-selector__dropdown">
+            <div className="producto-selector__dropdown" ref={dropdownRef}>
               {filteredProductos.length > 0 ? (
-                filteredProductos.map((producto) => (
+                filteredProductos.map((producto, index) => (
                   <button
                     key={producto.id}
                     type="button"
-                    className="producto-selector__dropdown-item"
+                    className={`producto-selector__dropdown-item${focusedIndex === index ? ' producto-selector__dropdown-item--focused' : ''}`}
                     onClick={() => handleSelectProducto(producto)}
+                    onMouseEnter={() => setFocusedIndex(index)}
                   >
                     <span className={`producto-selector__dropdown-clave${producto.clave?.toLowerCase().includes(searchTerm.toLowerCase()) ? ' producto-selector__dropdown-clave--match' : ''}`}>
                       {producto.clave || ''}
                     </span>
                     <span className="producto-selector__dropdown-name">
                       {producto.nombre}
+                    </span>
+                    <span className={`producto-selector__dropdown-stock ${!producto.controlStock ? 'producto-selector__dropdown-stock--hidden' : (producto.stock ?? 0) === 0 ? 'producto-selector__dropdown-stock--empty' : ''}`}>
+                      {producto.controlStock && <PiWarehouseBold size={12} />}
+                      {producto.controlStock
+                        ? (producto.stock ?? 0) === 0 ? 'Sin existencias' : `${producto.stock} en almacén`
+                        : ''}
                     </span>
                     <div className="producto-selector__dropdown-etiquetas">
                       {(producto.etiquetas || []).map(etId => {
@@ -243,39 +329,105 @@ const ProductoSelector = ({
       )}
 
       <div className="producto-selector__items">
-          <div className="producto-selector__table-scroll">
-          <table className="producto-selector__table">
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Subtotal</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.length === 0 && (
+        <div className="producto-selector__table-wrapper">
+          {/* Header fijo */}
+          <div className="producto-selector__table-head">
+            <table className="producto-selector__table">
+              <colgroup>
+                <col style={{ width: '8%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '18%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '13%' }} />
+                <col style={{ width: '8%' }} />
+              </colgroup>
+              <thead>
                 <tr>
-                  <td colSpan={5} className="producto-selector__empty-row">
-                    No hay productos agregados. Busca y selecciona productos para agregarlos al pedido.
-                  </td>
+                  <th>Clave</th>
+                  <th>Cant.</th>
+                  <th>Producto</th>
+                  <th>Etiquetas</th>
+                  <th>Stock</th>
+                  <th>Precio</th>
+                  <th>Subtotal</th>
+                  <th>Acciones</th>
+                  <th></th>
                 </tr>
-              )}
-              {items.map((item) => (
-                <tr key={item.producto.id}>
-                  <td className="producto-selector__table-name">
-                    {item.producto.clave && (
-                      <span className="producto-selector__table-clave">
-                        {item.producto.clave}
+              </thead>
+            </table>
+          </div>
+          {/* Cuerpo scrolleable */}
+          <div className="producto-selector__table-scroll" ref={tableScrollRef}>
+            <table className="producto-selector__table">
+              <colgroup>
+                <col style={{ width: '8%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '18%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '13%' }} />
+                <col style={{ width: '8%' }} />
+              </colgroup>
+              <tbody>
+                {items.length === 0 && (
+                  <tr>
+                    <td colSpan={9} className="producto-selector__empty-row">
+                      No hay productos agregados. Busca y selecciona productos para agregarlos al pedido.
+                    </td>
+                  </tr>
+                )}
+                {items.map((item, index) => (
+                  <tr
+                    key={item.producto.id}
+                    className={focusedRow === index ? 'producto-selector__product-row--focused' : undefined}
+                    onClick={() => setFocusedRow(index)}
+                  >
+                    <td>
+                      {item.producto.clave && (
+                        <span className="producto-selector__table-clave">
+                          {item.producto.clave}
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <div className="producto-selector__cantidad">
+                        <button
+                          type="button"
+                          className="producto-selector__cantidad-btn"
+                          onClick={() =>
+                            onUpdateCantidad(item.producto.id, item.cantidad - 1)
+                          }
+                        >
+                          -
+                        </button>
+                        <span className="producto-selector__cantidad-value">
+                          {item.cantidad}
+                        </span>
+                        <button
+                          type="button"
+                          className="producto-selector__cantidad-btn"
+                          onClick={() =>
+                            onUpdateCantidad(item.producto.id, item.cantidad + 1)
+                          }
+                          disabled={item.producto.controlStock && item.cantidad >= (item.producto.stock ?? 0)}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="producto-selector__table-name-text">
+                        {item.producto.nombre}
                       </span>
-                    )}
-                    <span className="producto-selector__table-name-text">
-                      {item.producto.nombre}
-                    </span>
-                    {item.producto.etiquetas && item.producto.etiquetas.length > 0 && (
+                    </td>
+                    <td>
                       <div className="producto-selector__table-etiquetas">
-                        {item.producto.etiquetas.map(etId => {
+                        {(item.producto.etiquetas || []).map(etId => {
                           const et = todasEtiquetas.find(e => e.id === etId);
                           if (!et) return null;
                           const iconData = ETIQUETA_ICONS[et.icono];
@@ -292,49 +444,33 @@ const ProductoSelector = ({
                           );
                         })}
                       </div>
-                    )}
-                  </td>
-                  <td>
-                    {isDescuentoActivo(item.producto) ? (
-                      <div className="producto-selector__table-price-discount">
-                        <span className="producto-selector__table-price-badge">-{item.producto.descuento}%</span>
-                        <span className="producto-selector__table-price-original">${item.producto.precio.toFixed(2)}</span>
-                        <span>${getEffectivePrice(item.producto).toFixed(2)}</span>
-                      </div>
-                    ) : (
-                      <span>${item.producto.precio.toFixed(2)}</span>
-                    )}
-                  </td>
-                  <td>
-                    <div className="producto-selector__cantidad">
-                      <button
-                        type="button"
-                        className="producto-selector__cantidad-btn"
-                        onClick={() =>
-                          onUpdateCantidad(item.producto.id, item.cantidad - 1)
-                        }
-                      >
-                        -
-                      </button>
-                      <span className="producto-selector__cantidad-value">
-                        {item.cantidad}
-                      </span>
-                      <button
-                        type="button"
-                        className="producto-selector__cantidad-btn"
-                        onClick={() =>
-                          onUpdateCantidad(item.producto.id, item.cantidad + 1)
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-                  </td>
-                  <td className="producto-selector__table-subtotal">
-                    ${item.subtotal.toFixed(2)}
-                  </td>
-                  <td>
-                    <div className="producto-selector__actions">
+                    </td>
+                    <td>
+                      {item.producto.controlStock ? (() => {
+                        const restante = (item.producto.stock ?? 0) - item.cantidad;
+                        return (
+                          <span className={`producto-selector__table-stock ${restante < 0 ? 'producto-selector__table-stock--over' : restante === 0 ? 'producto-selector__table-stock--zero' : ''}`}>
+                            <PiWarehouseBold size={11} />
+                            {restante < 0 ? `−${Math.abs(restante)} excedido` : restante === 0 ? 'Agotado' : `${restante} restante`}
+                          </span>
+                        );
+                      })() : <span className="producto-selector__table-stock-none">—</span>}
+                    </td>
+                    <td>
+                      {isDescuentoActivo(item.producto) ? (
+                        <div className="producto-selector__table-price-discount">
+                          <span className="producto-selector__table-price-badge">-{item.producto.descuento}%</span>
+                          <span className="producto-selector__table-price-original">${item.producto.precio.toFixed(2)}</span>
+                          <span>${getEffectivePrice(item.producto).toFixed(2)}</span>
+                        </div>
+                      ) : (
+                        <span>${item.producto.precio.toFixed(2)}</span>
+                      )}
+                    </td>
+                    <td className="producto-selector__table-subtotal">
+                      ${item.subtotal.toFixed(2)}
+                    </td>
+                    <td>
                       <button
                         type="button"
                         className="producto-selector__eye-btn"
@@ -343,6 +479,8 @@ const ProductoSelector = ({
                       >
                         <PiEyeBold size={18} />
                       </button>
+                    </td>
+                    <td>
                       <button
                         type="button"
                         className="producto-selector__remove-btn"
@@ -351,25 +489,47 @@ const ProductoSelector = ({
                       >
                         &times;
                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-
-          <div className="producto-selector__total">
-            <span className="producto-selector__total-label">Total:</span>
-            <span className="producto-selector__total-value">
-              ${total.toFixed(2)}
-            </span>
+          {/* Pie fijo (total) */}
+          <div className="producto-selector__table-foot">
+            <table className="producto-selector__table">
+              <colgroup>
+                <col style={{ width: '8%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '18%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '13%' }} />
+                <col style={{ width: '8%' }} />
+              </colgroup>
+              <tfoot className="producto-selector__tfoot">
+                <tr>
+                  <td className="producto-selector__total-label">Total</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td className="producto-selector__total-value">${total.toFixed(2)}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </div>
+      </div>
 
       {selectedProducto && (
         <div className="producto-selector__modal-overlay" onClick={() => setSelectedProducto(null)}>
-          <div className="producto-selector__modal" onClick={(e) => e.stopPropagation()}>
+          <div className="producto-selector__modal producto-selector__modal--product" onClick={(e) => e.stopPropagation()}>
             <div className="producto-selector__modal-header">
               <h3>Detalles del producto</h3>
               <button className="producto-selector__modal-close" onClick={() => setSelectedProducto(null)}>
@@ -387,48 +547,84 @@ const ProductoSelector = ({
                   </div>
                 )}
               </div>
-              <div className="producto-selector__modal-section">
-                <h4>Información</h4>
-                <div className="producto-selector__modal-info">
-                  {selectedProducto.clave && (
-                    <div className="producto-selector__modal-row">
-                      <span className="producto-selector__modal-label">Clave</span>
-                      <span className="producto-selector__modal-value">{selectedProducto.clave}</span>
-                    </div>
-                  )}
-                  <div className="producto-selector__modal-row">
-                    <span className="producto-selector__modal-label">Nombre</span>
-                    <span className="producto-selector__modal-value">{selectedProducto.nombre}</span>
-                  </div>
-                  <div className="producto-selector__modal-row">
-                    <span className="producto-selector__modal-label">Precio</span>
-                    {isDescuentoActivo(selectedProducto) ? (
-                      <span className="producto-selector__modal-price-discount">
-                        <span className="producto-selector__modal-price-badge">-{selectedProducto.descuento}%</span>
-                        <span className="producto-selector__modal-price-original">${selectedProducto.precio.toFixed(2)}</span>
-                        <span className="producto-selector__modal-value">${getEffectivePrice(selectedProducto).toFixed(2)}</span>
-                      </span>
-                    ) : (
-                      <span className="producto-selector__modal-value">${selectedProducto.precio.toFixed(2)}</span>
+              <div className="producto-selector__modal-right">
+                <div className="producto-selector__modal-section">
+                  <h4>Información</h4>
+                  <div className="producto-selector__modal-info">
+                    {selectedProducto.clave && (
+                      <div className="producto-selector__modal-row">
+                        <span className="producto-selector__modal-label">Clave</span>
+                        <span className="producto-selector__modal-value">{selectedProducto.clave}</span>
+                      </div>
                     )}
-                  </div>
-                  {isDescuentoActivo(selectedProducto) && selectedProducto.fechaFinDescuento && (
                     <div className="producto-selector__modal-row">
-                      <span className="producto-selector__modal-label">Descuento válido hasta</span>
-                      <span className="producto-selector__modal-value producto-selector__modal-value--expiry">
-                        <PiCalendarBold size={12} />
-                        {formatDate(selectedProducto.fechaFinDescuento)}
-                      </span>
+                      <span className="producto-selector__modal-label">Nombre</span>
+                      <span className="producto-selector__modal-value">{selectedProducto.nombre}</span>
                     </div>
-                  )}
+                    <div className="producto-selector__modal-row">
+                      <span className="producto-selector__modal-label">Precio</span>
+                      {isDescuentoActivo(selectedProducto) ? (
+                        <span className="producto-selector__modal-price-discount">
+                          <span className="producto-selector__modal-price-badge">-{selectedProducto.descuento}%</span>
+                          <span className="producto-selector__modal-price-original">${selectedProducto.precio.toFixed(2)}</span>
+                          <span className="producto-selector__modal-value">${getEffectivePrice(selectedProducto).toFixed(2)}</span>
+                        </span>
+                      ) : (
+                        <span className="producto-selector__modal-value">${selectedProducto.precio.toFixed(2)}</span>
+                      )}
+                    </div>
+                    {isDescuentoActivo(selectedProducto) && selectedProducto.fechaFinDescuento && (
+                      <div className="producto-selector__modal-row">
+                        <span className="producto-selector__modal-label">Descuento válido hasta</span>
+                        <span className="producto-selector__modal-value producto-selector__modal-value--expiry">
+                          <PiCalendarBold size={12} />
+                          {formatDate(selectedProducto.fechaFinDescuento)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="producto-selector__modal-row">
+                      <span className="producto-selector__modal-label">Etiquetas</span>
+                      {(selectedProducto.etiquetas || []).length === 0 ? (
+                        <span className="producto-selector__modal-empty">Sin etiquetas</span>
+                      ) : (
+                        <div className="producto-selector__modal-etiquetas">
+                          {(selectedProducto.etiquetas || []).map(etId => {
+                            const et = todasEtiquetas.find(e => e.id === etId);
+                            if (!et) return null;
+                            const iconData = ETIQUETA_ICONS[et.icono];
+                            const Icon = iconData?.icon;
+                            return (
+                              <span
+                                key={et.id}
+                                className="producto-selector__modal-etiqueta"
+                                style={{ backgroundColor: et.color }}
+                                title={et.nombre}
+                              >
+                                {Icon && <Icon size={12} />}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                    <div className="producto-selector__modal-row">
+                      <span className="producto-selector__modal-label">Almacén</span>
+                      {selectedProducto.controlStock ? (
+                        <span className={`producto-selector__modal-stock-badge${(selectedProducto.stock ?? 0) === 0 ? ' producto-selector__modal-stock-badge--empty' : ''}`}>
+                          <PiWarehouseBold size={11} />
+                          {(selectedProducto.stock ?? 0) === 0 ? 'Sin existencias' : `${selectedProducto.stock} unidades`}
+                        </span>
+                      ) : (
+                        <span className="producto-selector__modal-empty">Sin control de inventario</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              {selectedProducto.descripcion && (
                 <div className="producto-selector__modal-section">
                   <h4>Descripción</h4>
-                  <p>{selectedProducto.descripcion}</p>
+                  <p>{selectedProducto.descripcion || 'Sin descripción'}</p>
                 </div>
-              )}
+              </div>
             </div>
             <div className="producto-selector__modal-footer">
               <button className="btn btn--secondary btn--sm" onClick={() => setSelectedProducto(null)}>

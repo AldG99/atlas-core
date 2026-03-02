@@ -47,23 +47,9 @@
   &__content {
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
-    scrollbar-color: $color-gray-300 transparent;
-
-    &::-webkit-scrollbar {
-      width: 8px;
-      background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: $color-gray-300;
-      border-radius: 4px;
-
-      &:hover {
-        background: $color-gray-400;
-      }
-    }
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   &__loading,
@@ -77,24 +63,27 @@
     color: $color-danger;
   }
 
-  &__grid {
+  &__layout {
     display: grid;
     grid-template-columns: 1fr;
     gap: $spacing-sm;
-    margin-top: $spacing-sm;
+    flex: 1;
+    min-height: 0;
 
     @include lg {
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 3fr 1fr;
+      grid-template-rows: auto 1fr auto;
     }
   }
 
   &__chart {
-    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
   }
 
-  &__sidebar {
-    display: flex;
-    flex-direction: column;
+  &__bottom-left {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: $spacing-sm;
   }
 }

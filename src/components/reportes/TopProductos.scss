@@ -1,7 +1,7 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
-.top-clientes {
+.top-productos {
   background-color: $color-white;
   padding: $spacing-md;
   flex: 1;
@@ -37,7 +37,6 @@
     align-items: center;
     gap: $spacing-sm;
     padding: $spacing-sm;
-    border-radius: 0;
     background-color: $color-gray-50;
     transition: background-color $transition-fast;
 
@@ -58,23 +57,16 @@
     flex-shrink: 0;
   }
 
-  &__item:nth-child(1) &__rank {
-    background-color: #fbbf24;
-  }
-
-  &__item:nth-child(2) &__rank {
-    background-color: #9ca3af;
-  }
-
-  &__item:nth-child(3) &__rank {
-    background-color: #d97706;
-  }
+  &__item:nth-child(1) &__rank { background-color: #fbbf24; }
+  &__item:nth-child(2) &__rank { background-color: #9ca3af; }
+  &__item:nth-child(3) &__rank { background-color: #d97706; }
 
   &__info {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
+    gap: 2px;
   }
 
   &__name {
@@ -82,11 +74,27 @@
     font-weight: 500;
     color: $color-gray-800;
     @include truncate;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
   }
 
-  &__pedidos {
+  &__clave {
     font-size: $font-size-xs;
-    color: $color-gray-500;
+    font-weight: 500;
+    color: $color-primary;
+    background-color: rgba($color-primary, 0.1);
+    padding: 1px 5px;
+    font-family: monospace;
+    flex-shrink: 0;
+  }
+
+  &__unidades {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-gray-700;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   &__total {

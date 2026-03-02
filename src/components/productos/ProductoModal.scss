@@ -367,3 +367,46 @@
   color: $color-gray-500;
   font-style: italic;
 }
+
+// Stock / Almacén
+.stock-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  color: $color-gray-700;
+  font-weight: 500;
+  user-select: none;
+
+  input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    accent-color: $color-primary;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}
+
+.stock-input-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+
+  label {
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+    white-space: nowrap;
+  }
+}
+
+.stock-input {
+  width: 100px;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: $color-gray-100;
+  }
+}

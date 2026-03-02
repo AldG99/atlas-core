@@ -212,4 +212,22 @@
     font-weight: 500;
     color: $color-gray-600;
   }
+
+  &__stock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    background-color: rgba($color-success, 0.12);
+    color: $color-success;
+    white-space: nowrap;
+
+    &--empty {
+      background-color: $color-gray-100;
+      color: $color-gray-500;
+    }
+  }
 }

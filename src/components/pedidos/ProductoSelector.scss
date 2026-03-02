@@ -2,7 +2,10 @@
 @use '../../styles/abstracts/mixins' as *;
 
 .producto-selector {
-  margin-bottom: $spacing-md;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 
   &--disabled {
     opacity: 0.5;
@@ -15,6 +18,9 @@
     font-weight: 600;
     color: $color-gray-700;
     margin-bottom: $spacing-xs;
+    padding-top: $spacing-sm;
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
   }
 
   &__label-hint {
@@ -28,6 +34,8 @@
     display: flex;
     gap: $spacing-sm;
     position: relative;
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
   }
 
   &__search-wrapper {
@@ -86,11 +94,12 @@
 
   &__dropdown-item {
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
     gap: $spacing-sm;
     width: 100%;
-    padding: $spacing-sm $spacing-md;
+    height: 50px;
+    padding: 0 $spacing-md;
     background: none;
     border: none;
     border-bottom: 1px solid $color-gray-200;
@@ -102,8 +111,9 @@
       border-bottom: none;
     }
 
-    &:hover {
-      background-color: rgba($color-primary, 0.05);
+    &:hover,
+    &--focused {
+      background-color: rgba($color-primary, 0.08);
     }
   }
 
@@ -124,11 +134,32 @@
   }
 
   &__dropdown-name {
-    font-weight: 500;
+    font-size: $font-size-sm;
+    font-weight: 600;
     color: $color-gray-800;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  &__dropdown-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 600;
+    color: $color-success;
+    white-space: nowrap;
+
+    &--empty {
+      color: $color-gray-400;
+    }
+
+    &--hidden {
+      visibility: hidden;
+    }
   }
 
   &__dropdown-etiquetas {
@@ -193,6 +224,8 @@
 
   &__form {
     margin-top: $spacing-sm;
+    margin-left: $spacing-md;
+    margin-right: $spacing-md;
     padding: $spacing-md;
     border: 1px solid $color-gray-200;
     border-radius: $border-radius-md;
@@ -230,13 +263,41 @@
 
   &__items {
     margin-top: $spacing-md;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__table-wrapper {
+    border-top: 1px solid $color-gray-200;
+    border-bottom: 1px solid $color-gray-200;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  &__table-head {
+    flex-shrink: 0;
+    background-color: $color-gray-50;
+    overflow: hidden;
+    scrollbar-gutter: stable;
+    box-shadow: inset 0 -1px 0 $color-gray-200;
+  }
+
+  &__table-foot {
+    flex-shrink: 0;
+    background-color: $color-white;
+    overflow: hidden;
+    scrollbar-gutter: stable;
   }
 
   &__table-scroll {
-    height: 160px;
+    flex: 1;
+    min-height: 120px;
     overflow-y: auto;
-    overflow-x: auto;
-    border: 1px solid $color-gray-200;
     scrollbar-gutter: stable;
     scrollbar-color: $color-gray-300 $color-white;
 
@@ -258,40 +319,87 @@
   &__table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 400px;
+    table-layout: fixed;
 
-    th,
-    td {
-      padding: $spacing-sm;
-      text-align: left;
-      border-bottom: 1px solid $color-gray-200;
-    }
-
-    th {
-      background-color: $color-gray-50;
+    thead th {
+      padding: $spacing-xs $spacing-sm;
       font-size: $font-size-sm;
       font-weight: 600;
       color: $color-gray-500;
-      position: sticky;
-      top: 0;
-      z-index: 1;
+      text-align: left;
+      white-space: nowrap;
     }
 
-    td {
+    tbody tr {
+      height: 36px;
+      border-bottom: 1px solid $color-gray-100;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    tbody td,
+    tfoot td {
+      padding: $spacing-xs $spacing-sm;
       font-size: $font-size-sm;
       color: $color-gray-800;
+      vertical-align: middle;
+      white-space: nowrap;
     }
 
-    tr:last-child td {
-      border-bottom: none;
+    thead th:first-child,
+    tbody td:first-child,
+    tfoot td:first-child {
+      padding-left: $spacing-md;
+    }
+
+    // Cantidad col
+    thead th:nth-child(2),
+    tbody td:nth-child(2) {
+      text-align: center;
+    }
+
+    // Precio col
+    thead th:nth-child(6),
+    tbody td:nth-child(6) {
+      text-align: right;
+    }
+
+    // Subtotal col
+    thead th:nth-child(7),
+    tbody td:nth-child(7),
+    tfoot td:nth-child(7) {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    // Acciones col
+    thead th:nth-child(8),
+    tbody td:nth-child(8),
+    tfoot td:nth-child(8) {
+      text-align: center;
+    }
+
+    // Delete col
+    thead th:last-child,
+    tbody td:last-child,
+    tfoot td:last-child {
+      text-align: center;
     }
   }
 
-  &__table-name {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+  &__product-row--focused {
+    background-color: rgba($color-primary, 0.06);
+    cursor: pointer;
+  }
+
+  &__table-name-cell {
+    display: flex;
     align-items: center;
-    gap: $spacing-sm;
+    gap: $spacing-xs;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   &__table-name-text {
@@ -301,21 +409,21 @@
   }
 
   &__table-clave {
+    display: inline-block;
+    padding: 1px 5px;
     font-size: $font-size-xs;
-    font-weight: 600;
-    color: $color-gray-500;
-    background-color: $color-gray-100;
-    padding: 2px 6px;
-    border-radius: $border-radius-sm;
-    white-space: nowrap;
+    font-weight: 500;
+    color: $color-primary;
+    background-color: rgba($color-primary, 0.1);
     font-family: monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   &__table-etiquetas {
-    display: flex;
-    gap: 3px;
-    min-width: 44px;
-    justify-content: flex-end;
+    display: inline-flex;
+    gap: 2px;
+    flex-wrap: wrap;
   }
 
   &__table-etiqueta {
@@ -357,19 +465,47 @@
     color: $color-primary;
   }
 
+  &__table-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    white-space: nowrap;
+    background-color: rgba($color-success, 0.12);
+    color: $color-success;
+
+    &--zero {
+      background-color: rgba(#f59e0b, 0.12);
+      color: #d97706;
+    }
+
+    &--over {
+      background-color: rgba($color-danger, 0.12);
+      color: $color-danger;
+    }
+  }
+
+  &__table-stock-none {
+    color: $color-gray-400;
+  }
+
   &__cantidad {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: $spacing-xs;
   }
 
   &__cantidad-btn {
-    width: 28px;
-    height: 28px;
+    width: 20px;
+    height: 20px;
     border: 1px solid $color-gray-300;
     background-color: $color-white;
     border-radius: $border-radius-sm;
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -380,19 +516,31 @@
       border-color: $color-primary;
       color: $color-primary;
     }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      border-color: $color-gray-200;
+
+      &:hover {
+        border-color: $color-gray-200;
+        color: inherit;
+      }
+    }
   }
 
   &__cantidad-value {
-    min-width: 30px;
+    min-width: 20px;
     text-align: center;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: $font-size-sm;
   }
 
   &__remove-btn {
-    width: 28px;
-    height: 28px;
-    border: none;
-    background-color: transparent;
+    width: 22px;
+    height: 22px;
+    border: 1px solid $color-gray-300;
+    background-color: $color-white;
     color: $color-gray-500;
     font-size: $font-size-lg;
     cursor: pointer;
@@ -404,37 +552,29 @@
 
     &:hover {
       background-color: rgba($color-danger, 0.1);
+      border-color: $color-danger;
       color: $color-danger;
     }
   }
 
-  &__total {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: $spacing-md;
-    margin-top: $spacing-md;
-    padding-top: $spacing-md;
-    border-top: 2px solid $color-gray-300;
+  &__tfoot {
+    background-color: $color-white;
+    border-top: 1px solid $color-gray-100;
   }
 
   &__total-label {
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
     font-weight: 600;
-    color: $color-gray-700;
+    color: $color-gray-500;
   }
 
   &__total-value {
-    font-size: $font-size-xl;
+    font-size: $font-size-sm;
     font-weight: 700;
     color: $color-primary;
+    text-align: right;
   }
 
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
 
   &__eye-btn {
     display: inline-flex;
@@ -483,6 +623,68 @@
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+    &--product {
+      width: min(840px, 90vw);
+      max-width: none;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      .producto-selector__modal-header {
+        flex-shrink: 0;
+      }
+
+      .producto-selector__modal-body {
+        flex-direction: row;
+        padding: 0;
+        overflow: hidden;
+        gap: 0;
+      }
+
+      .producto-selector__modal-image {
+        width: 340px;
+        height: 340px;
+        aspect-ratio: unset;
+        flex-shrink: 0;
+        border-right: 1px solid $color-gray-100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img {
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          height: auto;
+          object-fit: cover;
+        }
+      }
+
+      .producto-selector__modal-footer {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  &__modal-right {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    min-height: 0;
+    scrollbar-color: $color-gray-300 $color-white;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 3px;
+    }
   }
 
   &__modal-header {
@@ -588,6 +790,44 @@
     font-size: $font-size-sm;
     color: $color-gray-500;
     font-weight: 500;
+  }
+
+  &__modal-empty {
+    font-size: $font-size-sm;
+    color: $color-gray-400;
+    font-style: italic;
+  }
+
+  &__modal-etiquetas {
+    display: inline-flex;
+    gap: 4px;
+  }
+
+  &__modal-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: $color-white;
+  }
+
+  &__modal-stock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    background-color: rgba($color-success, 0.12);
+    color: $color-success;
+
+    &--empty {
+      background-color: $color-gray-100;
+      color: $color-gray-500;
+    }
   }
 
   &__modal-value {

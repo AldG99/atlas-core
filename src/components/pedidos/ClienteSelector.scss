@@ -2,7 +2,6 @@
 @use '../../styles/abstracts/mixins' as *;
 
 .cliente-selector {
-  margin-bottom: $spacing-md;
   position: relative;
 
   &__label {
@@ -77,7 +76,8 @@
     align-items: center;
     gap: $spacing-sm;
     width: 100%;
-    padding: $spacing-sm $spacing-md;
+    height: 50px;
+    padding: 0 $spacing-md;
     background: none;
     border: none;
     border-bottom: 1px solid $color-gray-200;
@@ -89,18 +89,22 @@
       border-bottom: none;
     }
 
-    &:hover {
-      background-color: rgba($color-primary, 0.05);
+    &:hover,
+    &--focused {
+      background-color: rgba($color-primary, 0.08);
     }
   }
 
   &__dropdown-avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
-    background-color: $color-gray-200;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     img {
       width: 100%;
@@ -115,10 +119,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: $color-primary;
     color: $color-white;
     font-weight: 600;
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
   }
 
   &__dropdown-info {
@@ -126,14 +129,19 @@
     flex-direction: column;
     gap: 2px;
     flex: 1;
+    min-width: 0;
   }
 
   &__dropdown-name {
-    font-weight: 500;
+    font-size: $font-size-sm;
+    font-weight: 600;
     color: $color-gray-800;
     display: flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__dropdown-fav {
@@ -144,6 +152,7 @@
   &__dropdown-phone {
     font-size: $font-size-sm;
     color: $color-gray-500;
+    white-space: nowrap;
   }
 
   &__dropdown-empty {
@@ -191,19 +200,23 @@
   }
 
   // Estado seleccionado
-  &--selected {
-    margin-bottom: $spacing-md;
-  }
+  &--selected {}
 
   &__selected-row {
     display: flex;
     align-items: center;
-    gap: $spacing-md;
+    gap: $spacing-sm;
+
+    .btn {
+      height: 36px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
   }
 
   &__avatar {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     overflow: hidden;
     background: linear-gradient(135deg, $color-primary, $color-primary-dark);
@@ -220,7 +233,7 @@
 
     span {
       color: $color-white;
-      font-size: $font-size-base;
+      font-size: $font-size-sm;
       font-weight: 600;
     }
   }
@@ -233,7 +246,10 @@
   }
 
   &__client-name {
-    font-size: $font-size-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-base;
     font-weight: 600;
     color: $color-gray-800;
   }
@@ -241,11 +257,6 @@
   &__client-phone {
     font-size: $font-size-sm;
     color: $color-gray-500;
-  }
-
-  &__client-address {
-    font-size: $font-size-xs;
-    color: $color-gray-400;
   }
 
 }

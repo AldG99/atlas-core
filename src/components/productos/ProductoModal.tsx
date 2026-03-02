@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { PiXBold, PiImageBold, PiPlusBold, PiTrashBold } from 'react-icons/pi';
+import { PiXBold, PiImageBold, PiPlusBold, PiTrashBold, PiWarehouseBold } from 'react-icons/pi';
 import type { ProductoFormData, Etiqueta } from '../../types/Producto';
 import { uploadProductoImage } from '../../services/productoService';
 import { useAuth } from '../../hooks/useAuth';
@@ -28,6 +28,8 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
     descripcion: '',
     imagen: '',
     etiquetas: [],
+    controlStock: false,
+    stock: 0,
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof ProductoFormData, string>>>({});
@@ -475,6 +477,43 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Almacén */}
+          <div className="form-section">
+            <h3 className="form-section__title">Almacén</h3>
+            <div className="form-group">
+              <label className="stock-toggle">
+                <input
+                  type="checkbox"
+                  checked={!!formData.controlStock}
+                  onChange={(e) =>
+                    setFormData(prev => ({
+                      ...prev,
+                      controlStock: e.target.checked,
+                      stock: e.target.checked ? (prev.stock ?? 0) : 0,
+                    }))
+                  }
+                />
+                <PiWarehouseBold size={16} />
+                <span>Gestionar existencias</span>
+              </label>
+              <div className="stock-input-row">
+                <label htmlFor="stock">Unidades en almacén</label>
+                <input
+                  type="number"
+                  id="stock"
+                  name="stock"
+                  value={formData.stock ?? 0}
+                  onChange={handleChange}
+                  className="input stock-input"
+                  min="0"
+                  step="1"
+                  placeholder="0"
+                  disabled={!formData.controlStock}
+                />
+              </div>
             </div>
           </div>
 

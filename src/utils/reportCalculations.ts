@@ -1,8 +1,11 @@
 import type { Pedido, PedidoStatus } from '../types/Pedido';
+import type { Producto } from '../types/Producto';
 import type {
   KPIs,
   StatusBreakdownItem,
   TopCliente,
+  TopProducto,
+  InventarioStats,
   ChartDataPoint,
   PeriodType
 } from '../types/Reporte';
@@ -34,6 +37,14 @@ export const getDateRange = (period: PeriodType): DateRange => {
     default:
       return { start: end, end };
   }
+};
+
+export const getYearAgoDateRange = (dateRange: DateRange): DateRange => {
+  const start = new Date(dateRange.start);
+  const end = new Date(dateRange.end);
+  start.setFullYear(start.getFullYear() - 1);
+  end.setFullYear(end.getFullYear() - 1);
+  return { start, end };
 };
 
 export const filterPedidosByDate = (pedidos: Pedido[], dateRange: DateRange): Pedido[] => {
@@ -88,7 +99,7 @@ export const calculateStatusBreakdown = (pedidos: Pedido[]): StatusBreakdownItem
   }));
 };
 
-export const calculateTopClientes = (pedidos: Pedido[], limit: number = 5): TopCliente[] => {
+export const calculateTopClientes = (pedidos: Pedido[], limit: number = 3): TopCliente[] => {
   const clienteMap = new Map<string, { nombre: string; pedidos: number; total: number }>();
 
   pedidos.forEach((pedido) => {
@@ -186,4 +197,42 @@ const groupByDay = (pedidos: Pedido[], dateRange: DateRange): ChartDataPoint[] =
   });
 
   return days;
+};
+
+export const calculateTopProductos = (pedidos: Pedido[], limit = 3): TopProducto[] => {
+  const map = new Map<string, TopProducto>();
+
+  pedidos.forEach((pedido) => {
+    pedido.productos.forEach((item) => {
+      const key = item.productoId ?? item.nombre.toLowerCase().trim();
+      const existing = map.get(key);
+      if (existing) {
+        existing.unidades += item.cantidad;
+        existing.total += item.subtotal;
+      } else {
+        map.set(key, {
+          nombre: item.nombre,
+          clave: item.clave,
+          unidades: item.cantidad,
+          total: item.subtotal
+        });
+      }
+    });
+  });
+
+  return Array.from(map.values())
+    .sort((a, b) => b.unidades - a.unidades)
+    .slice(0, limit);
+};
+
+export const calculateInventarioStats = (productos: Producto[]): InventarioStats => {
+  const conControl = productos.filter((p) => p.controlStock);
+  const agotados = conControl
+    .filter((p) => (p.stock ?? 0) === 0)
+    .map((p) => ({ id: p.id, nombre: p.nombre, clave: p.clave, stock: 0 }));
+  const bajoStock = conControl
+    .filter((p) => (p.stock ?? 0) > 0 && (p.stock ?? 0) <= 5)
+    .map((p) => ({ id: p.id, nombre: p.nombre, clave: p.clave, stock: p.stock ?? 0 }));
+
+  return { totalConControl: conControl.length, agotados, bajoStock };
 };

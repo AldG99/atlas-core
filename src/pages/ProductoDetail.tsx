@@ -6,7 +6,8 @@ import {
   PiTrashBold,
   PiPackageBold,
   PiCalendarBold,
-  PiCameraBold
+  PiCameraBold,
+  PiWarehouseBold
 } from 'react-icons/pi';
 import type { Producto, ProductoFormData } from '../types/Producto';
 import { getProductoById, deleteProducto, updateProducto } from '../services/productoService';
@@ -105,7 +106,9 @@ const ProductoDetail = () => {
       descuento: producto.descuento || 0,
       fechaFinDescuento: producto.fechaFinDescuento
         ? new Date(producto.fechaFinDescuento).toISOString().split('T')[0]
-        : ''
+        : '',
+      controlStock: producto.controlStock ?? false,
+      stock: producto.stock ?? 0,
     });
     setIsEditing(true);
   };
@@ -396,6 +399,103 @@ const ProductoDetail = () => {
                   )}
                 </div>
 
+                {/* Etiquetas */}
+                <div className="producto-detail__header-etiquetas">
+                  <div className="producto-detail__header-etiquetas-row">
+                    {isEditing ? (
+                      <>
+                        {etiquetas.map(et => {
+                          const iconData = ETIQUETA_ICONS[et.icono];
+                          const Icon = iconData?.icon;
+                          const isSelected = editData?.etiquetas?.includes(et.id);
+                          const isDisabled = !isSelected && limiteAlcanzado;
+                          return (
+                            <span
+                              key={et.id}
+                              className={`producto-detail__etiqueta producto-detail__etiqueta--selectable ${isSelected ? '' : 'producto-detail__etiqueta--unselected'} ${isDisabled ? 'producto-detail__etiqueta--disabled' : ''}`}
+                              style={{ backgroundColor: isSelected ? et.color : undefined }}
+                              onClick={() => !isDisabled && toggleEtiqueta(et.id)}
+                              title={et.nombre}
+                            >
+                              {Icon && <Icon size={12} />}
+                            </span>
+                          );
+                        })}
+                        {limiteAlcanzado && (
+                          <span className="producto-detail__etiquetas-limite">Máx. {MAX_ETIQUETAS}</span>
+                        )}
+                      </>
+                    ) : productoEtiquetas.length > 0 ? (
+                      productoEtiquetas.map(et => {
+                        const iconData = ETIQUETA_ICONS[et.icono];
+                        const Icon = iconData?.icon;
+                        return (
+                          <span
+                            key={et.id}
+                            className="producto-detail__etiqueta"
+                            style={{ backgroundColor: et.color }}
+                            title={et.nombre}
+                          >
+                            {Icon && <Icon size={12} />}
+                          </span>
+                        );
+                      })
+                    ) : (
+                      <span className="producto-detail__etiquetas-empty">Sin etiquetas</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Almacén */}
+                {isEditing ? (
+                  <div className="producto-detail__stock-edit">
+                    <label className="producto-detail__stock-toggle">
+                      <input
+                        type="checkbox"
+                        checked={!!editData?.controlStock}
+                        onChange={(e) => {
+                          if (!editData) return;
+                          setEditData({
+                            ...editData,
+                            controlStock: e.target.checked,
+                            stock: e.target.checked ? (editData.stock ?? 0) : 0,
+                          });
+                        }}
+                      />
+                      <PiWarehouseBold size={15} />
+                      <span>Gestionar existencias</span>
+                    </label>
+                    <div className="producto-detail__stock-input-row">
+                      <span className="producto-detail__info-label">Unidades en almacén</span>
+                      <input
+                        type="number"
+                        value={editData?.stock ?? 0}
+                        onChange={(e) => {
+                          if (!editData) return;
+                          setEditData({ ...editData, stock: Math.max(0, parseInt(e.target.value) || 0) });
+                        }}
+                        className="producto-detail__input producto-detail__input--stock"
+                        min="0"
+                        step="1"
+                        disabled={!editData?.controlStock}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="producto-detail__stock-display">
+                    <PiWarehouseBold size={15} className="producto-detail__header-meta-icon" />
+                    {producto.controlStock ? (
+                      <span className={`producto-detail__stock-badge ${(producto.stock ?? 0) === 0 ? 'producto-detail__stock-badge--empty' : ''}`}>
+                        {(producto.stock ?? 0) === 0 ? 'Sin existencias' : `${producto.stock} unidades`}
+                      </span>
+                    ) : (
+                      <span className="producto-detail__stock-untracked">
+                        Sin control de inventario
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 <div className="producto-detail__header-meta">
                   <PiCalendarBold size={14} className="producto-detail__header-meta-icon" />
                   <span className="producto-detail__info-label">Cliente desde</span>
@@ -403,54 +503,6 @@ const ProductoDetail = () => {
                 </div>
               </div>
             </div>
-
-            {/* Etiquetas Section */}
-            {(isEditing || productoEtiquetas.length > 0) && (
-              <div className="producto-detail__section">
-                <div className="producto-detail__section-header">
-                  <strong>Etiquetas</strong>
-                  {limiteAlcanzado && (
-                    <span className="producto-detail__etiquetas-limite">Máximo {MAX_ETIQUETAS}</span>
-                  )}
-                </div>
-                <div className="producto-detail__etiquetas">
-                  {isEditing ? (
-                    etiquetas.map(et => {
-                      const iconData = ETIQUETA_ICONS[et.icono];
-                      const Icon = iconData?.icon;
-                      const isSelected = editData?.etiquetas?.includes(et.id);
-                      const isDisabled = !isSelected && limiteAlcanzado;
-                      return (
-                        <span
-                          key={et.id}
-                          className={`producto-detail__etiqueta producto-detail__etiqueta--selectable ${isSelected ? '' : 'producto-detail__etiqueta--unselected'} ${isDisabled ? 'producto-detail__etiqueta--disabled' : ''}`}
-                          style={{ backgroundColor: isSelected ? et.color : undefined }}
-                          onClick={() => !isDisabled && toggleEtiqueta(et.id)}
-                          title={et.nombre}
-                        >
-                          {Icon && <Icon size={12} />}
-                        </span>
-                      );
-                    })
-                  ) : (
-                    productoEtiquetas.map(et => {
-                      const iconData = ETIQUETA_ICONS[et.icono];
-                      const Icon = iconData?.icon;
-                      return (
-                        <span
-                          key={et.id}
-                          className="producto-detail__etiqueta"
-                          style={{ backgroundColor: et.color }}
-                          title={et.nombre}
-                        >
-                          {Icon && <Icon size={12} />}
-                        </span>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            )}
 
             {/* Description Section */}
             <div className="producto-detail__section producto-detail__section--grow">

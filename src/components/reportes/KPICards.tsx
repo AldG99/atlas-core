@@ -1,51 +1,83 @@
-import { PiCurrencyDollarBold, PiHashBold, PiTrendUpBold, PiUsersBold } from 'react-icons/pi';
+import { PiCurrencyDollarBold, PiHashBold, PiTrendUpBold, PiUsersBold, PiArrowUpBold, PiArrowDownBold } from 'react-icons/pi';
 import type { KPIs } from '../../types/Reporte';
 import { formatCurrency } from '../../utils/formatters';
 import './KPICards.scss';
 
 interface KPICardsProps {
   kpis: KPIs;
+  comparisonKPIs?: KPIs;
+  variant?: 'main' | 'side';
 }
 
-const KPICards = ({ kpis }: KPICardsProps) => {
-  const cards = [
+const getDelta = (current: number, previous: number): number | null => {
+  if (previous === 0) return null;
+  return ((current - previous) / previous) * 100;
+};
+
+const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
+  const allCards = [
     {
       icon: <PiCurrencyDollarBold size={24} />,
       value: formatCurrency(kpis.ventasTotales),
+      rawValue: kpis.ventasTotales,
+      comparisonValue: comparisonKPIs?.ventasTotales,
       label: 'Ventas totales',
       className: 'kpi-card--ventas'
     },
     {
       icon: <PiHashBold size={24} />,
       value: kpis.totalPedidos.toString(),
+      rawValue: kpis.totalPedidos,
+      comparisonValue: comparisonKPIs?.totalPedidos,
       label: 'Pedidos',
       className: 'kpi-card--pedidos'
     },
     {
       icon: <PiTrendUpBold size={24} />,
       value: formatCurrency(kpis.ticketPromedio),
+      rawValue: kpis.ticketPromedio,
+      comparisonValue: comparisonKPIs?.ticketPromedio,
       label: 'Ticket promedio',
       className: 'kpi-card--ticket'
     },
     {
       icon: <PiUsersBold size={24} />,
       value: kpis.clientesUnicos.toString(),
+      rawValue: kpis.clientesUnicos,
+      comparisonValue: comparisonKPIs?.clientesUnicos,
       label: 'Clientes',
       className: 'kpi-card--clientes'
     }
   ];
 
+  const cards = variant === 'main' ? allCards.slice(0, 3) : variant === 'side' ? allCards.slice(3) : allCards;
+
   return (
-    <div className="kpi-cards">
-      {cards.map((card) => (
-        <div key={card.label} className={`kpi-card ${card.className}`}>
-          <div className="kpi-card__icon">{card.icon}</div>
-          <div className="kpi-card__content">
-            <div className="kpi-card__value">{card.value}</div>
-            <div className="kpi-card__label">{card.label}</div>
+    <div className={`kpi-cards${variant ? ` kpi-cards--${variant}` : ''}`}>
+      {cards.map((card) => {
+        const delta = card.comparisonValue !== undefined
+          ? getDelta(card.rawValue, card.comparisonValue)
+          : null;
+        const isUp = delta !== null && delta >= 0;
+
+        return (
+          <div key={card.label} className={`kpi-card ${card.className}`}>
+            <div className="kpi-card__icon">{card.icon}</div>
+            <div className="kpi-card__content">
+              <div className="kpi-card__value">{card.value}</div>
+              <div className="kpi-card__bottom">
+                <span className="kpi-card__label">{card.label}</span>
+                {delta !== null && (
+                  <div className={`kpi-card__delta kpi-card__delta--${isUp ? 'up' : 'down'}`}>
+                    {isUp ? <PiArrowUpBold size={9} /> : <PiArrowDownBold size={9} />}
+                    <span>{Math.abs(delta).toFixed(1)}%</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

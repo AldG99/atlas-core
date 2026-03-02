@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { PiWarehouseBold } from 'react-icons/pi';
 import type { Producto, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import './ProductosTable.scss';
@@ -80,11 +81,12 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
   const colgroup = (
     <colgroup>
       <col style={{ width: '10%' }} />
-      <col style={{ width: '22%' }} />
-      <col style={{ width: '18%' }} />
-      <col style={{ width: '14%' }} />
       <col style={{ width: '20%' }} />
       <col style={{ width: '16%' }} />
+      <col style={{ width: '12%' }} />
+      <col style={{ width: '11%' }} />
+      <col style={{ width: '17%' }} />
+      <col style={{ width: '14%' }} />
     </colgroup>
   );
 
@@ -99,6 +101,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
               <th>Producto</th>
               <th>Precio</th>
               <th>Etiquetas</th>
+              <th>Stock</th>
               <th>Descripción</th>
               <th>Registro</th>
             </tr>
@@ -111,19 +114,19 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
           <tbody>
           {loading ? (
             <tr>
-              <td colSpan={6} className="productos-table__empty">
+              <td colSpan={7} className="productos-table__empty">
                 Cargando productos...
               </td>
             </tr>
           ) : error ? (
             <tr>
-              <td colSpan={6} className="productos-table__empty productos-table__empty--error">
+              <td colSpan={7} className="productos-table__empty productos-table__empty--error">
                 {error}
               </td>
             </tr>
           ) : productos.length === 0 ? (
             <tr>
-              <td colSpan={6} className="productos-table__empty">
+              <td colSpan={7} className="productos-table__empty">
                 {searchTerm?.trim() ? `No se encontraron productos para "${searchTerm}"` : 'No hay ningún producto registrado'}
               </td>
             </tr>
@@ -172,6 +175,16 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
                       <span className="productos-table__no-etiquetas">—</span>
                     )}
                   </div>
+                </td>
+                <td>
+                  {producto.controlStock ? (
+                    <span className={`productos-table__stock-badge ${(producto.stock ?? 0) === 0 ? 'productos-table__stock-badge--empty' : ''}`}>
+                      <PiWarehouseBold size={11} />
+                      {(producto.stock ?? 0) === 0 ? 'Sin stock' : producto.stock}
+                    </span>
+                  ) : (
+                    <span className="productos-table__no-etiquetas">—</span>
+                  )}
                 </td>
                 <td>
                   <span className="productos-table__description" title={producto.descripcion}>

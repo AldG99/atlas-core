@@ -83,6 +83,7 @@ const PedidoForm = ({
     const productos: ProductoItem[] = items.map((item) => {
       const effective = getEffectivePrice(item.producto);
       const hasDiscount = effective < item.producto.precio;
+      const isRealProduct = !item.producto.id.startsWith('repeat-');
       return {
         nombre: item.producto.nombre,
         clave: item.producto.clave || undefined,
@@ -92,6 +93,10 @@ const PedidoForm = ({
         ...(hasDiscount && {
           precioOriginal: item.producto.precio,
           descuento: item.producto.descuento
+        }),
+        ...(isRealProduct && item.producto.controlStock && {
+          productoId: item.producto.id,
+          controlStock: true
         })
       };
     });
@@ -175,13 +180,15 @@ const PedidoForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="pedido-form">
-      <ClienteSelector
-        onSelect={handleClienteSelect}
-        selectedCliente={selectedCliente}
-      />
-      {errors.cliente && (
-        <span className="error-message">{errors.cliente}</span>
-      )}
+      <div className="pedido-form__fields pedido-form__fields--client">
+        <ClienteSelector
+          onSelect={handleClienteSelect}
+          selectedCliente={selectedCliente}
+        />
+        {errors.cliente && (
+          <span className="error-message">{errors.cliente}</span>
+        )}
+      </div>
 
       <ProductoSelector
         items={items}
@@ -191,42 +198,46 @@ const PedidoForm = ({
         total={total}
         disabled={!selectedCliente}
       />
-      {errors.productos && (
-        <span className="error-message">{errors.productos}</span>
-      )}
 
-      <div className="form-group">
-        <label htmlFor="notas">Notas (opcional)</label>
-        <textarea
-          id="notas"
-          name="notas"
-          value={notas}
-          onChange={(e) => setNotas(e.target.value)}
-          className="input pedido-form__notas"
-          placeholder="Notas adicionales"
-          maxLength={300}
-        />
-        <span className="pedido-form__notas-counter">{notas.length}/300</span>
-      </div>
+      <div className="pedido-form__fields">
+        {errors.productos && (
+          <span className="error-message">{errors.productos}</span>
+        )}
 
-      <div className="pedido-form__actions">
-        {onCancel && (
+        <div className="form-group">
+          <label htmlFor="notas">Notas (opcional)</label>
+          <input
+            type="text"
+            id="notas"
+            name="notas"
+            value={notas}
+            onChange={(e) => setNotas(e.target.value)}
+            className="input"
+            placeholder="Notas adicionales"
+            maxLength={80}
+          />
+          <span className="pedido-form__notas-counter">{notas.length}/80</span>
+        </div>
+
+        <div className="pedido-form__actions">
+          {onCancel && (
+            <button
+              type="button"
+              className="btn btn--outline btn--full"
+              onClick={onCancel}
+              disabled={loading}
+            >
+              Cancelar
+            </button>
+          )}
           <button
-            type="button"
-            className="btn btn--outline btn--full"
-            onClick={onCancel}
+            type="submit"
+            className="btn btn--primary btn--full"
             disabled={loading}
           >
-            Cancelar
+            {loading ? 'Guardando...' : submitText}
           </button>
-        )}
-        <button
-          type="submit"
-          className="btn btn--primary btn--full"
-          disabled={loading}
-        >
-          {loading ? 'Guardando...' : submitText}
-        </button>
+        </div>
       </div>
     </form>
   );

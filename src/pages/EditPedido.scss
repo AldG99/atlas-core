@@ -29,5 +29,7 @@
 
   &__form {
     @include card;
+    padding-left: 0;
+    padding-right: 0;
   }
 }

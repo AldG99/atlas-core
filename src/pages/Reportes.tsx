@@ -7,6 +7,8 @@ import PeriodFilter from '../components/reportes/PeriodFilter';
 import SalesChart from '../components/reportes/SalesChart';
 import StatusBreakdown from '../components/reportes/StatusBreakdown';
 import TopClientes from '../components/reportes/TopClientes';
+import TopProductos from '../components/reportes/TopProductos';
+import InventarioStatus from '../components/reportes/InventarioStatus';
 import './Reportes.scss';
 
 const Reportes = () => {
@@ -56,23 +58,23 @@ const Reportes = () => {
           {error && <p className="reportes__error">{error}</p>}
 
           {!loading && !error && (
-            <>
-              <KPICards kpis={reporteData.kpis} />
-
-              <div className="reportes__grid">
-                <div className="reportes__chart">
-                  <SalesChart
-                    data={reporteData.chartData}
-                    totalVentas={reporteData.kpis.ventasTotales}
-                    totalPedidos={reporteData.kpis.totalPedidos}
-                  />
-                </div>
-                <div className="reportes__sidebar">
-                  <StatusBreakdown breakdown={reporteData.statusBreakdown} />
-                  <TopClientes clientes={reporteData.topClientes} />
-                </div>
+            <div className="reportes__layout">
+              <KPICards kpis={reporteData.kpis} comparisonKPIs={reporteData.comparisonKPIs} variant="main" />
+              <KPICards kpis={reporteData.kpis} comparisonKPIs={reporteData.comparisonKPIs} variant="side" />
+              <div className="reportes__chart">
+                <SalesChart
+                  data={reporteData.chartData}
+                  totalVentas={reporteData.kpis.ventasTotales}
+                  totalPedidos={reporteData.kpis.totalPedidos}
+                />
               </div>
-            </>
+              <StatusBreakdown breakdown={reporteData.statusBreakdown} />
+              <div className="reportes__bottom-left">
+                <TopClientes clientes={reporteData.topClientes} />
+                <TopProductos productos={reporteData.topProductos} />
+              </div>
+              <InventarioStatus inventario={reporteData.inventario} />
+            </div>
           )}
         </div>
       </div>

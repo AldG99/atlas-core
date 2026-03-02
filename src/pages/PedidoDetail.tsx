@@ -11,6 +11,7 @@ import {
   PiPackageBold,
   PiTrashBold,
   PiStarFill,
+  PiWarehouseBold,
 } from 'react-icons/pi';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import type { Producto, Etiqueta } from '../types/Producto';
@@ -957,6 +958,17 @@ const PedidoDetail = () => {
                         </div>
                       );
                     })()}
+                    <div className="pedido-detail__modal-row">
+                      <span className="pedido-detail__modal-label">Almacén</span>
+                      {selectedProducto.controlStock ? (
+                        <span className={`pedido-detail__modal-stock-badge ${(selectedProducto.stock ?? 0) === 0 ? 'pedido-detail__modal-stock-badge--empty' : ''}`}>
+                          <PiWarehouseBold size={11} />
+                          {(selectedProducto.stock ?? 0) === 0 ? 'Sin existencias' : `${selectedProducto.stock} unidades`}
+                        </span>
+                      ) : (
+                        <span className="pedido-detail__modal-empty">Sin control de inventario</span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="pedido-detail__modal-section">

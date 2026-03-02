@@ -20,9 +20,7 @@ const TopClientes = ({ clientes }: TopClientesProps) => {
               <div className="top-clientes__rank">#{index + 1}</div>
               <div className="top-clientes__info">
                 <span className="top-clientes__name">{cliente.nombre}</span>
-                <span className="top-clientes__pedidos">{cliente.pedidos} pedido{cliente.pedidos !== 1 ? 's' : ''}</span>
               </div>
-              <div className="top-clientes__total">{formatCurrency(cliente.total)}</div>
             </li>
           ))}
         </ul>

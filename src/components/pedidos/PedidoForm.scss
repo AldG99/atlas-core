@@ -1,12 +1,26 @@
 @use '../../styles/abstracts/variables' as *;
 
 .pedido-form {
-  &__notas {
-    resize: none !important;
-    height: 80px !important;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+
+  &__fields {
+    padding: $spacing-md;
+    padding-bottom: 0;
+
+    &--client {
+      padding: $spacing-sm $spacing-md;
+      border-bottom: 1px solid $color-gray-100;
+    }
+
+    &:last-child {
+      padding-bottom: $spacing-md;
+    }
   }
 
-  &__notas-counter {
+&__notas-counter {
     display: block;
     text-align: right;
     font-size: $font-size-xs;
@@ -18,8 +32,7 @@
     display: block;
     color: $color-danger;
     font-size: $font-size-sm;
-    margin-top: -$spacing-sm;
-    margin-bottom: $spacing-md;
+    margin-bottom: $spacing-sm;
   }
 
   &__actions {
