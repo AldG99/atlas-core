@@ -95,4 +95,11 @@
     color: $color-success;
     white-space: nowrap;
   }
+
+  &__phone {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 }

@@ -202,6 +202,7 @@
     align-items: center;
     justify-content: center;
     padding: $spacing-sm $spacing-md;
+    min-height: calc(#{$font-size-sm} * 1.5 + 2 * #{$spacing-sm});
     border-top: 1px solid $color-gray-200;
     flex-shrink: 0;
     background-color: $color-gray-50;

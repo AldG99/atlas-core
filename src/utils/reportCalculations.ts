@@ -100,7 +100,7 @@ export const calculateStatusBreakdown = (pedidos: Pedido[]): StatusBreakdownItem
 };
 
 export const calculateTopClientes = (pedidos: Pedido[], limit: number = 3): TopCliente[] => {
-  const clienteMap = new Map<string, { nombre: string; pedidos: number; total: number }>();
+  const clienteMap = new Map<string, { nombre: string; telefono: string; pedidos: number; total: number }>();
 
   pedidos.forEach((pedido) => {
     const key = pedido.clienteNombre.toLowerCase().trim();
@@ -112,6 +112,7 @@ export const calculateTopClientes = (pedidos: Pedido[], limit: number = 3): TopC
     } else {
       clienteMap.set(key, {
         nombre: pedido.clienteNombre,
+        telefono: pedido.clienteTelefono,
         pedidos: 1,
         total: pedido.total
       });

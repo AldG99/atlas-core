@@ -1,5 +1,7 @@
 import type { TopCliente } from '../../types/Reporte';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatTelefono } from '../../utils/formatters';
+import { useClientes } from '../../hooks/useClientes';
+import { getCodigoPais } from '../../data/codigosPais';
 import './TopClientes.scss';
 
 interface TopClientesProps {
@@ -7,6 +9,14 @@ interface TopClientesProps {
 }
 
 const TopClientes = ({ clientes }: TopClientesProps) => {
+  const { clientes: clientesData } = useClientes();
+
+  const getDialCode = (telefono: string): string => {
+    const cliente = clientesData.find(c => c.telefono === telefono);
+    if (!cliente?.telefonoCodigoPais) return '';
+    return getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? '';
+  };
+
   return (
     <div className="top-clientes">
       <h3 className="top-clientes__title">Top Clientes</h3>
@@ -21,6 +31,9 @@ const TopClientes = ({ clientes }: TopClientesProps) => {
               <div className="top-clientes__info">
                 <span className="top-clientes__name">{cliente.nombre}</span>
               </div>
+              <span className="top-clientes__phone">
+                {getDialCode(cliente.telefono)}{getDialCode(cliente.telefono) ? ' ' : ''}{formatTelefono(cliente.telefono)}
+              </span>
             </li>
           ))}
         </ul>

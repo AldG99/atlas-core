@@ -203,9 +203,6 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
 
       {productos.length > 0 && (
         <div className="productos-table__pagination">
-          <span className="productos-table__page-info">
-            {productos.length} {productos.length === 1 ? 'producto' : 'productos'}
-          </span>
         </div>
       )}
     </div>
