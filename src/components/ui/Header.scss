@@ -101,9 +101,11 @@
   &__profile-btn {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: $spacing-sm;
     padding: $spacing-xs;
     padding-right: $spacing-sm;
+    min-width: 180px;
     background-color: $color-gray-100;
     border: none;
     border-radius: 0;

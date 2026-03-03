@@ -85,5 +85,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: $spacing-md;
+    min-height: 200px;
   }
 }
