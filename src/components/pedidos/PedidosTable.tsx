@@ -3,8 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { PiStarFill } from 'react-icons/pi';
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
-import { formatCurrency, formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
-import { getCodigoPais } from '../../data/codigosPais';
+import { formatCurrency, formatShortDate, getTotalPagado } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
 import './PedidosTable.scss';
 
@@ -31,12 +30,6 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
   const getClienteFavorito = (pedido: Pedido): boolean => {
     const cliente = clientes.find(c => c.telefono === pedido.clienteTelefono);
     return cliente?.favorito ?? false;
-  };
-
-  const getClienteDialCode = (pedido: Pedido): string => {
-    const cliente = clientes.find(c => c.telefono === pedido.clienteTelefono);
-    if (!cliente?.telefonoCodigoPais) return '';
-    return getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? '';
   };
 
   useEffect(() => {
@@ -73,9 +66,9 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
         <table className="pedidos-table">
           <colgroup>
             <col style={{ width: '20%' }} />
-            <col style={{ width: '14%' }} />
             <col style={{ width: '7%' }} />
-            <col style={{ width: '8%' }} />
+            <col style={{ width: '15%' }} />
+            <col style={{ width: '6%' }} />
             <col style={{ width: '12%' }} />
             <col style={{ width: '10%' }} />
             <col style={{ width: '7%' }} />
@@ -84,8 +77,8 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
           <thead>
             <tr>
               <th>Cliente</th>
-              <th>Teléfono</th>
               <th>C.P.</th>
+              <th>Folio</th>
               <th>Productos</th>
               <th>Abonado</th>
               <th>Total</th>
@@ -99,9 +92,9 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
         <table className="pedidos-table">
           <colgroup>
             <col style={{ width: '20%' }} />
-            <col style={{ width: '14%' }} />
             <col style={{ width: '7%' }} />
-            <col style={{ width: '8%' }} />
+            <col style={{ width: '15%' }} />
+            <col style={{ width: '6%' }} />
             <col style={{ width: '12%' }} />
             <col style={{ width: '10%' }} />
             <col style={{ width: '7%' }} />
@@ -129,7 +122,6 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
           ) : pedidos.map((pedido, index) => {
             const foto = getClienteFoto(pedido);
             const favorito = getClienteFavorito(pedido);
-            const dialCode = getClienteDialCode(pedido);
             return (
             <tr
               key={pedido.id}
@@ -153,12 +145,12 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                 </div>
               </td>
               <td>
-                <span className="pedidos-table__phone">
-                  {dialCode ? `${dialCode} ${formatTelefono(pedido.clienteTelefono)}` : formatTelefono(pedido.clienteTelefono)}
-                </span>
+                <span className="pedidos-table__cp">{pedido.clienteCodigoPostal || '-'}</span>
               </td>
               <td>
-                <span className="pedidos-table__cp">{pedido.clienteCodigoPostal || '-'}</span>
+                <span className="pedidos-table__folio">
+                  {pedido.folio || '-'}
+                </span>
               </td>
               <td>
                 <div className="pedidos-table__product-cell">

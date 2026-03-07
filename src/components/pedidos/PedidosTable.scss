@@ -152,6 +152,14 @@
     }
   }
 
+  &__folio {
+    font-size: $font-size-sm;
+    font-family: monospace;
+    font-weight: 600;
+    color: $color-gray-400;
+    letter-spacing: 0.5px;
+  }
+
   &__phone {
     font-size: $font-size-sm;
     color: $color-gray-500;

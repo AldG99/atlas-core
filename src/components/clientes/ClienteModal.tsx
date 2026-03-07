@@ -6,13 +6,39 @@ import { useAuth } from '../../hooks/useAuth';
 import PhoneInput from './PhoneInput';
 import './ClienteModal.scss';
 
+const DOMINIOS_DESECHABLES = [
+  'mailinator.com', 'tempmail.com', 'guerrillamail.com', 'throwam.com',
+  'trashmail.com', 'fakeinbox.com', 'sharklasers.com', 'yopmail.com',
+  'dispostable.com', 'maildrop.cc', 'spamgourmet.com', 'trashmail.at',
+  'getairmail.com', 'discard.email', 'mailnull.com',
+];
+
+const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s\-]+$/;
+
+const esTelefonoFicticio = (tel: string): boolean => {
+  // Todos los dígitos iguales: 0000000000, 5555555555
+  if (/^(\d)\1+$/.test(tel)) return true;
+
+  // Secuencia ascendente o descendente estricta
+  let esAscendente = true;
+  let esDescendente = true;
+  for (let i = 1; i < tel.length; i++) {
+    if (parseInt(tel[i]) - parseInt(tel[i - 1]) !== 1) esAscendente = false;
+    if (parseInt(tel[i - 1]) - parseInt(tel[i]) !== 1) esDescendente = false;
+  }
+  if (esAscendente || esDescendente) return true;
+
+  return false;
+};
+
 interface ClienteModalProps {
   cliente?: ClienteFormData;
   onClose: () => void;
   onSave: (data: ClienteFormData) => void;
+  telefonosExistentes?: string[];
 }
 
-const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
+const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: ClienteModalProps) => {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -50,33 +76,81 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof ClienteFormData, string>> = {};
 
+    // Nombre
     if (!formData.nombre.trim()) {
       newErrors.nombre = 'El nombre es requerido';
+    } else if (formData.nombre.trim().length < 2) {
+      newErrors.nombre = 'El nombre debe tener al menos 2 caracteres';
+    } else if (!SOLO_LETRAS.test(formData.nombre.trim())) {
+      newErrors.nombre = 'El nombre solo puede contener letras';
     }
+
+    // Apellido
     if (!formData.apellido.trim()) {
       newErrors.apellido = 'El apellido es requerido';
+    } else if (formData.apellido.trim().length < 2) {
+      newErrors.apellido = 'El apellido debe tener al menos 2 caracteres';
+    } else if (!SOLO_LETRAS.test(formData.apellido.trim())) {
+      newErrors.apellido = 'El apellido solo puede contener letras';
     }
+
+    // Teléfono
     if (!formData.telefono.trim()) {
       newErrors.telefono = 'El teléfono es requerido';
+    } else if (esTelefonoFicticio(formData.telefono)) {
+      newErrors.telefono = 'Ingresa un número de teléfono válido';
+    } else if (telefonosExistentes.includes(formData.telefono)) {
+      newErrors.telefono = 'Ya existe un cliente con este número de teléfono';
     }
+
+    // Correo
+    if (formData.correo && formData.correo.trim()) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) {
+        newErrors.correo = 'El correo no es válido';
+      } else {
+        const dominio = formData.correo.split('@')[1]?.toLowerCase();
+        if (dominio && DOMINIOS_DESECHABLES.includes(dominio)) {
+          newErrors.correo = 'Ingresa un correo electrónico real';
+        }
+      }
+    }
+
+    // Calle
     if (!formData.calle.trim()) {
       newErrors.calle = 'La calle es requerida';
+    } else if (formData.calle.trim().length < 3) {
+      newErrors.calle = 'Ingresa el nombre completo de la calle';
     }
+
+    // Número exterior
     if (!formData.numeroExterior.trim()) {
       newErrors.numeroExterior = 'El número exterior es requerido';
+    } else if (!/\d/.test(formData.numeroExterior)) {
+      newErrors.numeroExterior = 'Debe contener al menos un número';
     }
+
+    // Colonia
     if (!formData.colonia.trim()) {
       newErrors.colonia = 'La colonia es requerida';
+    } else if (formData.colonia.trim().length < 3) {
+      newErrors.colonia = 'Ingresa el nombre completo de la colonia';
     }
+
+    // Ciudad
     if (!formData.ciudad.trim()) {
       newErrors.ciudad = 'La ciudad es requerida';
+    } else if (formData.ciudad.trim().length < 3) {
+      newErrors.ciudad = 'Ingresa el nombre completo de la ciudad';
     }
+
+    // Código postal
     if (!formData.codigoPostal.trim()) {
       newErrors.codigoPostal = 'El código postal es requerido';
+    } else if (!/^\d{5}$/.test(formData.codigoPostal.trim())) {
+      newErrors.codigoPostal = 'El código postal debe tener 5 dígitos';
     }
-    if (formData.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) {
-      newErrors.correo = 'El correo no es válido';
-    }
+
+    // Referencia
     if (!formData.referencia?.trim()) {
       newErrors.referencia = 'La referencia es requerida';
     }
@@ -249,7 +323,7 @@ const ClienteModal = ({ cliente, onClose, onSave }: ClienteModalProps) => {
                   id="telefono"
                   name="telefono"
                   value={formData.telefono}
-                  codigoPais={formData.telefonoCodigoPais}
+                  codigoPais={formData.telefonoCodigoPais ?? 'MX'}
                   onChange={handlePhoneChange('telefono', 'telefonoCodigoPais')}
                   hasError={!!errors.telefono}
                   placeholder="Número de teléfono"
