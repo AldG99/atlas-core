@@ -4,6 +4,8 @@ import { PiArchiveBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import type { Pedido } from '../types/Pedido';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
+import { useClientes } from '../hooks/useClientes';
+import { getCodigoPais } from '../data/codigosPais';
 import { getArchivedPedidos } from '../services/pedidoService';
 import { exportToCSV } from '../utils/formatters';
 import { ROUTES } from '../config/routes';
@@ -32,6 +34,7 @@ const DATE_FILTERS: Record<DateFilter, string> = {
 const Archivo = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { clientes } = useClientes();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -124,7 +127,11 @@ const Archivo = () => {
       showToast('No hay pedidos para exportar', 'warning');
       return;
     }
-    exportToCSV(filteredAndSortedPedidos, 'pedidos_archivados');
+    const pedidosConCodigo = filteredAndSortedPedidos.map(p => ({
+      ...p,
+      clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
+    }));
+    exportToCSV(pedidosConCodigo, 'pedidos_archivados');
     showToast('Archivo exportado correctamente', 'success');
   };
 

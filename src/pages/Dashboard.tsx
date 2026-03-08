@@ -4,6 +4,8 @@ import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArro
 import { usePedidos } from '../hooks/usePedidos';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
+import { useClientes } from '../hooks/useClientes';
+import { getCodigoPais } from '../data/codigosPais';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ROUTES } from '../config/routes';
@@ -47,6 +49,7 @@ const Dashboard = () => {
   } = usePedidos();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { clientes } = useClientes();
 
   // Auto-archivar pedidos entregados hace más de 48 horas
   useEffect(() => {
@@ -175,7 +178,11 @@ const Dashboard = () => {
       showToast('No hay pedidos para exportar', 'warning');
       return;
     }
-    exportToCSV(filteredAndSortedPedidos);
+    const pedidosConCodigo = filteredAndSortedPedidos.map(p => ({
+      ...p,
+      clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
+    }));
+    exportToCSV(pedidosConCodigo);
     showToast('Pedidos exportados', 'success');
   };
 

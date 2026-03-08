@@ -82,9 +82,13 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
 
 interface PedidoForCSV {
   id: string;
+  folio?: string;
   clienteNombre: string;
   clienteTelefono: string;
+  clienteCodigoPais?: string;
+  clienteCodigoPostal?: string;
   productos: ProductoItem[];
+  abonos?: { monto: number; fecha: Date; productoIndex?: number }[];
   total: number;
   notas?: string;
   estado: string;
@@ -92,7 +96,7 @@ interface PedidoForCSV {
 }
 
 export const exportToCSV = (pedidos: PedidoForCSV[], filename: string = 'pedidos'): void => {
-  const headers = ['ID', 'Cliente', 'Teléfono', 'Productos', 'Total', 'Estado', 'Notas', 'Fecha'];
+  const headers = ['Cliente', 'Teléfono', 'C.P.', 'Folio', 'Productos', 'Abonado', 'Total', 'Estado', 'Notas', 'Fecha'];
 
   const escapeCSV = (value: string): string => {
     if (value.includes(',') || value.includes('"') || value.includes('\n')) {
@@ -102,10 +106,12 @@ export const exportToCSV = (pedidos: PedidoForCSV[], filename: string = 'pedidos
   };
 
   const rows = pedidos.map((pedido) => [
-    pedido.id,
     escapeCSV(pedido.clienteNombre),
-    escapeCSV(pedido.clienteTelefono),
+    escapeCSV(pedido.clienteCodigoPais ? `${pedido.clienteCodigoPais} ${formatTelefono(pedido.clienteTelefono)}` : formatTelefono(pedido.clienteTelefono)),
+    escapeCSV(pedido.clienteCodigoPostal || ''),
+    escapeCSV(pedido.folio || ''),
     escapeCSV(formatProductosText(pedido.productos).replace(/\n/g, ' | ')),
+    (pedido.abonos?.reduce((sum, a) => sum + a.monto, 0) ?? 0).toFixed(2),
     pedido.total.toFixed(2),
     pedido.estado,
     escapeCSV(pedido.notas || ''),

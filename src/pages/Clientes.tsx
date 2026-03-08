@@ -120,6 +120,7 @@ const Clientes = () => {
           <ClienteModal
             onClose={() => setIsModalOpen(false)}
             onSave={handleAdd}
+            telefonosExistentes={clientes.map(c => c.telefono)}
           />
         )}
       </div>

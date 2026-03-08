@@ -1,5 +1,7 @@
 import { useReportes } from '../hooks/useReportes';
 import { useToast } from '../hooks/useToast';
+import { useClientes } from '../hooks/useClientes';
+import { getCodigoPais } from '../data/codigosPais';
 import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
 import KPICards from '../components/reportes/KPICards';
@@ -21,13 +23,18 @@ const Reportes = () => {
     setPeriod
   } = useReportes();
   const { showToast } = useToast();
+  const { clientes } = useClientes();
 
   const handleExport = () => {
     if (filteredPedidos.length === 0) {
       showToast('No hay pedidos para exportar', 'warning');
       return;
     }
-    exportToCSV(filteredPedidos, 'reporte_pedidos');
+    const pedidosConCodigo = filteredPedidos.map(p => ({
+      ...p,
+      clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
+    }));
+    exportToCSV(pedidosConCodigo, 'reporte_pedidos');
     showToast('Reporte exportado', 'success');
   };
 
