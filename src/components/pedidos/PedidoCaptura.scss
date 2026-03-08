@@ -113,6 +113,31 @@
     }
   }
 
+  &__products-table {
+    thead th,
+    tbody td {
+      &:nth-child(2) { text-align: center; }  // Cant.
+      &:nth-child(4) { text-align: right; }   // Precio
+      &:nth-child(5) { text-align: right; }   // Abonado
+      &:nth-child(6) { text-align: right; }   // Subtotal
+      &:nth-child(7) { text-align: center; }  // Estado
+    }
+
+    tbody td {
+      &:nth-child(2) { font-weight: 600; }    // Cant.
+      &:nth-child(5) { font-weight: 600; }    // Abonado
+      &:nth-child(6) { font-weight: 600; }    // Subtotal
+    }
+  }
+
+  &__abonos-table {
+    thead th,
+    tbody td {
+      &:nth-child(3) { text-align: right; }   // Monto
+      &:nth-child(4) { text-align: right; }   // Fecha
+    }
+  }
+
   &__clave {
     font-family: monospace;
     font-size: $font-size-xs;
@@ -185,7 +210,6 @@
   &__total-pending { color: #ea580c !important; }
 
   &__notes {
-    margin-top: 10px;
     font-size: $font-size-xs;
     color: $color-gray-500;
     line-height: 1.5;
@@ -194,5 +218,14 @@
   &__notes-label {
     font-weight: 600;
     color: $color-gray-600;
+  }
+
+  &__descarga {
+    margin-top: 16px;
+    padding-top: 10px;
+    border-top: 1px solid $color-gray-200;
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    text-align: right;
   }
 }

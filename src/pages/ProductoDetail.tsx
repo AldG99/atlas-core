@@ -10,9 +10,10 @@ import {
   PiWarehouseBold
 } from 'react-icons/pi';
 import type { Producto, ProductoFormData } from '../types/Producto';
-import { getProductoById, deleteProducto, updateProducto } from '../services/productoService';
+import { getProductoById, deleteProducto, updateProducto, uploadProductoImage } from '../services/productoService';
 import type { CancelDescuentoInfo } from '../services/productoService';
 import { useEtiquetas } from '../hooks/useEtiquetas';
+import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
@@ -22,6 +23,7 @@ import './ProductoDetail.scss';
 const ProductoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { showToast } = useToast();
   const { etiquetas } = useEtiquetas();
 
@@ -31,10 +33,12 @@ const ProductoDetail = () => {
   const [editData, setEditData] = useState<ProductoFormData | null>(null);
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedImageFile = useRef<File | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && editData) {
+      selectedImageFile.current = file;
       const reader = new FileReader();
       reader.onloadend = () => {
         setEditData({ ...editData, imagen: reader.result as string });
@@ -116,13 +120,21 @@ const ProductoDetail = () => {
   const cancelEditing = () => {
     setIsEditing(false);
     setEditData(null);
+    selectedImageFile.current = null;
   };
 
   const handleSave = async () => {
-    if (!producto || !editData) return;
+    if (!producto || !editData || !user) return;
     try {
       setSaving(true);
       const dataToSave = { ...editData };
+
+      // Si el usuario seleccionó una nueva imagen, subirla a Storage primero
+      if (selectedImageFile.current) {
+        const url = await uploadProductoImage(selectedImageFile.current, user.uid);
+        dataToSave.imagen = url;
+        selectedImageFile.current = null;
+      }
 
       let cancelledDescuento: CancelDescuentoInfo | undefined;
       const hadDescuento = producto.descuento && producto.descuento > 0 && producto.fechaFinDescuento;

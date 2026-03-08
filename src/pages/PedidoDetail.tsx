@@ -73,6 +73,7 @@ const PedidoDetail = () => {
   const abonoScrollRef = useRef<HTMLDivElement>(null);
   const capturaRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
+  const [fechaDescarga, setFechaDescarga] = useState<Date | null>(null);
 
   const fetchPedido = useCallback(async () => {
     if (!id || !user) return;
@@ -223,6 +224,8 @@ const PedidoDetail = () => {
   const handleDownload = async () => {
     if (!capturaRef.current || !pedido) return;
     setDownloading(true);
+    setFechaDescarga(new Date());
+    await new Promise(resolve => setTimeout(resolve, 50));
     try {
       const dataUrl = await toPng(capturaRef.current, { pixelRatio: 2 });
       const link = document.createElement('a');
@@ -723,7 +726,7 @@ const PedidoDetail = () => {
             </div>
           </div>
 
-          <div className="pedido-detail__section">
+          <div className="pedido-detail__section pedido-detail__section--notes">
             <div className="pedido-detail__notes">
               <strong>Notas:</strong>{' '}
               {pedido.notas ? pedido.notas : <span className="pedido-detail__notes--empty">Sin comentarios</span>}
@@ -1026,7 +1029,7 @@ const PedidoDetail = () => {
       )}
       {/* Componente de captura fuera de pantalla */}
       <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', zIndex: -1 }}>
-        <PedidoCaptura ref={capturaRef} pedido={pedido} cobertura={cobertura} />
+        <PedidoCaptura ref={capturaRef} pedido={pedido} cobertura={cobertura} telefonoCodigoPais={clienteData?.telefonoCodigoPais} fechaDescarga={fechaDescarga} />
       </div>
     </MainLayout>
   );

@@ -392,6 +392,14 @@ $bottombar-height: 64px;
       padding: 0;
     }
 
+    &--notes {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
     &--no-pad {
       padding: 0;
       padding-bottom: $spacing-xl;
@@ -511,7 +519,7 @@ $bottombar-height: 64px;
 
     tbody {
       tr {
-        height: 36px;
+        height: 32px;
         border-bottom: 1px solid $color-gray-100;
 
         &:last-child {
@@ -580,6 +588,8 @@ $bottombar-height: 64px;
   }
 
   &__product-total-row {
+    height: 32px;
+
     td:nth-child(6),
     td:nth-child(7) {
       text-align: right;

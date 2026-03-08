@@ -1,16 +1,19 @@
 import { forwardRef } from 'react';
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
-import { formatCurrency, formatDate, formatShortDate, getTotalPagado } from '../../utils/formatters';
+import { formatCurrency, formatDate, formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
+import { getCodigoPais } from '../../data/codigosPais';
 import './PedidoCaptura.scss';
 
 interface PedidoCapturaProps {
   pedido: Pedido;
   cobertura: number[];
+  telefonoCodigoPais?: string;
+  fechaDescarga?: Date | null;
 }
 
 const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
-  ({ pedido, cobertura }, ref) => {
+  ({ pedido, cobertura, telefonoCodigoPais, fechaDescarga }, ref) => {
     const pagado = getTotalPagado(pedido);
     const restante = pedido.total - pagado;
     const abonos = [...(pedido.abonos || [])].sort(
@@ -23,7 +26,11 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
         <div className="pedido-captura__header">
           <div className="pedido-captura__client">
             <span className="pedido-captura__client-name">{pedido.clienteNombre}</span>
-            <span className="pedido-captura__client-phone">{pedido.clienteTelefono}</span>
+            <span className="pedido-captura__client-phone">
+              {telefonoCodigoPais
+                ? `${getCodigoPais(telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(pedido.clienteTelefono)}`
+                : formatTelefono(pedido.clienteTelefono)}
+            </span>
           </div>
           <div className="pedido-captura__meta">
             {pedido.folio && (
@@ -42,15 +49,15 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
         {/* Tabla de productos */}
         <div className="pedido-captura__section">
           <span className="pedido-captura__section-title">Productos</span>
-          <table className="pedido-captura__table">
+          <table className="pedido-captura__table pedido-captura__products-table">
             <thead>
               <tr>
                 <th>Clave</th>
                 <th>Cant.</th>
                 <th>Producto</th>
-                <th>Precio unit.</th>
+                <th>Precio</th>
+                <th>Abonado</th>
                 <th>Subtotal</th>
-                <th>Pagado</th>
                 <th>Estado</th>
               </tr>
             </thead>
@@ -63,16 +70,16 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
                 return (
                   <tr key={idx}>
                     <td className="pedido-captura__clave">{p.clave || '-'}</td>
-                    <td className="pedido-captura__center">{p.cantidad}</td>
+                    <td>{p.cantidad}</td>
                     <td>
                       {p.nombre}
                       {p.descuento && p.descuento > 0 ? (
                         <span className="pedido-captura__discount"> (-{p.descuento}%)</span>
                       ) : null}
                     </td>
-                    <td className="pedido-captura__right">{formatCurrency(p.precioUnitario)}</td>
-                    <td className="pedido-captura__right">{formatCurrency(p.subtotal)}</td>
-                    <td className="pedido-captura__right">{formatCurrency(cubierto)}</td>
+                    <td>{formatCurrency(p.precioUnitario)}</td>
+                    <td>{formatCurrency(cubierto)}</td>
+                    <td>{formatCurrency(p.subtotal)}</td>
                     <td className={`pedido-captura__pago-status pedido-captura__pago-status--${status}`}>
                       {status === 'paid'
                         ? 'Pagado'
@@ -87,29 +94,45 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
           </table>
         </div>
 
+        {/* Notas */}
+        {pedido.notas && (
+          <div className="pedido-captura__section">
+            <div className="pedido-captura__notes">
+              <span className="pedido-captura__notes-label">Notas:</span> {pedido.notas}
+            </div>
+          </div>
+        )}
+
         {/* Tabla de abonos */}
         {abonos.length > 0 && (
           <div className="pedido-captura__section">
             <span className="pedido-captura__section-title">Pagos registrados</span>
-            <table className="pedido-captura__table">
+            <table className="pedido-captura__table pedido-captura__abonos-table">
               <thead>
                 <tr>
-                  <th>Fecha</th>
+                  <th>Clave</th>
                   <th>Producto</th>
                   <th>Monto</th>
+                  <th>Fecha</th>
                 </tr>
               </thead>
               <tbody>
                 {abonos.map((abono, i) => (
                   <tr key={i}>
-                    <td>{formatShortDate(abono.fecha)}</td>
+                    <td className="pedido-captura__clave">
+                      {typeof abono.productoIndex === 'number' &&
+                      pedido.productos[abono.productoIndex]
+                        ? pedido.productos[abono.productoIndex].clave || '-'
+                        : '-'}
+                    </td>
                     <td>
                       {typeof abono.productoIndex === 'number' &&
                       pedido.productos[abono.productoIndex]
                         ? pedido.productos[abono.productoIndex].nombre
                         : 'General'}
                     </td>
-                    <td className="pedido-captura__right">{formatCurrency(abono.monto)}</td>
+                    <td>{formatCurrency(abono.monto)}</td>
+                    <td>{formatShortDate(abono.fecha)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -133,12 +156,16 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
               {restante <= 0 ? 'Liquidado' : formatCurrency(restante)}
             </strong>
           </div>
-          {pedido.notas && (
-            <div className="pedido-captura__notes">
-              <span className="pedido-captura__notes-label">Notas:</span> {pedido.notas}
-            </div>
-          )}
         </div>
+
+        {fechaDescarga && (
+          <div className="pedido-captura__descarga">
+            Generado el{' '}
+            {fechaDescarga.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}
+            {' a las '}
+            {fechaDescarga.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
+          </div>
+        )}
       </div>
     );
   }
