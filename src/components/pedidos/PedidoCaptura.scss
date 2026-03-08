@@ -1,0 +1,198 @@
+@use '../../styles/abstracts/variables' as *;
+
+.pedido-captura {
+  width: 680px;
+  background-color: $color-white;
+  font-family: $font-family;
+  font-size: $font-size-sm;
+  color: $color-gray-800;
+  padding: 24px;
+  box-sizing: border-box;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 16px;
+    border-bottom: 2px solid $color-gray-900;
+    margin-bottom: 20px;
+  }
+
+  &__client {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__client-name {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-gray-900;
+  }
+
+  &__client-phone {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  &__folio {
+    font-family: monospace;
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-gray-500;
+    letter-spacing: 0.5px;
+  }
+
+  &__date {
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+  }
+
+  &__estado {
+    font-size: $font-size-xs;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__section {
+    margin-bottom: 20px;
+  }
+
+  &__section-title {
+    display: block;
+    font-size: $font-size-xs;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: $color-gray-500;
+    margin-bottom: 8px;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+
+    thead {
+      background-color: $color-gray-50;
+
+      th {
+        padding: 6px 8px;
+        font-size: $font-size-xs;
+        font-weight: 600;
+        color: $color-gray-600;
+        text-align: left;
+        border-bottom: 1px solid $color-gray-200;
+        white-space: nowrap;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $color-gray-100;
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+
+      td {
+        padding: 7px 8px;
+        font-size: $font-size-sm;
+        color: $color-gray-800;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  &__clave {
+    font-family: monospace;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    color: $color-primary;
+    white-space: nowrap;
+  }
+
+  &__center {
+    text-align: center;
+    font-weight: 600;
+  }
+
+  &__right {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  &__discount {
+    font-size: $font-size-xs;
+    color: #dc2626;
+    font-weight: 600;
+  }
+
+  &__pago-status {
+    font-size: $font-size-xs;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &--paid    { color: #16a34a; }
+    &--partial { color: #ea580c; }
+    &--pending { color: $color-gray-400; }
+  }
+
+  &__footer {
+    border-top: 2px solid $color-gray-900;
+    padding-top: 14px;
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+
+    strong {
+      font-size: $font-size-base;
+      color: $color-gray-900;
+    }
+
+    &--highlight {
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid $color-gray-200;
+      font-weight: 600;
+      color: $color-gray-900;
+
+      strong {
+        font-size: $font-size-lg;
+      }
+    }
+  }
+
+  &__total-paid    { color: #16a34a !important; }
+  &__total-pending { color: #ea580c !important; }
+
+  &__notes {
+    margin-top: 10px;
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+    line-height: 1.5;
+  }
+
+  &__notes-label {
+    font-weight: 600;
+    color: $color-gray-600;
+  }
+}

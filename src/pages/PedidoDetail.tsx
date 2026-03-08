@@ -12,7 +12,10 @@ import {
   PiTrashBold,
   PiStarFill,
   PiWarehouseBold,
+  PiDownloadSimpleBold,
 } from 'react-icons/pi';
+import { toPng } from 'html-to-image';
+import PedidoCaptura from '../components/pedidos/PedidoCaptura';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import type { Producto, Etiqueta } from '../types/Producto';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
@@ -68,6 +71,8 @@ const PedidoDetail = () => {
   const [discountTooltip, setDiscountTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const tableScrollRef = useRef<HTMLDivElement>(null);
   const abonoScrollRef = useRef<HTMLDivElement>(null);
+  const capturaRef = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
 
   const fetchPedido = useCallback(async () => {
     if (!id || !user) return;
@@ -215,6 +220,22 @@ const PedidoDetail = () => {
     return precio * (1 - descuento / 100);
   };
 
+  const handleDownload = async () => {
+    if (!capturaRef.current || !pedido) return;
+    setDownloading(true);
+    try {
+      const dataUrl = await toPng(capturaRef.current, { pixelRatio: 2 });
+      const link = document.createElement('a');
+      link.download = `${pedido.folio || pedido.id}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch {
+      showToast('Error al generar imagen', 'error');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const handleCopy = async () => {
     if (!pedido) return;
     const message = formatPedidoForWhatsApp(pedido);
@@ -350,6 +371,14 @@ const PedidoDetail = () => {
               ) : (
                 <PiCopyBold size={20} />
               )}
+            </button>
+            <button
+              onClick={handleDownload}
+              className="pedido-detail__icon-btn"
+              title="Descargar imagen"
+              disabled={downloading}
+            >
+              <PiDownloadSimpleBold size={20} />
             </button>
             <span className="pedido-detail__top-divider" />
             <button
@@ -995,6 +1024,10 @@ const PedidoDetail = () => {
           {discountTooltip.text}
         </div>
       )}
+      {/* Componente de captura fuera de pantalla */}
+      <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', zIndex: -1 }}>
+        <PedidoCaptura ref={capturaRef} pedido={pedido} cobertura={cobertura} />
+      </div>
     </MainLayout>
   );
 };
