@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   PiArrowLeftBold,
@@ -170,11 +170,31 @@ const PedidoDetail = () => {
     if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }, [focusedAbonoRow]);
 
-  const getClienteFoto = (p: Pedido): string | undefined => {
-    if (p.clienteFoto) return p.clienteFoto;
-    const cliente = clientes.find(c => c.telefono === p.clienteTelefono);
-    return cliente?.fotoPerfil;
-  };
+  const cobertura = useMemo(() => {
+    if (!pedido) return [] as number[];
+    const abonos = pedido.abonos || [];
+    const asignadoPorProducto: number[] = pedido.productos.map(() => 0);
+    let generalPool = 0;
+    abonos.forEach(a => {
+      if (
+        typeof a.productoIndex === 'number' &&
+        a.productoIndex >= 0 &&
+        a.productoIndex < pedido.productos.length
+      ) {
+        asignadoPorProducto[a.productoIndex] += a.monto;
+      } else {
+        generalPool += a.monto;
+      }
+    });
+    const result = [...asignadoPorProducto];
+    pedido.productos.forEach((p, idx) => {
+      const falta = Math.max(0, p.subtotal - result[idx]);
+      const porcion = Math.min(generalPool, falta);
+      result[idx] += porcion;
+      generalPool -= porcion;
+    });
+    return result;
+  }, [pedido]);
 
   const getEtiquetasForClave = (clave?: string): Etiqueta[] => {
     if (!clave) return [];
@@ -263,15 +283,13 @@ const PedidoDetail = () => {
     try {
       const productoIndex =
         abonoProducto === 'general' ? undefined : parseInt(abonoProducto, 10);
-      const nuevoAbono = await addAbono(pedido.id, monto, productoIndex);
+      const { abono: nuevoAbono, nuevoEstado } = await addAbono(pedido.id, monto, productoIndex, {
+        total: pedido.total,
+        estadoActual: pedido.estado,
+        pagadoHastaAhora: totalPagado
+      });
       const updatedAbonos = [...(pedido.abonos || []), nuevoAbono];
-      const nuevoPagado = updatedAbonos.reduce((sum, a) => sum + a.monto, 0);
-      let nuevoEstado = pedido.estado;
-      if (nuevoPagado >= pedido.total && pedido.estado === 'pendiente') {
-        nuevoEstado = 'en_preparacion';
-        await updatePedidoStatus(pedido.id, nuevoEstado);
-      }
-      setPedido({ ...pedido, abonos: updatedAbonos, estado: nuevoEstado });
+      setPedido({ ...pedido, abonos: updatedAbonos, estado: nuevoEstado ?? pedido.estado });
       setAbonoInput('');
       setAbonoProducto('general');
       showToast('Abono registrado', 'success');
@@ -293,33 +311,10 @@ const PedidoDetail = () => {
   if (!pedido) return null;
 
   const pagado = getTotalPagado(pedido);
-  const clienteFoto = getClienteFoto(pedido);
   const clienteData = clientes.find(c => c.telefono === pedido.clienteTelefono);
+  const clienteFoto = pedido.clienteFoto ?? clienteData?.fotoPerfil;
   const clienteFavorito = clienteData?.favorito ?? false;
   const abonos = pedido.abonos || [];
-
-  // Calculate coverage per product
-  const asignadoPorProducto: number[] = pedido.productos.map(() => 0);
-  const abonosGenerales: number[] = [];
-  abonos.forEach(a => {
-    if (
-      typeof a.productoIndex === 'number' &&
-      a.productoIndex >= 0 &&
-      a.productoIndex < pedido.productos.length
-    ) {
-      asignadoPorProducto[a.productoIndex] += a.monto;
-    } else {
-      abonosGenerales.push(a.monto);
-    }
-  });
-  const cobertura = [...asignadoPorProducto];
-  let generalPool = abonosGenerales.reduce((s, m) => s + m, 0);
-  pedido.productos.forEach((p, idx) => {
-    const falta = Math.max(0, p.subtotal - cobertura[idx]);
-    const porcion = Math.min(generalPool, falta);
-    cobertura[idx] += porcion;
-    generalPool -= porcion;
-  });
 
   const restante = pedido.total - pagado;
   const liquidado = pagado >= pedido.total;
@@ -364,7 +359,7 @@ const PedidoDetail = () => {
             >
               <PiTrashBold size={20} />
             </button>
-            {(!pedido.archivado || pedido.estado === 'entregado') && (
+            {!pedido.archivado && (
               <>
                 <div className="pedido-detail__top-bar-abono">
                   <select
@@ -548,6 +543,10 @@ const PedidoDetail = () => {
                                   <span
                                     className="pedido-detail__product-discount-badge"
                                     onMouseEnter={tooltipText ? (e) => {
+                                      const rect = e.currentTarget.getBoundingClientRect();
+                                      setDiscountTooltip({ text: tooltipText, x: rect.left + rect.width / 2, y: rect.top });
+                                    } : undefined}
+                                    onMouseMove={tooltipText ? (e) => {
                                       const rect = e.currentTarget.getBoundingClientRect();
                                       setDiscountTooltip({ text: tooltipText, x: rect.left + rect.width / 2, y: rect.top });
                                     } : undefined}
@@ -748,7 +747,7 @@ const PedidoDetail = () => {
                           )
                           .map((abono, i) => (
                             <tr
-                              key={i}
+                              key={`${new Date(abono.fecha).getTime()}-${abono.monto}-${abono.productoIndex ?? 'g'}`}
                               className={focusedAbonoRow === i ? 'pedido-detail__product-row--focused' : ''}
                               onClick={() => { setFocusedAbonoRow(i); setFocusedRow(null); }}
                             >
@@ -786,7 +785,7 @@ const PedidoDetail = () => {
         </div>
 
         {/* Fixed Bottom Bar */}
-        {(!pedido.archivado || pedido.estado === 'entregado') && (
+        {!pedido.archivado && (
           <div className="pedido-detail__bottom-bar">
             <div className="pedido-detail__bottom-bar-inner">
               <div className="pedido-detail__bottom-bar-info">

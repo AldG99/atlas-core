@@ -8,7 +8,6 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import NewPedido from './pages/NewPedido';
-import EditPedido from './pages/EditPedido';
 import PedidoDetail from './pages/PedidoDetail';
 import Clientes from './pages/Clientes';
 import ClienteDetail from './pages/ClienteDetail';
@@ -50,14 +49,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <PedidoDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path={ROUTES.EDIT_PEDIDO}
-            element={
-              <ProtectedRoute>
-                <EditPedido />
               </ProtectedRoute>
             }
           />

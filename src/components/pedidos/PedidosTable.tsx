@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { PiStarFill } from 'react-icons/pi';
+import { PiStarFill, PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
+
+const PAGE_SIZE = 20;
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatCurrency, formatShortDate, getTotalPagado } from '../../utils/formatters';
@@ -19,7 +21,16 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
   const location = useLocation();
   const { clientes } = useClientes();
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const totalPages = Math.ceil(pedidos.length / PAGE_SIZE);
+  const paginatedPedidos = pedidos.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  useEffect(() => {
+    setPage(0);
+    setFocusedRow(null);
+  }, [pedidos]);
 
   const getClienteFoto = (pedido: Pedido): string | undefined => {
     if (pedido.clienteFoto) return pedido.clienteFoto;
@@ -33,25 +44,25 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
   };
 
   useEffect(() => {
-    if (!pedidos.length) return;
+    if (!paginatedPedidos.length) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName.toLowerCase();
       if (['input', 'select', 'textarea'].includes(tag)) return;
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, pedidos.length - 1));
+        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, paginatedPedidos.length - 1));
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
       } else if (e.key === 'Enter' && focusedRow !== null) {
         e.preventDefault();
-        navigate(`/pedido/${pedidos[focusedRow].id}`, { state: { from: location.pathname } });
+        navigate(`/pedido/${paginatedPedidos[focusedRow].id}`, { state: { from: location.pathname } });
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [pedidos, focusedRow, navigate, location.pathname]);
+  }, [paginatedPedidos, focusedRow, navigate, location.pathname]);
 
   useEffect(() => {
     if (focusedRow === null || !tableContainerRef.current) return;
@@ -119,7 +130,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                 {searchTerm?.trim() ? `No se encontraron pedidos para "${searchTerm}"` : 'No hay ningún pedido agregado'}
               </td>
             </tr>
-          ) : pedidos.map((pedido, index) => {
+          ) : paginatedPedidos.map((pedido, index) => {
             const foto = getClienteFoto(pedido);
             const favorito = getClienteFavorito(pedido);
             return (
@@ -207,8 +218,25 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
       </table>
     </div>
 
-      {pedidos.length > 0 && (
+      {totalPages > 1 && (
         <div className="pedidos-table__pagination">
+          <button
+            className="pedidos-table__page-btn"
+            onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
+            disabled={page === 0}
+          >
+            <PiCaretLeftBold size={14} />
+          </button>
+          <span className="pedidos-table__page-info">
+            {page + 1} / {totalPages}
+          </span>
+          <button
+            className="pedidos-table__page-btn"
+            onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
+            disabled={page === totalPages - 1}
+          >
+            <PiCaretRightBold size={14} />
+          </button>
         </div>
       )}
     </div>

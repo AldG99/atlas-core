@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import type { QueryDocumentSnapshot } from 'firebase/firestore';
 import type { Pedido, PedidoFormData, PedidoStatus } from '../types/Pedido';
 import {
   getPedidos,
   getPedidosByStatus,
   getArchivedPedidos,
   createPedido,
-  updatePedido,
   updatePedidoStatus,
   deletePedido,
   archivePedido,
@@ -17,9 +17,12 @@ import { useAuth } from './useAuth';
 export const usePedidos = () => {
   const { user } = useAuth();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [allPedidos, setAllPedidos] = useState<Pedido[]>([]);
   const [showArchived, setShowArchived] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
 
   const fetchPedidos = useCallback(async () => {
     if (!user) return;
@@ -27,15 +30,38 @@ export const usePedidos = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getPedidos(user.uid);
-      // Filter out archived by default
-      setPedidos(data.filter((p) => !p.archivado));
+      const result = await getPedidos(user.uid);
+      const active = result.pedidos.filter((p) => !p.archivado);
+      setPedidos(active);
+      setAllPedidos(active);
+      lastDocRef.current = result.lastDoc;
+      setHasMore(result.hasMore);
+      setShowArchived(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar pedidos');
     } finally {
       setLoading(false);
     }
   }, [user]);
+
+  const loadMore = useCallback(async () => {
+    if (!user || !hasMore || !lastDocRef.current) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await getPedidos(user.uid, lastDocRef.current);
+      const active = result.pedidos.filter((p) => !p.archivado);
+      setPedidos((prev) => [...prev, ...active]);
+      setAllPedidos((prev) => [...prev, ...active]);
+      lastDocRef.current = result.lastDoc;
+      setHasMore(result.hasMore);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al cargar más pedidos');
+    } finally {
+      setLoading(false);
+    }
+  }, [user, hasMore]);
 
   const fetchArchived = useCallback(async () => {
     if (!user) return;
@@ -46,6 +72,8 @@ export const usePedidos = () => {
       const data = await getArchivedPedidos(user.uid);
       setPedidos(data);
       setShowArchived(true);
+      setHasMore(false);
+      lastDocRef.current = null;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar pedidos archivados');
     } finally {
@@ -61,6 +89,8 @@ export const usePedidos = () => {
       setError(null);
       const data = await getPedidosByStatus(user.uid, estado);
       setPedidos(data.filter((p) => !p.archivado));
+      setHasMore(false);
+      lastDocRef.current = null;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar pedidos');
     } finally {
@@ -75,6 +105,7 @@ export const usePedidos = () => {
       setError(null);
       const newPedido = await createPedido(data, user.uid);
       setPedidos((prev) => [newPedido, ...prev]);
+      setAllPedidos((prev) => [newPedido, ...prev]);
       return newPedido;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al crear pedido');
@@ -82,31 +113,19 @@ export const usePedidos = () => {
     }
   }, [user]);
 
-  const editPedido = useCallback(async (pedidoId: string, data: Partial<PedidoFormData>) => {
-    try {
-      setError(null);
-      await updatePedido(pedidoId, data);
-      setPedidos((prev) =>
-        prev.map((p) => (p.id === pedidoId ? { ...p, ...data } : p))
-      );
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al actualizar pedido');
-      throw err;
-    }
-  }, []);
-
   const changeStatus = useCallback(async (pedidoId: string, estado: PedidoStatus) => {
     try {
       setError(null);
       await updatePedidoStatus(pedidoId, estado);
-      setPedidos((prev) =>
+      const updateFn = (prev: Pedido[]) =>
         prev.map((p) => {
           if (p.id !== pedidoId) return p;
           const updated = { ...p, estado };
           if (estado === 'entregado') updated.fechaEntrega = new Date();
           return updated;
-        })
-      );
+        });
+      setPedidos(updateFn);
+      setAllPedidos(updateFn);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cambiar estado');
       throw err;
@@ -117,7 +136,9 @@ export const usePedidos = () => {
     try {
       setError(null);
       await deletePedido(pedidoId);
-      setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
+      const filterFn = (prev: Pedido[]) => prev.filter((p) => p.id !== pedidoId);
+      setPedidos(filterFn);
+      setAllPedidos(filterFn);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al eliminar pedido');
       throw err;
@@ -128,7 +149,9 @@ export const usePedidos = () => {
     try {
       setError(null);
       await archivePedido(pedidoId);
-      setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
+      const filterFn = (prev: Pedido[]) => prev.filter((p) => p.id !== pedidoId);
+      setPedidos(filterFn);
+      setAllPedidos(filterFn);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al archivar pedido');
       throw err;
@@ -149,24 +172,30 @@ export const usePedidos = () => {
   const registrarAbono = useCallback(async (pedidoId: string, monto: number, productoIndex?: number) => {
     try {
       setError(null);
-      const nuevoAbono = await addAbono(pedidoId, monto, productoIndex);
-      setPedidos((prev) =>
+      const pedido = pedidos.find((p) => p.id === pedidoId);
+      const opts = pedido
+        ? {
+            total: pedido.total,
+            estadoActual: pedido.estado,
+            pagadoHastaAhora: (pedido.abonos || []).reduce((s, a) => s + a.monto, 0)
+          }
+        : undefined;
+
+      const { abono: nuevoAbono, nuevoEstado } = await addAbono(pedidoId, monto, productoIndex, opts);
+
+      const updateFn = (prev: Pedido[]) =>
         prev.map((p) => {
           if (p.id !== pedidoId) return p;
           const updatedAbonos = [...(p.abonos || []), nuevoAbono];
-          const nuevoPagado = updatedAbonos.reduce((sum, a) => sum + a.monto, 0);
-          const nuevoEstado = nuevoPagado >= p.total && p.estado === 'pendiente' ? 'en_preparacion' : p.estado;
-          if (nuevoEstado !== p.estado) {
-            updatePedidoStatus(pedidoId, nuevoEstado).catch(() => {});
-          }
-          return { ...p, abonos: updatedAbonos, estado: nuevoEstado };
-        })
-      );
+          return { ...p, abonos: updatedAbonos, estado: nuevoEstado ?? p.estado };
+        });
+      setPedidos(updateFn);
+      setAllPedidos(updateFn);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al registrar abono');
       throw err;
     }
-  }, []);
+  }, [pedidos]);
 
   useEffect(() => {
     fetchPedidos();
@@ -174,14 +203,16 @@ export const usePedidos = () => {
 
   return {
     pedidos,
+    allPedidos,
     loading,
     error,
+    hasMore,
     showArchived,
     fetchPedidos,
     fetchArchived,
     fetchByStatus,
+    loadMore,
     addPedido,
-    editPedido,
     changeStatus,
     removePedido,
     archive,

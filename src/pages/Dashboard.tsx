@@ -6,11 +6,12 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useClientes } from '../hooks/useClientes';
 import { getCodigoPais } from '../data/codigosPais';
-import type { Pedido, PedidoStatus } from '../types/Pedido';
+import type { PedidoStatus } from '../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ROUTES } from '../config/routes';
 import { archiveAllDelivered } from '../services/pedidoService';
-import { exportToCSV } from '../utils/formatters';
+import { exportToCSV, generateCSVContent } from '../utils/formatters';
+import { uploadCSVToDrive } from '../services/googleDriveService';
 import MainLayout from '../layouts/MainLayout';
 import PedidosTable from '../components/pedidos/PedidosTable';
 import './Dashboard.scss';
@@ -39,13 +40,15 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
   const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
-  const [allPedidos, setAllPedidos] = useState<Pedido[]>([]);
   const {
     pedidos,
+    allPedidos,
     loading,
     error,
+    hasMore,
     fetchPedidos,
-    fetchByStatus
+    fetchByStatus,
+    loadMore
   } = usePedidos();
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -64,12 +67,6 @@ const Dashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
 
-  // Guardar todos los pedidos cuando el filtro es 'todos'
-  useEffect(() => {
-    if (filterStatus === 'todos') {
-      setAllPedidos(pedidos);
-    }
-  }, [pedidos, filterStatus]);
 
   // Conteo de pedidos por estado
   const statusCounts = useMemo(() => {
@@ -173,6 +170,34 @@ const Dashboard = () => {
     }
   };
 
+  const [uploadingDrive, setUploadingDrive] = useState(false);
+
+  const handleGoogleDrive = async () => {
+    if (filteredAndSortedPedidos.length === 0) {
+      showToast('No hay pedidos para exportar', 'warning');
+      return;
+    }
+    setUploadingDrive(true);
+    try {
+      const pedidosConCodigo = filteredAndSortedPedidos.map(p => ({
+        ...p,
+        clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
+      }));
+      const csvContent = generateCSVContent(pedidosConCodigo);
+      const fileName = `pedidos_${new Date().toISOString().split('T')[0]}.csv`;
+      const link = await uploadCSVToDrive(csvContent, fileName);
+      showToast('Archivo subido a Google Drive', 'success');
+      window.open(link, '_blank');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      if (msg !== 'popup_closed_by_user') {
+        showToast('Error al subir a Google Drive', 'error');
+      }
+    } finally {
+      setUploadingDrive(false);
+    }
+  };
+
   const handleExport = () => {
     if (filteredAndSortedPedidos.length === 0) {
       showToast('No hay pedidos para exportar', 'warning');
@@ -193,12 +218,13 @@ const Dashboard = () => {
           <h1>Mis Pedidos</h1>
           <div className="dashboard__header-actions">
             <button
-              onClick={() => {}}
+              onClick={handleGoogleDrive}
               className="btn btn--outline"
               title="Exportar a Google Drive"
+              disabled={uploadingDrive}
             >
               <PiCloudArrowUpBold size={18} style={{ marginRight: '6px' }} />
-              Google Drive
+              {uploadingDrive ? 'Subiendo...' : 'Google Drive'}
             </button>
             <button
               onClick={handleExport}
@@ -316,6 +342,17 @@ const Dashboard = () => {
           error={error}
           searchTerm={searchTerm}
         />
+        {hasMore && filterStatus === 'todos' && !searchTerm.trim() && (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0', flexShrink: 0 }}>
+            <button
+              className="btn btn--outline"
+              onClick={loadMore}
+              disabled={loading}
+            >
+              {loading ? 'Cargando...' : 'Cargar más pedidos'}
+            </button>
+          </div>
+        )}
       </div>
     </MainLayout>
   );

@@ -95,15 +95,15 @@ interface PedidoForCSV {
   fechaCreacion: Date;
 }
 
-export const exportToCSV = (pedidos: PedidoForCSV[], filename: string = 'pedidos'): void => {
-  const headers = ['Cliente', 'Teléfono', 'C.P.', 'Folio', 'Productos', 'Abonado', 'Total', 'Estado', 'Notas', 'Fecha'];
+const escapeCSV = (value: string): string => {
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+};
 
-  const escapeCSV = (value: string): string => {
-    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-      return `"${value.replace(/"/g, '""')}"`;
-    }
-    return value;
-  };
+export const generateCSVContent = (pedidos: PedidoForCSV[]): string => {
+  const headers = ['Cliente', 'Teléfono', 'C.P.', 'Folio', 'Productos', 'Abonado', 'Total', 'Estado', 'Notas', 'Fecha'];
 
   const rows = pedidos.map((pedido) => [
     escapeCSV(pedido.clienteNombre),
@@ -118,10 +118,11 @@ export const exportToCSV = (pedidos: PedidoForCSV[], filename: string = 'pedidos
     formatDate(pedido.fechaCreacion)
   ]);
 
-  const csvContent = [
-    headers.join(','),
-    ...rows.map((row) => row.join(','))
-  ].join('\n');
+  return [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+};
+
+export const exportToCSV = (pedidos: PedidoForCSV[], filename: string = 'pedidos'): void => {
+  const csvContent = generateCSVContent(pedidos);
 
   const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
