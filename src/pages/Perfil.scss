@@ -1,0 +1,398 @@
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+$topbar-height: 52px;
+
+.perfil-page {
+  position: fixed;
+  inset: 0;
+  background-color: $color-gray-50;
+  z-index: 200;
+  overflow-y: auto;
+}
+
+.perfil {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 56px;
+  padding-bottom: 24px;
+  min-height: 100%;
+
+  // Controles flotantes
+  &__controls {
+    position: fixed;
+    top: $spacing-md;
+    left: $spacing-md;
+    right: $spacing-md;
+    z-index: 201;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+
+    > * { pointer-events: all; }
+  }
+
+  &__action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: $spacing-xs;
+    transition: color $transition-fast;
+
+    &--primary {
+      color: $color-gray-500;
+      &:hover { color: $color-primary; }
+    }
+  }
+
+  &__back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $color-gray-600;
+    cursor: pointer;
+    padding: $spacing-xs;
+    transition: color $transition-fast;
+
+    &:hover { color: $color-gray-900; }
+  }
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: 700;
+    color: $color-gray-900;
+    margin: 0 0 $spacing-sm;
+
+    @include sm {
+      font-size: $font-size-2xl;
+    }
+  }
+
+  &__top-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-xs;
+    }
+  }
+
+  &__icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $color-gray-600;
+    cursor: pointer;
+    padding: $spacing-xs;
+    &:hover { color: $color-gray-800; }
+  }
+
+  // Body
+  &__body {
+    padding: $spacing-sm $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    @include md {
+      padding: $spacing-md $spacing-lg;
+    }
+  }
+
+  // Avatar
+  &__avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-md $spacing-md $spacing-sm;
+    border-bottom: 1px solid $color-gray-100;
+  }
+
+  &__avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: $border-radius-lg;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+
+    span {
+      color: $color-white;
+      font-size: $font-size-xl;
+      font-weight: 700;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &--editable {
+      cursor: pointer;
+      &:hover .perfil__avatar-overlay { opacity: 1; }
+    }
+  }
+
+  &__avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-white;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    border-radius: $border-radius-lg;
+  }
+
+  &__avatar-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  &__negocio {
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-gray-800;
+  }
+
+  &__email {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+
+  &__remove-photo {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    background: none;
+    border: none;
+    color: $color-danger;
+    font-size: $font-size-xs;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    &:hover { text-decoration: underline; }
+  }
+
+  // Estadísticas
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-sm;
+  }
+
+  &__stat {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    background-color: $color-white;
+    border: 1px solid $color-gray-200;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+  }
+
+  &__stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: rgba($color-primary, 0.08);
+    color: $color-primary;
+    border-radius: $border-radius-md;
+    flex-shrink: 0;
+  }
+
+  &__stat-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__stat-value {
+    font-size: $font-size-xl;
+    font-weight: 700;
+    color: $color-gray-900;
+    line-height: 1;
+  }
+
+  &__stat-label {
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+    margin-top: 2px;
+  }
+
+  // Card de campos
+  &__card {
+    background-color: $color-white;
+    border: 1px solid $color-gray-200;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+  }
+
+  &__card-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    border-bottom: 1px solid $color-gray-100;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-gray-600;
+    background-color: $color-gray-50;
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+
+    @include sm {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__field {
+    padding: $spacing-sm $spacing-md;
+    border-bottom: 1px solid $color-gray-100;
+    border-right: 1px solid $color-gray-100;
+
+    &:nth-child(even) { border-right: none; }
+    &:last-child, &:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+
+    &--full {
+      grid-column: 1 / -1;
+      border-right: none;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      font-size: $font-size-xs;
+      font-weight: 600;
+      color: $color-gray-500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: $spacing-xs;
+    }
+
+    p {
+      font-size: $font-size-sm;
+      color: $color-gray-800;
+      margin: 0;
+    }
+
+    .input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  &__field-error {
+    display: block;
+    margin-top: 4px;
+    font-size: $font-size-xs;
+    color: $color-danger;
+  }
+
+  &__readonly {
+    color: $color-gray-500 !important;
+  }
+
+  &__password-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-size-sm;
+    color: $color-gray-700;
+  }
+
+  &__password-form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    padding: $spacing-md;
+  }
+
+  &__password-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    label {
+      font-size: $font-size-xs;
+      font-weight: 600;
+      color: $color-gray-500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  &__password-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .input {
+      width: 100%;
+      padding-right: 36px;
+      box-sizing: border-box;
+    }
+
+    button {
+      position: absolute;
+      right: $spacing-sm;
+      background: none;
+      border: none;
+      color: $color-gray-400;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0;
+
+      &:hover { color: $color-gray-700; }
+    }
+  }
+
+  &__password-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-xs;
+    margin-top: $spacing-xs;
+  }
+
+  &__readonly-badge {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    color: $color-gray-400;
+    background-color: $color-gray-100;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+}
