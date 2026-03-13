@@ -6,10 +6,10 @@ export const formatTelefono = (numero: string): string => {
   return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 10)}`;
 };
 
-export const formatCurrency = (amount: number): string => {
+export const formatCurrency = (amount: number, currency = 'MXN'): string => {
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',
-    currency: 'MXN'
+    currency,
   }).format(amount);
 };
 
