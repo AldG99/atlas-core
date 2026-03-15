@@ -768,7 +768,7 @@ const PedidoDetail = () => {
                         <th>Clave</th>
                         <th>Producto</th>
                         <th>Monto</th>
-                        <th>Acciones</th>
+                        <th></th>
                         <th>Fecha</th>
                       </tr>
                     </thead>

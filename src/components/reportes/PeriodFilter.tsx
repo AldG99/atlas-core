@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import type { PeriodType } from '../../types/Reporte';
 import './PeriodFilter.scss';
 
@@ -13,6 +14,22 @@ const PERIODS: { value: PeriodType; label: string }[] = [
 ];
 
 const PeriodFilter = ({ period, onPeriodChange }: PeriodFilterProps) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (['input', 'select', 'textarea'].includes(tag)) return;
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      const currentIndex = PERIODS.findIndex(p => p.value === period);
+      const nextIndex = e.key === 'ArrowRight'
+        ? Math.min(currentIndex + 1, PERIODS.length - 1)
+        : Math.max(currentIndex - 1, 0);
+      if (nextIndex !== currentIndex) onPeriodChange(PERIODS[nextIndex].value);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [period, onPeriodChange]);
+
   return (
     <div className="period-filter">
       <div className="period-filter__buttons">

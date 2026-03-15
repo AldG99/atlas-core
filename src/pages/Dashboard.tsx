@@ -170,6 +170,24 @@ const Dashboard = () => {
     }
   };
 
+  const FILTER_ORDER: (PedidoStatus | 'todos')[] = ['todos', ...Object.keys(PEDIDO_STATUS) as PedidoStatus[]];
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase();
+      if (['input', 'select', 'textarea'].includes(tag)) return;
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      const currentIndex = FILTER_ORDER.indexOf(filterStatus);
+      const nextIndex = e.key === 'ArrowRight'
+        ? Math.min(currentIndex + 1, FILTER_ORDER.length - 1)
+        : Math.max(currentIndex - 1, 0);
+      if (nextIndex !== currentIndex) handleFilterChange(FILTER_ORDER[nextIndex]);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [filterStatus]);
+
   const [uploadingDrive, setUploadingDrive] = useState(false);
 
   const handleGoogleDrive = async () => {

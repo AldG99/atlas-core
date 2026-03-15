@@ -40,7 +40,7 @@ const createCroppedImage = async (imageSrc: string, cropArea: Area): Promise<{ b
     canvas.toBlob(blob => {
       if (!blob) { reject(new Error('Canvas vacío')); return; }
       resolve({ blob, url: URL.createObjectURL(blob) });
-    }, 'image/jpeg', 0.92);
+    }, 'image/jpeg', 0.75);
   });
 };
 
