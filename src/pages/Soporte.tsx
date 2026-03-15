@@ -1,75 +1,125 @@
-import { useState } from 'react';
-import { PiCaretDownBold, PiPaperPlaneRightBold, PiBookOpenBold, PiUsersBold, PiPackageBold, PiShoppingBagBold, PiChartBarBold, PiCheckCircleBold } from 'react-icons/pi';
+import { useState, useEffect, useCallback } from 'react';
+import { collection, addDoc, Timestamp, query, where, getDocs } from 'firebase/firestore';
+import { PiCaretDownBold, PiPaperPlaneRightBold, PiBookOpenBold } from 'react-icons/pi';
 import MainLayout from '../layouts/MainLayout';
+import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
+import { db } from '../services/firebase';
 import './Soporte.scss';
 
-// Data
+const MIN_MENSAJE_LENGTH = 20;
+const MAX_MENSAJE_LENGTH = 500;
+const LIMITE_DIARIO = 3;
+const COOLDOWN_SEGUNDOS = 300; // 5 minutos
+const MAX_SALTOS_LINEA = 5;
+const MAX_ESPACIOS_CONSECUTIVOS = 3;
+
+const REGLAS_CONTENIDO: { regex: RegExp; mensaje: string }[] = [
+  { regex: /https?:\/\//i,                        mensaje: 'El mensaje no puede contener enlaces.' },
+  { regex: /www\.[a-z0-9-]+\.[a-z]{2,}/i,         mensaje: 'El mensaje no puede contener enlaces.' },
+  { regex: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i, mensaje: 'El mensaje no puede contener correos electrónicos.' },
+  { regex: /(.)\1{6,}/,                            mensaje: 'El mensaje contiene repetición excesiva de caracteres.' },
+  { regex: /[!?]{4,}/,                             mensaje: 'El mensaje contiene demasiados signos de puntuación seguidos.' },
+];
+
+const validarMensaje = (texto: string): string | null => {
+  for (const regla of REGLAS_CONTENIDO) {
+    if (regla.regex.test(texto)) return regla.mensaje;
+  }
+  const saltos = (texto.match(/\n/g) || []).length;
+  if (saltos > MAX_SALTOS_LINEA) {
+    return `Máximo ${MAX_SALTOS_LINEA} saltos de línea permitidos.`;
+  }
+  if (/  {3,}/.test(texto)) {
+    return `Máximo ${MAX_ESPACIOS_CONSECUTIVOS} espacios consecutivos permitidos.`;
+  }
+  return null;
+};
+
 const FAQ_DATA = [
   {
     question: '¿Cómo creo un nuevo pedido?',
-    answer: 'Para crear un nuevo pedido, ve a la sección "Mis Pedidos" y haz clic en el botón "Nuevo pedido". Selecciona un cliente, agrega los productos deseados y confirma el pedido.'
+    answer: 'Ve a "Mis Pedidos" y haz clic en "Nuevo Pedido". Selecciona un cliente, agrega los productos con su cantidad y confirma. El pedido recibirá un folio automático.'
   },
   {
-    question: '¿Cómo agrego un nuevo cliente?',
-    answer: 'En la sección "Clientes", haz clic en "Nuevo Cliente". Completa los datos del cliente incluyendo nombre, teléfono y dirección. El cliente quedará guardado para futuros pedidos.'
+    question: '¿Cómo registro un abono a un pedido?',
+    answer: 'Abre el detalle del pedido. En la barra superior encontrarás el campo para ingresar el monto del abono. Puedes aplicarlo al pedido en general o a un producto específico. El pedido se marca como "Entregado" automáticamente al completar el pago total.'
   },
   {
     question: '¿Cómo cambio el estado de un pedido?',
-    answer: 'En la tabla de pedidos, haz clic sobre el badge de estado (Pendiente, En preparación, Entregado). Se abrirá un menú donde puedes seleccionar el nuevo estado.'
+    answer: 'Abre el detalle del pedido. En la barra inferior encontrarás el botón "Entregado", disponible cuando el pedido está en estado "En preparación". El estado también cambia automáticamente a "Entregado" cuando se liquida el total de los abonos.'
   },
   {
-    question: '¿Puedo exportar mis datos?',
-    answer: 'Sí, puedes exportar tus pedidos a CSV desde la sección "Mis Pedidos" usando el botón "Exportar CSV". También puedes sincronizar con Google Drive (próximamente).'
+    question: '¿Qué es la sección Archivo?',
+    answer: 'Los pedidos entregados se archivan automáticamente después de 48 horas. En la sección "Archivo" puedes consultarlos, exportarlos a CSV o restaurarlos a la lista principal si lo necesitas.'
   },
   {
     question: '¿Cómo envío un pedido por WhatsApp?',
-    answer: 'En la tabla de pedidos, cada fila tiene un botón de WhatsApp. Al hacer clic, se abrirá WhatsApp con un mensaje pre-formateado con los detalles del pedido.'
+    answer: 'Abre el detalle del pedido y usa el botón de WhatsApp en la barra superior. Se abrirá WhatsApp con un mensaje pre-formateado que incluye el resumen completo del pedido.'
   },
   {
-    question: '¿Cómo agrego productos al catálogo?',
-    answer: 'Ve a la sección "Productos" y haz clic en "Nuevo Producto". Ingresa la clave, nombre, precio y descripción. Los productos estarán disponibles al crear pedidos.'
+    question: '¿Cómo aplico un descuento a un producto?',
+    answer: 'En la sección "Productos", edita el producto y configura el porcentaje de descuento junto con una fecha de vencimiento. El descuento se aplica automáticamente en los pedidos mientras esté vigente y se muestra en el detalle del pedido.'
+  },
+  {
+    question: '¿Cómo busco y filtro mis pedidos?',
+    answer: 'En "Mis Pedidos" encontrarás una barra de búsqueda por nombre de cliente o folio, filtros por estado (Pendiente, En preparación, Entregado), filtros por fecha (hoy, esta semana, este mes) y opciones de ordenamiento. Todos los filtros se pueden combinar.'
+  },
+  {
+    question: '¿Puedo descargar una imagen del pedido?',
+    answer: 'Sí. Abre el detalle del pedido y usa el botón de descarga en la barra superior. Se generará una imagen PNG con el resumen completo del pedido, lista para compartir.'
+  },
+  {
+    question: '¿Qué son las etiquetas y para qué sirven?',
+    answer: 'Las etiquetas son categorías visuales que puedes asignar a tus productos desde la sección "Productos". Aparecen en el detalle de cada pedido junto a los productos, facilitando la identificación rápida por categoría, tipo o cualquier criterio que definas.'
+  },
+  {
+    question: '¿Dónde veo el historial de pedidos de un cliente?',
+    answer: 'Entra al detalle del cliente desde la sección "Clientes". Ahí encontrarás todos los pedidos asociados a ese cliente, ordenados por fecha, con su estado y totales.'
+  },
+  {
+    question: '¿Cómo hago un respaldo de mis datos?',
+    answer: 'En la sección "Configuración" puedes exportar un respaldo completo de todos tus datos (clientes, productos, pedidos y etiquetas) en formato JSON. También puedes importar un respaldo previamente guardado para restaurar tu información.'
   }
-];
-
-const GUIDES_DATA = [
-  {
-    icon: <PiShoppingBagBold size={24} />,
-    title: 'Gestión de Pedidos',
-    description: 'Aprende a crear, editar y dar seguimiento a tus pedidos de forma eficiente.'
-  },
-  {
-    icon: <PiUsersBold size={24} />,
-    title: 'Administrar Clientes',
-    description: 'Organiza tu base de clientes con información de contacto y direcciones.'
-  },
-  {
-    icon: <PiPackageBold size={24} />,
-    title: 'Catálogo de Productos',
-    description: 'Configura tu catálogo de productos con claves, precios y descripciones.'
-  },
-  {
-    icon: <PiChartBarBold size={24} />,
-    title: 'Reportes y Estadísticas',
-    description: 'Visualiza métricas de ventas, productos más vendidos y tendencias.'
-  }
-];
-
-const SYSTEM_STATUS = [
-  { name: 'Aplicación', status: 'operational' },
-  { name: 'Base de datos', status: 'operational' },
-  { name: 'Autenticación', status: 'operational' },
-  { name: 'Sincronización', status: 'operational' }
 ];
 
 const Soporte = () => {
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-  const [formData, setFormData] = useState({
-    asunto: '',
-    mensaje: ''
-  });
-  const [sending, setSending] = useState(false);
+  const { user } = useAuth();
   const { showToast } = useToast();
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+  const [formData, setFormData] = useState({ asunto: '', mensaje: '' });
+  const [sending, setSending] = useState(false);
+  const [cooldownRestante, setCooldownRestante] = useState(0);
+  const [mensajesHoy, setMensajesHoy] = useState(0);
+
+  const mensajeValido = formData.mensaje.trim().length >= MIN_MENSAJE_LENGTH;
+  const limitado = mensajesHoy >= LIMITE_DIARIO;
+  const bloqueado = cooldownRestante > 0 || limitado;
+
+  // Cargar cuántos mensajes envió hoy
+  const fetchMensajesHoy = useCallback(async () => {
+    if (!user) return;
+    const inicio = new Date();
+    inicio.setHours(0, 0, 0, 0);
+    const q = query(
+      collection(db, 'soporte'),
+      where('userId', '==', user.uid),
+      where('fecha', '>=', Timestamp.fromDate(inicio))
+    );
+    const snap = await getDocs(q);
+    setMensajesHoy(snap.size);
+  }, [user]);
+
+  useEffect(() => {
+    fetchMensajesHoy();
+  }, [fetchMensajesHoy]);
+
+  // Contador de cooldown
+  useEffect(() => {
+    if (cooldownRestante <= 0) return;
+    const timer = setTimeout(() => setCooldownRestante(c => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [cooldownRestante]);
 
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
@@ -83,14 +133,47 @@ const Soporte = () => {
       return;
     }
 
+    if (!mensajeValido) {
+      showToast(`El mensaje debe tener al menos ${MIN_MENSAJE_LENGTH} caracteres`, 'warning');
+      return;
+    }
+
+    const errorContenido = validarMensaje(formData.mensaje);
+    if (errorContenido) {
+      showToast(errorContenido, 'warning');
+      return;
+    }
+
+    if (limitado) {
+      showToast(`Límite diario de ${LIMITE_DIARIO} mensajes alcanzado`, 'warning');
+      return;
+    }
+
+    if (cooldownRestante > 0) return;
+
     setSending(true);
+    try {
+      await addDoc(collection(db, 'soporte'), {
+        userId: user?.uid ?? null,
+        asunto: formData.asunto.trim(),
+        mensaje: formData.mensaje.trim(),
+        fecha: Timestamp.now()
+      });
+      showToast('Mensaje enviado correctamente', 'success');
+      setFormData({ asunto: '', mensaje: '' });
+      setMensajesHoy(c => c + 1);
+      setCooldownRestante(COOLDOWN_SEGUNDOS);
+    } catch {
+      showToast('Error al enviar el mensaje', 'error');
+    } finally {
+      setSending(false);
+    }
+  };
 
-    // Simular envío
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    showToast('Mensaje enviado correctamente', 'success');
-    setFormData({ asunto: '', mensaje: '' });
-    setSending(false);
+  const formatCooldown = (seg: number) => {
+    const m = Math.floor(seg / 60);
+    const s = seg % 60;
+    return m > 0 ? `${m}m ${s}s` : `${s}s`;
   };
 
   return (
@@ -101,117 +184,104 @@ const Soporte = () => {
           <p>Encuentra respuestas, guías y ayuda para usar Atlas Core</p>
         </div>
 
-        {/* Estado del Sistema */}
-        <section className="soporte__section">
-          <h2 className="soporte__section-title">Estado del Sistema</h2>
-          <div className="soporte__status-card">
-            <div className="soporte__status-header">
-              <span className="soporte__status-indicator soporte__status-indicator--operational"></span>
-              <span>Todos los sistemas operativos</span>
-            </div>
-            <div className="soporte__status-list">
-              {SYSTEM_STATUS.map((service, index) => (
-                <div key={index} className="soporte__status-item">
-                  <span>{service.name}</span>
-                  <span className="soporte__status-badge soporte__status-badge--operational">
-                    <PiCheckCircleBold size={18} />
-                    Operativo
-                  </span>
+        <div className="soporte__body">
+          {/* FAQ */}
+          <section className="soporte__section">
+            <h2 className="soporte__section-title">Preguntas Frecuentes</h2>
+            <div className="soporte__faq">
+              {FAQ_DATA.map((item, index) => (
+                <div
+                  key={index}
+                  className={`soporte__faq-item ${openFAQ === index ? 'soporte__faq-item--open' : ''}`}
+                >
+                  <button
+                    className="soporte__faq-question"
+                    onClick={() => toggleFAQ(index)}
+                  >
+                    <span>{item.question}</span>
+                    <span className="soporte__faq-icon">
+                      <PiCaretDownBold size={20} />
+                    </span>
+                  </button>
+                  <div className="soporte__faq-answer">
+                    <p>{item.answer}</p>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Guías */}
-        <section className="soporte__section">
-          <h2 className="soporte__section-title">Guías Rápidas</h2>
-          <div className="soporte__guides">
-            {GUIDES_DATA.map((guide, index) => (
-              <div key={index} className="soporte__guide-card">
-                <div className="soporte__guide-icon">{guide.icon}</div>
-                <h3>{guide.title}</h3>
-                <p>{guide.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section className="soporte__section">
-          <h2 className="soporte__section-title">Preguntas Frecuentes</h2>
-          <div className="soporte__faq">
-            {FAQ_DATA.map((item, index) => (
-              <div
-                key={index}
-                className={`soporte__faq-item ${openFAQ === index ? 'soporte__faq-item--open' : ''}`}
-              >
-                <button
-                  className="soporte__faq-question"
-                  onClick={() => toggleFAQ(index)}
-                >
-                  <span>{item.question}</span>
-                  <span className="soporte__faq-icon">
-                    <PiCaretDownBold size={20} />
-                  </span>
-                </button>
-                <div className="soporte__faq-answer">
-                  <p>{item.answer}</p>
+          {/* Formulario de Contacto */}
+          <section className="soporte__section">
+            <h2 className="soporte__section-title">Contactar Soporte</h2>
+            <div className="soporte__contact-card">
+              <div className="soporte__contact-info">
+                <PiBookOpenBold size={24} />
+                <div>
+                  <h3>¿Necesitas más ayuda?</h3>
+                  <p>Envíanos un mensaje y te responderemos lo antes posible.</p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Formulario de Contacto */}
-        <section className="soporte__section">
-          <h2 className="soporte__section-title">Contactar Soporte</h2>
-          <div className="soporte__contact-card">
-            <div className="soporte__contact-info">
-              <PiBookOpenBold size={24} />
-              <div>
-                <h3>¿Necesitas más ayuda?</h3>
-                <p>Envíanos un mensaje y te responderemos lo antes posible.</p>
-              </div>
-            </div>
-            <form className="soporte__form" onSubmit={handleSubmit}>
-              <div className="soporte__form-group">
-                <label htmlFor="asunto">Asunto</label>
-                <input
-                  type="text"
-                  id="asunto"
-                  className="input"
-                  placeholder="¿En qué podemos ayudarte?"
-                  value={formData.asunto}
-                  onChange={(e) => setFormData({ ...formData, asunto: e.target.value })}
-                />
-              </div>
-              <div className="soporte__form-group">
-                <label htmlFor="mensaje">Mensaje</label>
-                <textarea
-                  id="mensaje"
-                  className="input"
-                  placeholder="Describe tu problema o pregunta..."
-                  rows={4}
-                  value={formData.mensaje}
-                  onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
-                />
-              </div>
-              <button
-                type="submit"
-                className="btn btn--primary"
-                disabled={sending}
-              >
-                {sending ? 'Enviando...' : (
-                  <>
-                    <PiPaperPlaneRightBold size={18} />
-                    Enviar mensaje
-                  </>
+                {!limitado && (
+                  <span className="soporte__mensajes-contador">
+                    {mensajesHoy}/{LIMITE_DIARIO} hoy
+                  </span>
                 )}
-              </button>
-            </form>
-          </div>
-        </section>
+              </div>
+
+              {limitado ? (
+                <p className="soporte__limite-msg">
+                  Alcanzaste el límite de {LIMITE_DIARIO} mensajes por día. Intenta mañana.
+                </p>
+              ) : (
+                <form className="soporte__form" onSubmit={handleSubmit}>
+                  <div className="soporte__form-group">
+                    <label htmlFor="asunto">Asunto</label>
+                    <input
+                      type="text"
+                      id="asunto"
+                      className="input"
+                      placeholder="¿En qué podemos ayudarte?"
+                      value={formData.asunto}
+                      onChange={(e) => setFormData({ ...formData, asunto: e.target.value })}
+                      disabled={bloqueado}
+                    />
+                  </div>
+                  <div className="soporte__form-group soporte__form-group--grow">
+                    <label htmlFor="mensaje">
+                      Mensaje
+                      <span className={`soporte__char-count ${mensajeValido ? 'soporte__char-count--ok' : ''} ${formData.mensaje.trim().length >= MAX_MENSAJE_LENGTH ? 'soporte__char-count--max' : ''}`}>
+                        {formData.mensaje.trim().length}/{MAX_MENSAJE_LENGTH}
+                      </span>
+                    </label>
+                    <textarea
+                      id="mensaje"
+                      className="input soporte__textarea"
+                      placeholder="Describe tu problema o pregunta..."
+                      value={formData.mensaje}
+                      maxLength={MAX_MENSAJE_LENGTH}
+                      onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
+                      disabled={bloqueado}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn btn--primary"
+                    disabled={sending || bloqueado || !mensajeValido}
+                  >
+                    {sending ? 'Enviando...' : cooldownRestante > 0 ? (
+                      `Espera ${formatCooldown(cooldownRestante)}`
+                    ) : (
+                      <>
+                        <PiPaperPlaneRightBold size={18} />
+                        Enviar mensaje
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </section>
+        </div>
       </div>
     </MainLayout>
   );

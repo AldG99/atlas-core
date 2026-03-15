@@ -1,4 +1,18 @@
 import { useState, useMemo } from 'react';
+
+type SortOption = 'nombre_asc' | 'nombre_desc' | 'precio_asc' | 'precio_desc' | 'registro_desc' | 'registro_asc';
+
+const PRECIO_OPTIONS: Partial<Record<SortOption, string>> = {
+  precio_asc: 'Precio menor a mayor',
+  precio_desc: 'Precio mayor a menor',
+};
+
+const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
+  nombre_asc: 'Nombre A-Z',
+  nombre_desc: 'Nombre Z-A',
+  registro_desc: 'Más recientes',
+  registro_asc: 'Más antiguos',
+};
 import { PiCloudArrowUpBold, PiMagnifyingGlassBold, PiClockCounterClockwiseBold } from 'react-icons/pi';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
@@ -12,6 +26,7 @@ import './Productos.scss';
 
 const Productos = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showHistorial, setShowHistorial] = useState(false);
   const [editingProducto, setEditingProducto] = useState<{ id: string; data: ProductoFormData } | null>(null);
@@ -21,16 +36,28 @@ const Productos = () => {
   const { showToast } = useToast();
 
   const filteredProductos = useMemo(() => {
-    if (!searchTerm.trim()) return productos;
+    let resultado = searchTerm.trim()
+      ? productos.filter(p =>
+          p.clave.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.descripcion?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : [...productos];
 
-    const term = searchTerm.toLowerCase();
-    return productos.filter(
-      (producto) =>
-        producto.clave.toLowerCase().includes(term) ||
-        producto.nombre.toLowerCase().includes(term) ||
-        producto.descripcion?.toLowerCase().includes(term)
-    );
-  }, [productos, searchTerm]);
+    resultado.sort((a, b) => {
+      switch (sortBy) {
+        case 'nombre_asc': return a.nombre.localeCompare(b.nombre);
+        case 'nombre_desc': return b.nombre.localeCompare(a.nombre);
+        case 'precio_asc': return a.precio - b.precio;
+        case 'precio_desc': return b.precio - a.precio;
+        case 'registro_desc': return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
+        case 'registro_asc': return new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
+        default: return 0;
+      }
+    });
+
+    return resultado;
+  }, [productos, searchTerm, sortBy]);
 
   const handleAdd = async (data: ProductoFormData) => {
     try {
@@ -111,8 +138,27 @@ const Productos = () => {
               className="input"
             />
           </div>
-          <div className="productos__count">
-            {filteredProductos.length} {filteredProductos.length === 1 ? 'producto' : 'productos'}
+          <div className="productos__selects">
+            <select
+              value={sortBy in PRECIO_OPTIONS ? sortBy : ''}
+              onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
+              className="select"
+            >
+              <option value="">Precio</option>
+              {(Object.keys(PRECIO_OPTIONS) as SortOption[]).map(opt => (
+                <option key={opt} value={opt}>{PRECIO_OPTIONS[opt]}</option>
+              ))}
+            </select>
+            <select
+              value={sortBy in NOMBRE_OPTIONS ? sortBy : ''}
+              onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
+              className="select"
+            >
+              <option value="">Nombre / Registro</option>
+              {(Object.keys(NOMBRE_OPTIONS) as SortOption[]).map(opt => (
+                <option key={opt} value={opt}>{NOMBRE_OPTIONS[opt]}</option>
+              ))}
+            </select>
           </div>
         </div>
 

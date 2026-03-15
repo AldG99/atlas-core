@@ -60,18 +60,17 @@
 
     @include md {
       flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+      align-items: stretch;
     }
   }
 
   &__search {
     flex: 1;
-    max-width: 400px;
     position: relative;
 
     .input {
       width: 100%;
+      height: 100%;
       padding-left: 36px;
     }
   }
@@ -85,8 +84,12 @@
     pointer-events: none;
   }
 
-  &__count {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
+  &__selects {
+    display: flex;
+    gap: $spacing-sm;
+
+    .select {
+      font-size: $font-size-sm;
+    }
   }
 }

@@ -2,152 +2,62 @@
 @use '../styles/abstracts/mixins' as *;
 
 .soporte {
-  max-width: 900px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 
   &__header {
     text-align: center;
-    margin-bottom: $spacing-xl;
+    padding-bottom: $spacing-lg;
+    flex-shrink: 0;
 
     h1 {
-      margin: 0 0 $spacing-sm;
-      font-size: $font-size-2xl;
+      margin: 0 0 $spacing-xs;
+      font-size: $font-size-xl;
       color: $color-gray-900;
 
       @include sm {
-        font-size: $font-size-3xl;
+        font-size: $font-size-2xl;
       }
     }
 
     p {
       margin: 0;
       color: $color-gray-500;
-      font-size: $font-size-base;
+      font-size: $font-size-sm;
 
       @include sm {
-        font-size: $font-size-lg;
+        font-size: $font-size-base;
       }
+    }
+  }
+
+  &__body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+    flex: 1;
+    min-height: 0;
+
+    @include md {
+      grid-template-columns: 1fr 1fr;
     }
   }
 
   &__section {
-    margin-bottom: $spacing-xl;
-  }
-
-  &__section-title {
-    font-size: $font-size-lg;
-    font-weight: 600;
-    color: $color-gray-800;
-    margin: 0 0 $spacing-md;
-  }
-
-  // Estado del Sistema
-  &__status-card {
-    background-color: $color-white;
-    border-radius: $border-radius-lg;
-    box-shadow: $shadow-sm;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     overflow: hidden;
   }
 
-  &__status-header {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    padding: $spacing-md $spacing-lg;
-    background-color: rgba($color-success, 0.05);
-    border-bottom: 1px solid $color-gray-100;
-    font-weight: 500;
+  &__section-title {
+    font-size: $font-size-base;
+    font-weight: 600;
     color: $color-gray-800;
-  }
-
-  &__status-indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-
-    &--operational {
-      background-color: $color-success;
-      box-shadow: 0 0 0 3px rgba($color-success, 0.2);
-    }
-  }
-
-  &__status-list {
-    padding: $spacing-sm 0;
-  }
-
-  &__status-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: $spacing-sm $spacing-lg;
-
-    span:first-child {
-      color: $color-gray-700;
-      font-size: $font-size-sm;
-    }
-  }
-
-  &__status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: $font-size-xs;
-    font-weight: 500;
-
-    &--operational {
-      color: $color-success;
-    }
-  }
-
-  // Guías
-  &__guides {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: $spacing-md;
-
-    @include sm {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  &__guide-card {
-    background-color: $color-white;
-    border-radius: $border-radius-lg;
-    box-shadow: $shadow-sm;
-    padding: $spacing-lg;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-    cursor: pointer;
-
-    &:hover {
-      box-shadow: $shadow-md;
-      transform: translateY(-2px);
-    }
-
-    h3 {
-      margin: 0 0 $spacing-xs;
-      font-size: $font-size-base;
-      font-weight: 600;
-      color: $color-gray-800;
-    }
-
-    p {
-      margin: 0;
-      font-size: $font-size-sm;
-      color: $color-gray-500;
-      line-height: 1.5;
-    }
-  }
-
-  &__guide-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background-color: rgba($color-primary, 0.1);
-    border-radius: $border-radius-md;
-    color: $color-primary;
-    margin-bottom: $spacing-md;
+    margin: 0 0 $spacing-sm;
+    flex-shrink: 0;
   }
 
   // FAQ
@@ -155,7 +65,19 @@
     background-color: $color-white;
     border-radius: $border-radius-lg;
     box-shadow: $shadow-sm;
-    overflow: hidden;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    scrollbar-color: $color-gray-300 $color-white;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 3px;
+    }
   }
 
   &__faq-item {
@@ -182,7 +104,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: $spacing-md $spacing-lg;
+    padding: $spacing-sm $spacing-lg;
     background: none;
     border: none;
     text-align: left;
@@ -194,10 +116,6 @@
 
     &:hover {
       background-color: $color-gray-50;
-    }
-
-    @include sm {
-      font-size: $font-size-base;
     }
   }
 
@@ -226,9 +144,20 @@
     border-radius: $border-radius-lg;
     box-shadow: $shadow-sm;
     padding: $spacing-lg;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    scrollbar-color: $color-gray-300 $color-white;
 
-    @include sm {
-      padding: $spacing-xl;
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 3px;
     }
   }
 
@@ -236,8 +165,8 @@
     display: flex;
     align-items: flex-start;
     gap: $spacing-md;
-    margin-bottom: $spacing-lg;
-    padding-bottom: $spacing-lg;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
     border-bottom: 1px solid $color-gray-100;
 
     > svg {
@@ -259,10 +188,52 @@
     }
   }
 
+  &__mensajes-contador {
+    margin-left: auto;
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &__limite-msg {
+    margin: 0;
+    padding: $spacing-md;
+    background-color: rgba($color-danger, 0.06);
+    border-radius: $border-radius-md;
+    color: $color-danger;
+    font-size: $font-size-sm;
+    text-align: center;
+  }
+
+  &__char-count {
+    margin-left: $spacing-xs;
+    font-size: $font-size-xs;
+    font-weight: 400;
+    color: $color-gray-400;
+
+    &--ok {
+      color: $color-success;
+    }
+
+    &--max {
+      color: $color-danger;
+      font-weight: 600;
+    }
+  }
+
+  &__textarea {
+    resize: none;
+    flex: 1;
+    min-height: 0;
+  }
+
   &__form {
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
+    flex: 1;
+    min-height: 0;
   }
 
   &__form-group {
@@ -270,16 +241,17 @@
     flex-direction: column;
     gap: $spacing-xs;
 
+    &--grow {
+      flex: 1;
+      min-height: 0;
+    }
+
     label {
       font-size: $font-size-sm;
       font-weight: 500;
       color: $color-gray-700;
     }
 
-    textarea.input {
-      resize: vertical;
-      min-height: 100px;
-    }
   }
 
   .btn--primary {

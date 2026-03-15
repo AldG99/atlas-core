@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { PiWarehouseBold } from 'react-icons/pi';
 import type { Producto, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import './ProductosTable.scss';
@@ -178,8 +177,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
                 </td>
                 <td>
                   {producto.controlStock ? (
-                    <span className={`productos-table__stock-badge ${(producto.stock ?? 0) === 0 ? 'productos-table__stock-badge--empty' : ''}`}>
-                      <PiWarehouseBold size={11} />
+                    <span className={(producto.stock ?? 0) === 0 ? 'productos-table__stock--empty' : 'productos-table__stock'}>
                       {(producto.stock ?? 0) === 0 ? 'Sin stock' : producto.stock}
                     </span>
                   ) : (
@@ -203,6 +201,9 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
 
       {productos.length > 0 && (
         <div className="productos-table__pagination">
+          <span className="productos-table__page-info">
+            {productos.length} {productos.length === 1 ? 'producto' : 'productos'}
+          </span>
         </div>
       )}
     </div>

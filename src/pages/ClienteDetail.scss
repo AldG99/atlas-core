@@ -617,7 +617,7 @@ $topbar-height: 52px;
     flex: 1;
     min-height: 0;
     overflow-x: auto;
-    overflow-y: auto;
+    overflow-y: scroll;
     scrollbar-gutter: stable;
     scrollbar-color: $color-gray-300 $color-white;
     background-color: $color-white;

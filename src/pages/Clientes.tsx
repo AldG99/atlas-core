@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
+
+type SortOption = 'nombre_asc' | 'nombre_desc' | 'cp_asc' | 'cp_desc' | 'registro_desc' | 'registro_asc';
+
 import {
   PiCloudArrowUpBold,
-  PiStarFill,
-  PiStarBold,
   PiMagnifyingGlassBold,
 } from 'react-icons/pi';
 import { useClientes } from '../hooks/useClientes';
@@ -13,9 +14,21 @@ import ClientesTable from '../components/clientes/ClientesTable';
 import ClienteModal from '../components/clientes/ClienteModal';
 import './Clientes.scss';
 
+const CP_OPTIONS: Partial<Record<SortOption, string>> = {
+  cp_asc: 'C.P. menor a mayor',
+  cp_desc: 'C.P. mayor a menor',
+};
+
+const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
+  nombre_asc: 'Nombre A-Z',
+  nombre_desc: 'Nombre Z-A',
+  registro_desc: 'Más recientes',
+  registro_asc: 'Más antiguos',
+};
+
 const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [soloFavoritos, setSoloFavoritos] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { clientes, loading, error, addCliente } = useClientes();
@@ -24,25 +37,31 @@ const Clientes = () => {
   const filteredClientes = useMemo(() => {
     let resultado = clientes;
 
-    if (soloFavoritos) {
-      resultado = resultado.filter(c => c.favorito);
-    }
-
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
       resultado = resultado.filter(
         cliente =>
           cliente.nombre.toLowerCase().includes(term) ||
           cliente.apellido.toLowerCase().includes(term) ||
-          `${cliente.nombre} ${cliente.apellido}`
-            .toLowerCase()
-            .includes(term) ||
+          `${cliente.nombre} ${cliente.apellido}`.toLowerCase().includes(term) ||
           cliente.telefono.toLowerCase().includes(term)
       );
     }
 
-    return resultado.sort((a, b) => a.nombre.localeCompare(b.nombre));
-  }, [clientes, searchTerm, soloFavoritos]);
+    resultado.sort((a, b) => {
+      switch (sortBy) {
+        case 'nombre_asc': return a.nombre.localeCompare(b.nombre);
+        case 'nombre_desc': return b.nombre.localeCompare(a.nombre);
+        case 'cp_asc': return (a.codigoPostal || '').localeCompare(b.codigoPostal || '', undefined, { numeric: true });
+        case 'cp_desc': return (b.codigoPostal || '').localeCompare(a.codigoPostal || '', undefined, { numeric: true });
+        case 'registro_desc': return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
+        case 'registro_asc': return new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
+        default: return 0;
+      }
+    });
+
+    return resultado;
+  }, [clientes, searchTerm, sortBy]);
 
   const handleAdd = async (data: ClienteFormData) => {
     try {
@@ -54,11 +73,16 @@ const Clientes = () => {
     }
   };
 
+  const cpValue = sortBy in CP_OPTIONS ? sortBy : '';
+  const nombreValue = sortBy in NOMBRE_OPTIONS ? sortBy : '';
+
   return (
     <MainLayout>
       <div className="clientes">
         <div className="clientes__header">
-          <h1>Clientes</h1>
+          <div className="clientes__header-title">
+            <h1>Clientes</h1>
+          </div>
           <div className="clientes__header-actions">
             <button
               onClick={() => {}}
@@ -79,10 +103,7 @@ const Clientes = () => {
 
         <div className="clientes__controls">
           <div className="clientes__search">
-            <PiMagnifyingGlassBold
-              size={16}
-              className="clientes__search-icon"
-            />
+            <PiMagnifyingGlassBold size={16} className="clientes__search-icon" />
             <input
               type="text"
               placeholder="Buscar por nombre o teléfono..."
@@ -91,21 +112,27 @@ const Clientes = () => {
               className="input"
             />
           </div>
-          <button
-            onClick={() => setSoloFavoritos(!soloFavoritos)}
-            className={`btn btn--outline clientes__fav-filter ${soloFavoritos ? 'clientes__fav-filter--active' : ''}`}
-            title={soloFavoritos ? 'Mostrar todos' : 'Solo favoritos'}
-          >
-            {soloFavoritos ? (
-              <PiStarFill size={16} />
-            ) : (
-              <PiStarBold size={16} />
-            )}
-            <span>Favoritos</span>
-          </button>
-          <div className="clientes__count">
-            {filteredClientes.length}{' '}
-            {filteredClientes.length === 1 ? 'cliente' : 'clientes'}
+          <div className="clientes__selects">
+            <select
+              value={cpValue}
+              onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
+              className="select"
+            >
+              <option value="">Código Postal</option>
+              {(Object.keys(CP_OPTIONS) as SortOption[]).map(opt => (
+                <option key={opt} value={opt}>{CP_OPTIONS[opt]}</option>
+              ))}
+            </select>
+            <select
+              value={nombreValue}
+              onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
+              className="select"
+            >
+              <option value="">Nombre / Registro</option>
+              {(Object.keys(NOMBRE_OPTIONS) as SortOption[]).map(opt => (
+                <option key={opt} value={opt}>{NOMBRE_OPTIONS[opt]}</option>
+              ))}
+            </select>
           </div>
         </div>
 

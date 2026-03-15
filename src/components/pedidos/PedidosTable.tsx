@@ -218,25 +218,32 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
       </table>
     </div>
 
-      {totalPages > 1 && (
+      {pedidos.length > 0 && (
         <div className="pedidos-table__pagination">
-          <button
-            className="pedidos-table__page-btn"
-            onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
-            disabled={page === 0}
-          >
-            <PiCaretLeftBold size={14} />
-          </button>
           <span className="pedidos-table__page-info">
-            {page + 1} / {totalPages}
+            {pedidos.length} {pedidos.length === 1 ? 'pedido' : 'pedidos'}
           </span>
-          <button
-            className="pedidos-table__page-btn"
-            onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
-            disabled={page === totalPages - 1}
-          >
-            <PiCaretRightBold size={14} />
-          </button>
+          {totalPages > 1 && (
+            <>
+              <button
+                className="pedidos-table__page-btn"
+                onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
+                disabled={page === 0}
+              >
+                <PiCaretLeftBold size={14} />
+              </button>
+              <span className="pedidos-table__page-info">
+                {page + 1} / {totalPages}
+              </span>
+              <button
+                className="pedidos-table__page-btn"
+                onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
+                disabled={page === totalPages - 1}
+              >
+                <PiCaretRightBold size={14} />
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>

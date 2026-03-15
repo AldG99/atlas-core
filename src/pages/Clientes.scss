@@ -21,6 +21,13 @@
       justify-content: space-between;
     }
 
+  }
+
+  &__header-title {
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-sm;
+
     h1 {
       margin: 0;
       font-size: $font-size-xl;
@@ -29,7 +36,11 @@
         font-size: $font-size-2xl;
       }
     }
+  }
 
+  &__count {
+    font-size: $font-size-sm;
+    color: $color-gray-400;
   }
 
   &__header-actions {
@@ -68,7 +79,6 @@
 
   &__search {
     flex: 1;
-    max-width: 400px;
     position: relative;
 
     .input {
@@ -98,9 +108,13 @@
     }
   }
 
-  &__count {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
+  &__selects {
+    display: flex;
+    gap: $spacing-sm;
+
+    .select {
+      font-size: $font-size-sm;
+    }
   }
 
   &__loading,

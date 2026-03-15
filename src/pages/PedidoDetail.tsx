@@ -294,14 +294,14 @@ const PedidoDetail = () => {
     setAbonoError(null);
 
     const totalPagado = getTotalPagado(pedido);
-    const restante = pedido.total - totalPagado;
+    const restante = Math.round((pedido.total - totalPagado) * 100) / 100;
 
     if (restante <= 0) {
       setAbonoError('Este pedido ya está completamente pagado');
       return;
     }
 
-    if (monto > restante) {
+    if (Math.round(monto * 100) / 100 > restante) {
       setAbonoError(
         `El monto excede el saldo restante (${formatCurrency(restante)})`
       );
@@ -514,14 +514,14 @@ const PedidoDetail = () => {
                 <table className="pedido-detail__products-table">
                   <colgroup>
                     <col style={{ width: '8%' }} />
-                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '7%' }} />
                     <col style={{ width: '15%' }} />
                     <col style={{ width: '9%' }} />
                     <col style={{ width: '14%' }} />
                     <col style={{ width: '13%' }} />
                     <col style={{ width: '12%' }} />
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '9%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '10%' }} />
                   </colgroup>
                   <thead>
                     <tr>
@@ -543,14 +543,14 @@ const PedidoDetail = () => {
                 <table className="pedido-detail__products-table">
                   <colgroup>
                     <col style={{ width: '8%' }} />
-                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '7%' }} />
                     <col style={{ width: '15%' }} />
                     <col style={{ width: '9%' }} />
                     <col style={{ width: '14%' }} />
                     <col style={{ width: '13%' }} />
                     <col style={{ width: '12%' }} />
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '9%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '10%' }} />
                   </colgroup>
                   <tbody>
                     {pedido.productos.map((p, index) => {
@@ -695,14 +695,14 @@ const PedidoDetail = () => {
                 <table className="pedido-detail__products-table">
                   <colgroup>
                     <col style={{ width: '8%' }} />
-                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '7%' }} />
                     <col style={{ width: '15%' }} />
                     <col style={{ width: '9%' }} />
                     <col style={{ width: '14%' }} />
                     <col style={{ width: '13%' }} />
                     <col style={{ width: '12%' }} />
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '9%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '10%' }} />
                   </colgroup>
                   <tfoot className="pedido-detail__products-tfoot">
                     <tr className="pedido-detail__product-total-row">
@@ -758,16 +758,18 @@ const PedidoDetail = () => {
                   <table className="pedido-detail__abonos-table">
                     <colgroup>
                       <col style={{ width: '10%' }} />
-                      <col style={{ width: '32%' }} />
-                      <col style={{ width: '18%' }} />
-                      <col style={{ width: '18%' }} />
-                      <col style={{ width: '22%' }} />
+                      <col style={{ width: '33%' }} />
+                      <col style={{ width: '16%' }} />
+                      <col style={{ width: '7%' }} />
+                      <col style={{ width: '14%' }} />
+                      <col style={{ width: '20%' }} />
                     </colgroup>
                     <thead>
                       <tr>
                         <th>Clave</th>
                         <th>Producto</th>
                         <th>Monto</th>
+                        <th></th>
                         <th></th>
                         <th>Fecha</th>
                       </tr>
@@ -779,15 +781,16 @@ const PedidoDetail = () => {
                   <table className="pedido-detail__abonos-table">
                     <colgroup>
                       <col style={{ width: '10%' }} />
-                      <col style={{ width: '32%' }} />
-                      <col style={{ width: '18%' }} />
-                      <col style={{ width: '18%' }} />
-                      <col style={{ width: '22%' }} />
+                      <col style={{ width: '33%' }} />
+                      <col style={{ width: '16%' }} />
+                      <col style={{ width: '7%' }} />
+                      <col style={{ width: '14%' }} />
+                      <col style={{ width: '20%' }} />
                     </colgroup>
                     <tbody>
                       {abonos.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="pedido-detail__abonos-empty">
+                          <td colSpan={6} className="pedido-detail__abonos-empty">
                             Sin abonos registrados
                           </td>
                         </tr>
@@ -839,17 +842,17 @@ const PedidoDetail = () => {
                                     </button>
                                   </div>
                                 ) : (
-                                  <div className="pedido-detail__abono-monto">
-                                    <span>{formatCurrency(abono.monto)}</span>
-                                    {abono.montoOriginal && (
-                                      <span
-                                        className="pedido-detail__abono-editado"
-                                        title={`Corregido de ${formatCurrency(abono.montoOriginal)}${abono.editadoEn ? ` · ${formatDate(abono.editadoEn)}` : ''}`}
-                                      >
-                                        Editado
-                                      </span>
-                                    )}
-                                  </div>
+                                  <span>{formatCurrency(abono.monto)}</span>
+                                )}
+                              </td>
+                              <td>
+                                {abono.montoOriginal && (
+                                  <span
+                                    className="pedido-detail__abono-editado"
+                                    title={`Corregido de ${formatCurrency(abono.montoOriginal)}${abono.editadoEn ? ` · ${formatDate(abono.editadoEn)}` : ''}`}
+                                  >
+                                    Editado
+                                  </span>
                                 )}
                               </td>
                               <td onClick={e => e.stopPropagation()}>

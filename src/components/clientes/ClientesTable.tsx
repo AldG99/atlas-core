@@ -163,6 +163,9 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
 
       {clientes.length > 0 && (
         <div className="clientes-table__pagination">
+          <span className="clientes-table__page-info">
+            {clientes.length} {clientes.length === 1 ? 'cliente' : 'clientes'}
+          </span>
         </div>
       )}
     </div>
