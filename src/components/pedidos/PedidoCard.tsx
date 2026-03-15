@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Pedido, PedidoStatus } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatPedidoForWhatsApp, openWhatsApp, copyToClipboard } from '../../utils/formatters';
+import { useCurrency } from '../../hooks/useCurrency';
 import './PedidoCard.scss';
 
 interface PedidoCardProps {
@@ -17,6 +18,7 @@ interface PedidoCardProps {
 const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, isArchived = false }: PedidoCardProps) => {
   const [copied, setCopied] = useState(false);
   const statusOptions: PedidoStatus[] = ['pendiente', 'en_preparacion', 'entregado'];
+  const { format } = useCurrency();
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-MX', {
@@ -25,13 +27,6 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
       hour: '2-digit',
       minute: '2-digit'
     }).format(date);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN'
-    }).format(amount);
   };
 
   const handleCopy = async () => {
@@ -78,7 +73,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
 
         <div className="pedido-card__total">
           <span>Total:</span>
-          <strong>{formatCurrency(pedido.total)}</strong>
+          <strong>{format(pedido.total)}</strong>
         </div>
       </div>
 

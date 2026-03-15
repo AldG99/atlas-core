@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold } from 'react-icons/pi';
+import { Link, useLocation } from 'react-router-dom';
+import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold, PiDownloadSimpleBold, PiPlusBold } from 'react-icons/pi';
 import { usePedidos } from '../hooks/usePedidos';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -18,6 +18,11 @@ import './Dashboard.scss';
 
 type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc' | 'nombre_desc';
 type DateFilter = 'todos' | 'hoy' | 'semana' | 'mes';
+type StatusFilter = PedidoStatus | 'todos' | 'abono_pendiente';
+
+const DIAS_ABONO_SIN_MOVIMIENTO = 3;
+const diffDiasAbono = (fecha: Date): number =>
+  Math.floor((Date.now() - new Date(fecha).getTime()) / (1000 * 60 * 60 * 24));
 
 const SORT_OPTIONS: Record<SortOption, string> = {
   fecha_desc: 'Más recientes',
@@ -36,7 +41,7 @@ const DATE_FILTERS: Record<DateFilter, string> = {
 };
 
 const Dashboard = () => {
-  const [filterStatus, setFilterStatus] = useState<PedidoStatus | 'todos'>('todos');
+  const [filterStatus, setFilterStatus] = useState<StatusFilter>('todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
   const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
@@ -53,6 +58,18 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { clientes } = useClientes();
+  const location = useLocation();
+
+  // Apply filter from notification navigation
+  useEffect(() => {
+    const state = location.state as Record<string, unknown> | null;
+    if (!state?.filterStatus) return;
+    const status = state.filterStatus as StatusFilter;
+    setFilterStatus(status);
+    if (status !== 'todos' && status !== 'abono_pendiente') {
+      fetchByStatus(status as PedidoStatus);
+    }
+  }, []);
 
   // Auto-archivar pedidos entregados hace más de 48 horas
   useEffect(() => {
@@ -128,6 +145,20 @@ const Dashboard = () => {
       });
     }
 
+    // Filtro por abono pendiente
+    if (filterStatus === 'abono_pendiente') {
+      result = result.filter(p => {
+        const abonos = p.abonos || [];
+        if (abonos.length === 0) return false;
+        const totalPagado = abonos.reduce((sum, a) => sum + a.monto, 0);
+        if (totalPagado <= 0 || totalPagado >= p.total) return false;
+        const ultimoAbono = abonos.reduce((max, a) =>
+          new Date(a.fecha) > new Date(max.fecha) ? a : max
+        );
+        return diffDiasAbono(ultimoAbono.fecha) >= DIAS_ABONO_SIN_MOVIMIENTO;
+      });
+    }
+
     // Filtro por búsqueda
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
@@ -159,18 +190,18 @@ const Dashboard = () => {
     });
 
     return result;
-  }, [pedidos, searchTerm, sortBy, dateFilter]);
+  }, [pedidos, searchTerm, sortBy, dateFilter, filterStatus]);
 
-  const handleFilterChange = async (status: PedidoStatus | 'todos') => {
+  const handleFilterChange = async (status: StatusFilter) => {
     setFilterStatus(status);
     if (status === 'todos') {
       await fetchPedidos();
-    } else {
-      await fetchByStatus(status);
+    } else if (status !== 'abono_pendiente') {
+      await fetchByStatus(status as PedidoStatus);
     }
   };
 
-  const FILTER_ORDER: (PedidoStatus | 'todos')[] = ['todos', ...Object.keys(PEDIDO_STATUS) as PedidoStatus[]];
+  const FILTER_ORDER: StatusFilter[] = ['todos', ...Object.keys(PEDIDO_STATUS) as PedidoStatus[]];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -249,9 +280,11 @@ const Dashboard = () => {
               className="btn btn--secondary"
               disabled={pedidos.length === 0}
             >
+              <PiDownloadSimpleBold size={18} style={{ marginRight: '6px' }} />
               Exportar CSV
             </button>
             <Link to={ROUTES.NEW_PEDIDO} className="btn btn--primary">
+              <PiPlusBold size={18} style={{ marginRight: '6px' }} />
               Nuevo pedido
             </Link>
           </div>
@@ -352,6 +385,17 @@ const Dashboard = () => {
               <span className="dashboard__filter-count">{statusCounts[status]}</span>
             </button>
           ))}
+          <button
+            key="abono_pendiente"
+            className={`dashboard__filter ${filterStatus === 'abono_pendiente' ? 'dashboard__filter--active' : ''}`}
+            onClick={() => handleFilterChange('abono_pendiente')}
+          >
+            <span
+              className="dashboard__filter-dot"
+              style={{ backgroundColor: '#f59e0b' }}
+            />
+            Saldo pendiente
+          </button>
         </div>
 
         <PedidosTable

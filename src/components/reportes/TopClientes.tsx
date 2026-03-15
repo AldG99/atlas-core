@@ -1,5 +1,5 @@
 import type { TopCliente } from '../../types/Reporte';
-import { formatCurrency, formatTelefono } from '../../utils/formatters';
+import { formatTelefono } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
 import { getCodigoPais } from '../../data/codigosPais';
 import './TopClientes.scss';

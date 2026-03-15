@@ -1,5 +1,5 @@
 import type { ChartDataPoint } from '../../types/Reporte';
-import { formatCurrency } from '../../utils/formatters';
+import { useCurrency } from '../../hooks/useCurrency';
 import './SalesChart.scss';
 
 interface SalesChartProps {
@@ -9,6 +9,7 @@ interface SalesChartProps {
 }
 
 const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
+  const { format } = useCurrency();
   if (data.length === 0) {
     return (
       <div className="sales-chart sales-chart--empty">
@@ -22,14 +23,14 @@ const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
   return (
     <div className="sales-chart">
       <span className="sales-chart__label">Total ventas</span>
-      <span className="sales-chart__amount">{formatCurrency(totalVentas)}</span>
+      <span className="sales-chart__amount">{format(totalVentas)}</span>
 
       <div className="sales-chart__chart-area">
         <div className="sales-chart__grid">
           {[100, 75, 50, 25, 0].map((pct) => (
             <div key={pct} className="sales-chart__grid-line">
               <span className="sales-chart__grid-value">
-                {formatCurrency(maxValue * (pct / 100))}
+                {format(maxValue * (pct / 100))}
               </span>
             </div>
           ))}
@@ -62,7 +63,7 @@ const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
         </div>
         <div className="sales-chart__stat">
           <span className="sales-chart__stat-value">
-            {formatCurrency(totalPedidos > 0 ? totalVentas / totalPedidos : 0)}
+            {format(totalPedidos > 0 ? totalVentas / totalPedidos : 0)}
           </span>
           <span className="sales-chart__stat-label">Promedio</span>
         </div>

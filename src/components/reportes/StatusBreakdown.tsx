@@ -1,6 +1,6 @@
 import type { StatusBreakdownItem } from '../../types/Reporte';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
-import { formatCurrency } from '../../utils/formatters';
+import { useCurrency } from '../../hooks/useCurrency';
 import './StatusBreakdown.scss';
 
 interface StatusBreakdownProps {
@@ -14,6 +14,7 @@ const CY = 50;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
+  const { format } = useCurrency();
   const total = breakdown.reduce((sum, item) => sum + item.cantidad, 0);
 
   let cumulativeOffset = 0;
@@ -86,7 +87,7 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
                 <div className="status-breakdown__item-data">
                   <span className="status-breakdown__count">{item.cantidad}</span>
                   <span className="status-breakdown__percent">({item.porcentaje.toFixed(0)}%)</span>
-                  <span className="status-breakdown__total">{formatCurrency(item.total)}</span>
+                  <span className="status-breakdown__total">{format(item.total)}</span>
                 </div>
               </li>
             ))}

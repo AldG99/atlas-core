@@ -5,6 +5,7 @@ type SortOption = 'nombre_asc' | 'nombre_desc' | 'cp_asc' | 'cp_desc' | 'registr
 import {
   PiCloudArrowUpBold,
   PiMagnifyingGlassBold,
+  PiPlusBold,
 } from 'react-icons/pi';
 import { useClientes } from '../hooks/useClientes';
 import { useToast } from '../hooks/useToast';
@@ -96,6 +97,7 @@ const Clientes = () => {
               onClick={() => setIsModalOpen(true)}
               className="btn btn--primary"
             >
+              <PiPlusBold size={18} style={{ marginRight: '6px' }} />
               Nuevo Cliente
             </button>
           </div>

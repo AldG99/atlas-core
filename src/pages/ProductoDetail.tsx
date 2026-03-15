@@ -7,7 +7,6 @@ import {
   PiPackageBold,
   PiCalendarBold,
   PiCameraBold,
-  PiWarehouseBold
 } from 'react-icons/pi';
 import type { Producto, ProductoFormData } from '../types/Producto';
 import { getProductoById, deleteProducto, updateProducto, uploadProductoImage } from '../services/productoService';
@@ -15,6 +14,7 @@ import type { CancelDescuentoInfo } from '../services/productoService';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
+import { useCurrency } from '../hooks/useCurrency';
 import { ROUTES } from '../config/routes';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import MainLayout from '../layouts/MainLayout';
@@ -26,6 +26,7 @@ const ProductoDetail = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { etiquetas } = useEtiquetas();
+  const { format } = useCurrency();
 
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,9 +77,6 @@ const ProductoDetail = () => {
       month: 'long',
       year: 'numeric'
     }).format(new Date(date));
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
 
   const getEtiquetasForProducto = (p: Producto) => {
     return (p.etiquetas || [])
@@ -384,10 +382,10 @@ const ProductoDetail = () => {
                         {editData?.descuento && editData.descuento > 0 && (
                           <div className="producto-detail__price-edit-preview">
                             <span className="producto-detail__price-original">
-                              {formatCurrency(editData?.precio || producto.precio)}
+                              {format(editData?.precio || producto.precio)}
                             </span>
                             <span className="producto-detail__price-final">
-                              {formatCurrency(getPrecioConDescuento(editData?.precio || producto.precio, editData.descuento))}
+                              {format(getPrecioConDescuento(editData?.precio || producto.precio, editData.descuento))}
                             </span>
                           </div>
                         )}
@@ -396,9 +394,9 @@ const ProductoDetail = () => {
                   ) : isDescuentoActivo(producto) ? (
                     <div className="producto-detail__price-discount">
                       <span className="producto-detail__price-badge">-{producto.descuento}%</span>
-                      <span className="producto-detail__price-original">{formatCurrency(producto.precio)}</span>
+                      <span className="producto-detail__price-original">{format(producto.precio)}</span>
                       <span className="producto-detail__price-final">
-                        {formatCurrency(getPrecioConDescuento(producto.precio, producto.descuento!))}
+                        {format(getPrecioConDescuento(producto.precio, producto.descuento!))}
                       </span>
                       {producto.fechaFinDescuento && (
                         <span className="producto-detail__price-expiry">
@@ -407,7 +405,7 @@ const ProductoDetail = () => {
                       )}
                     </div>
                   ) : (
-                    formatCurrency(producto.precio)
+                    format(producto.precio)
                   )}
                 </div>
 
@@ -474,7 +472,7 @@ const ProductoDetail = () => {
                           });
                         }}
                       />
-                      <PiWarehouseBold size={15} />
+                      <PiPackageBold size={15} />
                       <span>Gestionar existencias</span>
                     </label>
                     <div className="producto-detail__stock-input-row">
@@ -495,7 +493,7 @@ const ProductoDetail = () => {
                   </div>
                 ) : (
                   <div className="producto-detail__stock-display">
-                    <PiWarehouseBold size={15} className="producto-detail__header-meta-icon" />
+                    <PiPackageBold size={15} className="producto-detail__header-meta-icon" />
                     {producto.controlStock ? (
                       <span className={`producto-detail__stock-badge ${(producto.stock ?? 0) === 0 ? 'producto-detail__stock-badge--empty' : ''}`}>
                         {(producto.stock ?? 0) === 0 ? 'Sin existencias' : `${producto.stock} unidades`}

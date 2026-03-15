@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { PiArchiveBold, PiMagnifyingGlassBold } from 'react-icons/pi';
+import { PiArchiveBold, PiMagnifyingGlassBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import type { Pedido } from '../types/Pedido';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -146,11 +146,9 @@ const Archivo = () => {
               className="btn btn--secondary"
               disabled={pedidos.length === 0}
             >
+              <PiDownloadSimpleBold size={18} style={{ marginRight: '6px' }} />
               Exportar CSV
             </button>
-            <Link to={ROUTES.DASHBOARD} className="btn btn--primary">
-              Ver pedidos activos
-            </Link>
           </div>
         </div>
 

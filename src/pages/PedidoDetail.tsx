@@ -22,7 +22,6 @@ import type { Producto, Etiqueta } from '../types/Producto';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import {
-  formatCurrency,
   formatDate,
   getTotalPagado,
   formatPedidoForWhatsApp,
@@ -30,6 +29,7 @@ import {
   copyToClipboard,
   formatTelefono,
 } from '../utils/formatters';
+import { useCurrency } from '../hooks/useCurrency';
 import { getCodigoPais } from '../data/codigosPais';
 import {
   getPedidoById,
@@ -57,6 +57,7 @@ const PedidoDetail = () => {
   const { clientes } = useClientes();
   const { productos: catalogoProductos } = useProductos();
   const { etiquetas: todasEtiquetas } = useEtiquetas();
+  const { simbolo, format } = useCurrency();
 
   const [pedido, setPedido] = useState<Pedido | null>(null);
   const [loading, setLoading] = useState(true);
@@ -245,7 +246,7 @@ const PedidoDetail = () => {
 
   const handleCopy = async () => {
     if (!pedido) return;
-    const message = formatPedidoForWhatsApp(pedido);
+    const message = formatPedidoForWhatsApp(pedido, simbolo);
     const success = await copyToClipboard(message);
     if (success) {
       setCopiedId(true);
@@ -255,7 +256,7 @@ const PedidoDetail = () => {
 
   const handleWhatsApp = () => {
     if (!pedido) return;
-    const message = formatPedidoForWhatsApp(pedido);
+    const message = formatPedidoForWhatsApp(pedido, simbolo);
     openWhatsApp(pedido.clienteTelefono, message);
   };
 
@@ -303,7 +304,7 @@ const PedidoDetail = () => {
 
     if (Math.round(monto * 100) / 100 > restante) {
       setAbonoError(
-        `El monto excede el saldo restante (${formatCurrency(restante)})`
+        `El monto excede el saldo restante (${format(restante)})`
       );
       return;
     }
@@ -630,29 +631,29 @@ const PedidoDetail = () => {
                             {p.precioOriginal && p.descuento ? (
                               <div className="pedido-detail__product-subtotal-discount">
                                 <span className="pedido-detail__product-subtotal-original">
-                                  {formatCurrency(p.precioOriginal)}
+                                  {format(p.precioOriginal)}
                                 </span>
-                                <span>{formatCurrency(p.precioUnitario)}</span>
+                                <span>{format(p.precioUnitario)}</span>
                               </div>
                             ) : (
-                              formatCurrency(p.precioUnitario)
+                              format(p.precioUnitario)
                             )}
                           </td>
                           <td>
                             <div className="pedido-detail__product-paid-cell">
-                              <span>{formatCurrency(cubierto)}</span>
+                              <span>{format(cubierto)}</span>
                             </div>
                           </td>
                           <td>
                             {p.precioOriginal && p.descuento ? (
                               <div className="pedido-detail__product-subtotal-discount">
                                 <span className="pedido-detail__product-subtotal-original">
-                                  {formatCurrency(p.precioOriginal * p.cantidad)}
+                                  {format(p.precioOriginal * p.cantidad)}
                                 </span>
-                                <span>{formatCurrency(p.subtotal)}</span>
+                                <span>{format(p.subtotal)}</span>
                               </div>
                             ) : (
-                              formatCurrency(p.subtotal)
+                              format(p.subtotal)
                             )}
                           </td>
                           <td>
@@ -715,11 +716,11 @@ const PedidoDetail = () => {
                       <td></td>
                       <td>
                         <div className="pedido-detail__product-paid-cell">
-                          <strong>{formatCurrency(pagado)}</strong>
+                          <strong>{format(pagado)}</strong>
                         </div>
                       </td>
                       <td>
-                        <strong>{formatCurrency(pedido.total)}</strong>
+                        <strong>{format(pedido.total)}</strong>
                       </td>
                       <td>
                         <strong
@@ -733,7 +734,7 @@ const PedidoDetail = () => {
                         >
                           {pagado >= pedido.total
                             ? 'Liquidado'
-                            : formatCurrency(pedido.total - pagado)}
+                            : format(pedido.total - pagado)}
                         </strong>
                       </td>
                       <td></td>
@@ -842,14 +843,14 @@ const PedidoDetail = () => {
                                     </button>
                                   </div>
                                 ) : (
-                                  <span>{formatCurrency(abono.monto)}</span>
+                                  <span>{format(abono.monto)}</span>
                                 )}
                               </td>
                               <td>
                                 {abono.montoOriginal && (
                                   <span
                                     className="pedido-detail__abono-editado"
-                                    title={`Corregido de ${formatCurrency(abono.montoOriginal)}${abono.editadoEn ? ` · ${formatDate(abono.editadoEn)}` : ''}`}
+                                    title={`Corregido de ${format(abono.montoOriginal)}${abono.editadoEn ? ` · ${formatDate(abono.editadoEn)}` : ''}`}
                                   >
                                     Editado
                                   </span>
@@ -893,7 +894,7 @@ const PedidoDetail = () => {
                 <span
                   className={`pedido-detail__bottom-bar-amount ${restante <= 0 ? 'pedido-detail__bottom-bar-amount--paid' : ''}`}
                 >
-                  {restante <= 0 ? 'Liquidado' : formatCurrency(restante)}
+                  {restante <= 0 ? 'Liquidado' : format(restante)}
                 </span>
               </div>
               <button
@@ -1010,10 +1011,10 @@ const PedidoDetail = () => {
                             -{selectedProducto.descuento}%
                           </span>
                           <span className="pedido-detail__modal-price-original">
-                            {formatCurrency(selectedProducto.precio)}
+                            {format(selectedProducto.precio)}
                           </span>
                           <span className="pedido-detail__modal-value">
-                            {formatCurrency(
+                            {format(
                               getPrecioConDescuento(
                                 selectedProducto.precio,
                                 selectedProducto.descuento!
@@ -1023,7 +1024,7 @@ const PedidoDetail = () => {
                         </span>
                       ) : (
                         <span className="pedido-detail__modal-value">
-                          {formatCurrency(selectedProducto.precio)}
+                          {format(selectedProducto.precio)}
                         </span>
                       )}
                     </div>

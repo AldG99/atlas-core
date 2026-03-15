@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold } from 'react-icons/pi';
+import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
+import { useNotificaciones, type Notificacion } from '../../hooks/useNotificaciones';
 import { ROUTES } from '../../config/routes';
 import './Header.scss';
 
@@ -10,6 +11,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const { notificaciones } = useNotificaciones();
 
   const handleLogout = async () => {
     await logout();
@@ -21,9 +23,7 @@ const Header = () => {
   };
 
   const getWeekday = () => {
-    return new Intl.DateTimeFormat('es-MX', {
-      weekday: 'long'
-    }).format(new Date());
+    return new Intl.DateTimeFormat('es-MX', { weekday: 'long' }).format(new Date());
   };
 
   const getDate = () => {
@@ -33,6 +33,11 @@ const Header = () => {
     const year = date.getFullYear();
     const monthCapitalized = month.charAt(0).toUpperCase() + month.slice(1).replace('.', '');
     return `${day} ${monthCapitalized}, ${year}`;
+  };
+
+  const handleNotificacionClick = (n: Notificacion) => {
+    setShowNotifications(false);
+    navigate(n.link, { state: n.filterState });
   };
 
   return (
@@ -52,39 +57,44 @@ const Header = () => {
             onClick={() => setShowNotifications(!showNotifications)}
           >
             <PiBellBold size={20} />
-            <span className="header__notification-badge">3</span>
+            {notificaciones.length > 0 && (
+              <span className="header__notification-badge">{notificaciones.length}</span>
+            )}
           </button>
 
           {showNotifications && (
             <div className="header__dropdown header__dropdown--notifications">
               <div className="header__dropdown-header">
                 <span>Notificaciones</span>
+                {notificaciones.length > 0 && (
+                  <span className="header__notification-count">{notificaciones.length}</span>
+                )}
               </div>
               <div className="header__dropdown-content">
-                <div className="header__notification-item">
-                  <div className="header__notification-dot"></div>
-                  <div className="header__notification-text">
-                    <p>Nuevo pedido recibido</p>
-                    <span>Hace 5 minutos</span>
+                {notificaciones.length === 0 ? (
+                  <div className="header__notification-empty">
+                    <p>Sin notificaciones</p>
                   </div>
-                </div>
-                <div className="header__notification-item">
-                  <div className="header__notification-dot"></div>
-                  <div className="header__notification-text">
-                    <p>Pedido #123 entregado</p>
-                    <span>Hace 1 hora</span>
-                  </div>
-                </div>
-                <div className="header__notification-item">
-                  <div className="header__notification-dot"></div>
-                  <div className="header__notification-text">
-                    <p>Cliente frecuente agregado</p>
-                    <span>Hace 2 horas</span>
-                  </div>
-                </div>
-              </div>
-              <div className="header__dropdown-footer">
-                <button>Ver todas</button>
+                ) : (
+                  notificaciones.map(n => (
+                    <div
+                      key={n.id}
+                      className={`header__notification-item header__notification-item--${n.tipo}`}
+                      onClick={() => handleNotificacionClick(n)}
+                    >
+                      <div className="header__notification-icon">
+                        {n.tipo === 'warning'
+                          ? <PiWarningBold size={16} />
+                          : <PiInfoBold size={16} />
+                        }
+                      </div>
+                      <div className="header__notification-text">
+                        <p>{n.titulo}</p>
+                        <span>{n.descripcion}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -152,7 +162,6 @@ const Header = () => {
           }}
         />
       )}
-
     </header>
   );
 };

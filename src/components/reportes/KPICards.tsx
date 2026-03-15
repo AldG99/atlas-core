@@ -1,6 +1,6 @@
 import { PiCurrencyDollarBold, PiHashBold, PiTrendUpBold, PiUsersBold, PiArrowUpBold, PiArrowDownBold } from 'react-icons/pi';
 import type { KPIs } from '../../types/Reporte';
-import { formatCurrency } from '../../utils/formatters';
+import { useCurrency } from '../../hooks/useCurrency';
 import './KPICards.scss';
 
 interface KPICardsProps {
@@ -15,10 +15,11 @@ const getDelta = (current: number, previous: number): number | null => {
 };
 
 const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
+  const { format } = useCurrency();
   const allCards = [
     {
       icon: <PiCurrencyDollarBold size={24} />,
-      value: formatCurrency(kpis.ventasTotales),
+      value: format(kpis.ventasTotales),
       rawValue: kpis.ventasTotales,
       comparisonValue: comparisonKPIs?.ventasTotales,
       label: 'Ventas totales',
@@ -34,7 +35,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
     },
     {
       icon: <PiTrendUpBold size={24} />,
-      value: formatCurrency(kpis.ticketPromedio),
+      value: format(kpis.ticketPromedio),
       rawValue: kpis.ticketPromedio,
       comparisonValue: comparisonKPIs?.ticketPromedio,
       label: 'Ticket promedio',

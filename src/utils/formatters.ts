@@ -6,11 +6,12 @@ export const formatTelefono = (numero: string): string => {
   return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 10)}`;
 };
 
-export const formatCurrency = (amount: number, currency = 'MXN'): string => {
-  return new Intl.NumberFormat('es-MX', {
-    style: 'currency',
-    currency,
+export const formatCurrency = (amount: number, simbolo = '$'): string => {
+  const formatted = new Intl.NumberFormat('es-MX', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
+  return `${simbolo}${formatted}`;
 };
 
 export const formatDate = (date: Date): string => {
@@ -45,18 +46,18 @@ interface PedidoForWhatsApp {
   notas?: string;
 }
 
-const formatProductosText = (productos: ProductoItem[]): string => {
+const formatProductosText = (productos: ProductoItem[], simbolo = '$'): string => {
   return productos.map(p => {
     const clave = p.clave ? `[${p.clave}] ` : '';
-    return `${p.cantidad}x ${clave}${p.nombre} - $${p.subtotal.toFixed(2)}`;
+    return `${p.cantidad}x ${clave}${p.nombre} - ${formatCurrency(p.subtotal, simbolo)}`;
   }).join('\n');
 };
 
-export const formatPedidoForWhatsApp = (pedido: PedidoForWhatsApp): string => {
+export const formatPedidoForWhatsApp = (pedido: PedidoForWhatsApp, simbolo = '$'): string => {
   let message = `*Pedido - ${pedido.clienteNombre}*\n`;
   message += `${pedido.clienteTelefono}\n\n`;
-  message += `*Productos:*\n${formatProductosText(pedido.productos)}\n\n`;
-  message += `*Total: ${formatCurrency(pedido.total)}*`;
+  message += `*Productos:*\n${formatProductosText(pedido.productos, simbolo)}\n\n`;
+  message += `*Total: ${formatCurrency(pedido.total, simbolo)}*`;
 
   if (pedido.notas) {
     message += `\n\n_${pedido.notas}_`;

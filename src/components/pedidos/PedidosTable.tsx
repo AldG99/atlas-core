@@ -5,8 +5,9 @@ import { PiStarFill, PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
 const PAGE_SIZE = 20;
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
-import { formatCurrency, formatShortDate, getTotalPagado } from '../../utils/formatters';
+import { formatShortDate, getTotalPagado } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
+import { useCurrency } from '../../hooks/useCurrency';
 import './PedidosTable.scss';
 
 interface PedidosTableProps {
@@ -20,6 +21,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
   const navigate = useNavigate();
   const location = useLocation();
   const { clientes } = useClientes();
+  const { format } = useCurrency();
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -180,7 +182,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                   const status = pagado >= pedido.total ? 'paid' : pagado > 0 ? 'partial' : 'pending';
                   return (
                     <div className={`pedidos-table__paid pedidos-table__paid--${status}`}>
-                      <span className="pedidos-table__paid-amount">{formatCurrency(pagado)}</span>
+                      <span className="pedidos-table__paid-amount">{format(pagado)}</span>
                       <span className="pedidos-table__paid-percent">{porcentaje}%</span>
                     </div>
                   );
@@ -196,7 +198,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                       : '';
                   return (
                     <span className={`pedidos-table__total ${totalClass}`}>
-                      {formatCurrency(pedido.total)}
+                      {format(pedido.total)}
                     </span>
                   );
                 })()}

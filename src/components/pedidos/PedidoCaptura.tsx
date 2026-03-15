@@ -1,8 +1,9 @@
 import { forwardRef } from 'react';
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
-import { formatCurrency, formatDate, formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
+import { formatDate, formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
 import { getCodigoPais } from '../../data/codigosPais';
+import { useCurrency } from '../../hooks/useCurrency';
 import './PedidoCaptura.scss';
 
 interface PedidoCapturaProps {
@@ -14,6 +15,7 @@ interface PedidoCapturaProps {
 
 const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
   ({ pedido, cobertura, telefonoCodigoPais, fechaDescarga }, ref) => {
+    const { format } = useCurrency();
     const pagado = getTotalPagado(pedido);
     const restante = pedido.total - pagado;
     const abonos = [...(pedido.abonos || [])].sort(
@@ -77,9 +79,9 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
                         <span className="pedido-captura__discount"> (-{p.descuento}%)</span>
                       ) : null}
                     </td>
-                    <td>{formatCurrency(p.precioUnitario)}</td>
-                    <td>{formatCurrency(cubierto)}</td>
-                    <td>{formatCurrency(p.subtotal)}</td>
+                    <td>{format(p.precioUnitario)}</td>
+                    <td>{format(cubierto)}</td>
+                    <td>{format(p.subtotal)}</td>
                     <td className={`pedido-captura__pago-status pedido-captura__pago-status--${status}`}>
                       {status === 'paid'
                         ? 'Pagado'
@@ -131,7 +133,7 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
                         ? pedido.productos[abono.productoIndex].nombre
                         : 'General'}
                     </td>
-                    <td>{formatCurrency(abono.monto)}</td>
+                    <td>{format(abono.monto)}</td>
                     <td>{formatShortDate(abono.fecha)}</td>
                   </tr>
                 ))}
@@ -144,16 +146,16 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
         <div className="pedido-captura__footer">
           <div className="pedido-captura__total-row">
             <span>Total</span>
-            <strong>{formatCurrency(pedido.total)}</strong>
+            <strong>{format(pedido.total)}</strong>
           </div>
           <div className="pedido-captura__total-row">
             <span>Pagado</span>
-            <strong className="pedido-captura__total-paid">{formatCurrency(pagado)}</strong>
+            <strong className="pedido-captura__total-paid">{format(pagado)}</strong>
           </div>
           <div className="pedido-captura__total-row pedido-captura__total-row--highlight">
             <span>Restante</span>
             <strong className={restante <= 0 ? 'pedido-captura__total-paid' : 'pedido-captura__total-pending'}>
-              {restante <= 0 ? 'Liquidado' : formatCurrency(restante)}
+              {restante <= 0 ? 'Liquidado' : format(restante)}
             </strong>
           </div>
         </div>

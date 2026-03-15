@@ -83,9 +83,9 @@
     gap: $spacing-sm;
 
     .select {
-      min-width: 170px;
       font-size: $font-size-sm;
-      padding-right: $spacing-xl;
+      width: 190px;
+      height: 100%;
     }
   }
 

@@ -2,6 +2,7 @@ import { useReportes } from '../hooks/useReportes';
 import { useToast } from '../hooks/useToast';
 import { useClientes } from '../hooks/useClientes';
 import { getCodigoPais } from '../data/codigosPais';
+import { PiDownloadSimpleBold } from 'react-icons/pi';
 import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
 import KPICards from '../components/reportes/KPICards';
@@ -48,6 +49,7 @@ const Reportes = () => {
             className="btn btn--secondary"
             disabled={filteredPedidos.length === 0}
           >
+            <PiDownloadSimpleBold size={18} style={{ marginRight: '6px' }} />
             Exportar CSV
           </button>
         </div>

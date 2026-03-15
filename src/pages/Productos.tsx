@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 type SortOption = 'nombre_asc' | 'nombre_desc' | 'precio_asc' | 'precio_desc' | 'registro_desc' | 'registro_asc';
 
@@ -13,7 +13,8 @@ const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
   registro_desc: 'Más recientes',
   registro_asc: 'Más antiguos',
 };
-import { PiCloudArrowUpBold, PiMagnifyingGlassBold, PiClockCounterClockwiseBold } from 'react-icons/pi';
+import { useLocation } from 'react-router-dom';
+import { PiCloudArrowUpBold, PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPlusBold } from 'react-icons/pi';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
@@ -27,7 +28,14 @@ import './Productos.scss';
 const Productos = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
+  const [filterVenciendo, setFilterVenciendo] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const state = location.state as Record<string, unknown> | null;
+    if (state?.filterDescuento) setFilterVenciendo(true);
+  }, []);
   const [showHistorial, setShowHistorial] = useState(false);
   const [editingProducto, setEditingProducto] = useState<{ id: string; data: ProductoFormData } | null>(null);
 
@@ -44,6 +52,16 @@ const Productos = () => {
         )
       : [...productos];
 
+    if (filterVenciendo) {
+      const ahora = Date.now();
+      resultado = resultado.filter(p => {
+        if (!p.descuento || !p.fechaFinDescuento) return false;
+        const msRestantes = new Date(p.fechaFinDescuento).getTime() - ahora;
+        const diasRestantes = Math.ceil(msRestantes / (1000 * 60 * 60 * 24));
+        return diasRestantes >= 0 && diasRestantes <= 7;
+      });
+    }
+
     resultado.sort((a, b) => {
       switch (sortBy) {
         case 'nombre_asc': return a.nombre.localeCompare(b.nombre);
@@ -57,7 +75,7 @@ const Productos = () => {
     });
 
     return resultado;
-  }, [productos, searchTerm, sortBy]);
+  }, [productos, searchTerm, sortBy, filterVenciendo]);
 
   const handleAdd = async (data: ProductoFormData) => {
     try {
@@ -122,6 +140,7 @@ const Productos = () => {
               onClick={() => setIsModalOpen(true)}
               className="btn btn--primary"
             >
+              <PiPlusBold size={18} style={{ marginRight: '6px' }} />
               Nuevo Producto
             </button>
           </div>
@@ -162,6 +181,13 @@ const Productos = () => {
           </div>
         </div>
 
+        {filterVenciendo && (
+          <div className="productos__filter-banner">
+            <PiWarningBold size={16} />
+            <span>Mostrando solo productos con descuento por vencer</span>
+            <button onClick={() => setFilterVenciendo(false)}>✕ Quitar filtro</button>
+          </div>
+        )}
         <ProductosTable
           productos={filteredProductos}
           etiquetas={etiquetas}

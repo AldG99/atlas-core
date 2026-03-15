@@ -18,7 +18,8 @@ import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito } f
 import PhoneInput from '../components/clientes/PhoneInput';
 import { getPedidosByClientPhone } from '../services/pedidoService';
 import { getCodigoPais } from '../data/codigosPais';
-import { formatTelefono, formatCurrency } from '../utils/formatters';
+import { formatTelefono } from '../utils/formatters';
+import { useCurrency } from '../hooks/useCurrency';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -35,6 +36,7 @@ const ClienteDetail = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { user } = useAuth();
+  const { format } = useCurrency();
   const { productos: catalogoProductos } = useProductos();
   const { etiquetas: todasEtiquetas } = useEtiquetas();
 
@@ -617,7 +619,7 @@ const ClienteDetail = () => {
                                     })}
                                   </div>
                                 </td>
-                                <td>{formatCurrency(p.subtotal)}</td>
+                                <td>{format(p.subtotal)}</td>
                                 <td />
                               </tr>
                             ))}
@@ -627,8 +629,8 @@ const ClienteDetail = () => {
                               onMouseEnter={() => setFocusedRow(totalIdx)}
                             >
                               <td colSpan={4} className="cliente-detail__pedidos-total-label">Total</td>
-                              <td className="cliente-detail__pedidos-total-value">{formatCurrency(pedido.total)}</td>
-                              <td className="cliente-detail__pedidos-acumulado-value">{formatCurrency(acumuladoMap.get(pedido.id) ?? 0)}</td>
+                              <td className="cliente-detail__pedidos-total-value">{format(pedido.total)}</td>
+                              <td className="cliente-detail__pedidos-acumulado-value">{format(acumuladoMap.get(pedido.id) ?? 0)}</td>
                             </tr>
                           </React.Fragment>
                             );
@@ -650,7 +652,7 @@ const ClienteDetail = () => {
                       <tfoot>
                         <tr>
                           <td colSpan={5} className="cliente-detail__pedidos-table-total-label">Total acumulado</td>
-                          <td className="cliente-detail__pedidos-table-total-value">{formatCurrency(pedidos.filter(p => p.estado === 'entregado').reduce((s, p) => s + p.total, 0))}</td>
+                          <td className="cliente-detail__pedidos-table-total-value">{format(pedidos.filter(p => p.estado === 'entregado').reduce((s, p) => s + p.total, 0))}</td>
                         </tr>
                       </tfoot>
                     </table>

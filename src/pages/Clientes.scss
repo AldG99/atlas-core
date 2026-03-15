@@ -72,7 +72,7 @@
 
     @include md {
       flex-direction: row;
-      align-items: center;
+      align-items: stretch;
       justify-content: space-between;
     }
   }
@@ -114,6 +114,8 @@
 
     .select {
       font-size: $font-size-sm;
+      height: 100%;
+      width: 190px;
     }
   }
 

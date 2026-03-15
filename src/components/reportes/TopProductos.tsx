@@ -1,5 +1,4 @@
 import type { TopProducto } from '../../types/Reporte';
-import { formatCurrency } from '../../utils/formatters';
 import './TopProductos.scss';
 
 interface TopProductosProps {

@@ -26,17 +26,7 @@ import './Configuracion.scss';
 type ImportStep = 'idle' | 'preview' | 'importing' | 'done';
 type DangerModal = null | 'deleteData' | 'deleteAccount';
 
-const MONEDAS = [
-  { codigo: 'MXN', nombre: 'Peso Mexicano', simbolo: '$' },
-  { codigo: 'USD', nombre: 'Dólar Estadounidense', simbolo: '$' },
-  { codigo: 'EUR', nombre: 'Euro', simbolo: '€' },
-  { codigo: 'COP', nombre: 'Peso Colombiano', simbolo: '$' },
-  { codigo: 'ARS', nombre: 'Peso Argentino', simbolo: '$' },
-  { codigo: 'CLP', nombre: 'Peso Chileno', simbolo: '$' },
-  { codigo: 'PEN', nombre: 'Sol Peruano', simbolo: 'S/' },
-  { codigo: 'BRL', nombre: 'Real Brasileño', simbolo: 'R$' },
-  { codigo: 'GTQ', nombre: 'Quetzal Guatemalteco', simbolo: 'Q' },
-];
+const SIMBOLOS_MONEDA = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
 
 const Configuracion = () => {
   const { user, updateProfile, deleteAllData, deleteAccount } = useAuth();
@@ -50,8 +40,12 @@ const Configuracion = () => {
   const [importResult, setImportResult] = useState<{ clientes: number; productos: number; pedidos: number; etiquetas: number; omitidos: number } | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
 
-  // Moneda
-  const [moneda, setMoneda] = useState(user?.moneda ?? 'MXN');
+  // Moneda — migración de código ISO a símbolo
+  const LEGACY_MAP: Record<string, string> = {
+    MXN: '$', USD: '$', EUR: '€', COP: '$', ARS: '$', CLP: '$', PEN: 'S/', BRL: 'R$', GTQ: 'Q',
+  };
+  const rawMoneda = user?.moneda ?? '$';
+  const [moneda, setMoneda] = useState(LEGACY_MAP[rawMoneda] ?? rawMoneda);
   const [savingMoneda, setSavingMoneda] = useState(false);
 
   // Zona de peligro
@@ -299,7 +293,7 @@ const Configuracion = () => {
                 <h2 className="configuracion__card-title">Moneda</h2>
               </div>
               <p className="configuracion__card-desc">
-                Define el símbolo y formato que se usará en precios, totales y reportes.
+                Elige el símbolo que se mostrará en precios, totales y reportes.
               </p>
               <div className="configuracion__card-footer configuracion__card-footer--row">
                 <select
@@ -307,16 +301,14 @@ const Configuracion = () => {
                   value={moneda}
                   onChange={e => setMoneda(e.target.value)}
                 >
-                  {MONEDAS.map(m => (
-                    <option key={m.codigo} value={m.codigo}>
-                      {m.simbolo} — {m.nombre} ({m.codigo})
-                    </option>
+                  {SIMBOLOS_MONEDA.map(s => (
+                    <option key={s} value={s}>{s}</option>
                   ))}
                 </select>
                 <button
                   className="btn btn--primary btn--sm"
                   onClick={handleSaveMoneda}
-                  disabled={savingMoneda || moneda === (user?.moneda ?? 'MXN')}
+                  disabled={savingMoneda || moneda === (LEGACY_MAP[rawMoneda] ?? rawMoneda)}
                 >
                   {savingMoneda ? 'Guardando...' : 'Guardar'}
                 </button>
