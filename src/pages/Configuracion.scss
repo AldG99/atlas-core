@@ -2,44 +2,61 @@
 @use '../styles/abstracts/mixins' as *;
 
 .configuracion {
-  max-width: 900px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  max-width: 960px;
+  width: 100%;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-md;
 
   &__page-title {
     font-size: $font-size-xl;
     font-weight: 700;
     color: $color-gray-800;
-    margin: 0 0 $spacing-xl;
+    flex-shrink: 0;
   }
 
-  &__grid {
+  // Layout principal: grid 2x2 — fila 1 toma espacio sobrante, fila 2 se ajusta al contenido
+  &__layout {
+    flex: 1;
+    min-height: 0;
     display: grid;
-    grid-template-columns: 1fr;
-    gap: $spacing-lg;
-
-    @include md {
-      grid-template-columns: 1fr 1fr;
-    }
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr auto;
+    gap: $spacing-md;
   }
 
+  // Cards
   &__card {
     background-color: $color-white;
     border: 1px solid $color-gray-200;
     border-radius: $border-radius-lg;
-    padding: $spacing-lg;
+    padding: $spacing-md $spacing-lg;
     display: flex;
     flex-direction: column;
-    gap: $spacing-md;
+    gap: $spacing-sm;
     box-shadow: $shadow-sm;
+    min-height: 0;
+
+    &--danger {
+      border-color: rgba(#dc2626, 0.25);
+    }
+  }
+
+  &__card-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex-shrink: 0;
   }
 
   &__card-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 32px;
+    height: 32px;
     border-radius: $border-radius-md;
     flex-shrink: 0;
 
@@ -52,13 +69,16 @@
       background-color: rgba(#16a34a, 0.1);
       color: #16a34a;
     }
-  }
 
-  &__card-body {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
-    flex: 1;
+    &--moneda {
+      background-color: rgba(#f59e0b, 0.1);
+      color: #f59e0b;
+    }
+
+    &--danger {
+      background-color: rgba(#dc2626, 0.1);
+      color: #dc2626;
+    }
   }
 
   &__card-title {
@@ -66,11 +86,15 @@
     font-weight: 700;
     color: $color-gray-800;
     margin: 0;
+
+    &--danger {
+      color: #dc2626;
+    }
   }
 
   &__card-desc {
     font-size: $font-size-sm;
-    color: $color-gray-600;
+    color: $color-gray-500;
     margin: 0;
     line-height: 1.5;
   }
@@ -81,6 +105,20 @@
     margin: 0;
   }
 
+  &__card-footer {
+    margin-top: auto;
+    padding-top: $spacing-sm;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    &--row {
+      flex-direction: row;
+      align-items: center;
+      gap: $spacing-sm;
+    }
+  }
+
   &__card-btn {
     display: inline-flex;
     align-items: center;
@@ -88,6 +126,26 @@
     align-self: flex-start;
   }
 
+  // Moneda select
+  &__select {
+    flex: 1;
+    height: 36px;
+    padding: 0 $spacing-sm;
+    border: 1px solid $color-gray-300;
+    border-radius: $border-radius-md;
+    font-size: $font-size-sm;
+    color: $color-gray-800;
+    background-color: $color-white;
+    cursor: pointer;
+    outline: none;
+
+    &:focus {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
+    }
+  }
+
+  // File
   &__file-input {
     display: none;
   }
@@ -110,8 +168,9 @@
     gap: $spacing-sm;
     border: 1px solid $color-gray-200;
     border-radius: $border-radius-md;
-    padding: $spacing-md;
+    padding: $spacing-sm $spacing-md;
     background-color: $color-gray-50;
+    margin-top: auto;
   }
 
   &__preview-date {
@@ -133,7 +192,7 @@
     background-color: $color-white;
     border: 1px solid $color-gray-200;
     border-radius: $border-radius-md;
-    padding: $spacing-sm $spacing-xs;
+    padding: $spacing-xs;
     font-size: $font-size-xs;
     color: $color-gray-500;
     gap: 2px;
@@ -141,7 +200,7 @@
   }
 
   &__preview-count {
-    font-size: $font-size-lg;
+    font-size: $font-size-base;
     font-weight: 700;
     color: $color-gray-800;
   }
@@ -150,14 +209,6 @@
     display: flex;
     gap: $spacing-xs;
     justify-content: flex-end;
-    margin-top: $spacing-xs;
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: $spacing-xs;
-      font-size: $font-size-sm;
-    }
   }
 
   // Importing
@@ -168,11 +219,12 @@
     font-size: $font-size-sm;
     color: $color-gray-500;
     padding: $spacing-sm 0;
+    margin-top: auto;
   }
 
   &__spinner {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border: 2px solid $color-gray-200;
     border-top-color: $color-primary;
     border-radius: 50%;
@@ -184,8 +236,8 @@
   &__done {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: $spacing-xs;
+    margin-top: auto;
   }
 
   &__done-icon {
@@ -193,7 +245,7 @@
   }
 
   &__done-title {
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
     font-weight: 700;
     color: $color-gray-800;
     margin: 0;
@@ -204,6 +256,168 @@
     color: $color-gray-600;
     margin: 0;
     line-height: 1.5;
+  }
+
+  // Zona de peligro
+  &__danger-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $spacing-md;
+
+    .btn--danger {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+  }
+
+  &__danger-label {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-gray-800;
+    margin: 0 0 2px;
+  }
+
+  &__danger-divider {
+    height: 1px;
+    background-color: $color-gray-100;
+    flex-shrink: 0;
+  }
+
+  // Modal
+  &__modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: $spacing-md;
+  }
+
+  &__modal {
+    background-color: $color-white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-lg;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__modal-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-lg $spacing-lg $spacing-md;
+    border-bottom: 1px solid $color-gray-100;
+
+    h3 {
+      margin: 0;
+      font-size: $font-size-base;
+      font-weight: 700;
+      color: $color-gray-800;
+      flex: 1;
+    }
+  }
+
+  &__modal-icon {
+    color: #dc2626;
+    flex-shrink: 0;
+  }
+
+  &__modal-close {
+    background: none;
+    border: none;
+    color: $color-gray-400;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: $border-radius-sm;
+    display: flex;
+    align-items: center;
+
+    &:hover { color: $color-gray-700; }
+  }
+
+  &__modal-body {
+    padding: $spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+
+    p {
+      font-size: $font-size-sm;
+      color: $color-gray-600;
+      margin: 0;
+      line-height: 1.6;
+    }
+  }
+
+  &__modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    label {
+      font-size: $font-size-sm;
+      font-weight: 600;
+      color: $color-gray-700;
+    }
+  }
+
+  &__modal-pwd {
+    display: flex;
+    align-items: center;
+    border: 1px solid $color-gray-300;
+    border-radius: $border-radius-md;
+    overflow: hidden;
+
+    .input {
+      flex: 1;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+
+      &:focus { box-shadow: none; }
+    }
+
+    button {
+      background: none;
+      border: none;
+      padding: 0 $spacing-sm;
+      color: $color-gray-400;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+
+      &:hover { color: $color-gray-700; }
+    }
+  }
+
+  &__modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg $spacing-lg;
+    border-top: 1px solid $color-gray-100;
+  }
+}
+
+// Btn danger (global)
+.btn--danger {
+  background-color: #dc2626;
+  color: $color-white;
+  border: 1px solid #dc2626;
+
+  &:hover:not(:disabled) {
+    background-color: #b91c1c;
+    border-color: #b91c1c;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 

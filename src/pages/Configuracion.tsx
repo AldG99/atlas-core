@@ -6,6 +6,11 @@ import {
   PiCheckCircleBold,
   PiWarningBold,
   PiXBold,
+  PiCurrencyDollarBold,
+  PiTrashBold,
+  PiUserMinusBold,
+  PiEyeBold,
+  PiEyeSlashBold,
 } from 'react-icons/pi';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../hooks/useAuth';
@@ -19,18 +24,44 @@ import {
 import './Configuracion.scss';
 
 type ImportStep = 'idle' | 'preview' | 'importing' | 'done';
+type DangerModal = null | 'deleteData' | 'deleteAccount';
+
+const MONEDAS = [
+  { codigo: 'MXN', nombre: 'Peso Mexicano', simbolo: '$' },
+  { codigo: 'USD', nombre: 'Dólar Estadounidense', simbolo: '$' },
+  { codigo: 'EUR', nombre: 'Euro', simbolo: '€' },
+  { codigo: 'COP', nombre: 'Peso Colombiano', simbolo: '$' },
+  { codigo: 'ARS', nombre: 'Peso Argentino', simbolo: '$' },
+  { codigo: 'CLP', nombre: 'Peso Chileno', simbolo: '$' },
+  { codigo: 'PEN', nombre: 'Sol Peruano', simbolo: 'S/' },
+  { codigo: 'BRL', nombre: 'Real Brasileño', simbolo: 'R$' },
+  { codigo: 'GTQ', nombre: 'Quetzal Guatemalteco', simbolo: 'Q' },
+];
 
 const Configuracion = () => {
-  const { user } = useAuth();
+  const { user, updateProfile, deleteAllData, deleteAccount } = useAuth();
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Backup
   const [exporting, setExporting] = useState(false);
   const [importStep, setImportStep] = useState<ImportStep>('idle');
   const [backupData, setBackupData] = useState<BackupData | null>(null);
   const [importResult, setImportResult] = useState<{ clientes: number; productos: number; pedidos: number; etiquetas: number; omitidos: number } | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
 
+  // Moneda
+  const [moneda, setMoneda] = useState(user?.moneda ?? 'MXN');
+  const [savingMoneda, setSavingMoneda] = useState(false);
+
+  // Zona de peligro
+  const [dangerModal, setDangerModal] = useState<DangerModal>(null);
+  const [dangerPassword, setDangerPassword] = useState('');
+  const [showDangerPwd, setShowDangerPwd] = useState(false);
+  const [dangerError, setDangerError] = useState('');
+  const [dangerLoading, setDangerLoading] = useState(false);
+
+  // ── Backup ──────────────────────────────────────────
   const handleExport = async () => {
     if (!user) return;
     setExporting(true);
@@ -78,137 +109,329 @@ const Configuracion = () => {
     setFileError(null);
   };
 
+  // ── Moneda ──────────────────────────────────────────
+  const handleSaveMoneda = async () => {
+    setSavingMoneda(true);
+    try {
+      await updateProfile({ moneda });
+      showToast('Moneda actualizada correctamente', 'success');
+    } catch {
+      showToast('Error al guardar la moneda', 'error');
+    } finally {
+      setSavingMoneda(false);
+    }
+  };
+
+  // ── Zona de peligro ─────────────────────────────────
+  const closeDangerModal = () => {
+    setDangerModal(null);
+    setDangerPassword('');
+    setDangerError('');
+    setShowDangerPwd(false);
+  };
+
+  const handleDeleteData = async () => {
+    setDangerError('');
+    setDangerLoading(true);
+    try {
+      await deleteAllData();
+      showToast('Todos los datos han sido eliminados', 'success');
+      closeDangerModal();
+    } catch {
+      setDangerError('Ocurrió un error al eliminar los datos');
+    } finally {
+      setDangerLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDangerError('');
+    if (!dangerPassword) {
+      setDangerError('Ingresa tu contraseña para confirmar');
+      return;
+    }
+    setDangerLoading(true);
+    try {
+      await deleteAccount(dangerPassword);
+    } catch {
+      setDangerError('Contraseña incorrecta');
+      setDangerLoading(false);
+    }
+  };
+
   return (
     <MainLayout>
       <div className="configuracion">
         <h1 className="configuracion__page-title">Configuración</h1>
 
-        <div className="configuracion__grid">
-          {/* Exportar */}
-          <div className="configuracion__card">
-            <div className="configuracion__card-icon configuracion__card-icon--export">
-              <PiDownloadSimpleBold size={24} />
-            </div>
-            <div className="configuracion__card-body">
-              <h2 className="configuracion__card-title">Exportar datos</h2>
+        <div className="configuracion__layout">
+
+            {/* Exportar */}
+            <div className="configuracion__card">
+              <div className="configuracion__card-header">
+                <div className="configuracion__card-icon configuracion__card-icon--export">
+                  <PiDownloadSimpleBold size={18} />
+                </div>
+                <h2 className="configuracion__card-title">Exportar datos</h2>
+              </div>
               <p className="configuracion__card-desc">
                 Descarga un archivo con todos tus clientes, productos, pedidos y etiquetas. Úsalo como respaldo o para migrar a otra cuenta.
               </p>
               <p className="configuracion__card-note">
                 Las fotos de clientes y productos no se incluyen en el respaldo.
               </p>
+              <div className="configuracion__card-footer">
+                <button
+                  className="btn btn--primary btn--sm configuracion__card-btn"
+                  onClick={handleExport}
+                  disabled={exporting}
+                >
+                  <PiDownloadSimpleBold size={15} />
+                  {exporting ? 'Generando...' : 'Descargar respaldo'}
+                </button>
+              </div>
             </div>
-            <button
-              className="btn btn--primary configuracion__card-btn"
-              onClick={handleExport}
-              disabled={exporting}
-            >
-              <PiDownloadSimpleBold size={16} />
-              {exporting ? 'Generando...' : 'Descargar respaldo'}
-            </button>
-          </div>
 
-          {/* Importar */}
-          <div className="configuracion__card">
-            <div className="configuracion__card-icon configuracion__card-icon--import">
-              <PiUploadSimpleBold size={24} />
-            </div>
-            <div className="configuracion__card-body">
-              <h2 className="configuracion__card-title">Importar datos</h2>
+            {/* Importar */}
+            <div className="configuracion__card">
+              <div className="configuracion__card-header">
+                <div className="configuracion__card-icon configuracion__card-icon--import">
+                  <PiUploadSimpleBold size={18} />
+                </div>
+                <h2 className="configuracion__card-title">Importar datos</h2>
+              </div>
               <p className="configuracion__card-desc">
                 Carga un archivo de respaldo para restaurar tus datos en esta cuenta. Los datos existentes no se eliminan.
               </p>
               <p className="configuracion__card-note">
                 Solo se aceptan archivos generados por Orderly (.json).
               </p>
+
+              {importStep === 'idle' && (
+                <div className="configuracion__card-footer">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    className="configuracion__file-input"
+                    onChange={handleFileChange}
+                  />
+                  <button
+                    className="btn btn--outline btn--sm configuracion__card-btn"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <PiFileBold size={15} />
+                    Seleccionar archivo
+                  </button>
+                  {fileError && (
+                    <div className="configuracion__file-error">
+                      <PiWarningBold size={13} />
+                      {fileError}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {importStep === 'preview' && backupData && (
+                <div className="configuracion__preview">
+                  <p className="configuracion__preview-date">
+                    Respaldo del {new Date(backupData.exportadoEn).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}
+                  </p>
+                  <div className="configuracion__preview-summary">
+                    <div className="configuracion__preview-item">
+                      <span className="configuracion__preview-count">{backupData.clientes.length}</span>
+                      <span>Clientes</span>
+                    </div>
+                    <div className="configuracion__preview-item">
+                      <span className="configuracion__preview-count">{backupData.productos.length}</span>
+                      <span>Productos</span>
+                    </div>
+                    <div className="configuracion__preview-item">
+                      <span className="configuracion__preview-count">{backupData.pedidos.length}</span>
+                      <span>Pedidos</span>
+                    </div>
+                    <div className="configuracion__preview-item">
+                      <span className="configuracion__preview-count">{backupData.etiquetas?.length ?? 0}</span>
+                      <span>Etiquetas</span>
+                    </div>
+                  </div>
+                  <div className="configuracion__preview-actions">
+                    <button className="btn btn--ghost btn--sm" onClick={handleReset}>
+                      <PiXBold size={13} />
+                      Cancelar
+                    </button>
+                    <button className="btn btn--primary btn--sm" onClick={handleImport}>
+                      <PiUploadSimpleBold size={13} />
+                      Confirmar importación
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {importStep === 'importing' && (
+                <div className="configuracion__importing">
+                  <div className="configuracion__spinner" />
+                  <span>Importando datos...</span>
+                </div>
+              )}
+
+              {importStep === 'done' && importResult && (
+                <div className="configuracion__done">
+                  <PiCheckCircleBold size={28} className="configuracion__done-icon" />
+                  <p className="configuracion__done-title">¡Importación completada!</p>
+                  <p className="configuracion__done-desc">
+                    Se importaron {importResult.clientes} clientes, {importResult.productos} productos, {importResult.pedidos} pedidos y {importResult.etiquetas} etiquetas.
+                    {importResult.omitidos > 0 && (
+                      <> {importResult.omitidos} {importResult.omitidos === 1 ? 'registro omitido por' : 'registros omitidos por'} duplicado.</>
+                    )}
+                  </p>
+                  <button className="btn btn--outline btn--sm" onClick={handleReset}>Aceptar</button>
+                </div>
+              )}
             </div>
 
-            {importStep === 'idle' && (
-              <>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".json"
-                  className="configuracion__file-input"
-                  onChange={handleFileChange}
-                />
-                <button
-                  className="btn btn--outline configuracion__card-btn"
-                  onClick={() => fileInputRef.current?.click()}
+            {/* Moneda */}
+            <div className="configuracion__card">
+              <div className="configuracion__card-header">
+                <div className="configuracion__card-icon configuracion__card-icon--moneda">
+                  <PiCurrencyDollarBold size={18} />
+                </div>
+                <h2 className="configuracion__card-title">Moneda</h2>
+              </div>
+              <p className="configuracion__card-desc">
+                Define el símbolo y formato que se usará en precios, totales y reportes.
+              </p>
+              <div className="configuracion__card-footer configuracion__card-footer--row">
+                <select
+                  className="configuracion__select"
+                  value={moneda}
+                  onChange={e => setMoneda(e.target.value)}
                 >
-                  <PiFileBold size={16} />
-                  Seleccionar archivo
-                </button>
-                {fileError && (
-                  <div className="configuracion__file-error">
-                    <PiWarningBold size={14} />
-                    {fileError}
-                  </div>
-                )}
-              </>
-            )}
-
-            {importStep === 'preview' && backupData && (
-              <div className="configuracion__preview">
-                <p className="configuracion__preview-date">
-                  Respaldo del {new Date(backupData.exportadoEn).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}
-                </p>
-                <div className="configuracion__preview-summary">
-                  <div className="configuracion__preview-item">
-                    <span className="configuracion__preview-count">{backupData.clientes.length}</span>
-                    <span>Clientes</span>
-                  </div>
-                  <div className="configuracion__preview-item">
-                    <span className="configuracion__preview-count">{backupData.productos.length}</span>
-                    <span>Productos</span>
-                  </div>
-                  <div className="configuracion__preview-item">
-                    <span className="configuracion__preview-count">{backupData.pedidos.length}</span>
-                    <span>Pedidos</span>
-                  </div>
-                  <div className="configuracion__preview-item">
-                    <span className="configuracion__preview-count">{backupData.etiquetas?.length ?? 0}</span>
-                    <span>Etiquetas</span>
-                  </div>
-                </div>
-                <div className="configuracion__preview-actions">
-                  <button className="btn btn--ghost" onClick={handleReset}>
-                    <PiXBold size={14} />
-                    Cancelar
-                  </button>
-                  <button className="btn btn--primary" onClick={handleImport}>
-                    <PiUploadSimpleBold size={14} />
-                    Confirmar importación
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {importStep === 'importing' && (
-              <div className="configuracion__importing">
-                <div className="configuracion__spinner" />
-                <span>Importando datos...</span>
-              </div>
-            )}
-
-            {importStep === 'done' && importResult && (
-              <div className="configuracion__done">
-                <PiCheckCircleBold size={32} className="configuracion__done-icon" />
-                <p className="configuracion__done-title">¡Importación completada!</p>
-                <p className="configuracion__done-desc">
-                  Se importaron {importResult.clientes} clientes, {importResult.productos} productos, {importResult.pedidos} pedidos y {importResult.etiquetas} etiquetas.
-                  {importResult.omitidos > 0 && (
-                    <> {importResult.omitidos} {importResult.omitidos === 1 ? 'registro omitido por' : 'registros omitidos por'} duplicado.</>
-                  )}
-                </p>
-                <button className="btn btn--outline configuracion__card-btn" onClick={handleReset}>
-                  Aceptar
+                  {MONEDAS.map(m => (
+                    <option key={m.codigo} value={m.codigo}>
+                      {m.simbolo} — {m.nombre} ({m.codigo})
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="btn btn--primary btn--sm"
+                  onClick={handleSaveMoneda}
+                  disabled={savingMoneda || moneda === (user?.moneda ?? 'MXN')}
+                >
+                  {savingMoneda ? 'Guardando...' : 'Guardar'}
                 </button>
               </div>
-            )}
-          </div>
+            </div>
+
+            {/* Zona de peligro */}
+            <div className="configuracion__card configuracion__card--danger">
+              <div className="configuracion__card-header">
+                <div className="configuracion__card-icon configuracion__card-icon--danger">
+                  <PiWarningBold size={18} />
+                </div>
+                <h2 className="configuracion__card-title configuracion__card-title--danger">Zona de peligro</h2>
+              </div>
+
+              <div className="configuracion__danger-item">
+                <div>
+                  <p className="configuracion__danger-label">Eliminar todos los datos</p>
+                  <p className="configuracion__card-desc">
+                    Borra permanentemente todos tus clientes, productos, pedidos y etiquetas. Tu cuenta permanece activa.
+                  </p>
+                </div>
+                <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteData')}>
+                  <PiTrashBold size={14} />
+                  Eliminar datos
+                </button>
+              </div>
+
+              <div className="configuracion__danger-divider" />
+
+              <div className="configuracion__danger-item">
+                <div>
+                  <p className="configuracion__danger-label">Eliminar cuenta</p>
+                  <p className="configuracion__card-desc">
+                    Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.
+                  </p>
+                </div>
+                <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteAccount')}>
+                  <PiUserMinusBold size={14} />
+                  Eliminar cuenta
+                </button>
+              </div>
+            </div>
+
         </div>
       </div>
+
+      {/* Modal zona de peligro */}
+      {dangerModal && (
+        <div className="configuracion__modal-overlay" onClick={closeDangerModal}>
+          <div className="configuracion__modal" onClick={e => e.stopPropagation()}>
+            <div className="configuracion__modal-header">
+              <PiWarningBold size={20} className="configuracion__modal-icon" />
+              <h3>
+                {dangerModal === 'deleteData' ? 'Eliminar todos los datos' : 'Eliminar cuenta'}
+              </h3>
+              <button className="configuracion__modal-close" onClick={closeDangerModal}>
+                <PiXBold size={16} />
+              </button>
+            </div>
+            <div className="configuracion__modal-body">
+              {dangerModal === 'deleteData' ? (
+                <p>
+                  Se eliminarán permanentemente todos tus <strong>clientes, productos, pedidos y etiquetas</strong>.
+                  Tu cuenta seguirá activa. Esta acción <strong>no se puede deshacer</strong>.
+                </p>
+              ) : (
+                <>
+                  <p>
+                    Se eliminará tu cuenta y <strong>todos los datos</strong> de forma permanente.
+                    Esta acción <strong>no se puede deshacer</strong>.
+                  </p>
+                  <div className="configuracion__modal-field">
+                    <label>Confirma tu contraseña</label>
+                    <div className="configuracion__modal-pwd">
+                      <input
+                        type={showDangerPwd ? 'text' : 'password'}
+                        className="input"
+                        placeholder="••••••••"
+                        value={dangerPassword}
+                        onChange={e => setDangerPassword(e.target.value)}
+                      />
+                      <button type="button" onClick={() => setShowDangerPwd(v => !v)}>
+                        {showDangerPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+              {dangerError && (
+                <div className="configuracion__file-error">
+                  <PiWarningBold size={14} />
+                  {dangerError}
+                </div>
+              )}
+            </div>
+            <div className="configuracion__modal-actions">
+              <button className="btn btn--outline btn--sm" onClick={closeDangerModal} disabled={dangerLoading}>
+                Cancelar
+              </button>
+              <button
+                className="btn btn--danger btn--sm"
+                onClick={dangerModal === 'deleteData' ? handleDeleteData : handleDeleteAccount}
+                disabled={dangerLoading}
+              >
+                {dangerLoading
+                  ? 'Eliminando...'
+                  : dangerModal === 'deleteData'
+                    ? 'Sí, eliminar datos'
+                    : 'Sí, eliminar cuenta'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 };

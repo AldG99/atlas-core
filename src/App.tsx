@@ -14,6 +14,7 @@ import ClienteDetail from './pages/ClienteDetail';
 import Productos from './pages/Productos';
 import ProductoDetail from './pages/ProductoDetail';
 import Reportes from './pages/Reportes';
+import Perfil from './pages/Perfil';
 import Configuracion from './pages/Configuracion';
 import Archivo from './pages/Archivo';
 import Soporte from './pages/Soporte';
@@ -97,6 +98,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Archivo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.PERFIL}
+            element={
+              <ProtectedRoute>
+                <Perfil />
               </ProtectedRoute>
             }
           />

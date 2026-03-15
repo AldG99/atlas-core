@@ -13,6 +13,7 @@ import {
   PiStarFill,
   PiWarehouseBold,
   PiDownloadSimpleBold,
+  PiPencilSimpleBold,
 } from 'react-icons/pi';
 import { toPng } from 'html-to-image';
 import PedidoCaptura from '../components/pedidos/PedidoCaptura';
@@ -34,6 +35,7 @@ import {
   getPedidoById,
   updatePedidoStatus,
   addAbono,
+  updateAbono,
   deletePedido,
 } from '../services/pedidoService';
 import { useAuth } from '../hooks/useAuth';
@@ -68,6 +70,8 @@ const PedidoDetail = () => {
   );
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const [focusedAbonoRow, setFocusedAbonoRow] = useState<number | null>(null);
+  const [editingAbonoId, setEditingAbonoId] = useState<string | null>(null);
+  const [editingAbonoValue, setEditingAbonoValue] = useState('');
   const [discountTooltip, setDiscountTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const tableScrollRef = useRef<HTMLDivElement>(null);
   const abonoScrollRef = useRef<HTMLDivElement>(null);
@@ -319,6 +323,20 @@ const PedidoDetail = () => {
       showToast('Abono registrado', 'success');
     } catch {
       showToast('Error al registrar abono', 'error');
+    }
+  };
+
+  const handleUpdateAbono = async (abonoId: string) => {
+    if (!pedido) return;
+    const nuevoMonto = parseFloat(editingAbonoValue);
+    if (!nuevoMonto || nuevoMonto <= 0) return;
+    try {
+      const updatedAbonos = await updateAbono(pedido.id, abonoId, nuevoMonto);
+      setPedido({ ...pedido, abonos: updatedAbonos });
+      setEditingAbonoId(null);
+      showToast('Abono corregido', 'success');
+    } catch {
+      showToast('Error al corregir el abono', 'error');
     }
   };
 
@@ -739,16 +757,18 @@ const PedidoDetail = () => {
                 <div className="pedido-detail__table-head">
                   <table className="pedido-detail__abonos-table">
                     <colgroup>
-                      <col style={{ width: '15%' }} />
-                      <col style={{ width: '40%' }} />
-                      <col style={{ width: '20%' }} />
-                      <col style={{ width: '25%' }} />
+                      <col style={{ width: '10%' }} />
+                      <col style={{ width: '32%' }} />
+                      <col style={{ width: '18%' }} />
+                      <col style={{ width: '18%' }} />
+                      <col style={{ width: '22%' }} />
                     </colgroup>
                     <thead>
                       <tr>
                         <th>Clave</th>
                         <th>Producto</th>
                         <th>Monto</th>
+                        <th>Acciones</th>
                         <th>Fecha</th>
                       </tr>
                     </thead>
@@ -758,28 +778,25 @@ const PedidoDetail = () => {
                 <div ref={abonoScrollRef} className="pedido-detail__table-scroll pedido-detail__table-scroll--fixed">
                   <table className="pedido-detail__abonos-table">
                     <colgroup>
-                      <col style={{ width: '15%' }} />
-                      <col style={{ width: '40%' }} />
-                      <col style={{ width: '20%' }} />
-                      <col style={{ width: '25%' }} />
+                      <col style={{ width: '10%' }} />
+                      <col style={{ width: '32%' }} />
+                      <col style={{ width: '18%' }} />
+                      <col style={{ width: '18%' }} />
+                      <col style={{ width: '22%' }} />
                     </colgroup>
                     <tbody>
                       {abonos.length === 0 ? (
                         <tr>
-                          <td colSpan={4} className="pedido-detail__abonos-empty">
+                          <td colSpan={5} className="pedido-detail__abonos-empty">
                             Sin abonos registrados
                           </td>
                         </tr>
                       ) : (
                         [...abonos]
-                          .sort(
-                            (a, b) =>
-                              new Date(b.fecha).getTime() -
-                              new Date(a.fecha).getTime()
-                          )
+                          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
                           .map((abono, i) => (
                             <tr
-                              key={`${new Date(abono.fecha).getTime()}-${abono.monto}-${abono.productoIndex ?? 'g'}`}
+                              key={abono.id}
                               className={focusedAbonoRow === i ? 'pedido-detail__product-row--focused' : ''}
                               onClick={() => { setFocusedAbonoRow(i); setFocusedRow(null); }}
                             >
@@ -789,21 +806,67 @@ const PedidoDetail = () => {
                                   <span className="pedido-detail__clave">
                                     {pedido.productos[abono.productoIndex].clave}
                                   </span>
-                                ) : (
-                                  '-'
-                                )}
+                                ) : '-'}
                               </td>
                               <td>
                                 {typeof abono.productoIndex === 'number' &&
                                 pedido.productos[abono.productoIndex] ? (
                                   pedido.productos[abono.productoIndex].nombre
                                 ) : (
-                                  <span className="pedido-detail__general-label">
-                                    General
-                                  </span>
+                                  <span className="pedido-detail__general-label">General</span>
                                 )}
                               </td>
-                              <td>{formatCurrency(abono.monto)}</td>
+                              <td>
+                                {editingAbonoId === abono.id ? (
+                                  <div className="pedido-detail__abono-edit" onClick={e => e.stopPropagation()}>
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      step="0.01"
+                                      autoFocus
+                                      value={editingAbonoValue}
+                                      onChange={e => setEditingAbonoValue(e.target.value)}
+                                      onKeyDown={e => {
+                                        if (e.key === 'Enter') handleUpdateAbono(abono.id);
+                                        if (e.key === 'Escape') setEditingAbonoId(null);
+                                      }}
+                                    />
+                                    <button className="pedido-detail__abono-edit-confirm" onClick={() => handleUpdateAbono(abono.id)} title="Confirmar">
+                                      <PiCheckBold size={14} />
+                                    </button>
+                                    <button className="pedido-detail__abono-edit-cancel" onClick={() => setEditingAbonoId(null)} title="Cancelar">
+                                      <PiXBold size={14} />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="pedido-detail__abono-monto">
+                                    <span>{formatCurrency(abono.monto)}</span>
+                                    {abono.montoOriginal && (
+                                      <span
+                                        className="pedido-detail__abono-editado"
+                                        title={`Corregido de ${formatCurrency(abono.montoOriginal)}${abono.editadoEn ? ` · ${formatDate(abono.editadoEn)}` : ''}`}
+                                      >
+                                        Editado
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                              </td>
+                              <td onClick={e => e.stopPropagation()}>
+                                {editingAbonoId !== abono.id && (
+                                  <button
+                                    className="pedido-detail__abono-edit-btn"
+                                    title={pedido.estado === 'entregado' || pedido.archivado ? 'No se puede editar un pedido entregado' : 'Corregir monto'}
+                                    disabled={pedido.estado === 'entregado' || pedido.archivado}
+                                    onClick={() => {
+                                      setEditingAbonoId(abono.id);
+                                      setEditingAbonoValue(String(abono.monto));
+                                    }}
+                                  >
+                                    <PiPencilSimpleBold size={14} />
+                                  </button>
+                                )}
+                              </td>
                               <td>{formatDate(abono.fecha)}</td>
                             </tr>
                           ))

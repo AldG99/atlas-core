@@ -513,7 +513,8 @@ $bottombar-height: 64px;
         font-weight: 600;
         color: $color-gray-500;
         text-align: left;
-        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
 
@@ -548,7 +549,7 @@ $bottombar-height: 64px;
     thead th,
     tbody td {
       &:nth-child(3) { text-align: right; } // Monto
-      &:last-child { text-align: right; }  // Fecha
+      &:last-child { text-align: right; }   // Fecha
     }
   }
 
@@ -732,6 +733,88 @@ $bottombar-height: 64px;
     color: $color-gray-400;
     font-style: italic;
     padding: $spacing-md !important;
+  }
+
+  &__abono-monto {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $spacing-xs;
+  }
+
+  &__abono-editado {
+    font-size: 10px;
+    font-weight: 600;
+    color: $color-primary;
+    background-color: rgba($color-primary, 0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
+    cursor: default;
+    white-space: nowrap;
+  }
+
+  &__abono-edit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $color-gray-400;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all $transition-fast;
+
+    &:hover:not(:disabled) {
+      color: $color-primary;
+      background-color: rgba($color-primary, 0.08);
+    }
+
+    &:disabled {
+      color: $color-gray-300;
+      cursor: not-allowed;
+    }
+  }
+
+  &__abono-edit {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    input {
+      width: 80px;
+      padding: 2px 6px;
+      font-size: $font-size-sm;
+      border: 1px solid $color-primary;
+      border-radius: 4px;
+      outline: none;
+    }
+  }
+
+  &__abono-edit-confirm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $color-success;
+    border: none;
+    border-radius: 4px;
+    color: $color-white;
+    padding: 4px;
+    cursor: pointer;
+    &:hover { opacity: 0.85; }
+  }
+
+  &__abono-edit-cancel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $color-gray-200;
+    border: none;
+    border-radius: 4px;
+    color: $color-gray-600;
+    padding: 4px;
+    cursor: pointer;
+    &:hover { background-color: $color-gray-300; }
   }
 
 

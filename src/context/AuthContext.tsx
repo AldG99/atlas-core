@@ -3,7 +3,7 @@ import { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import type { User, AuthState, LoginCredentials, RegisterCredentials } from '../types/User';
-import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage } from '../services/authService';
+import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserData, deleteAccount as deleteAccountService } from '../services/authService';
 import type { UpdateProfileData } from '../services/authService';
 
 interface AuthContextType extends AuthState {
@@ -11,6 +11,9 @@ interface AuthContextType extends AuthState {
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: UpdateProfileData, imageFile?: File | null) => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  deleteAllData: () => Promise<void>;
+  deleteAccount: (password: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -96,6 +99,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    try {
+      setError(null);
+      await changeUserPassword(currentPassword, newPassword);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al cambiar contraseña');
+      throw err;
+    }
+  };
+
+  const deleteAllData = async () => {
+    if (!user) return;
+    try {
+      setError(null);
+      await deleteAllUserData(user.uid);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al eliminar los datos');
+      throw err;
+    }
+  };
+
+  const deleteAccount = async (password: string) => {
+    if (!user) return;
+    try {
+      setError(null);
+      await deleteAccountService(password, user.uid);
+      setUser(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al eliminar la cuenta');
+      throw err;
+    }
+  };
+
   const value: AuthContextType = {
     user,
     loading,
@@ -103,7 +139,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     login,
     register,
     logout,
-    updateProfile
+    updateProfile,
+    changePassword,
+    deleteAllData,
+    deleteAccount,
   };
 
   return (

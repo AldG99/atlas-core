@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { PiBellBold, PiCaretDownBold, PiUserBold, PiGearBold, PiSignOutBold } from 'react-icons/pi';
+import { useNavigate } from 'react-router-dom';
+import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
-import ProfileModal from './ProfileModal';
+import { ROUTES } from '../../config/routes';
 import './Header.scss';
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -104,7 +105,11 @@ const Header = () => {
             </div>
             <div className="header__profile-info">
               <span className="header__profile-name">{user?.nombreNegocio}</span>
-              <span className="header__profile-role">Administrador</span>
+              <span className="header__profile-role">
+                {user?.nombre && user?.apellido
+                  ? `${user.nombre} ${user.apellido}`
+                  : 'Administrador'}
+              </span>
             </div>
             <PiCaretDownBold size={16} />
           </button>
@@ -115,17 +120,17 @@ const Header = () => {
                 <button
                   className="header__dropdown-item"
                   onClick={() => {
-                    setShowProfileModal(true);
                     setShowProfileMenu(false);
+                    navigate(ROUTES.PERFIL);
                   }}
                 >
                   <PiUserBold size={18} />
                   <span>Mi perfil</span>
                 </button>
-                <button className="header__dropdown-item">
-                  <PiGearBold size={18} />
-                  <span>Configuración</span>
-                </button>
+                <div className="header__dropdown-item">
+                  <PiCrownSimpleBold size={18} />
+                  <span>Plan {user?.plan === 'pro' ? 'Pro' : user?.plan === 'enterprise' ? 'Enterprise' : 'Gratuito'}</span>
+                </div>
                 <div className="header__dropdown-divider"></div>
                 <button className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
                   <PiSignOutBold size={18} />
@@ -148,10 +153,6 @@ const Header = () => {
         />
       )}
 
-      {/* Profile Modal */}
-      {showProfileModal && (
-        <ProfileModal onClose={() => setShowProfileModal(false)} />
-      )}
     </header>
   );
 };

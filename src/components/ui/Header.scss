@@ -105,7 +105,8 @@
     gap: $spacing-sm;
     padding: $spacing-xs;
     padding-right: $spacing-sm;
-    min-width: 180px;
+    width: auto;
+    white-space: nowrap;
     background-color: $color-gray-100;
     border: none;
     border-radius: 0;
@@ -157,12 +158,14 @@
     font-weight: 600;
     color: $color-gray-800;
     line-height: 1.2;
+    white-space: nowrap;
   }
 
   &__profile-role {
     font-size: $font-size-xs;
     color: $color-gray-500;
     line-height: 1.2;
+    white-space: nowrap;
   }
 
   &__overlay {
@@ -178,7 +181,7 @@
     position: absolute;
     top: calc(100% + $spacing-sm);
     right: 0;
-    min-width: 200px;
+    min-width: 240px;
     background-color: $color-white;
     border-radius: 0;
     box-shadow: $shadow-lg;
@@ -192,6 +195,65 @@
       @include md {
         min-width: 320px;
       }
+    }
+  }
+
+  &__plan-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-sm $spacing-md;
+    margin: $spacing-xs 0;
+
+    &[data-plan='gratuito'] {
+      background-color: $color-gray-50;
+
+      .header__plan-info {
+        color: $color-gray-600;
+      }
+    }
+
+    &[data-plan='pro'] {
+      background: linear-gradient(135deg, rgba($color-primary, 0.08), rgba($color-primary-dark, 0.12));
+
+      .header__plan-info {
+        color: $color-primary-dark;
+      }
+    }
+
+    &[data-plan='enterprise'] {
+      background: linear-gradient(135deg, rgba(#b8860b, 0.08), rgba(#8b6914, 0.12));
+
+      .header__plan-info {
+        color: #8b6914;
+      }
+    }
+  }
+
+  &__plan-info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
+    font-weight: 600;
+  }
+
+  &__plan-upgrade {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px $spacing-sm;
+    background-color: $color-primary;
+    color: $color-white;
+    border: none;
+    border-radius: 0;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background-color: $color-primary-dark;
     }
   }
 
