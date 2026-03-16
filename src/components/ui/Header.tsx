@@ -137,10 +137,16 @@ const Header = () => {
                   <PiUserBold size={18} />
                   <span>Mi perfil</span>
                 </button>
-                <div className="header__dropdown-item">
+                <button
+                  className="header__dropdown-item"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    navigate(ROUTES.PLANES);
+                  }}
+                >
                   <PiCrownSimpleBold size={18} />
                   <span>Plan {user?.plan === 'pro' ? 'Pro' : user?.plan === 'enterprise' ? 'Enterprise' : 'Gratuito'}</span>
-                </div>
+                </button>
                 <div className="header__dropdown-divider"></div>
                 <button className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
                   <PiSignOutBold size={18} />

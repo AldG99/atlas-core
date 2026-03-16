@@ -33,6 +33,27 @@
     opacity: 0.9;
   }
 
+  &__beta {
+    display: inline-block;
+    margin-top: $spacing-sm;
+    padding: 2px 10px;
+    border-radius: $border-radius-full;
+    border: 1px solid rgba($color-white, 0.5);
+    color: $color-white;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+    text-transform: uppercase;
+  }
+
+  &__frase {
+    margin-top: $spacing-sm;
+    font-size: $font-size-sm;
+    font-style: italic;
+    opacity: 0.75;
+  }
+
   &__content {
     @include card;
   }

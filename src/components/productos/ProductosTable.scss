@@ -218,6 +218,15 @@
     font-weight: 600;
   }
 
+  &__unidad {
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+  }
+
+  &__col--right {
+    text-align: right !important;
+  }
+
   &__stock--empty {
     color: $color-gray-400;
     font-weight: 600;

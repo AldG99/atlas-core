@@ -385,17 +385,6 @@ const Dashboard = () => {
               <span className="dashboard__filter-count">{statusCounts[status]}</span>
             </button>
           ))}
-          <button
-            key="abono_pendiente"
-            className={`dashboard__filter ${filterStatus === 'abono_pendiente' ? 'dashboard__filter--active' : ''}`}
-            onClick={() => handleFilterChange('abono_pendiente')}
-          >
-            <span
-              className="dashboard__filter-dot"
-              style={{ backgroundColor: '#f59e0b' }}
-            />
-            Saldo pendiente
-          </button>
         </div>
 
         <PedidosTable

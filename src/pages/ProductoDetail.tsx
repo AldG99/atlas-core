@@ -17,6 +17,7 @@ import { useToast } from '../hooks/useToast';
 import { useCurrency } from '../hooks/useCurrency';
 import { ROUTES } from '../config/routes';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
+import { compressImage } from '../utils/imageUtils';
 import MainLayout from '../layouts/MainLayout';
 import './ProductoDetail.scss';
 
@@ -36,15 +37,25 @@ const ProductoDetail = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectedImageFile = useRef<File | null>(null);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && editData) {
-      selectedImageFile.current = file;
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setEditData({ ...editData, imagen: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressImage(file, 600, 0.8);
+        selectedImageFile.current = compressed;
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setEditData({ ...editData, imagen: reader.result as string });
+        };
+        reader.readAsDataURL(compressed);
+      } catch {
+        selectedImageFile.current = file;
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setEditData({ ...editData, imagen: reader.result as string });
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 
@@ -111,6 +122,8 @@ const ProductoDetail = () => {
         : '',
       controlStock: producto.controlStock ?? false,
       stock: producto.stock ?? 0,
+      unidad: producto.unidad ?? '',
+      unidadCantidad: producto.unidadCantidad ?? 1,
     });
     setIsEditing(true);
   };
@@ -321,11 +334,55 @@ const ProductoDetail = () => {
                         placeholder="Nombre del producto"
                         className="producto-detail__input producto-detail__input--name"
                       />
+                      <div className="producto-detail__unidad-edit">
+                        <label className="producto-detail__stock-toggle">
+                          <input
+                            type="checkbox"
+                            checked={!!editData?.unidad}
+                            onChange={(e) => {
+                              if (!editData) return;
+                              setEditData({ ...editData, unidad: e.target.checked ? 'kg' : '' });
+                            }}
+                          />
+                          <span>Especificar unidad de medida</span>
+                          <input
+                            type="number"
+                            value={editData?.unidadCantidad ?? 1}
+                            onChange={(e) => {
+                              if (!editData) return;
+                              setEditData({ ...editData, unidadCantidad: Math.max(0, parseFloat(e.target.value) || 0) });
+                            }}
+                            className="producto-detail__input producto-detail__input--unidad-cantidad"
+                            min="0"
+                            step="0.1"
+                            disabled={!editData?.unidad}
+                          />
+                          <select
+                            value={editData?.unidad || 'kg'}
+                            onChange={(e) => {
+                              if (!editData) return;
+                              setEditData({ ...editData, unidad: e.target.value });
+                            }}
+                            className="producto-detail__input producto-detail__input--unidad"
+                            disabled={!editData?.unidad}
+                          >
+                            <option value="kg">kg</option>
+                            <option value="g">g</option>
+                            <option value="L">L</option>
+                            <option value="ml">ml</option>
+                          </select>
+                        </label>
+                      </div>
                     </>
                   ) : (
                     <>
                       <span className="producto-detail__clave">{producto.clave}</span>
                       <h1 className="producto-detail__name">{producto.nombre}</h1>
+                      <span className="producto-detail__unidad-display">
+                        {producto.unidad
+                          ? `${producto.unidadCantidad ?? ''} ${producto.unidad}`.trim()
+                          : '---'}
+                      </span>
                     </>
                   )}
                 </div>
@@ -476,7 +533,7 @@ const ProductoDetail = () => {
                       <span>Gestionar existencias</span>
                     </label>
                     <div className="producto-detail__stock-input-row">
-                      <span className="producto-detail__info-label">Unidades en almacén</span>
+                      <span className="producto-detail__info-label">En almacén</span>
                       <input
                         type="number"
                         value={editData?.stock ?? 0}
@@ -495,8 +552,8 @@ const ProductoDetail = () => {
                   <div className="producto-detail__stock-display">
                     <PiPackageBold size={15} className="producto-detail__header-meta-icon" />
                     {producto.controlStock ? (
-                      <span className={`producto-detail__stock-badge ${(producto.stock ?? 0) === 0 ? 'producto-detail__stock-badge--empty' : ''}`}>
-                        {(producto.stock ?? 0) === 0 ? 'Sin existencias' : `${producto.stock} unidades`}
+                      <span className="producto-detail__stock-badge">
+                        {(producto.stock ?? 0) === 0 ? 'Sin existencias' : `${producto.stock} uds`}
                       </span>
                     ) : (
                       <span className="producto-detail__stock-untracked">
@@ -506,11 +563,6 @@ const ProductoDetail = () => {
                   </div>
                 )}
 
-                <div className="producto-detail__header-meta">
-                  <PiCalendarBold size={14} className="producto-detail__header-meta-icon" />
-                  <span className="producto-detail__info-label">Cliente desde</span>
-                  <span className="producto-detail__info-value">{formatDate(producto.fechaCreacion)}</span>
-                </div>
               </div>
             </div>
 
@@ -539,6 +591,11 @@ const ProductoDetail = () => {
               )}
             </div>
 
+            <div className="producto-detail__footer-meta">
+              <PiCalendarBold size={13} className="producto-detail__header-meta-icon" />
+              <span className="producto-detail__info-label">Producto agregado</span>
+              <span className="producto-detail__info-value">{formatDate(producto.fechaCreacion)}</span>
+            </div>
           </div>
         </div>
       </div>

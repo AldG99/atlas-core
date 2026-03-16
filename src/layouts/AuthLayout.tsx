@@ -15,11 +15,13 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
             alt="Orderly"
             className="auth-layout__logo"
           />
-          <p className="auth-layout__subtitle">Gestión de pedidos simplificada</p>
+          <p className="auth-layout__subtitle">
+            Diseñado para gestionar tus pedidos. Construido para escalar tu
+            negocio.
+          </p>
+          <span className="auth-layout__beta">Versión Beta</span>
         </div>
-        <div className="auth-layout__content">
-          {children}
-        </div>
+        <div className="auth-layout__content">{children}</div>
       </div>
     </div>
   );

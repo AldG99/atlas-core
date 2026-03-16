@@ -18,6 +18,7 @@ import Perfil from './pages/Perfil';
 import Configuracion from './pages/Configuracion';
 import Archivo from './pages/Archivo';
 import Soporte from './pages/Soporte';
+import Planes from './pages/Planes';
 import './styles/main.scss';
 
 function App() {
@@ -122,6 +123,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Soporte />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.PLANES}
+            element={
+              <ProtectedRoute>
+                <Planes />
               </ProtectedRoute>
             }
           />

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { PiEyeBold, PiXBold, PiPackageBold, PiCalendarBold, PiWarehouseBold } from 'react-icons/pi';
+import { PiWarehouseBold } from 'react-icons/pi';
+import ProductoDetalleModal from '../productos/ProductoDetalleModal';
 import { useProductos } from '../../hooks/useProductos';
 import { useEtiquetas } from '../../hooks/useEtiquetas';
 import { useToast } from '../../hooks/useToast';
@@ -227,9 +228,13 @@ const ProductoSelector = ({
                     </span>
                     <span className="producto-selector__dropdown-name">
                       {producto.nombre}
+                      {producto.unidad && (
+                        <span className="producto-selector__dropdown-unidad">
+                          {producto.unidadCantidad ? `${producto.unidadCantidad} ` : ''}{producto.unidad}
+                        </span>
+                      )}
                     </span>
                     <span className={`producto-selector__dropdown-stock ${!producto.controlStock ? 'producto-selector__dropdown-stock--hidden' : (producto.stock ?? 0) === 0 ? 'producto-selector__dropdown-stock--empty' : ''}`}>
-                      {producto.controlStock && <PiWarehouseBold size={12} />}
                       {producto.controlStock
                         ? (producto.stock ?? 0) === 0 ? 'Sin existencias' : `${producto.stock} en almacén`
                         : ''}
@@ -337,23 +342,23 @@ const ProductoSelector = ({
                 <col style={{ width: '8%' }} />
                 <col style={{ width: '10%' }} />
                 <col style={{ width: '18%' }} />
-                <col style={{ width: '12%' }} />
-                <col style={{ width: '9%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '13%' }} />
                 <col style={{ width: '8%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '16%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '4%' }} />
               </colgroup>
               <thead>
                 <tr>
                   <th>Clave</th>
                   <th>Cant.</th>
                   <th>Producto</th>
+                  <th>Unidad</th>
                   <th>Etiquetas</th>
                   <th>Stock</th>
-                  <th>Precio</th>
+                  <th className="producto-selector__col--right">Precio</th>
                   <th>Subtotal</th>
-                  <th>Acciones</th>
                   <th></th>
                 </tr>
               </thead>
@@ -366,12 +371,12 @@ const ProductoSelector = ({
                 <col style={{ width: '8%' }} />
                 <col style={{ width: '10%' }} />
                 <col style={{ width: '18%' }} />
-                <col style={{ width: '12%' }} />
-                <col style={{ width: '9%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '13%' }} />
                 <col style={{ width: '8%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '16%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '4%' }} />
               </colgroup>
               <tbody>
                 {items.length === 0 && (
@@ -426,6 +431,13 @@ const ProductoSelector = ({
                       </span>
                     </td>
                     <td>
+                      <span className="producto-selector__table-unidad">
+                        {item.producto.unidad
+                          ? `${item.producto.unidadCantidad ? `${item.producto.unidadCantidad} ` : ''}${item.producto.unidad}`
+                          : '—'}
+                      </span>
+                    </td>
+                    <td>
                       <div className="producto-selector__table-etiquetas">
                         {(item.producto.etiquetas || []).map(etId => {
                           const et = todasEtiquetas.find(e => e.id === etId);
@@ -450,13 +462,12 @@ const ProductoSelector = ({
                         const restante = (item.producto.stock ?? 0) - item.cantidad;
                         return (
                           <span className={`producto-selector__table-stock ${restante < 0 ? 'producto-selector__table-stock--over' : restante === 0 ? 'producto-selector__table-stock--zero' : ''}`}>
-                            <PiWarehouseBold size={11} />
-                            {restante < 0 ? `−${Math.abs(restante)} excedido` : restante === 0 ? 'Agotado' : `${restante} restante`}
+                            {restante < 0 ? `−${Math.abs(restante)}` : restante === 0 ? '0' : restante}
                           </span>
                         );
                       })() : <span className="producto-selector__table-stock-none">—</span>}
                     </td>
-                    <td>
+                    <td className="producto-selector__col--right">
                       {isDescuentoActivo(item.producto) ? (
                         <div className="producto-selector__table-price-discount">
                           <span className="producto-selector__table-price-badge">-{item.producto.descuento}%</span>
@@ -469,16 +480,6 @@ const ProductoSelector = ({
                     </td>
                     <td className="producto-selector__table-subtotal">
                       ${item.subtotal.toFixed(2)}
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="producto-selector__eye-btn"
-                        title="Ver detalles"
-                        onClick={() => setSelectedProducto(item.producto)}
-                      >
-                        <PiEyeBold size={18} />
-                      </button>
                     </td>
                     <td>
                       <button
@@ -502,12 +503,12 @@ const ProductoSelector = ({
                 <col style={{ width: '8%' }} />
                 <col style={{ width: '10%' }} />
                 <col style={{ width: '18%' }} />
-                <col style={{ width: '12%' }} />
-                <col style={{ width: '9%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '13%' }} />
                 <col style={{ width: '8%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '16%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '4%' }} />
               </colgroup>
               <tfoot className="producto-selector__tfoot">
                 <tr>
@@ -517,8 +518,8 @@ const ProductoSelector = ({
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td className="producto-selector__total-value">${total.toFixed(2)}</td>
                   <td></td>
+                  <td className="producto-selector__total-value">${total.toFixed(2)}</td>
                   <td></td>
                 </tr>
               </tfoot>
@@ -528,111 +529,11 @@ const ProductoSelector = ({
       </div>
 
       {selectedProducto && (
-        <div className="producto-selector__modal-overlay" onClick={() => setSelectedProducto(null)}>
-          <div className="producto-selector__modal producto-selector__modal--product" onClick={(e) => e.stopPropagation()}>
-            <div className="producto-selector__modal-header">
-              <h3>Detalles del producto</h3>
-              <button className="producto-selector__modal-close" onClick={() => setSelectedProducto(null)}>
-                <PiXBold size={18} />
-              </button>
-            </div>
-            <div className="producto-selector__modal-body">
-              <div className="producto-selector__modal-image">
-                {selectedProducto.imagen ? (
-                  <img src={selectedProducto.imagen} alt={selectedProducto.nombre} />
-                ) : (
-                  <div className="producto-selector__modal-placeholder">
-                    <PiPackageBold size={48} />
-                    <span>Sin imagen</span>
-                  </div>
-                )}
-              </div>
-              <div className="producto-selector__modal-right">
-                <div className="producto-selector__modal-section">
-                  <h4>Información</h4>
-                  <div className="producto-selector__modal-info">
-                    {selectedProducto.clave && (
-                      <div className="producto-selector__modal-row">
-                        <span className="producto-selector__modal-label">Clave</span>
-                        <span className="producto-selector__modal-value">{selectedProducto.clave}</span>
-                      </div>
-                    )}
-                    <div className="producto-selector__modal-row">
-                      <span className="producto-selector__modal-label">Nombre</span>
-                      <span className="producto-selector__modal-value">{selectedProducto.nombre}</span>
-                    </div>
-                    <div className="producto-selector__modal-row">
-                      <span className="producto-selector__modal-label">Precio</span>
-                      {isDescuentoActivo(selectedProducto) ? (
-                        <span className="producto-selector__modal-price-discount">
-                          <span className="producto-selector__modal-price-badge">-{selectedProducto.descuento}%</span>
-                          <span className="producto-selector__modal-price-original">${selectedProducto.precio.toFixed(2)}</span>
-                          <span className="producto-selector__modal-value">${getEffectivePrice(selectedProducto).toFixed(2)}</span>
-                        </span>
-                      ) : (
-                        <span className="producto-selector__modal-value">${selectedProducto.precio.toFixed(2)}</span>
-                      )}
-                    </div>
-                    {isDescuentoActivo(selectedProducto) && selectedProducto.fechaFinDescuento && (
-                      <div className="producto-selector__modal-row">
-                        <span className="producto-selector__modal-label">Descuento válido hasta</span>
-                        <span className="producto-selector__modal-value producto-selector__modal-value--expiry">
-                          <PiCalendarBold size={12} />
-                          {formatDate(selectedProducto.fechaFinDescuento)}
-                        </span>
-                      </div>
-                    )}
-                    <div className="producto-selector__modal-row">
-                      <span className="producto-selector__modal-label">Etiquetas</span>
-                      {(selectedProducto.etiquetas || []).length === 0 ? (
-                        <span className="producto-selector__modal-empty">Sin etiquetas</span>
-                      ) : (
-                        <div className="producto-selector__modal-etiquetas">
-                          {(selectedProducto.etiquetas || []).map(etId => {
-                            const et = todasEtiquetas.find(e => e.id === etId);
-                            if (!et) return null;
-                            const iconData = ETIQUETA_ICONS[et.icono];
-                            const Icon = iconData?.icon;
-                            return (
-                              <span
-                                key={et.id}
-                                className="producto-selector__modal-etiqueta"
-                                style={{ backgroundColor: et.color }}
-                                title={et.nombre}
-                              >
-                                {Icon && <Icon size={12} />}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                    <div className="producto-selector__modal-row">
-                      <span className="producto-selector__modal-label">Almacén</span>
-                      {selectedProducto.controlStock ? (
-                        <span className={`producto-selector__modal-stock-badge${(selectedProducto.stock ?? 0) === 0 ? ' producto-selector__modal-stock-badge--empty' : ''}`}>
-                          <PiWarehouseBold size={11} />
-                          {(selectedProducto.stock ?? 0) === 0 ? 'Sin existencias' : `${selectedProducto.stock} unidades`}
-                        </span>
-                      ) : (
-                        <span className="producto-selector__modal-empty">Sin control de inventario</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="producto-selector__modal-section">
-                  <h4>Descripción</h4>
-                  <p>{selectedProducto.descripcion || 'Sin descripción'}</p>
-                </div>
-              </div>
-            </div>
-            <div className="producto-selector__modal-footer">
-              <button className="btn btn--secondary btn--sm" onClick={() => setSelectedProducto(null)}>
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
+        <ProductoDetalleModal
+          producto={selectedProducto}
+          etiquetas={todasEtiquetas}
+          onClose={() => setSelectedProducto(null)}
+        />
       )}
     </div>
   );

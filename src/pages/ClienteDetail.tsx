@@ -19,6 +19,7 @@ import PhoneInput from '../components/clientes/PhoneInput';
 import { getPedidosByClientPhone } from '../services/pedidoService';
 import { getCodigoPais } from '../data/codigosPais';
 import { formatTelefono } from '../utils/formatters';
+import { compressImage } from '../utils/imageUtils';
 import { useCurrency } from '../hooks/useCurrency';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import { useAuth } from '../hooks/useAuth';
@@ -55,14 +56,23 @@ const ClienteDetail = () => {
   const [busqueda, setBusqueda] = useState('');
   const [filtroFecha, setFiltroFecha] = useState<DateFilter>('todo');
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && editData) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setEditData({ ...editData, fotoPerfil: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressImage(file, 400, 0.8);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setEditData({ ...editData, fotoPerfil: reader.result as string });
+        };
+        reader.readAsDataURL(compressed);
+      } catch {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setEditData({ ...editData, fotoPerfil: reader.result as string });
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 

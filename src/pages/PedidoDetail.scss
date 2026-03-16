@@ -678,9 +678,15 @@ $bottombar-height: 64px;
     }
   }
 
+  &__col--right {
+    text-align: right;
+    vertical-align: middle;
+  }
+
   &__product-subtotal-discount {
     display: inline-flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 4px;
     white-space: nowrap;
   }
@@ -913,8 +919,8 @@ $bottombar-height: 64px;
       }
 
       .pedido-detail__modal-image {
-        width: 340px;
-        height: 340px;
+        width: 420px;
+        height: 420px;
         aspect-ratio: unset;
         flex-shrink: 0;
         border-right: 1px solid $color-gray-100;
@@ -1080,20 +1086,9 @@ $bottombar-height: 64px;
   }
 
   &__modal-stock-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: $font-size-xs;
+    font-size: $font-size-sm;
     font-weight: 600;
-    background-color: rgba($color-success, 0.12);
-    color: $color-success;
-
-    &--empty {
-      background-color: $color-gray-100;
-      color: $color-gray-500;
-    }
+    color: $color-gray-800;
   }
 
   &__modal-value {
@@ -1101,6 +1096,7 @@ $bottombar-height: 64px;
     color: $color-gray-800;
     font-weight: 600;
   }
+
 
   &__modal-price-discount {
     display: flex;

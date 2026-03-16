@@ -79,13 +79,13 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
 
   const colgroup = (
     <colgroup>
-      <col style={{ width: '10%' }} />
-      <col style={{ width: '20%' }} />
-      <col style={{ width: '16%' }} />
       <col style={{ width: '12%' }} />
-      <col style={{ width: '11%' }} />
-      <col style={{ width: '17%' }} />
+      <col style={{ width: '24%' }} />
+      <col style={{ width: '10%' }} />
+      <col style={{ width: '18%' }} />
       <col style={{ width: '14%' }} />
+      <col style={{ width: '10%' }} />
+      <col style={{ width: '12%' }} />
     </colgroup>
   );
 
@@ -98,11 +98,11 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
             <tr>
               <th>Clave</th>
               <th>Producto</th>
+              <th>Unidad</th>
               <th>Precio</th>
               <th>Etiquetas</th>
               <th>Stock</th>
-              <th>Descripción</th>
-              <th>Registro</th>
+              <th className="productos-table__col--right">Registro</th>
             </tr>
           </thead>
         </table>
@@ -145,6 +145,13 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
                   <span className="productos-table__name">{producto.nombre}</span>
                 </td>
                 <td>
+                  <span className="productos-table__unidad">
+                    {producto.unidad
+                      ? `${producto.unidadCantidad ?? ''} ${producto.unidad}`.trim()
+                      : '—'}
+                  </span>
+                </td>
+                <td>
                   {isDescuentoActivo(producto) ? (
                     <div className="productos-table__price-cell">
                       <span className="productos-table__price-badge">-{producto.descuento}%</span>
@@ -184,12 +191,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
                     <span className="productos-table__no-etiquetas">—</span>
                   )}
                 </td>
-                <td>
-                  <span className="productos-table__description" title={producto.descripcion}>
-                    {producto.descripcion || '—'}
-                  </span>
-                </td>
-                <td>
+                <td className="productos-table__col--right">
                   <span className="productos-table__date">{formatDate(producto.fechaCreacion)}</span>
                 </td>
               </tr>

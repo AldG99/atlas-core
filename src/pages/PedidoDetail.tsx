@@ -8,10 +8,8 @@ import {
   PiCheckBold,
   PiEyeBold,
   PiXBold,
-  PiPackageBold,
   PiTrashBold,
   PiStarFill,
-  PiWarehouseBold,
   PiDownloadSimpleBold,
   PiPencilSimpleBold,
 } from 'react-icons/pi';
@@ -44,6 +42,7 @@ import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
+import ProductoDetalleModal from '../components/productos/ProductoDetalleModal';
 import MainLayout from '../layouts/MainLayout';
 import './PedidoDetail.scss';
 
@@ -73,7 +72,6 @@ const PedidoDetail = () => {
   const [focusedAbonoRow, setFocusedAbonoRow] = useState<number | null>(null);
   const [editingAbonoId, setEditingAbonoId] = useState<string | null>(null);
   const [editingAbonoValue, setEditingAbonoValue] = useState('');
-  const [discountTooltip, setDiscountTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const tableScrollRef = useRef<HTMLDivElement>(null);
   const abonoScrollRef = useRef<HTMLDivElement>(null);
   const capturaRef = useRef<HTMLDivElement>(null);
@@ -216,15 +214,6 @@ const PedidoDetail = () => {
       .filter((e): e is Etiqueta => !!e);
   };
 
-  const isDescuentoActivo = (p: Producto): boolean => {
-    if (!p.descuento || p.descuento <= 0) return false;
-    if (!p.fechaFinDescuento) return false;
-    return new Date(p.fechaFinDescuento) >= new Date(new Date().toDateString());
-  };
-
-  const getPrecioConDescuento = (precio: number, descuento: number): number => {
-    return precio * (1 - descuento / 100);
-  };
 
   const handleDownload = async () => {
     if (!capturaRef.current || !pedido) return;
@@ -516,11 +505,11 @@ const PedidoDetail = () => {
                   <colgroup>
                     <col style={{ width: '8%' }} />
                     <col style={{ width: '7%' }} />
-                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '12%' }} />
                     <col style={{ width: '9%' }} />
                     <col style={{ width: '14%' }} />
                     <col style={{ width: '13%' }} />
-                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '15%' }} />
                     <col style={{ width: '12%' }} />
                     <col style={{ width: '10%' }} />
                   </colgroup>
@@ -532,7 +521,7 @@ const PedidoDetail = () => {
                       <th>Etiquetas</th>
                       <th>Precio</th>
                       <th>Abonado</th>
-                      <th>Subtotal</th>
+                      <th className="pedido-detail__col--right">Subtotal</th>
                       <th>Estado</th>
                       <th>Acciones</th>
                     </tr>
@@ -545,11 +534,11 @@ const PedidoDetail = () => {
                   <colgroup>
                     <col style={{ width: '8%' }} />
                     <col style={{ width: '7%' }} />
-                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '12%' }} />
                     <col style={{ width: '9%' }} />
                     <col style={{ width: '14%' }} />
                     <col style={{ width: '13%' }} />
-                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '15%' }} />
                     <col style={{ width: '12%' }} />
                     <col style={{ width: '10%' }} />
                   </colgroup>
@@ -581,33 +570,7 @@ const PedidoDetail = () => {
                           </td>
                           <td>{p.cantidad}</td>
                           <td>
-                            <div className="pedido-detail__product-name-cell">
-                              <span className="pedido-detail__product-name">{p.nombre}</span>
-                              {p.descuento && p.descuento > 0 && (() => {
-                                const fechaFin = p.clave
-                                  ? catalogoProductos.find(cp => cp.clave === p.clave)?.fechaFinDescuento
-                                  : undefined;
-                                const tooltipText = fechaFin
-                                  ? `Válido hasta el ${formatDate(new Date(fechaFin))}`
-                                  : undefined;
-                                return (
-                                  <span
-                                    className="pedido-detail__product-discount-badge"
-                                    onMouseEnter={tooltipText ? (e) => {
-                                      const rect = e.currentTarget.getBoundingClientRect();
-                                      setDiscountTooltip({ text: tooltipText, x: rect.left + rect.width / 2, y: rect.top });
-                                    } : undefined}
-                                    onMouseMove={tooltipText ? (e) => {
-                                      const rect = e.currentTarget.getBoundingClientRect();
-                                      setDiscountTooltip({ text: tooltipText, x: rect.left + rect.width / 2, y: rect.top });
-                                    } : undefined}
-                                    onMouseLeave={() => setDiscountTooltip(null)}
-                                  >
-                                    -{p.descuento}%
-                                  </span>
-                                );
-                              })()}
-                            </div>
+                            <span className="pedido-detail__product-name">{p.nombre}</span>
                           </td>
                           <td>
                             <div className="pedido-detail__etiquetas">
@@ -644,9 +607,12 @@ const PedidoDetail = () => {
                               <span>{format(cubierto)}</span>
                             </div>
                           </td>
-                          <td>
+                          <td className="pedido-detail__col--right">
                             {p.precioOriginal && p.descuento ? (
                               <div className="pedido-detail__product-subtotal-discount">
+                                <span className="pedido-detail__product-discount-badge">
+                                  -{p.descuento}%
+                                </span>
                                 <span className="pedido-detail__product-subtotal-original">
                                   {format(p.precioOriginal * p.cantidad)}
                                 </span>
@@ -697,11 +663,11 @@ const PedidoDetail = () => {
                   <colgroup>
                     <col style={{ width: '8%' }} />
                     <col style={{ width: '7%' }} />
-                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '12%' }} />
                     <col style={{ width: '9%' }} />
                     <col style={{ width: '14%' }} />
                     <col style={{ width: '13%' }} />
-                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '15%' }} />
                     <col style={{ width: '12%' }} />
                     <col style={{ width: '10%' }} />
                   </colgroup>
@@ -956,143 +922,11 @@ const PedidoDetail = () => {
       )}
 
       {selectedProducto && (
-        <div
-          className="pedido-detail__modal-overlay"
-          onClick={() => setSelectedProducto(null)}
-        >
-          <div
-            className="pedido-detail__modal pedido-detail__modal--product"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="pedido-detail__modal-header">
-              <h3>Detalles del producto</h3>
-              <button
-                className="pedido-detail__modal-close"
-                onClick={() => setSelectedProducto(null)}
-              >
-                <PiXBold size={18} />
-              </button>
-            </div>
-            <div className="pedido-detail__modal-body">
-              <div className="pedido-detail__modal-image">
-                {selectedProducto.imagen ? (
-                  <img
-                    src={selectedProducto.imagen}
-                    alt={selectedProducto.nombre}
-                  />
-                ) : (
-                  <div className="pedido-detail__modal-placeholder">
-                    <PiPackageBold size={48} />
-                    <span>Sin imagen</span>
-                  </div>
-                )}
-              </div>
-              <div className="pedido-detail__modal-right">
-                <div className="pedido-detail__modal-section">
-                  <h4>Información</h4>
-                  <div className="pedido-detail__modal-info">
-                    <div className="pedido-detail__modal-row">
-                      <span className="pedido-detail__modal-label">Clave</span>
-                      <span className="pedido-detail__modal-value">
-                        {selectedProducto.clave}
-                      </span>
-                    </div>
-                    <div className="pedido-detail__modal-row">
-                      <span className="pedido-detail__modal-label">Nombre</span>
-                      <span className="pedido-detail__modal-value">
-                        {selectedProducto.nombre}
-                      </span>
-                    </div>
-                    <div className="pedido-detail__modal-row">
-                      <span className="pedido-detail__modal-label">Precio</span>
-                      {isDescuentoActivo(selectedProducto) ? (
-                        <span className="pedido-detail__modal-price-discount">
-                          <span className="pedido-detail__modal-price-badge">
-                            -{selectedProducto.descuento}%
-                          </span>
-                          <span className="pedido-detail__modal-price-original">
-                            {format(selectedProducto.precio)}
-                          </span>
-                          <span className="pedido-detail__modal-value">
-                            {format(
-                              getPrecioConDescuento(
-                                selectedProducto.precio,
-                                selectedProducto.descuento!
-                              )
-                            )}
-                          </span>
-                        </span>
-                      ) : (
-                        <span className="pedido-detail__modal-value">
-                          {format(selectedProducto.precio)}
-                        </span>
-                      )}
-                    </div>
-                    {(() => {
-                      const ets = getEtiquetasForClave(selectedProducto.clave);
-                      return (
-                        <div className="pedido-detail__modal-row">
-                          <span className="pedido-detail__modal-label">Etiquetas</span>
-                          {ets.length === 0 ? (
-                            <span className="pedido-detail__modal-empty">Sin etiquetas</span>
-                          ) : (
-                            <div className="pedido-detail__etiquetas">
-                              {ets.map(et => {
-                                const iconData = ETIQUETA_ICONS[et.icono];
-                                const Icon = iconData?.icon;
-                                return (
-                                  <span
-                                    key={et.id}
-                                    className="pedido-detail__etiqueta"
-                                    style={{ backgroundColor: et.color }}
-                                    title={et.nombre}
-                                  >
-                                    {Icon && <Icon size={12} />}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
-                    <div className="pedido-detail__modal-row">
-                      <span className="pedido-detail__modal-label">Almacén</span>
-                      {selectedProducto.controlStock ? (
-                        <span className={`pedido-detail__modal-stock-badge ${(selectedProducto.stock ?? 0) === 0 ? 'pedido-detail__modal-stock-badge--empty' : ''}`}>
-                          <PiWarehouseBold size={11} />
-                          {(selectedProducto.stock ?? 0) === 0 ? 'Sin existencias' : `${selectedProducto.stock} unidades`}
-                        </span>
-                      ) : (
-                        <span className="pedido-detail__modal-empty">Sin control de inventario</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="pedido-detail__modal-section">
-                  <h4>Descripción</h4>
-                  <p>{selectedProducto.descripcion || 'Sin descripción'}</p>
-                </div>
-              </div>
-            </div>
-            <div className="pedido-detail__modal-footer">
-              <button
-                className="btn btn--secondary btn--sm"
-                onClick={() => setSelectedProducto(null)}
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {discountTooltip && (
-        <div
-          className="pedido-detail__discount-tooltip"
-          style={{ left: discountTooltip.x, top: discountTooltip.y }}
-        >
-          {discountTooltip.text}
-        </div>
+        <ProductoDetalleModal
+          producto={selectedProducto}
+          etiquetas={todasEtiquetas}
+          onClose={() => setSelectedProducto(null)}
+        />
       )}
       {/* Componente de captura fuera de pantalla */}
       <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', zIndex: -1 }}>

@@ -1,0 +1,200 @@
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+.planes-page {
+  position: fixed;
+  inset: 0;
+  background-color: $color-gray-50;
+  z-index: 200;
+  overflow-y: auto;
+}
+
+.planes {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 56px $spacing-lg $spacing-xl;
+
+  &__controls {
+    position: fixed;
+    top: $spacing-md;
+    left: $spacing-md;
+    z-index: 201;
+    pointer-events: none;
+
+    > * { pointer-events: all; }
+  }
+
+  &__back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $color-gray-600;
+    cursor: pointer;
+    padding: $spacing-xs;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: $color-gray-900;
+    }
+  }
+
+  &__header {
+    margin-bottom: $spacing-lg;
+
+    h1 {
+      margin: 0 0 $spacing-xs;
+      font-size: $font-size-2xl;
+    }
+
+    p {
+      margin: 0;
+      font-size: $font-size-sm;
+      color: $color-gray-500;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+    align-items: start;
+
+    @include md {
+      grid-template-columns: repeat(3, 1fr);
+      align-items: stretch;
+    }
+  }
+
+  &__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: $color-white;
+    border: 1px solid $color-gray-200;
+    padding: $spacing-lg;
+    transition: box-shadow $transition-fast;
+
+    &:hover {
+      box-shadow: $shadow-md;
+    }
+
+&--actual {
+      background-color: $color-gray-50;
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px $spacing-md;
+    background-color: $color-primary;
+    color: $color-white;
+    font-size: $font-size-xs;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &--actual {
+      background-color: $color-gray-400;
+    }
+  }
+
+  &__card-header {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba($color-primary, 0.1);
+    color: $color-primary;
+    margin-bottom: $spacing-sm;
+
+  }
+
+  &__card-nombre {
+    margin: 0 0 $spacing-sm;
+    font-size: $font-size-xl;
+    color: $color-gray-800;
+  }
+
+  &__card-precio {
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__precio-monto {
+    font-size: $font-size-3xl;
+    font-weight: 700;
+    color: $color-gray-900;
+  }
+
+  &__precio-periodo {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+
+  &__card-desc {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+    line-height: 1.5;
+  }
+
+  &__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 $spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    flex: 1;
+  }
+
+  &__feature {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: $font-size-sm;
+    color: $color-gray-700;
+
+    &--no {
+      color: $color-gray-400;
+    }
+  }
+
+  &__feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-color: rgba($color-success, 0.12);
+    color: $color-success;
+
+    .planes__feature--no & {
+      background-color: $color-gray-100;
+      color: $color-gray-400;
+    }
+  }
+
+  &__card-footer {
+    margin-top: auto;
+  }
+
+  &__btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
