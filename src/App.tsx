@@ -21,6 +21,7 @@ import Soporte from './pages/Soporte';
 import Planes from './pages/Planes';
 import Terminos from './pages/Terminos';
 import Privacidad from './pages/Privacidad';
+import NotFound from './pages/NotFound';
 import './styles/main.scss';
 
 function App() {
@@ -139,7 +140,7 @@ function App() {
           <Route path={ROUTES.TERMINOS} element={<Terminos />} />
           <Route path={ROUTES.PRIVACIDAD} element={<Privacidad />} />
           <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
-          <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+          <Route path="*" element={<NotFound />} />
           </Routes>
         </ToastProvider>
       </AuthProvider>

@@ -1,6 +1,9 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 import Sidebar from '../components/ui/Sidebar';
 import Header from '../components/ui/Header';
+import InstallBanner from '../components/ui/InstallBanner';
+import { useNotificaciones } from '../hooks/useNotificaciones';
+import { usePWA } from '../hooks/usePWA';
 import './MainLayout.scss';
 
 interface MainLayoutProps {
@@ -8,6 +11,22 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
+  const { notificaciones } = useNotificaciones();
+  const { notifPermission, sendNotification } = usePWA();
+  const prevCountRef = useRef(notificaciones.length);
+
+  // Enviar notificación del sistema cuando aparecen nuevas alertas
+  useEffect(() => {
+    if (notifPermission !== 'granted') return;
+    const prev = prevCountRef.current;
+    const curr = notificaciones.length;
+    if (curr > prev) {
+      const nueva = notificaciones[0];
+      sendNotification(nueva.titulo, { body: nueva.descripcion });
+    }
+    prevCountRef.current = curr;
+  }, [notificaciones, notifPermission, sendNotification]);
+
   return (
     <div className="main-layout">
       <Sidebar />
@@ -19,6 +38,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           {children}
         </main>
       </div>
+      <InstallBanner />
     </div>
   );
 };

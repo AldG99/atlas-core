@@ -23,8 +23,13 @@
     min-height: 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr auto;
+    grid-template-rows: 1fr auto auto;
     gap: $spacing-md;
+  }
+
+  // Card full-width (span 2 columns)
+  &__card--full {
+    grid-column: 1 / -1;
   }
 
   // Cards
@@ -256,6 +261,99 @@
     color: $color-gray-600;
     margin: 0;
     line-height: 1.5;
+  }
+
+  // Instalar / Notificaciones
+  &__card-icon--install {
+    background-color: rgba(#0891b2, 0.1);
+    color: #0891b2;
+  }
+
+  &__card-icon--notif {
+    background-color: rgba($color-gray-400, 0.15);
+    color: $color-gray-500;
+
+    &--on {
+      background-color: rgba(#16a34a, 0.1);
+      color: #16a34a;
+    }
+  }
+
+  &__notif-denied {
+    font-size: $font-size-xs;
+    color: #dc2626;
+    background-color: rgba(#dc2626, 0.06);
+    border-radius: $border-radius-md;
+    padding: $spacing-xs $spacing-sm;
+    margin: 0;
+  }
+
+  &__notif-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    padding: 4px $spacing-sm;
+    border-radius: $border-radius-sm;
+
+    &--on {
+      color: #16a34a;
+      background-color: rgba(#16a34a, 0.1);
+    }
+  }
+
+  // Plantillas
+  &__card-icon--plantillas {
+    background-color: rgba(#7c3aed, 0.1);
+    color: #7c3aed;
+  }
+
+  &__plantillas-tabs {
+    display: flex;
+    gap: 2px;
+    border-bottom: 1px solid $color-gray-200;
+    flex-shrink: 0;
+  }
+
+  &__plantillas-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-gray-500;
+    cursor: pointer;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+
+    &:hover { color: $color-gray-800; }
+
+    &--active {
+      color: $color-primary;
+      border-bottom-color: $color-primary;
+      font-weight: 600;
+    }
+  }
+
+  &__plantillas-textarea {
+    width: 100%;
+    resize: vertical;
+    padding: $spacing-sm;
+    border: 1px solid $color-gray-300;
+    border-radius: $border-radius-md;
+    font-size: $font-size-sm;
+    font-family: inherit;
+    color: $color-gray-800;
+    line-height: 1.6;
+    outline: none;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
+    }
   }
 
   // Zona de peligro

@@ -39,19 +39,19 @@ export const useProductos = () => {
     if (!user) return;
 
     const id = await createProducto(data, user.uid);
-    const newProducto: Producto = {
+    const newProducto = {
       id,
       ...data,
       userId: user.uid,
       fechaCreacion: new Date()
-    };
+    } as Producto;
     setProductos((prev) => [...prev, newProducto].sort((a, b) => a.nombre.localeCompare(b.nombre)));
   };
 
   const editProducto = async (id: string, data: Partial<ProductoFormData>) => {
     await updateProducto(id, data);
     setProductos((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...data } : p))
+      prev.map((p) => (p.id === id ? { ...p, ...data } as typeof p : p))
     );
   };
 

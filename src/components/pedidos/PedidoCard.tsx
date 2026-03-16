@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Pedido, PedidoStatus } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
-import { formatPedidoForWhatsApp, openWhatsApp, copyToClipboard } from '../../utils/formatters';
+import { applyTemplate, openWhatsApp, copyToClipboard } from '../../utils/formatters';
 import { useCurrency } from '../../hooks/useCurrency';
+import { useAuth } from '../../hooks/useAuth';
+import { PLANTILLAS_DEFAULT } from '../../types/User';
 import './PedidoCard.scss';
 
 interface PedidoCardProps {
@@ -18,7 +20,17 @@ interface PedidoCardProps {
 const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, isArchived = false }: PedidoCardProps) => {
   const [copied, setCopied] = useState(false);
   const statusOptions: PedidoStatus[] = ['pendiente', 'en_preparacion', 'entregado'];
-  const { format } = useCurrency();
+  const { format, simbolo } = useCurrency();
+  const { user } = useAuth();
+
+  const buildMensaje = () => {
+    const plantillas = user?.plantillas ?? PLANTILLAS_DEFAULT;
+    const template =
+      pedido.estado === 'entregado' ? plantillas.entrega :
+      pedido.estado === 'en_preparacion' ? plantillas.preparacion :
+      plantillas.confirmacion;
+    return applyTemplate(template, pedido, simbolo, user?.nombreNegocio ?? '');
+  };
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-MX', {
@@ -30,8 +42,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
   };
 
   const handleCopy = async () => {
-    const message = formatPedidoForWhatsApp(pedido);
-    const success = await copyToClipboard(message);
+    const success = await copyToClipboard(buildMensaje());
     if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -39,8 +50,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
   };
 
   const handleWhatsApp = () => {
-    const message = formatPedidoForWhatsApp(pedido);
-    openWhatsApp(pedido.clienteTelefono, message);
+    openWhatsApp(pedido.clienteTelefono, buildMensaje());
   };
 
   return (

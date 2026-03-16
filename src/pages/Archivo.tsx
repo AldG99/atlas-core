@@ -98,7 +98,8 @@ const Archivo = () => {
       result = result.filter(
         (pedido) =>
           pedido.clienteNombre.toLowerCase().includes(term) ||
-          pedido.clienteTelefono.toLowerCase().includes(term)
+          pedido.clienteTelefono.toLowerCase().includes(term) ||
+          (pedido.folio?.toLowerCase().includes(term) ?? false)
       );
     }
 
@@ -158,7 +159,7 @@ const Archivo = () => {
               <PiMagnifyingGlassBold size={16} className="archivo__search-icon" />
               <input
                 type="text"
-                placeholder="Buscar por nombre o teléfono..."
+                placeholder="Buscar por nombre, teléfono o folio..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="input"

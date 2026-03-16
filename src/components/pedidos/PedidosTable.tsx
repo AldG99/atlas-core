@@ -115,11 +115,18 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
           </colgroup>
           <tbody>
           {loading ? (
-            <tr>
-              <td colSpan={8} className="pedidos-table__empty">
-                Cargando pedidos...
-              </td>
-            </tr>
+            Array.from({ length: 10 }).map((_, i) => (
+              <tr key={i} className="pedidos-table__skeleton-row">
+                <td><span className="pedidos-table__skeleton pedidos-table__skeleton--name" /></td>
+                <td><span className="pedidos-table__skeleton pedidos-table__skeleton--short" /></td>
+                <td><span className="pedidos-table__skeleton pedidos-table__skeleton--folio" /></td>
+                <td style={{ textAlign: 'center' }}><span className="pedidos-table__skeleton pedidos-table__skeleton--short" /></td>
+                <td style={{ textAlign: 'right' }}><span className="pedidos-table__skeleton pedidos-table__skeleton--medium" /></td>
+                <td style={{ textAlign: 'right' }}><span className="pedidos-table__skeleton pedidos-table__skeleton--medium" /></td>
+                <td style={{ textAlign: 'center' }}><span className="pedidos-table__skeleton pedidos-table__skeleton--status" /></td>
+                <td><span className="pedidos-table__skeleton pedidos-table__skeleton--medium" /></td>
+              </tr>
+            ))
           ) : error ? (
             <tr>
               <td colSpan={8} className="pedidos-table__empty pedidos-table__empty--error">

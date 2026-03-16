@@ -20,6 +20,7 @@ src/types
 
 # Docs
 fase-1-gestor-pedidos.md
+fase-2-escalabilidad-saas.md
 
 # Vite
 vite-env.d.ts

@@ -128,7 +128,10 @@ const Planes = () => {
                       Plan actual
                     </button>
                   ) : (
-                    <button className="btn btn--primary btn--sm planes__btn" disabled>
+                    <button
+                      className="btn btn--primary btn--sm planes__btn"
+                      onClick={() => navigate('/soporte')}
+                    >
                       {plan.id === 'gratuito' ? 'Cambiar a Gratuito' : `Contratar ${plan.nombre}`}
                     </button>
                   )}

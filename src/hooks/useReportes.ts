@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import type { PeriodType, ReporteData } from '../types/Reporte';
 import { usePedidos } from './usePedidos';
 import { useProductos } from './useProductos';
@@ -15,7 +15,7 @@ import {
 } from '../utils/reportCalculations';
 
 export const useReportes = () => {
-  const { pedidos: allPedidos, loading, error, fetchPedidos } = usePedidos();
+  const { pedidos: allPedidos, loading, error } = usePedidos();
   const { productos } = useProductos();
   const [period, setPeriod] = useState<PeriodType>('semana');
 
@@ -43,10 +43,6 @@ export const useReportes = () => {
       inventario: calculateInventarioStats(productos)
     };
   }, [filteredPedidos, yearAgoPedidos, period, dateRange, productos]);
-
-  useEffect(() => {
-    fetchPedidos();
-  }, [fetchPedidos]);
 
   return {
     reporteData,

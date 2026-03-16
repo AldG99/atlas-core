@@ -22,11 +22,12 @@ import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import {
   formatDate,
   getTotalPagado,
-  formatPedidoForWhatsApp,
+  applyTemplate,
   openWhatsApp,
   copyToClipboard,
   formatTelefono,
 } from '../utils/formatters';
+import { PLANTILLAS_DEFAULT } from '../types/User';
 import { useCurrency } from '../hooks/useCurrency';
 import { getCodigoPais } from '../data/codigosPais';
 import {
@@ -233,10 +234,19 @@ const PedidoDetail = () => {
     }
   };
 
+  const buildMensaje = (p: typeof pedido): string => {
+    if (!p) return '';
+    const plantillas = user?.plantillas ?? PLANTILLAS_DEFAULT;
+    const template =
+      p.estado === 'entregado' ? plantillas.entrega :
+      p.estado === 'en_preparacion' ? plantillas.preparacion :
+      plantillas.confirmacion;
+    return applyTemplate(template, p, simbolo, user?.nombreNegocio ?? '');
+  };
+
   const handleCopy = async () => {
     if (!pedido) return;
-    const message = formatPedidoForWhatsApp(pedido, simbolo);
-    const success = await copyToClipboard(message);
+    const success = await copyToClipboard(buildMensaje(pedido));
     if (success) {
       setCopiedId(true);
       setTimeout(() => setCopiedId(false), 2000);
@@ -245,8 +255,7 @@ const PedidoDetail = () => {
 
   const handleWhatsApp = () => {
     if (!pedido) return;
-    const message = formatPedidoForWhatsApp(pedido, simbolo);
-    openWhatsApp(pedido.clienteTelefono, message);
+    openWhatsApp(pedido.clienteTelefono, buildMensaje(pedido));
   };
 
   const handleChangeStatus = async (status: PedidoStatus) => {

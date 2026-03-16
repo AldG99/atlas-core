@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { collection, addDoc, Timestamp, query, where, getDocs } from 'firebase/firestore';
 import { PiCaretDownBold, PiPaperPlaneRightBold, PiBookOpenBold } from 'react-icons/pi';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { db } from '../services/firebase';
+import { getRateLimitStatus, sendSupportMessage } from '../services/soporteService';
 import './Soporte.scss';
 
 const MIN_MENSAJE_LENGTH = 20;
@@ -96,23 +95,20 @@ const Soporte = () => {
   const limitado = mensajesHoy >= LIMITE_DIARIO;
   const bloqueado = cooldownRestante > 0 || limitado;
 
-  // Cargar cuántos mensajes envió hoy
-  const fetchMensajesHoy = useCallback(async () => {
+  // Cargar estado de rate limit desde Firestore al montar
+  const fetchRateLimit = useCallback(async () => {
     if (!user) return;
-    const inicio = new Date();
-    inicio.setHours(0, 0, 0, 0);
-    const q = query(
-      collection(db, 'soporte'),
-      where('userId', '==', user.uid),
-      where('fecha', '>=', Timestamp.fromDate(inicio))
-    );
-    const snap = await getDocs(q);
-    setMensajesHoy(snap.size);
+    const { mensajesHoy: count, cooldownEnds } = await getRateLimitStatus(user.uid);
+    setMensajesHoy(count);
+    if (cooldownEnds) {
+      const secsLeft = Math.ceil((cooldownEnds.getTime() - Date.now()) / 1000);
+      setCooldownRestante(Math.max(0, secsLeft));
+    }
   }, [user]);
 
   useEffect(() => {
-    fetchMensajesHoy();
-  }, [fetchMensajesHoy]);
+    fetchRateLimit();
+  }, [fetchRateLimit]);
 
   // Contador de cooldown
   useEffect(() => {
@@ -153,18 +149,21 @@ const Soporte = () => {
 
     setSending(true);
     try {
-      await addDoc(collection(db, 'soporte'), {
-        userId: user?.uid ?? null,
-        asunto: formData.asunto.trim(),
-        mensaje: formData.mensaje.trim(),
-        fecha: Timestamp.now()
-      });
+      await sendSupportMessage(user!.uid, formData.asunto, formData.mensaje);
       showToast('Mensaje enviado correctamente', 'success');
       setFormData({ asunto: '', mensaje: '' });
       setMensajesHoy(c => c + 1);
       setCooldownRestante(COOLDOWN_SEGUNDOS);
-    } catch {
-      showToast('Error al enviar el mensaje', 'error');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      if (msg === 'DAILY_LIMIT') {
+        showToast(`Límite diario de ${LIMITE_DIARIO} mensajes alcanzado`, 'warning');
+        setMensajesHoy(LIMITE_DIARIO);
+      } else if (msg === 'COOLDOWN') {
+        showToast('Debes esperar antes de enviar otro mensaje', 'warning');
+      } else {
+        showToast('Error al enviar el mensaje', 'error');
+      }
     } finally {
       setSending(false);
     }
@@ -181,7 +180,7 @@ const Soporte = () => {
       <div className="soporte">
         <div className="soporte__header">
           <h1>Centro de Soporte</h1>
-          <p>Encuentra respuestas, guías y ayuda para usar Atlas Core</p>
+          <p>Encuentra respuestas, guías y ayuda para usar Orderly</p>
         </div>
 
         <div className="soporte__body">

@@ -1,6 +1,11 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
+@keyframes reportes-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .reportes {
   display: flex;
   flex-direction: column;
@@ -61,6 +66,34 @@
 
   &__error {
     color: $color-danger;
+  }
+
+  &__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__skeleton-kpis {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+
+    @include lg {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__skeleton-card {
+    height: 80px;
+    border-radius: $border-radius-md;
+    background: linear-gradient(90deg, $color-gray-100 25%, $color-gray-200 50%, $color-gray-100 75%);
+    background-size: 200% 100%;
+    animation: reportes-shimmer 1.4s ease infinite;
+
+    &--tall {
+      height: 220px;
+    }
   }
 
   &__layout {

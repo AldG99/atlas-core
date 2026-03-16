@@ -39,7 +39,7 @@ const Productos = () => {
   const [showHistorial, setShowHistorial] = useState(false);
   const [editingProducto, setEditingProducto] = useState<{ id: string; data: ProductoFormData } | null>(null);
 
-  const { productos, loading, error, addProducto, editProducto, removeProducto } = useProductos();
+  const { productos, loading, error, addProducto, editProducto } = useProductos();
   const { etiquetas } = useEtiquetas();
   const { showToast } = useToast();
 
@@ -98,21 +98,6 @@ const Productos = () => {
     } catch {
       showToast('Error al actualizar el producto', 'error');
     }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-      try {
-        await removeProducto(id);
-        showToast('Producto eliminado', 'success');
-      } catch {
-        showToast('Error al eliminar el producto', 'error');
-      }
-    }
-  };
-
-  const openEditModal = (id: string, data: ProductoFormData) => {
-    setEditingProducto({ id, data });
   };
 
   return (

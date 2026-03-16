@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { PiWarehouseBold } from 'react-icons/pi';
 import ProductoDetalleModal from '../productos/ProductoDetalleModal';
 import { useProductos } from '../../hooks/useProductos';
 import { useEtiquetas } from '../../hooks/useEtiquetas';
@@ -60,12 +59,6 @@ const ProductoSelector = ({
     return p.precio;
   };
 
-  const formatDate = (date: Date) =>
-    new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    }).format(new Date(date));
 
   const filteredProductos = productos.filter(
     (p) =>

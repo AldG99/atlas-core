@@ -11,10 +11,17 @@ import {
   PiUserMinusBold,
   PiEyeBold,
   PiEyeSlashBold,
+  PiChatTextBold,
+  PiArrowCounterClockwiseBold,
+  PiBellBold,
+  PiBellSlashBold,
+  PiDownloadBold,
 } from 'react-icons/pi';
+import { usePWA } from '../hooks/usePWA';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
+import { useTemplates } from '../hooks/useTemplates';
 import {
   exportBackup,
   parseBackupFile,
@@ -47,6 +54,26 @@ const Configuracion = () => {
   const rawMoneda = user?.moneda ?? '$';
   const [moneda, setMoneda] = useState(LEGACY_MAP[rawMoneda] ?? rawMoneda);
   const [savingMoneda, setSavingMoneda] = useState(false);
+
+  // PWA
+  const { canInstall, promptInstall, notifPermission, requestNotifPermission, sendNotification } = usePWA();
+
+  const handleTestNotif = () => {
+    sendNotification('Orderly', { body: '¡Las notificaciones están activadas correctamente!' });
+  };
+
+  // Plantillas
+  const { draft: plantillas, setDraft: setPlantillas, saving: savingPlantillas, isDirty: plantillasDirty, save: savePlantillas, reset: resetPlantillas, resetToDefaults } = useTemplates();
+  type PlantillaKey = 'confirmacion' | 'preparacion' | 'entrega';
+  const [plantillaTab, setPlantillaTab] = useState<PlantillaKey>('confirmacion');
+
+  const PLANTILLA_TABS: { key: PlantillaKey; label: string }[] = [
+    { key: 'confirmacion', label: 'Confirmación' },
+    { key: 'preparacion',  label: 'Preparación' },
+    { key: 'entrega',      label: 'Entrega' },
+  ];
+
+  const VARIABLES_INFO = '{{nombre}} · {{folio}} · {{total}} · {{pagado}} · {{restante}} · {{productos}} · {{notas}} · {{negocio}}';
 
   // Zona de peligro
   const [dangerModal, setDangerModal] = useState<DangerModal>(null);
@@ -311,6 +338,125 @@ const Configuracion = () => {
                   disabled={savingMoneda || moneda === (LEGACY_MAP[rawMoneda] ?? rawMoneda)}
                 >
                   {savingMoneda ? 'Guardando...' : 'Guardar'}
+                </button>
+              </div>
+            </div>
+
+            {/* Instalar app */}
+            {canInstall && (
+              <div className="configuracion__card">
+                <div className="configuracion__card-header">
+                  <div className="configuracion__card-icon configuracion__card-icon--install">
+                    <PiDownloadBold size={18} />
+                  </div>
+                  <h2 className="configuracion__card-title">Instalar aplicación</h2>
+                </div>
+                <p className="configuracion__card-desc">
+                  Instala Orderly en tu dispositivo para acceder más rápido y usarla sin conexión.
+                </p>
+                <div className="configuracion__card-footer">
+                  <button className="btn btn--primary btn--sm configuracion__card-btn" onClick={promptInstall}>
+                    <PiDownloadBold size={15} />
+                    Instalar Orderly
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Notificaciones */}
+            <div className="configuracion__card">
+              <div className="configuracion__card-header">
+                <div className={`configuracion__card-icon configuracion__card-icon--notif${notifPermission === 'granted' ? '--on' : ''}`}>
+                  {notifPermission === 'granted' ? <PiBellBold size={18} /> : <PiBellSlashBold size={18} />}
+                </div>
+                <h2 className="configuracion__card-title">Notificaciones</h2>
+              </div>
+              <p className="configuracion__card-desc">
+                Recibe alertas del sistema cuando haya pedidos pendientes, stock bajo o descuentos por vencer.
+              </p>
+
+              {!('Notification' in window) ? (
+                <p className="configuracion__card-note">Tu navegador no soporta notificaciones.</p>
+              ) : notifPermission === 'denied' ? (
+                <p className="configuracion__notif-denied">
+                  Notificaciones bloqueadas. Actívalas desde la configuración de tu navegador.
+                </p>
+              ) : (
+                <div className="configuracion__card-footer configuracion__card-footer--row">
+                  {notifPermission === 'granted' ? (
+                    <>
+                      <span className="configuracion__notif-status configuracion__notif-status--on">
+                        <PiBellBold size={13} /> Activadas
+                      </span>
+                      <button className="btn btn--outline btn--sm" onClick={handleTestNotif}>
+                        Probar
+                      </button>
+                    </>
+                  ) : (
+                    <button className="btn btn--primary btn--sm configuracion__card-btn" onClick={requestNotifPermission}>
+                      <PiBellBold size={15} />
+                      Activar notificaciones
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Plantillas de mensajes */}
+            <div className="configuracion__card configuracion__card--full">
+              <div className="configuracion__card-header">
+                <div className="configuracion__card-icon configuracion__card-icon--plantillas">
+                  <PiChatTextBold size={18} />
+                </div>
+                <h2 className="configuracion__card-title">Plantillas de mensajes</h2>
+              </div>
+              <p className="configuracion__card-desc">
+                Personaliza el mensaje que se envía por WhatsApp según el estado del pedido.
+              </p>
+              <p className="configuracion__card-note">{VARIABLES_INFO}</p>
+
+              <div className="configuracion__plantillas-tabs">
+                {PLANTILLA_TABS.map(tab => (
+                  <button
+                    key={tab.key}
+                    className={`configuracion__plantillas-tab${plantillaTab === tab.key ? ' configuracion__plantillas-tab--active' : ''}`}
+                    onClick={() => setPlantillaTab(tab.key)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              <textarea
+                className="configuracion__plantillas-textarea"
+                value={plantillas[plantillaTab]}
+                onChange={e => setPlantillas(prev => ({ ...prev, [plantillaTab]: e.target.value }))}
+                rows={5}
+                placeholder="Escribe tu plantilla..."
+              />
+
+              <div className="configuracion__card-footer configuracion__card-footer--row">
+                <button
+                  className="btn btn--outline btn--sm"
+                  onClick={resetToDefaults}
+                  title="Restaurar valores por defecto"
+                >
+                  <PiArrowCounterClockwiseBold size={14} />
+                  Restaurar
+                </button>
+                <button
+                  className="btn btn--outline btn--sm"
+                  onClick={resetPlantillas}
+                  disabled={!plantillasDirty}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className="btn btn--primary btn--sm"
+                  onClick={savePlantillas}
+                  disabled={savingPlantillas || !plantillasDirty}
+                >
+                  {savingPlantillas ? 'Guardando...' : 'Guardar'}
                 </button>
               </div>
             </div>

@@ -66,6 +66,26 @@ export const formatPedidoForWhatsApp = (pedido: PedidoForWhatsApp, simbolo = '$'
   return message;
 };
 
+export const applyTemplate = (
+  template: string,
+  pedido: PedidoForWhatsApp & { folio?: string; notas?: string; abonos?: { monto: number }[] },
+  simbolo = '$',
+  negocio = ''
+): string => {
+  const pagado = (pedido.abonos || []).reduce((s, a) => s + a.monto, 0);
+  const restante = Math.max(0, pedido.total - pagado);
+
+  return template
+    .replace(/\{\{nombre\}\}/g, pedido.clienteNombre)
+    .replace(/\{\{folio\}\}/g, pedido.folio ?? '')
+    .replace(/\{\{total\}\}/g, formatCurrency(pedido.total, simbolo))
+    .replace(/\{\{pagado\}\}/g, formatCurrency(pagado, simbolo))
+    .replace(/\{\{restante\}\}/g, formatCurrency(restante, simbolo))
+    .replace(/\{\{productos\}\}/g, formatProductosText(pedido.productos, simbolo))
+    .replace(/\{\{notas\}\}/g, pedido.notas ?? '')
+    .replace(/\{\{negocio\}\}/g, negocio);
+};
+
 export const openWhatsApp = (phone: string, message: string): void => {
   const cleanPhone = phone.replace(/\D/g, '');
   const encodedMessage = encodeURIComponent(message);

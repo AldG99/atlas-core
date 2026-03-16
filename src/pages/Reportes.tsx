@@ -35,7 +35,7 @@ const Reportes = () => {
       ...p,
       clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
     }));
-    exportToCSV(pedidosConCodigo, 'reporte_pedidos');
+    exportToCSV(pedidosConCodigo, `reporte_${period}`);
     showToast('Reporte exportado', 'success');
   };
 
@@ -62,7 +62,17 @@ const Reportes = () => {
         </div>
 
         <div className="reportes__content">
-          {loading && <p className="reportes__loading">Cargando datos...</p>}
+          {loading && (
+            <div className="reportes__skeleton">
+              <div className="reportes__skeleton-kpis">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="reportes__skeleton-card" />
+                ))}
+              </div>
+              <div className="reportes__skeleton-card reportes__skeleton-card--tall" />
+              <div className="reportes__skeleton-card reportes__skeleton-card--tall" />
+            </div>
+          )}
 
           {error && <p className="reportes__error">{error}</p>}
 
