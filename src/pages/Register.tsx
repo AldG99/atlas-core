@@ -302,6 +302,13 @@ const Register = () => {
           {loading ? 'Creando cuenta...' : 'Crear cuenta'}
         </button>
 
+        <p className="register-form__legal">
+          Al crear una cuenta aceptas nuestros{' '}
+          <a href="/terminos" target="_blank" rel="noopener noreferrer">Términos de uso</a>
+          {' '}y el{' '}
+          <a href="/privacidad" target="_blank" rel="noopener noreferrer">Aviso de privacidad</a>.
+        </p>
+
         <p className="register-form__link">
           ¿Ya tienes cuenta? <Link to={ROUTES.LOGIN}>Inicia sesión</Link>
         </p>

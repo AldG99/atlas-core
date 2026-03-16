@@ -1,0 +1,82 @@
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+.legal-page {
+  min-height: 100vh;
+  background-color: $color-gray-50;
+  padding: $spacing-xl $spacing-md;
+
+  &__container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__logo {
+    max-width: 140px;
+    height: auto;
+  }
+
+  &__card {
+    background-color: $color-white;
+    border: 1px solid $color-gray-200;
+    border-radius: $border-radius-lg;
+    padding: $spacing-xl;
+  }
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: 700;
+    color: $color-gray-800;
+    margin: 0 0 $spacing-xs;
+  }
+
+  &__date {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    margin: 0 0 $spacing-xl;
+  }
+
+  &__section {
+    margin-bottom: $spacing-lg;
+
+    h2 {
+      font-size: $font-size-base;
+      font-weight: 600;
+      color: $color-gray-700;
+      margin: 0 0 $spacing-sm;
+    }
+
+    p {
+      font-size: $font-size-sm;
+      color: $color-gray-600;
+      line-height: 1.7;
+      margin: 0 0 $spacing-sm;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    ul {
+      margin: $spacing-xs 0 $spacing-sm $spacing-md;
+      padding: 0;
+
+      li {
+        font-size: $font-size-sm;
+        color: $color-gray-600;
+        line-height: 1.7;
+        margin-bottom: 2px;
+      }
+    }
+
+    strong {
+      color: $color-gray-700;
+      font-weight: 600;
+    }
+  }
+}
