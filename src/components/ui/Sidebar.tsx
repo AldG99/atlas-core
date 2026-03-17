@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { PiListBold, PiXBold, PiClipboardTextBold, PiUsersBold, PiPackageBold, PiChartBarBold, PiArchiveBold, PiGearBold, PiLifebuoyBold } from 'react-icons/pi';
 import { ROUTES } from '../../config/routes';
+import { useAuth } from '../../hooks/useAuth';
 import './Sidebar.scss';
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { role } = useAuth();
 
   const toggleMobile = () => {
     setIsMobileOpen(!isMobileOpen);
