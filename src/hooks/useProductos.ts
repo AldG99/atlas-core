@@ -12,16 +12,16 @@ export const useProductos = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, negocioUid } = useAuth();
 
   const fetchProductos = useCallback(async () => {
-    if (!user) return;
+    if (!user || !negocioUid) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const data = await getProductos(user.uid);
+      const data = await getProductos(negocioUid);
       setProductos(data);
     } catch (err) {
       console.error('Error al cargar productos:', err);
@@ -29,20 +29,20 @@ export const useProductos = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, negocioUid]);
 
   useEffect(() => {
     fetchProductos();
   }, [fetchProductos]);
 
   const addProducto = async (data: ProductoFormData) => {
-    if (!user) return;
+    if (!user || !negocioUid) return;
 
-    const id = await createProducto(data, user.uid);
+    const id = await createProducto(data, negocioUid);
     const newProducto = {
       id,
       ...data,
-      userId: user.uid,
+      userId: negocioUid!,
       fechaCreacion: new Date()
     } as Producto;
     setProductos((prev) => [...prev, newProducto].sort((a, b) => a.nombre.localeCompare(b.nombre)));

@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { PiArchiveBold, PiMagnifyingGlassBold, PiDownloadSimpleBold } from 'react-icons/pi';
+import { PiMagnifyingGlassBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import type { Pedido } from '../types/Pedido';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -8,7 +7,6 @@ import { useClientes } from '../hooks/useClientes';
 import { getCodigoPais } from '../data/codigosPais';
 import { getArchivedPedidos } from '../services/pedidoService';
 import { exportToCSV } from '../utils/formatters';
-import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
 import PedidosTable from '../components/pedidos/PedidosTable';
 import './Archivo.scss';
@@ -153,77 +151,51 @@ const Archivo = () => {
           </div>
         </div>
 
-        {!loading && pedidos.length > 0 && (
-          <div className="archivo__controls">
-            <div className="archivo__search">
-              <PiMagnifyingGlassBold size={16} className="archivo__search-icon" />
-              <input
-                type="text"
-                placeholder="Buscar por nombre, teléfono o folio..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input"
-              />
-            </div>
-
-            <div className="archivo__selects">
-              <select
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value as DateFilter)}
-                className="select"
-              >
-                {(Object.keys(DATE_FILTERS) as DateFilter[]).map((filter) => (
-                  <option key={filter} value={filter}>
-                    {DATE_FILTERS[filter]}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="select"
-              >
-                {(Object.keys(SORT_OPTIONS) as SortOption[]).map((option) => (
-                  <option key={option} value={option}>
-                    {SORT_OPTIONS[option]}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <div className="archivo__controls">
+          <div className="archivo__search">
+            <PiMagnifyingGlassBold size={16} className="archivo__search-icon" />
+            <input
+              type="text"
+              placeholder="Buscar por nombre, teléfono o folio..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="input"
+            />
           </div>
-        )}
 
-        {!loading && !error && pedidos.length === 0 && (
-          <div className="archivo__empty">
-            <div className="archivo__empty-icon">
-              <PiArchiveBold />
-            </div>
-            <h2>El archivo está vacío</h2>
-            <p>Los pedidos que archives aparecerán aquí para que puedas consultarlos o restaurarlos en cualquier momento.</p>
-            <Link to={ROUTES.DASHBOARD} className="btn btn--primary">
-              Ir a pedidos
-            </Link>
+          <div className="archivo__selects">
+            <select
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value as DateFilter)}
+              className="select"
+            >
+              {(Object.keys(DATE_FILTERS) as DateFilter[]).map((filter) => (
+                <option key={filter} value={filter}>
+                  {DATE_FILTERS[filter]}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="select"
+            >
+              {(Object.keys(SORT_OPTIONS) as SortOption[]).map((option) => (
+                <option key={option} value={option}>
+                  {SORT_OPTIONS[option]}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
+        </div>
 
-        {!loading && !error && pedidos.length > 0 && filteredAndSortedPedidos.length === 0 && (
-          <div className="archivo__empty">
-            <p>No se encontraron pedidos para "{searchTerm}"</p>
-            <button onClick={() => setSearchTerm('')} className="btn btn--secondary">
-              Limpiar búsqueda
-            </button>
-          </div>
-        )}
-
-        {(loading || error || pedidos.length > 0) && (
-          <PedidosTable
-            pedidos={filteredAndSortedPedidos}
-            loading={loading}
-            error={error}
-            searchTerm={searchTerm}
-          />
-        )}
+        <PedidosTable
+          pedidos={filteredAndSortedPedidos}
+          loading={loading}
+          error={error}
+          searchTerm={searchTerm}
+        />
       </div>
     </MainLayout>
   );

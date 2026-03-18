@@ -36,7 +36,7 @@ const ClienteDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const { format } = useCurrency();
   const { productos: catalogoProductos } = useProductos();
   const { etiquetas: todasEtiquetas } = useEtiquetas();
@@ -356,7 +356,7 @@ const ClienteDetail = () => {
             >
               <PiArrowLeftBold size={20} />
             </button>
-            {isEditing ? (
+            {role === 'admin' && isEditing ? (
               <div className="cliente-detail__top-bar-actions">
                 <button onClick={cancelEditing} className="btn btn--outline btn--sm" disabled={saving}>
                   Cancelar
@@ -378,12 +378,16 @@ const ClienteDetail = () => {
                 >
                   {cliente.favorito ? <PiStarFill size={20} /> : <PiStarBold size={20} />}
                 </button>
-                <button onClick={startEditing} className="cliente-detail__icon-btn cliente-detail__icon-btn--primary" title="Editar cliente">
-                  <PiPencilBold size={20} />
-                </button>
-                <button onClick={handleDelete} className="cliente-detail__icon-btn cliente-detail__icon-btn--danger" title="Eliminar cliente">
-                  <PiTrashBold size={20} />
-                </button>
+                {role === 'admin' && (
+                  <>
+                    <button onClick={startEditing} className="cliente-detail__icon-btn cliente-detail__icon-btn--primary" title="Editar cliente">
+                      <PiPencilBold size={20} />
+                    </button>
+                    <button onClick={handleDelete} className="cliente-detail__icon-btn cliente-detail__icon-btn--danger" title="Eliminar cliente">
+                      <PiTrashBold size={20} />
+                    </button>
+                  </>
+                )}
               </>
             )}
           </div>

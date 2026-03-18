@@ -16,29 +16,62 @@ import {
   PiBellBold,
   PiBellSlashBold,
   PiDownloadBold,
+  PiUsersThreeBold,
+  PiCaretRightBold,
+  PiArrowLeftBold,
+  PiUserBold,
+  PiPhoneBold,
+  PiCalendarBold,
+  PiIdentificationBadgeBold,
 } from 'react-icons/pi';
+import type { User } from '../types/User';
+import { formatTelefono } from '../utils/formatters';
+import { getCodigoPais } from '../data/codigosPais';
 import { usePWA } from '../hooks/usePWA';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useTemplates } from '../hooks/useTemplates';
+import { useEquipo } from '../hooks/useEquipo';
 import {
   exportBackup,
   parseBackupFile,
   importBackup,
   type BackupData,
 } from '../services/backupService';
+import { salirDelNegocio } from '../services/equipoService';
+import PhoneInput from '../components/clientes/PhoneInput';
 import './Configuracion.scss';
 
 type ImportStep = 'idle' | 'preview' | 'importing' | 'done';
 type DangerModal = null | 'deleteData' | 'deleteAccount';
+type Section = 'moneda' | 'notificaciones' | 'instalar' | 'plantillas' | 'equipo' | 'respaldo' | 'peligro' | 'membresia';
 
 const SIMBOLOS_MONEDA = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
 
+type NavItem = { id: Section; icon: React.ReactNode; title: string; color: string };
+type NavGroup = { label: string; items: NavItem[] };
+
+const getSectionTitle = (section: Section): string => {
+  switch (section) {
+    case 'moneda':        return 'Moneda';
+    case 'notificaciones': return 'Notificaciones';
+    case 'instalar':      return 'Instalar aplicación';
+    case 'plantillas':    return 'Plantillas de mensajes';
+    case 'equipo':        return 'Equipo';
+    case 'respaldo':      return 'Respaldo';
+    case 'peligro':       return 'Zona de peligro';
+    case 'membresia':     return 'Membresía';
+  }
+};
+
 const Configuracion = () => {
-  const { user, updateProfile, deleteAllData, deleteAccount } = useAuth();
+  const { user, updateProfile, deleteAllData, deleteAccount, role } = useAuth();
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Active section
+  const [activeSection, setActiveSection] = useState<Section | null>(null);
 
   // Backup
   const [exporting, setExporting] = useState(false);
@@ -81,6 +114,21 @@ const Configuracion = () => {
   const [showDangerPwd, setShowDangerPwd] = useState(false);
   const [dangerError, setDangerError] = useState('');
   const [dangerLoading, setDangerLoading] = useState(false);
+
+  // Equipo
+  const { miembros, loading: equipoLoading, crearEmpleado, remover } = useEquipo();
+  const [showCrearEmpleado, setShowCrearEmpleado] = useState(false);
+  const [empleadoForm, setEmpleadoForm] = useState({
+    nombre: '', apellido: '', fechaNacimiento: '', telefono: '', telefonoCodigoPais: 'MX', password: '', confirmarPassword: ''
+  });
+  const [creandoEmpleado, setCreandoEmpleado] = useState(false);
+  const [empleadoError, setEmpleadoError] = useState('');
+
+  // Perfil de miembro
+  const [selectedMiembro, setSelectedMiembro] = useState<User | null>(null);
+
+  // Membresía
+  const [salirLoading, setSalirLoading] = useState(false);
 
   // ── Backup ──────────────────────────────────────────
   const handleExport = async () => {
@@ -143,6 +191,55 @@ const Configuracion = () => {
     }
   };
 
+  // ── Equipo ──────────────────────────────────────────
+  const handleCrearEmpleado = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEmpleadoError('');
+    if (empleadoForm.password !== empleadoForm.confirmarPassword) {
+      setEmpleadoError('Las contraseñas no coinciden');
+      return;
+    }
+    if (!empleadoForm.fechaNacimiento) {
+      setEmpleadoError('La fecha de nacimiento es requerida');
+      return;
+    }
+    if (!empleadoForm.telefono || empleadoForm.telefono.length < 10) {
+      setEmpleadoError('Ingresa un número de teléfono válido');
+      return;
+    }
+    setCreandoEmpleado(true);
+    try {
+      await crearEmpleado({
+        nombre: empleadoForm.nombre,
+        apellido: empleadoForm.apellido,
+        fechaNacimiento: empleadoForm.fechaNacimiento,
+        telefono: empleadoForm.telefono,
+        telefonoCodigoPais: empleadoForm.telefonoCodigoPais,
+        password: empleadoForm.password,
+      });
+      showToast('Miembro creado correctamente', 'success');
+      setEmpleadoForm({ nombre: '', apellido: '', fechaNacimiento: '', telefono: '', telefonoCodigoPais: 'MX', password: '', confirmarPassword: '' });
+      setShowCrearEmpleado(false);
+    } catch (err) {
+      setEmpleadoError(err instanceof Error ? err.message : 'Error al crear miembro');
+    } finally {
+      setCreandoEmpleado(false);
+    }
+  };
+
+  // ── Membresía ────────────────────────────────────────
+  const handleSalirNegocio = async () => {
+    if (!user) return;
+    setSalirLoading(true);
+    try {
+      await salirDelNegocio(user.uid);
+      window.location.reload();
+    } catch {
+      showToast('Error al salir del negocio', 'error');
+      setSalirLoading(false);
+    }
+  };
+
   // ── Zona de peligro ─────────────────────────────────
   const closeDangerModal = () => {
     setDangerModal(null);
@@ -180,30 +277,223 @@ const Configuracion = () => {
     }
   };
 
-  return (
-    <MainLayout>
-      <div className="configuracion">
-        <h1 className="configuracion__page-title">Configuración</h1>
+  // ── Nav groups ───────────────────────────────────────
+  const preferenciasItems: NavItem[] = [
+    { id: 'moneda', icon: <PiCurrencyDollarBold size={16} />, title: 'Moneda', color: 'yellow' },
+    { id: 'notificaciones', icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: 'Notificaciones', color: notifPermission === 'granted' ? 'green' : 'gray' },
+    ...(canInstall ? [{ id: 'instalar' as Section, icon: <PiDownloadBold size={16} />, title: 'Instalar app', color: 'teal' }] : []),
+  ];
 
-        <div className="configuracion__layout">
+  const navGroups: NavGroup[] = role === 'empleado'
+    ? [
+        { label: 'Preferencias', items: preferenciasItems },
+        { label: 'Negocio', items: [{ id: 'plantillas', icon: <PiChatTextBold size={16} />, title: 'Plantillas', color: 'purple' }] },
+        { label: 'Cuenta', items: [{ id: 'membresia', icon: <PiUsersThreeBold size={16} />, title: 'Membresía', color: 'blue' }] },
+      ]
+    : [
+        { label: 'Preferencias', items: preferenciasItems },
+        {
+          label: 'Negocio',
+          items: [
+            { id: 'plantillas', icon: <PiChatTextBold size={16} />, title: 'Plantillas', color: 'purple' },
+            { id: 'equipo', icon: <PiUsersThreeBold size={16} />, title: 'Equipo', color: 'blue' },
+          ],
+        },
+        { label: 'Datos', items: [{ id: 'respaldo', icon: <PiDownloadSimpleBold size={16} />, title: 'Respaldo', color: 'teal' }] },
+        { label: 'Cuenta', items: [{ id: 'peligro', icon: <PiWarningBold size={16} />, title: 'Zona de peligro', color: 'danger' }] },
+      ];
 
-            {/* Exportar */}
-            <div className="configuracion__card">
-              <div className="configuracion__card-header">
-                <div className="configuracion__card-icon configuracion__card-icon--export">
-                  <PiDownloadSimpleBold size={18} />
-                </div>
-                <h2 className="configuracion__card-title">Exportar datos</h2>
+  // ── Panel renderer ───────────────────────────────────
+  const renderPanel = () => {
+    switch (activeSection) {
+      case 'moneda':
+        return (
+          <>
+            <p className="configuracion__desc">
+              Elige el símbolo de moneda a mostrar en precios y reportes.
+            </p>
+            <div className="configuracion__field-row">
+              <select
+                className="configuracion__select"
+                value={moneda}
+                onChange={e => setMoneda(e.target.value)}
+              >
+                {SIMBOLOS_MONEDA.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+              <button
+                className="btn btn--primary btn--sm"
+                onClick={handleSaveMoneda}
+                disabled={savingMoneda || moneda === (LEGACY_MAP[rawMoneda] ?? rawMoneda)}
+              >
+                {savingMoneda ? 'Guardando...' : 'Guardar'}
+              </button>
+            </div>
+          </>
+        );
+
+      case 'notificaciones':
+        return (
+          <>
+            <p className="configuracion__desc">
+              Recibe alertas del sistema cuando haya pedidos pendientes, stock bajo o descuentos por vencer.
+            </p>
+            {!('Notification' in window) ? (
+              <p className="configuracion__note">Tu navegador no soporta notificaciones.</p>
+            ) : notifPermission === 'denied' ? (
+              <p className="configuracion__notif-denied">
+                Notificaciones bloqueadas. Actívalas desde la configuración de tu navegador.
+              </p>
+            ) : notifPermission === 'granted' ? (
+              <div className="configuracion__actions">
+                <span className="configuracion__notif-status configuracion__notif-status--on">
+                  <PiBellBold size={13} /> Activadas
+                </span>
+                <button className="btn btn--outline btn--sm" onClick={handleTestNotif}>
+                  Probar
+                </button>
               </div>
-              <p className="configuracion__card-desc">
+            ) : (
+              <div className="configuracion__actions">
+                <button className="btn btn--primary btn--sm" onClick={requestNotifPermission}>
+                  <PiBellBold size={15} />
+                  Activar notificaciones
+                </button>
+              </div>
+            )}
+          </>
+        );
+
+      case 'instalar':
+        return (
+          <>
+            <p className="configuracion__desc">
+              Instala Orderly en tu dispositivo para acceder más rápido y usarla sin conexión.
+            </p>
+            <div className="configuracion__actions">
+              <button className="btn btn--primary btn--sm" onClick={promptInstall}>
+                <PiDownloadBold size={15} />
+                Instalar Orderly
+              </button>
+            </div>
+          </>
+        );
+
+      case 'plantillas':
+        return (
+          <>
+            <p className="configuracion__desc">
+              Personaliza el mensaje que se envía por WhatsApp según el estado del pedido.
+            </p>
+            <p className="configuracion__note">{VARIABLES_INFO}</p>
+            <div className="configuracion__tabs">
+              {PLANTILLA_TABS.map(tab => (
+                <button
+                  key={tab.key}
+                  className={`configuracion__tab${plantillaTab === tab.key ? ' configuracion__tab--active' : ''}`}
+                  onClick={() => setPlantillaTab(tab.key)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <textarea
+              className="configuracion__textarea"
+              value={plantillas[plantillaTab]}
+              onChange={e => setPlantillas(prev => ({ ...prev, [plantillaTab]: e.target.value }))}
+              rows={6}
+              placeholder="Escribe tu plantilla..."
+            />
+            <div className="configuracion__actions">
+              <button
+                className="btn btn--outline btn--sm"
+                onClick={resetToDefaults}
+                title="Restaurar valores por defecto"
+              >
+                <PiArrowCounterClockwiseBold size={14} />
+                Restaurar
+              </button>
+              <button
+                className="btn btn--outline btn--sm"
+                onClick={resetPlantillas}
+                disabled={!plantillasDirty}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn btn--primary btn--sm"
+                onClick={savePlantillas}
+                disabled={savingPlantillas || !plantillasDirty}
+              >
+                {savingPlantillas ? 'Guardando...' : 'Guardar'}
+              </button>
+            </div>
+          </>
+        );
+
+      case 'equipo':
+        return (
+          <>
+            <p className="configuracion__desc">
+              Crea cuentas para los miembros de tu equipo. Entran con su usuario o correo y contraseña.
+            </p>
+
+            {/* Member list */}
+            {equipoLoading ? (
+              <p className="configuracion__desc">Cargando...</p>
+            ) : miembros.length === 0 ? (
+              <p className="configuracion__empty-list">No hay miembros todavía.</p>
+            ) : (
+              <div className="configuracion__equipo-list">
+                {miembros.map(m => (
+                  <div
+                    key={m.uid}
+                    className="configuracion__equipo-item configuracion__equipo-item--clickable"
+                    onClick={() => setSelectedMiembro(m)}
+                  >
+                    <div className="configuracion__equipo-avatar">
+                      {m.fotoPerfil
+                        ? <img src={m.fotoPerfil} alt={m.nombre} />
+                        : <span>{(m.nombre?.[0] ?? '?').toUpperCase()}{(m.apellido?.[0] ?? '').toUpperCase()}</span>
+                      }
+                    </div>
+                    <div className="configuracion__equipo-info">
+                      <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
+                      <span className="configuracion__equipo-email">{m.username}{m.numeroEmpleado ? ` · Nº ${m.numeroEmpleado}` : ''}</span>
+                    </div>
+                    <button
+                      className="btn btn--outline btn--sm"
+                      onClick={e => { e.stopPropagation(); remover(m.uid); }}
+                    >
+                      Remover
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button className="btn btn--primary btn--sm" onClick={() => setShowCrearEmpleado(true)}>
+              + Nuevo miembro
+            </button>
+          </>
+        );
+
+      case 'respaldo':
+        return (
+          <div className="configuracion__backup-blocks">
+            {/* Exportar */}
+            <div className="configuracion__backup-block">
+              <p className="configuracion__backup-title">Exportar</p>
+              <p className="configuracion__desc">
                 Descarga un archivo con todos tus clientes, productos, pedidos y etiquetas. Úsalo como respaldo o para migrar a otra cuenta.
               </p>
-              <p className="configuracion__card-note">
+              <p className="configuracion__note">
                 Las fotos de clientes y productos no se incluyen en el respaldo.
               </p>
-              <div className="configuracion__card-footer">
+              <div className="configuracion__actions">
                 <button
-                  className="btn btn--primary btn--sm configuracion__card-btn"
+                  className="btn btn--primary btn--sm"
                   onClick={handleExport}
                   disabled={exporting}
                 >
@@ -214,31 +504,27 @@ const Configuracion = () => {
             </div>
 
             {/* Importar */}
-            <div className="configuracion__card">
-              <div className="configuracion__card-header">
-                <div className="configuracion__card-icon configuracion__card-icon--import">
-                  <PiUploadSimpleBold size={18} />
-                </div>
-                <h2 className="configuracion__card-title">Importar datos</h2>
-              </div>
-              <p className="configuracion__card-desc">
+            <div className="configuracion__backup-block">
+              <p className="configuracion__backup-title">Importar</p>
+              <p className="configuracion__desc">
                 Carga un archivo de respaldo para restaurar tus datos en esta cuenta. Los datos existentes no se eliminan.
               </p>
-              <p className="configuracion__card-note">
+              <p className="configuracion__note">
                 Solo se aceptan archivos generados por Orderly (.json).
               </p>
 
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                className="configuracion__file-input"
+                onChange={handleFileChange}
+              />
+
               {importStep === 'idle' && (
-                <div className="configuracion__card-footer">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".json"
-                    className="configuracion__file-input"
-                    onChange={handleFileChange}
-                  />
+                <div className="configuracion__actions">
                   <button
-                    className="btn btn--outline btn--sm configuracion__card-btn"
+                    className="btn btn--outline btn--sm"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <PiFileBold size={15} />
@@ -276,7 +562,7 @@ const Configuracion = () => {
                       <span>Etiquetas</span>
                     </div>
                   </div>
-                  <div className="configuracion__preview-actions">
+                  <div className="configuracion__actions">
                     <button className="btn btn--ghost btn--sm" onClick={handleReset}>
                       <PiXBold size={13} />
                       Cancelar
@@ -310,195 +596,105 @@ const Configuracion = () => {
                 </div>
               )}
             </div>
+          </div>
+        );
 
-            {/* Moneda */}
-            <div className="configuracion__card">
-              <div className="configuracion__card-header">
-                <div className="configuracion__card-icon configuracion__card-icon--moneda">
-                  <PiCurrencyDollarBold size={18} />
-                </div>
-                <h2 className="configuracion__card-title">Moneda</h2>
-              </div>
-              <p className="configuracion__card-desc">
-                Elige el símbolo que se mostrará en precios, totales y reportes.
-              </p>
-              <div className="configuracion__card-footer configuracion__card-footer--row">
-                <select
-                  className="configuracion__select"
-                  value={moneda}
-                  onChange={e => setMoneda(e.target.value)}
-                >
-                  {SIMBOLOS_MONEDA.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-                <button
-                  className="btn btn--primary btn--sm"
-                  onClick={handleSaveMoneda}
-                  disabled={savingMoneda || moneda === (LEGACY_MAP[rawMoneda] ?? rawMoneda)}
-                >
-                  {savingMoneda ? 'Guardando...' : 'Guardar'}
-                </button>
-              </div>
-            </div>
-
-            {/* Instalar app */}
-            {canInstall && (
-              <div className="configuracion__card">
-                <div className="configuracion__card-header">
-                  <div className="configuracion__card-icon configuracion__card-icon--install">
-                    <PiDownloadBold size={18} />
-                  </div>
-                  <h2 className="configuracion__card-title">Instalar aplicación</h2>
-                </div>
-                <p className="configuracion__card-desc">
-                  Instala Orderly en tu dispositivo para acceder más rápido y usarla sin conexión.
+      case 'peligro':
+        return (
+          <>
+            <div className="configuracion__danger-item">
+              <div>
+                <p className="configuracion__danger-label">Eliminar todos los datos</p>
+                <p className="configuracion__desc">
+                  Borra permanentemente todos tus clientes, productos, pedidos y etiquetas. Tu cuenta permanece activa.
                 </p>
-                <div className="configuracion__card-footer">
-                  <button className="btn btn--primary btn--sm configuracion__card-btn" onClick={promptInstall}>
-                    <PiDownloadBold size={15} />
-                    Instalar Orderly
-                  </button>
-                </div>
               </div>
-            )}
-
-            {/* Notificaciones */}
-            <div className="configuracion__card">
-              <div className="configuracion__card-header">
-                <div className={`configuracion__card-icon configuracion__card-icon--notif${notifPermission === 'granted' ? '--on' : ''}`}>
-                  {notifPermission === 'granted' ? <PiBellBold size={18} /> : <PiBellSlashBold size={18} />}
-                </div>
-                <h2 className="configuracion__card-title">Notificaciones</h2>
-              </div>
-              <p className="configuracion__card-desc">
-                Recibe alertas del sistema cuando haya pedidos pendientes, stock bajo o descuentos por vencer.
-              </p>
-
-              {!('Notification' in window) ? (
-                <p className="configuracion__card-note">Tu navegador no soporta notificaciones.</p>
-              ) : notifPermission === 'denied' ? (
-                <p className="configuracion__notif-denied">
-                  Notificaciones bloqueadas. Actívalas desde la configuración de tu navegador.
+              <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteData')}>
+                <PiTrashBold size={14} />
+                Eliminar datos
+              </button>
+            </div>
+            <div className="configuracion__danger-item">
+              <div>
+                <p className="configuracion__danger-label">Eliminar cuenta</p>
+                <p className="configuracion__desc">
+                  Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.
                 </p>
-              ) : (
-                <div className="configuracion__card-footer configuracion__card-footer--row">
-                  {notifPermission === 'granted' ? (
-                    <>
-                      <span className="configuracion__notif-status configuracion__notif-status--on">
-                        <PiBellBold size={13} /> Activadas
-                      </span>
-                      <button className="btn btn--outline btn--sm" onClick={handleTestNotif}>
-                        Probar
-                      </button>
-                    </>
-                  ) : (
-                    <button className="btn btn--primary btn--sm configuracion__card-btn" onClick={requestNotifPermission}>
-                      <PiBellBold size={15} />
-                      Activar notificaciones
-                    </button>
-                  )}
-                </div>
-              )}
+              </div>
+              <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteAccount')}>
+                <PiUserMinusBold size={14} />
+                Eliminar cuenta
+              </button>
             </div>
+          </>
+        );
 
-            {/* Plantillas de mensajes */}
-            <div className="configuracion__card configuracion__card--full">
-              <div className="configuracion__card-header">
-                <div className="configuracion__card-icon configuracion__card-icon--plantillas">
-                  <PiChatTextBold size={18} />
-                </div>
-                <h2 className="configuracion__card-title">Plantillas de mensajes</h2>
-              </div>
-              <p className="configuracion__card-desc">
-                Personaliza el mensaje que se envía por WhatsApp según el estado del pedido.
-              </p>
-              <p className="configuracion__card-note">{VARIABLES_INFO}</p>
-
-              <div className="configuracion__plantillas-tabs">
-                {PLANTILLA_TABS.map(tab => (
-                  <button
-                    key={tab.key}
-                    className={`configuracion__plantillas-tab${plantillaTab === tab.key ? ' configuracion__plantillas-tab--active' : ''}`}
-                    onClick={() => setPlantillaTab(tab.key)}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-
-              <textarea
-                className="configuracion__plantillas-textarea"
-                value={plantillas[plantillaTab]}
-                onChange={e => setPlantillas(prev => ({ ...prev, [plantillaTab]: e.target.value }))}
-                rows={5}
-                placeholder="Escribe tu plantilla..."
-              />
-
-              <div className="configuracion__card-footer configuracion__card-footer--row">
-                <button
-                  className="btn btn--outline btn--sm"
-                  onClick={resetToDefaults}
-                  title="Restaurar valores por defecto"
-                >
-                  <PiArrowCounterClockwiseBold size={14} />
-                  Restaurar
-                </button>
-                <button
-                  className="btn btn--outline btn--sm"
-                  onClick={resetPlantillas}
-                  disabled={!plantillasDirty}
-                >
-                  Cancelar
-                </button>
-                <button
-                  className="btn btn--primary btn--sm"
-                  onClick={savePlantillas}
-                  disabled={savingPlantillas || !plantillasDirty}
-                >
-                  {savingPlantillas ? 'Guardando...' : 'Guardar'}
-                </button>
-              </div>
+      case 'membresia':
+        return (
+          <>
+            <p className="configuracion__desc">
+              Eres miembro de este negocio. Contacta con el administrador para cambios en la cuenta.
+            </p>
+            <div className="configuracion__actions">
+              <button
+                className="btn btn--danger btn--sm"
+                onClick={handleSalirNegocio}
+                disabled={salirLoading}
+              >
+                <PiUserMinusBold size={15} />
+                {salirLoading ? 'Saliendo...' : 'Salir del negocio'}
+              </button>
             </div>
+          </>
+        );
 
-            {/* Zona de peligro */}
-            <div className="configuracion__card configuracion__card--danger">
-              <div className="configuracion__card-header">
-                <div className="configuracion__card-icon configuracion__card-icon--danger">
-                  <PiWarningBold size={18} />
-                </div>
-                <h2 className="configuracion__card-title configuracion__card-title--danger">Zona de peligro</h2>
-              </div>
+      default:
+        return null;
+    }
+  };
 
-              <div className="configuracion__danger-item">
-                <div>
-                  <p className="configuracion__danger-label">Eliminar todos los datos</p>
-                  <p className="configuracion__card-desc">
-                    Borra permanentemente todos tus clientes, productos, pedidos y etiquetas. Tu cuenta permanece activa.
-                  </p>
-                </div>
-                <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteData')}>
-                  <PiTrashBold size={14} />
-                  Eliminar datos
+  return (
+    <MainLayout>
+      <div className="configuracion">
+        {/* Nav */}
+        <nav className={`configuracion__nav${activeSection ? ' configuracion__nav--hidden' : ''}`}>
+          <p className="configuracion__nav-title">Configuración</p>
+          {navGroups.map(group => (
+            <div key={group.label} className="configuracion__group">
+              <p className="configuracion__group-label">{group.label}</p>
+              {group.items.map(item => (
+                <button
+                  key={item.id}
+                  className={`configuracion__row${activeSection === item.id ? ' configuracion__row--active' : ''}`}
+                  onClick={() => setActiveSection(item.id)}
+                >
+                  <span className={`configuracion__row-icon configuracion__row-icon--${item.color}`}>
+                    {item.icon}
+                  </span>
+                  <span className="configuracion__row-title">{item.title}</span>
+                  <PiCaretRightBold size={12} className="configuracion__row-chevron" />
                 </button>
-              </div>
-
-              <div className="configuracion__danger-divider" />
-
-              <div className="configuracion__danger-item">
-                <div>
-                  <p className="configuracion__danger-label">Eliminar cuenta</p>
-                  <p className="configuracion__card-desc">
-                    Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.
-                  </p>
-                </div>
-                <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteAccount')}>
-                  <PiUserMinusBold size={14} />
-                  Eliminar cuenta
-                </button>
-              </div>
+              ))}
             </div>
+          ))}
+        </nav>
 
+        {/* Detail panel */}
+        <div className={`configuracion__detail${!activeSection ? ' configuracion__detail--hidden' : ''}`}>
+          <button className="configuracion__back" onClick={() => setActiveSection(null)}>
+            <PiArrowLeftBold size={14} />
+            Configuración
+          </button>
+          {activeSection ? (
+            <div className="configuracion__detail-inner">
+              <h2 className="configuracion__detail-title">{getSectionTitle(activeSection)}</h2>
+              {renderPanel()}
+            </div>
+          ) : (
+            <div className="configuracion__placeholder">
+              Selecciona una opción
+            </div>
+          )}
         </div>
       </div>
 
@@ -570,6 +766,190 @@ const Configuracion = () => {
           </div>
         </div>
       )}
+
+      {/* Modal nuevo miembro */}
+      {showCrearEmpleado && (
+        <div className="configuracion__modal-overlay" onClick={() => { setShowCrearEmpleado(false); setEmpleadoError(''); }}>
+          <div className="configuracion__modal configuracion__modal--wide" onClick={e => e.stopPropagation()}>
+            <div className="configuracion__modal-header">
+              <PiUsersThreeBold size={20} className="configuracion__modal-icon" />
+              <h3>Nuevo miembro</h3>
+              <button className="configuracion__modal-close" onClick={() => { setShowCrearEmpleado(false); setEmpleadoError(''); }}>
+                <PiXBold size={16} />
+              </button>
+            </div>
+            <form onSubmit={handleCrearEmpleado}>
+              <div className="configuracion__modal-body">
+                <div className="configuracion__modal-row">
+                  <div className="configuracion__modal-field">
+                    <label>Nombre</label>
+                    <input
+                      type="text"
+                      className="input"
+                      placeholder="Juan"
+                      value={empleadoForm.nombre}
+                      onChange={e => setEmpleadoForm(f => ({ ...f, nombre: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="configuracion__modal-field">
+                    <label>Apellido</label>
+                    <input
+                      type="text"
+                      className="input"
+                      placeholder="Pérez"
+                      value={empleadoForm.apellido}
+                      onChange={e => setEmpleadoForm(f => ({ ...f, apellido: e.target.value }))}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="configuracion__modal-field">
+                  <label>Fecha de nacimiento</label>
+                  <input
+                    type="date"
+                    className="input"
+                    value={empleadoForm.fechaNacimiento}
+                    onChange={e => setEmpleadoForm(f => ({ ...f, fechaNacimiento: e.target.value }))}
+                    max={new Date().toISOString().split('T')[0]}
+                    required
+                  />
+                </div>
+                <div className="configuracion__modal-field">
+                  <label>Número de teléfono</label>
+                  <PhoneInput
+                    value={empleadoForm.telefono}
+                    codigoPais={empleadoForm.telefonoCodigoPais}
+                    onChange={(numero, iso) => setEmpleadoForm(f => ({ ...f, telefono: numero, telefonoCodigoPais: iso }))}
+                    placeholder="Número de celular"
+                  />
+                </div>
+                <div className="configuracion__modal-row">
+                  <div className="configuracion__modal-field">
+                    <label>Contraseña</label>
+                    <input
+                      type="password"
+                      className="input"
+                      placeholder="••••••••"
+                      value={empleadoForm.password}
+                      onChange={e => setEmpleadoForm(f => ({ ...f, password: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="configuracion__modal-field">
+                    <label>Confirmar contraseña</label>
+                    <input
+                      type="password"
+                      className="input"
+                      placeholder="••••••••"
+                      value={empleadoForm.confirmarPassword}
+                      onChange={e => setEmpleadoForm(f => ({ ...f, confirmarPassword: e.target.value }))}
+                      required
+                    />
+                  </div>
+                </div>
+                {empleadoError && (
+                  <div className="configuracion__file-error">
+                    <PiWarningBold size={14} />
+                    {empleadoError}
+                  </div>
+                )}
+              </div>
+              <div className="configuracion__modal-actions">
+                <button
+                  type="button"
+                  className="btn btn--outline btn--sm"
+                  onClick={() => { setShowCrearEmpleado(false); setEmpleadoError(''); }}
+                  disabled={creandoEmpleado}
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn--primary btn--sm" disabled={creandoEmpleado}>
+                  {creandoEmpleado ? 'Creando...' : 'Crear miembro'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Modal perfil de miembro */}
+      {selectedMiembro && (() => {
+        const m = selectedMiembro;
+        const nombreCompleto = `${m.nombre ?? ''} ${m.apellido ?? ''}`.trim();
+        const initials = `${(m.nombre?.[0] ?? '').toUpperCase()}${(m.apellido?.[0] ?? '').toUpperCase()}`;
+        const codigoPais = m.telefonoCodigoPais ? getCodigoPais(m.telefonoCodigoPais) : null;
+        const telefonoFormateado = m.telefono
+          ? `${codigoPais ? `${codigoPais.codigo} ` : ''}${formatTelefono(m.telefono)}`
+          : null;
+        const fechaNacStr = m.fechaNacimiento
+          ? new Date(m.fechaNacimiento + 'T12:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })
+          : null;
+        return (
+          <div className="configuracion__modal-overlay" onClick={() => setSelectedMiembro(null)}>
+            <div className="configuracion__modal" onClick={e => e.stopPropagation()}>
+              <div className="configuracion__modal-header">
+                <PiUserBold size={20} className="configuracion__modal-icon--user" />
+                <h3>Perfil del miembro</h3>
+                <button className="configuracion__modal-close" onClick={() => setSelectedMiembro(null)}>
+                  <PiXBold size={16} />
+                </button>
+              </div>
+              <div className="configuracion__modal-body">
+                <div className="configuracion__miembro-profile">
+                  <div className="configuracion__miembro-avatar">
+                    {m.fotoPerfil
+                      ? <img src={m.fotoPerfil} alt={nombreCompleto} />
+                      : <span>{initials || '?'}</span>
+                    }
+                  </div>
+                  <div className="configuracion__miembro-name">{nombreCompleto || '—'}</div>
+                  {m.numeroEmpleado && (
+                    <div className="configuracion__miembro-badge">#{m.numeroEmpleado}</div>
+                  )}
+                </div>
+                <div className="configuracion__miembro-fields">
+                  <div className="configuracion__miembro-field">
+                    <PiIdentificationBadgeBold size={14} className="configuracion__miembro-field-icon" />
+                    <div>
+                      <p className="configuracion__miembro-field-label">Usuario</p>
+                      <p className="configuracion__miembro-field-value">{m.username ?? '—'}</p>
+                    </div>
+                  </div>
+                  {telefonoFormateado && (
+                    <div className="configuracion__miembro-field">
+                      <PiPhoneBold size={14} className="configuracion__miembro-field-icon" />
+                      <div>
+                        <p className="configuracion__miembro-field-label">Teléfono</p>
+                        <p className="configuracion__miembro-field-value">{telefonoFormateado}</p>
+                      </div>
+                    </div>
+                  )}
+                  {fechaNacStr && (
+                    <div className="configuracion__miembro-field">
+                      <PiCalendarBold size={14} className="configuracion__miembro-field-icon" />
+                      <div>
+                        <p className="configuracion__miembro-field-label">Fecha de nacimiento</p>
+                        <p className="configuracion__miembro-field-value">{fechaNacStr}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="configuracion__modal-actions">
+                <button
+                  className="btn btn--danger btn--sm"
+                  onClick={() => { remover(m.uid); setSelectedMiembro(null); }}
+                >
+                  Remover del equipo
+                </button>
+                <button className="btn btn--outline btn--sm" onClick={() => setSelectedMiembro(null)}>
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </MainLayout>
   );
 };

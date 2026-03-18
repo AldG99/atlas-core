@@ -55,7 +55,8 @@ interface FormErrors {
 }
 
 const Perfil = () => {
-  const { user, updateProfile, changePassword } = useAuth();
+  const { user, updateProfile, changePassword, role } = useAuth();
+  const isEmpleado = role === 'empleado';
   const { showToast } = useToast();
   const { clientes } = useClientes();
   const { productos } = useProductos();
@@ -166,17 +167,21 @@ const Perfil = () => {
   };
 
   const handleSave = async () => {
-    if (!validate()) return;
+    if (!isEmpleado && !validate()) return;
     setSaving(true);
     try {
-      await updateProfile({
-        nombreNegocio: formData.nombreNegocio.trim(),
-        nombre: formData.nombre.trim(),
-        apellido: formData.apellido.trim(),
-        fechaNacimiento: formData.fechaNacimiento,
-        telefono: formData.telefono,
-        telefonoCodigoPais: formData.telefonoCodigoPais,
-      }, imageFile);
+      if (isEmpleado) {
+        await updateProfile({}, imageFile ?? undefined);
+      } else {
+        await updateProfile({
+          nombreNegocio: formData.nombreNegocio.trim(),
+          nombre: formData.nombre.trim(),
+          apellido: formData.apellido.trim(),
+          fechaNacimiento: formData.fechaNacimiento,
+          telefono: formData.telefono,
+          telefonoCodigoPais: formData.telefonoCodigoPais,
+        }, imageFile);
+      }
       setIsEditing(false);
       setImageFile(null);
       showToast('Perfil actualizado correctamente', 'success');
@@ -296,14 +301,14 @@ const Perfil = () => {
 
             <div className="perfil__card-header">
               <PiUserBold size={16} />
-              <span>Información del administrador</span>
+              <span>{isEmpleado ? 'Información del miembro' : 'Información del administrador'}</span>
             </div>
 
             <div className="perfil__fields">
               {/* Nombre del negocio */}
               <div className="perfil__field perfil__field--full">
                 <label>Nombre del negocio</label>
-                {isEditing ? (
+                {isEditing && !isEmpleado ? (
                   <>
                     <input
                       type="text"
@@ -323,7 +328,7 @@ const Perfil = () => {
               {/* Nombre y Apellido */}
               <div className="perfil__field">
                 <label>Nombre</label>
-                {isEditing ? (
+                {isEditing && !isEmpleado ? (
                   <>
                     <input
                       type="text"
@@ -342,7 +347,7 @@ const Perfil = () => {
 
               <div className="perfil__field">
                 <label>Apellido</label>
-                {isEditing ? (
+                {isEditing && !isEmpleado ? (
                   <>
                     <input
                       type="text"
@@ -362,7 +367,7 @@ const Perfil = () => {
               {/* Fecha de nacimiento */}
               <div className="perfil__field">
                 <label>Fecha de nacimiento</label>
-                {isEditing ? (
+                {isEditing && !isEmpleado ? (
                   <>
                     <input
                       type="date"
@@ -387,7 +392,7 @@ const Perfil = () => {
               {/* Teléfono */}
               <div className="perfil__field">
                 <label>Número de celular</label>
-                {isEditing ? (
+                {isEditing && !isEmpleado ? (
                   <>
                     <PhoneInput
                       value={formData.telefono}
@@ -425,8 +430,8 @@ const Perfil = () => {
             </div>
           </div>
 
-          {/* Cambiar contraseña */}
-          <div className="perfil__card">
+          {/* Cambiar contraseña — solo admin */}
+          {!isEmpleado && <div className="perfil__card">
             <div className="perfil__card-header">
               <PiLockKeyBold size={16} />
               <span>Seguridad</span>
@@ -493,7 +498,7 @@ const Perfil = () => {
                 </div>
               </div>
             )}
-          </div>
+          </div>}
 
           {/* Estadísticas */}
           <div className="perfil__stats">

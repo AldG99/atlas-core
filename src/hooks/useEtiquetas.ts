@@ -10,30 +10,30 @@ import {
 export const useEtiquetas = () => {
   const [etiquetas, setEtiquetas] = useState<Etiqueta[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, negocioUid } = useAuth();
 
   const fetchEtiquetas = useCallback(async () => {
-    if (!user) return;
+    if (!user || !negocioUid) return;
 
     setLoading(true);
     try {
-      const data = await getEtiquetas(user.uid);
+      const data = await getEtiquetas(negocioUid);
       setEtiquetas(data);
     } catch (err) {
       console.error('Error al cargar etiquetas:', err);
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, negocioUid]);
 
   useEffect(() => {
     fetchEtiquetas();
   }, [fetchEtiquetas]);
 
   const addEtiqueta = async (nombre: string, color: string, icono: string) => {
-    if (!user) return;
+    if (!user || !negocioUid) return;
 
-    const nueva = await createEtiqueta(nombre, color, icono, user.uid);
+    const nueva = await createEtiqueta(nombre, color, icono, negocioUid);
     setEtiquetas((prev) => [...prev, nueva]);
     return nueva;
   };

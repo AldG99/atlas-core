@@ -18,6 +18,7 @@ import { PiCloudArrowUpBold, PiMagnifyingGlassBold, PiClockCounterClockwiseBold,
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
+import { useAuth } from '../hooks/useAuth';
 import type { ProductoFormData } from '../types/Producto';
 import MainLayout from '../layouts/MainLayout';
 import ProductosTable from '../components/productos/ProductosTable';
@@ -42,6 +43,7 @@ const Productos = () => {
   const { productos, loading, error, addProducto, editProducto } = useProductos();
   const { etiquetas } = useEtiquetas();
   const { showToast } = useToast();
+  const { role } = useAuth();
 
   const filteredProductos = useMemo(() => {
     let resultado = searchTerm.trim()
@@ -121,13 +123,15 @@ const Productos = () => {
               <PiCloudArrowUpBold size={18} style={{ marginRight: '6px' }} />
               Google Drive
             </button>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="btn btn--primary"
-            >
-              <PiPlusBold size={18} style={{ marginRight: '6px' }} />
-              Nuevo Producto
-            </button>
+            {role === 'admin' && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="btn btn--primary"
+              >
+                <PiPlusBold size={18} style={{ marginRight: '6px' }} />
+                Nuevo Producto
+              </button>
+            )}
           </div>
         </div>
 

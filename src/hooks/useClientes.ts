@@ -13,10 +13,10 @@ export const useClientes = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, negocioUid } = useAuth();
 
   const fetchClientes = useCallback(async () => {
-    if (!user) {
+    if (!user || !negocioUid) {
       setLoading(false);
       return;
     }
@@ -25,23 +25,23 @@ export const useClientes = () => {
     setError(null);
 
     try {
-      const data = await getClientes(user.uid);
+      const data = await getClientes(negocioUid);
       setClientes(data);
     } catch {
       setError('Error al cargar los clientes');
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, negocioUid]);
 
   useEffect(() => {
     fetchClientes();
   }, [fetchClientes]);
 
   const addCliente = async (data: ClienteFormData): Promise<Cliente> => {
-    if (!user) throw new Error('Usuario no autenticado');
+    if (!user || !negocioUid) throw new Error('Usuario no autenticado');
 
-    const id = await createCliente(data, user.uid);
+    const id = await createCliente(data, negocioUid);
     const newCliente: Cliente = {
       id,
       fotoPerfil: data.fotoPerfil || '',
@@ -58,7 +58,7 @@ export const useClientes = () => {
       codigoPostal: data.codigoPostal,
       pais: data.pais || '',
       referencia: data.referencia || '',
-      userId: user.uid,
+      userId: negocioUid,
       fechaCreacion: new Date()
     };
     setClientes((prev) => [...prev, newCliente].sort((a, b) => a.nombre.localeCompare(b.nombre)));

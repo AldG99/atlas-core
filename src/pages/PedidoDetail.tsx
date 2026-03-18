@@ -38,6 +38,7 @@ import {
   deletePedido,
 } from '../services/pedidoService';
 import { useAuth } from '../hooks/useAuth';
+import { buildCreadoPor } from '../hooks/usePedidos';
 import { useClientes } from '../hooks/useClientes';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
@@ -52,7 +53,7 @@ const PedidoDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const backRoute = (location.state as { from?: string })?.from || ROUTES.DASHBOARD;
-  const { user } = useAuth();
+  const { user, negocioUid, role } = useAuth();
   const { showToast } = useToast();
   const { clientes } = useClientes();
   const { productos: catalogoProductos } = useProductos();
@@ -80,10 +81,10 @@ const PedidoDetail = () => {
   const [fechaDescarga, setFechaDescarga] = useState<Date | null>(null);
 
   const fetchPedido = useCallback(async () => {
-    if (!id || !user) return;
+    if (!id || !user || !negocioUid) return;
     try {
       setLoading(true);
-      const data = await getPedidoById(id, user.uid);
+      const data = await getPedidoById(id, negocioUid);
       if (!data) {
         showToast('Pedido no encontrado', 'error');
         navigate(backRoute);
@@ -96,7 +97,7 @@ const PedidoDetail = () => {
     } finally {
       setLoading(false);
     }
-  }, [id, user, navigate, showToast]);
+  }, [id, user, negocioUid, navigate, showToast]);
 
   useEffect(() => {
     fetchPedido();
@@ -310,11 +311,12 @@ const PedidoDetail = () => {
     try {
       const productoIndex =
         abonoProducto === 'general' ? undefined : parseInt(abonoProducto, 10);
+      const creadoPor = user ? buildCreadoPor(user) : undefined;
       const { abono: nuevoAbono, nuevoEstado } = await addAbono(pedido.id, monto, productoIndex, {
         total: pedido.total,
         estadoActual: pedido.estado,
         pagadoHastaAhora: totalPagado
-      });
+      }, creadoPor);
       const updatedAbonos = [...(pedido.abonos || []), nuevoAbono];
       setPedido({ ...pedido, abonos: updatedAbonos, estado: nuevoEstado ?? pedido.estado });
       setAbonoInput('');
@@ -400,14 +402,18 @@ const PedidoDetail = () => {
             >
               <PiDownloadSimpleBold size={20} />
             </button>
-            <span className="pedido-detail__top-divider" />
-            <button
-              onClick={handleDelete}
-              className="pedido-detail__icon-btn pedido-detail__icon-btn--danger"
-              title="Eliminar pedido"
-            >
-              <PiTrashBold size={20} />
-            </button>
+            {role === 'admin' && (
+              <>
+                <span className="pedido-detail__top-divider" />
+                <button
+                  onClick={handleDelete}
+                  className="pedido-detail__icon-btn pedido-detail__icon-btn--danger"
+                  title="Eliminar pedido"
+                >
+                  <PiTrashBold size={20} />
+                </button>
+              </>
+            )}
             {!pedido.archivado && (
               <>
                 <div className="pedido-detail__top-bar-abono">
@@ -447,6 +453,22 @@ const PedidoDetail = () => {
                     Abonar
                   </button>
                 </div>
+                {role === 'admin' && (
+                  <button
+                    onClick={() => handleChangeStatus('entregado')}
+                    className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''} ${pedido.estado === 'entregado' ? 'pedido-detail__btn-entregado--done' : ''}`}
+                    disabled={!puedeMarcarEntregado}
+                    title={
+                      pedido.estado === 'entregado'
+                        ? 'Pedido ya entregado'
+                        : !puedeMarcarEntregado
+                          ? 'Solo disponible cuando el pedido está en preparación'
+                          : ''
+                    }
+                  >
+                    <PiCheckBold size={18} />
+                  </button>
+                )}
                 {abonoError && (
                   <span className="pedido-detail__top-bar-abono-error">
                     {abonoError}
@@ -733,11 +755,12 @@ const PedidoDetail = () => {
                 <div className="pedido-detail__table-head">
                   <table className="pedido-detail__abonos-table">
                     <colgroup>
-                      <col style={{ width: '10%' }} />
-                      <col style={{ width: '33%' }} />
-                      <col style={{ width: '16%' }} />
-                      <col style={{ width: '7%' }} />
+                      <col style={{ width: '8%' }} />
+                      <col style={{ width: '27%' }} />
                       <col style={{ width: '14%' }} />
+                      <col style={{ width: '6%' }} />
+                      <col style={{ width: '8%' }} />
+                      <col style={{ width: '17%' }} />
                       <col style={{ width: '20%' }} />
                     </colgroup>
                     <thead>
@@ -747,6 +770,7 @@ const PedidoDetail = () => {
                         <th>Monto</th>
                         <th></th>
                         <th></th>
+                        <th>Por</th>
                         <th>Fecha</th>
                       </tr>
                     </thead>
@@ -756,11 +780,12 @@ const PedidoDetail = () => {
                 <div ref={abonoScrollRef} className="pedido-detail__table-scroll pedido-detail__table-scroll--fixed">
                   <table className="pedido-detail__abonos-table">
                     <colgroup>
-                      <col style={{ width: '10%' }} />
-                      <col style={{ width: '33%' }} />
-                      <col style={{ width: '16%' }} />
-                      <col style={{ width: '7%' }} />
+                      <col style={{ width: '8%' }} />
+                      <col style={{ width: '27%' }} />
                       <col style={{ width: '14%' }} />
+                      <col style={{ width: '6%' }} />
+                      <col style={{ width: '8%' }} />
+                      <col style={{ width: '17%' }} />
                       <col style={{ width: '20%' }} />
                     </colgroup>
                     <tbody>
@@ -832,7 +857,7 @@ const PedidoDetail = () => {
                                 )}
                               </td>
                               <td onClick={e => e.stopPropagation()}>
-                                {editingAbonoId !== abono.id && (
+                                {role === 'admin' && editingAbonoId !== abono.id && (
                                   <button
                                     className="pedido-detail__abono-edit-btn"
                                     title={pedido.estado === 'entregado' || pedido.archivado ? 'No se puede editar un pedido entregado' : 'Corregir monto'}
@@ -846,6 +871,13 @@ const PedidoDetail = () => {
                                   </button>
                                 )}
                               </td>
+                              <td>
+                                {abono.creadoPor && (
+                                  <span className="pedido-detail__abono-autor" title={abono.creadoPor.nombre}>
+                                    {abono.creadoPor.nombre}
+                                  </span>
+                                )}
+                              </td>
                               <td>{formatDate(abono.fecha)}</td>
                             </tr>
                           ))
@@ -854,41 +886,15 @@ const PedidoDetail = () => {
                   </table>
                 </div>
               </div>
+              {pedido.creadoPor && (
+                <div className="pedido-detail__creado-por-row">
+                  Creado por <span>{pedido.creadoPor.nombre}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Fixed Bottom Bar */}
-        {!pedido.archivado && (
-          <div className="pedido-detail__bottom-bar">
-            <div className="pedido-detail__bottom-bar-inner">
-              <div className="pedido-detail__bottom-bar-info">
-                <span className="pedido-detail__bottom-bar-label">
-                  Restante:
-                </span>
-                <span
-                  className={`pedido-detail__bottom-bar-amount ${restante <= 0 ? 'pedido-detail__bottom-bar-amount--paid' : ''}`}
-                >
-                  {restante <= 0 ? 'Liquidado' : format(restante)}
-                </span>
-              </div>
-              <button
-                onClick={() => handleChangeStatus('entregado')}
-                className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''} ${pedido.estado === 'entregado' ? 'pedido-detail__btn-entregado--done' : ''}`}
-                disabled={!puedeMarcarEntregado}
-                title={
-                  pedido.estado === 'entregado'
-                    ? 'Pedido ya entregado'
-                    : !puedeMarcarEntregado
-                      ? 'Solo disponible cuando el pedido está en preparación'
-                      : ''
-                }
-              >
-                Entregado
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {showDeleteModal && (

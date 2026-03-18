@@ -24,7 +24,7 @@ import './ProductoDetail.scss';
 const ProductoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const { showToast } = useToast();
   const { etiquetas } = useEtiquetas();
   const { format } = useCurrency();
@@ -242,41 +242,43 @@ const ProductoDetail = () => {
             >
               <PiArrowLeftBold size={20} />
             </button>
-            {isEditing ? (
-              <div className="producto-detail__top-bar-actions">
-                <button
-                  onClick={cancelEditing}
-                  className="btn btn--outline btn--sm"
-                  disabled={saving}
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleSave}
-                  className="btn btn--primary btn--sm"
-                  disabled={saving}
-                >
-                  {saving ? 'Guardando...' : 'Guardar'}
-                </button>
-              </div>
-            ) : (
-              <>
-                <span className="producto-detail__top-divider" />
-                <button
-                  onClick={startEditing}
-                  className="producto-detail__icon-btn producto-detail__icon-btn--primary"
-                  title="Editar producto"
-                >
-                  <PiPencilBold size={20} />
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="producto-detail__icon-btn producto-detail__icon-btn--danger"
-                  title="Eliminar producto"
-                >
-                  <PiTrashBold size={20} />
-                </button>
-              </>
+            {role === 'admin' && (
+              isEditing ? (
+                <div className="producto-detail__top-bar-actions">
+                  <button
+                    onClick={cancelEditing}
+                    className="btn btn--outline btn--sm"
+                    disabled={saving}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="btn btn--primary btn--sm"
+                    disabled={saving}
+                  >
+                    {saving ? 'Guardando...' : 'Guardar'}
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <span className="producto-detail__top-divider" />
+                  <button
+                    onClick={startEditing}
+                    className="producto-detail__icon-btn producto-detail__icon-btn--primary"
+                    title="Editar producto"
+                  >
+                    <PiPencilBold size={20} />
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="producto-detail__icon-btn producto-detail__icon-btn--danger"
+                    title="Eliminar producto"
+                  >
+                    <PiTrashBold size={20} />
+                  </button>
+                </>
+              )
             )}
           </div>
         </div>

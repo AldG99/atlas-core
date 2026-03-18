@@ -9,6 +9,7 @@ import {
 } from 'react-icons/pi';
 import { useClientes } from '../hooks/useClientes';
 import { useToast } from '../hooks/useToast';
+import { useAuth } from '../hooks/useAuth';
 import type { ClienteFormData } from '../types/Cliente';
 import MainLayout from '../layouts/MainLayout';
 import ClientesTable from '../components/clientes/ClientesTable';
@@ -34,6 +35,7 @@ const Clientes = () => {
 
   const { clientes, loading, error, addCliente } = useClientes();
   const { showToast } = useToast();
+  const { role } = useAuth();
 
   const filteredClientes = useMemo(() => {
     let resultado = clientes;
@@ -93,13 +95,15 @@ const Clientes = () => {
               <PiCloudArrowUpBold size={18} style={{ marginRight: '6px' }} />
               Google Drive
             </button>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="btn btn--primary"
-            >
-              <PiPlusBold size={18} style={{ marginRight: '6px' }} />
-              Nuevo Cliente
-            </button>
+            {role === 'admin' && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="btn btn--primary"
+              >
+                <PiPlusBold size={18} style={{ marginRight: '6px' }} />
+                Nuevo Cliente
+              </button>
+            )}
           </div>
         </div>
 

@@ -1,6 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { QueryDocumentSnapshot } from 'firebase/firestore';
-import type { Pedido, PedidoFormData, PedidoStatus } from '../types/Pedido';
+import type { Pedido, PedidoFormData, PedidoStatus, CreadoPor } from '../types/Pedido';
+import type { User } from '../types/User';
+
+export const buildCreadoPor = (user: User): CreadoPor => {
+  const base = user.nombre
+    ? `${user.nombre}${user.apellido ? ' ' + user.apellido : ''}`
+    : user.nombreNegocio;
+  const sufijo = user.role === 'empleado'
+    ? (user.numeroEmpleado ? ` #${user.numeroEmpleado}` : '')
+    : ' (Adm.)';
+  return { uid: user.uid, nombre: `${base}${sufijo}` };
+};
 import {
   getPedidos,
   getPedidosByStatus,
@@ -15,7 +26,7 @@ import {
 import { useAuth } from './useAuth';
 
 export const usePedidos = () => {
-  const { user } = useAuth();
+  const { user, negocioUid } = useAuth();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [allPedidos, setAllPedidos] = useState<Pedido[]>([]);
   const [showArchived, setShowArchived] = useState(false);
@@ -25,12 +36,12 @@ export const usePedidos = () => {
   const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
 
   const fetchPedidos = useCallback(async () => {
-    if (!user) return;
+    if (!user || !negocioUid) return;
 
     try {
       setLoading(true);
       setError(null);
-      const result = await getPedidos(user.uid);
+      const result = await getPedidos(negocioUid);
       const active = result.pedidos.filter((p) => !p.archivado);
       setPedidos(active);
       setAllPedidos(active);
@@ -42,15 +53,15 @@ export const usePedidos = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, negocioUid]);
 
   const loadMore = useCallback(async () => {
-    if (!user || !hasMore || !lastDocRef.current) return;
+    if (!user || !negocioUid || !hasMore || !lastDocRef.current) return;
 
     try {
       setLoading(true);
       setError(null);
-      const result = await getPedidos(user.uid, lastDocRef.current);
+      const result = await getPedidos(negocioUid, lastDocRef.current);
       const active = result.pedidos.filter((p) => !p.archivado);
       setPedidos((prev) => [...prev, ...active]);
       setAllPedidos((prev) => [...prev, ...active]);
@@ -61,15 +72,15 @@ export const usePedidos = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, hasMore]);
+  }, [user, negocioUid, hasMore]);
 
   const fetchArchived = useCallback(async () => {
-    if (!user) return;
+    if (!user || !negocioUid) return;
 
     try {
       setLoading(true);
       setError(null);
-      const data = await getArchivedPedidos(user.uid);
+      const data = await getArchivedPedidos(negocioUid);
       setPedidos(data);
       setShowArchived(true);
       setHasMore(false);
@@ -79,15 +90,15 @@ export const usePedidos = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, negocioUid]);
 
   const fetchByStatus = useCallback(async (estado: PedidoStatus) => {
-    if (!user) return;
+    if (!user || !negocioUid) return;
 
     try {
       setLoading(true);
       setError(null);
-      const data = await getPedidosByStatus(user.uid, estado);
+      const data = await getPedidosByStatus(negocioUid, estado);
       setPedidos(data.filter((p) => !p.archivado));
       setHasMore(false);
       lastDocRef.current = null;
@@ -96,14 +107,14 @@ export const usePedidos = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, negocioUid]);
 
   const addPedido = useCallback(async (data: PedidoFormData) => {
-    if (!user) return;
+    if (!user || !negocioUid) return;
 
     try {
       setError(null);
-      const newPedido = await createPedido(data, user.uid);
+      const newPedido = await createPedido(data, negocioUid, buildCreadoPor(user));
       setPedidos((prev) => [newPedido, ...prev]);
       setAllPedidos((prev) => [newPedido, ...prev]);
       return newPedido;
@@ -111,7 +122,7 @@ export const usePedidos = () => {
       setError(err instanceof Error ? err.message : 'Error al crear pedido');
       throw err;
     }
-  }, [user]);
+  }, [user, negocioUid]);
 
   const changeStatus = useCallback(async (pedidoId: string, estado: PedidoStatus) => {
     try {
@@ -181,7 +192,7 @@ export const usePedidos = () => {
           }
         : undefined;
 
-      const { abono: nuevoAbono, nuevoEstado } = await addAbono(pedidoId, monto, productoIndex, opts);
+      const { abono: nuevoAbono, nuevoEstado } = await addAbono(pedidoId, monto, productoIndex, opts, user ? buildCreadoPor(user) : undefined);
 
       const updateFn = (prev: Pedido[]) =>
         prev.map((p) => {
