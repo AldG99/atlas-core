@@ -15,6 +15,7 @@ const DIAS_PENDIENTE = 2;
 const DIAS_PREPARACION = 3;
 const DIAS_ABONO = 3;
 const DIAS_DESCUENTO = 7;
+const UMBRAL_STOCK_BAJO = 5;
 
 const diffDias = (fecha: Date): number =>
   Math.floor((Date.now() - new Date(fecha).getTime()) / (1000 * 60 * 60 * 24));
@@ -95,6 +96,34 @@ export const useNotificaciones = () => {
         descripcion: `Sin abonos en más de ${DIAS_ABONO} días`,
         link: '/dashboard',
         filterState: { filterStatus: 'abono_pendiente' },
+      });
+    }
+
+    // 5. Productos sin stock
+    const sinStock = productos.filter(p => p.controlStock && (p.stock ?? 0) <= 0);
+    if (sinStock.length > 0) {
+      result.push({
+        id: 'sin_stock',
+        tipo: 'warning',
+        titulo: `${sinStock.length} producto${sinStock.length > 1 ? 's' : ''} sin stock`,
+        descripcion: sinStock.length === 1 ? sinStock[0].nombre : `${sinStock[0].nombre} y ${sinStock.length - 1} más`,
+        link: '/productos',
+        filterState: {},
+      });
+    }
+
+    // 6. Productos con stock bajo (> 0 pero <= umbral)
+    const stockBajo = productos.filter(p =>
+      p.controlStock && (p.stock ?? 0) > 0 && (p.stock ?? 0) <= UMBRAL_STOCK_BAJO
+    );
+    if (stockBajo.length > 0) {
+      result.push({
+        id: 'stock_bajo',
+        tipo: 'info',
+        titulo: `${stockBajo.length} producto${stockBajo.length > 1 ? 's' : ''} con stock bajo`,
+        descripcion: `Menos de ${UMBRAL_STOCK_BAJO} unidades disponibles`,
+        link: '/productos',
+        filterState: {},
       });
     }
 

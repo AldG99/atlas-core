@@ -28,10 +28,13 @@ const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
   registro_asc: 'Más antiguos',
 };
 
+const PAGE_SIZE = 50;
+
 const Clientes = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
 
   const { clientes, loading, error, addCliente } = useClientes();
   const { showToast } = useToast();
@@ -66,13 +69,16 @@ const Clientes = () => {
     return resultado;
   }, [clientes, searchTerm, sortBy]);
 
+  const clientesPaginados = filteredClientes.slice(0, displayLimit);
+  const hayMas = filteredClientes.length > displayLimit;
+
   const handleAdd = async (data: ClienteFormData) => {
     try {
       await addCliente(data);
       showToast('Cliente agregado correctamente', 'success');
       setIsModalOpen(false);
-    } catch {
-      showToast('Error al agregar el cliente', 'error');
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Error al agregar el cliente', 'error');
     }
   };
 
@@ -143,11 +149,22 @@ const Clientes = () => {
         </div>
 
         <ClientesTable
-          clientes={filteredClientes}
+          clientes={clientesPaginados}
           loading={loading}
           error={error}
           searchTerm={searchTerm}
         />
+
+        {hayMas && (
+          <div className="clientes__load-more">
+            <button
+              className="btn btn--outline btn--sm"
+              onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
+            >
+              Mostrar más ({filteredClientes.length - displayLimit} restantes)
+            </button>
+          </div>
+        )}
 
         {isModalOpen && (
           <ClienteModal

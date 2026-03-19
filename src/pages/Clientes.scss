@@ -141,4 +141,10 @@
       color: $color-gray-500;
     }
   }
+
+  &__load-more {
+    display: flex;
+    justify-content: center;
+    padding: $spacing-md 0;
+  }
 }

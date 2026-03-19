@@ -26,11 +26,14 @@ import ProductoModal from '../components/productos/ProductoModal';
 import HistorialDescuentosModal from '../components/productos/HistorialDescuentosModal';
 import './Productos.scss';
 
+const PAGE_SIZE = 50;
+
 const Productos = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
   const [filterVenciendo, setFilterVenciendo] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
   const location = useLocation();
 
   useEffect(() => {
@@ -79,14 +82,16 @@ const Productos = () => {
     return resultado;
   }, [productos, searchTerm, sortBy, filterVenciendo]);
 
+  const productosPaginados = filteredProductos.slice(0, displayLimit);
+  const hayMas = filteredProductos.length > displayLimit;
+
   const handleAdd = async (data: ProductoFormData) => {
     try {
       await addProducto(data);
       showToast('Producto agregado correctamente', 'success');
       setIsModalOpen(false);
     } catch (err) {
-      console.error('Error al agregar producto:', err);
-      showToast('Error al agregar el producto', 'error');
+      showToast(err instanceof Error ? err.message : 'Error al agregar el producto', 'error');
     }
   };
 
@@ -178,12 +183,23 @@ const Productos = () => {
           </div>
         )}
         <ProductosTable
-          productos={filteredProductos}
+          productos={productosPaginados}
           etiquetas={etiquetas}
           loading={loading}
           error={error}
           searchTerm={searchTerm}
         />
+
+        {hayMas && (
+          <div className="productos__load-more">
+            <button
+              className="btn btn--outline btn--sm"
+              onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
+            >
+              Mostrar más ({filteredProductos.length - displayLimit} restantes)
+            </button>
+          </div>
+        )}
 
         {isModalOpen && (
           <ProductoModal
