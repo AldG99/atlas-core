@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
   PiDownloadSimpleBold,
   PiUploadSimpleBold,
@@ -20,6 +20,7 @@ import {
   PiCaretRightBold,
   PiArrowLeftBold,
   PiUserBold,
+  PiShieldCheckBold,
   PiPhoneBold,
   PiCalendarBold,
   PiIdentificationBadgeBold,
@@ -39,7 +40,7 @@ import {
   importBackup,
   type BackupData,
 } from '../services/backupService';
-import { salirDelNegocio } from '../services/equipoService';
+import { salirDelNegocio, getAdminPorUid, getMiembros } from '../services/equipoService';
 import PhoneInput from '../components/clientes/PhoneInput';
 import './Configuracion.scss';
 
@@ -127,8 +128,18 @@ const Configuracion = () => {
   // Perfil de miembro
   const [selectedMiembro, setSelectedMiembro] = useState<User | null>(null);
 
-  // Membresía
+  // Membresía (datos del negocio para miembros)
   const [salirLoading, setSalirLoading] = useState(false);
+  const [adminNegocio, setAdminNegocio] = useState<User | null>(null);
+  const [companeros, setCompaneros] = useState<User[]>([]);
+
+  useEffect(() => {
+    if (role !== 'empleado' || !user?.negocioUid) return;
+    getAdminPorUid(user.negocioUid).then(setAdminNegocio);
+    getMiembros(user.negocioUid).then(data =>
+      setCompaneros(data.filter(m => m.uid !== user.uid))
+    );
+  }, [role, user?.negocioUid, user?.uid]);
 
   // ── Backup ──────────────────────────────────────────
   const handleExport = async () => {
@@ -279,7 +290,7 @@ const Configuracion = () => {
 
   // ── Nav groups ───────────────────────────────────────
   const preferenciasItems: NavItem[] = [
-    { id: 'moneda', icon: <PiCurrencyDollarBold size={16} />, title: 'Moneda', color: 'yellow' },
+    ...(role !== 'empleado' ? [{ id: 'moneda' as Section, icon: <PiCurrencyDollarBold size={16} />, title: 'Moneda', color: 'yellow' }] : []),
     { id: 'notificaciones', icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: 'Notificaciones', color: notifPermission === 'granted' ? 'green' : 'gray' },
     ...(canInstall ? [{ id: 'instalar' as Section, icon: <PiDownloadBold size={16} />, title: 'Instalar app', color: 'teal' }] : []),
   ];
@@ -307,6 +318,9 @@ const Configuracion = () => {
   const renderPanel = () => {
     switch (activeSection) {
       case 'moneda':
+        if (role === 'empleado') return (
+          <p className="configuracion__desc">Solo el administrador puede cambiar la moneda.</p>
+        );
         return (
           <>
             <p className="configuracion__desc">
@@ -459,7 +473,10 @@ const Configuracion = () => {
                       }
                     </div>
                     <div className="configuracion__equipo-info">
-                      <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
+                      <div className="configuracion__equipo-name-row">
+                        <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
+                        <PiUserBold size={11} color="#3b82f6" />
+                      </div>
                       <span className="configuracion__equipo-email">{m.username}{m.numeroEmpleado ? ` · Nº ${m.numeroEmpleado}` : ''}</span>
                     </div>
                     <button
@@ -635,6 +652,53 @@ const Configuracion = () => {
             <p className="configuracion__desc">
               Eres miembro de este negocio. Contacta con el administrador para cambios en la cuenta.
             </p>
+
+            {adminNegocio && (
+              <div className="configuracion__membresia-section">
+                <p className="configuracion__membresia-label">Administrador</p>
+                <div className="configuracion__equipo-item">
+                  <div className="configuracion__equipo-avatar">
+                    {adminNegocio.fotoPerfil
+                      ? <img src={adminNegocio.fotoPerfil} alt={adminNegocio.nombre} />
+                      : <span>{(adminNegocio.nombre?.[0] ?? '?').toUpperCase()}{(adminNegocio.apellido?.[0] ?? '').toUpperCase()}</span>
+                    }
+                  </div>
+                  <div className="configuracion__equipo-info">
+                    <div className="configuracion__equipo-name-row">
+                      <span className="configuracion__equipo-name">{adminNegocio.nombre} {adminNegocio.apellido}</span>
+                      <PiShieldCheckBold size={11} color="#f59e0b" />
+                    </div>
+                    <span className="configuracion__equipo-email">{adminNegocio.nombreNegocio}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {companeros.length > 0 && (
+              <div className="configuracion__membresia-section">
+                <p className="configuracion__membresia-label">Compañeros</p>
+                <div className="configuracion__equipo-list">
+                  {companeros.map(m => (
+                    <div key={m.uid} className="configuracion__equipo-item">
+                      <div className="configuracion__equipo-avatar">
+                        {m.fotoPerfil
+                          ? <img src={m.fotoPerfil} alt={m.nombre} />
+                          : <span>{(m.nombre?.[0] ?? '?').toUpperCase()}{(m.apellido?.[0] ?? '').toUpperCase()}</span>
+                        }
+                      </div>
+                      <div className="configuracion__equipo-info">
+                        <div className="configuracion__equipo-name-row">
+                          <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
+                          <PiUserBold size={11} color="#3b82f6" />
+                        </div>
+                        <span className="configuracion__equipo-email">{m.username}{m.numeroEmpleado ? ` · Nº ${m.numeroEmpleado}` : ''}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="configuracion__actions">
               <button
                 className="btn btn--danger btn--sm"

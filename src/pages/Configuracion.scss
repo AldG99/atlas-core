@@ -471,6 +471,20 @@
     margin: 0 0 2px;
   }
 
+  // Membresía
+  &__membresia-section {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__membresia-label {
+    font-size: $font-size-xs;
+    font-weight: 600;
+    color: $color-gray-400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: $spacing-sm;
+  }
+
   // Equipo
   &__equipo-list {
     display: flex;
@@ -522,6 +536,12 @@
   &__equipo-info {
     flex: 1;
     min-width: 0;
+  }
+
+  &__equipo-name-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
   &__equipo-name {

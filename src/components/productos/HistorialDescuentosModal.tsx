@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { PiXBold } from 'react-icons/pi';
+import { PiXBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import type { Producto, DescuentoHistorial } from '../../types/Producto';
 import './HistorialDescuentosModal.scss';
 
@@ -76,14 +76,44 @@ const HistorialDescuentosModal = ({ productos, onClose }: HistorialDescuentosMod
     return rows;
   }, [productos]);
 
+  const handleExportCSV = () => {
+    const headers = ['Clave', 'Producto', 'Descuento', 'Fecha fin', 'Fecha cierre', 'Estado'];
+    const rows = filas.map(f => [
+      f.clave,
+      f.nombre,
+      `-${f.porcentaje}%`,
+      formatDate(f.fechaFin),
+      f.fechaCierre ? formatDate(f.fechaCierre) : '',
+      MOTIVO_LABEL[f.motivo],
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `descuentos_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal--large historial-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
           <h2>Registro de descuentos</h2>
-          <button className="modal__close" onClick={onClose}>
-            <PiXBold size={24} />
-          </button>
+          <div className="modal__header-actions">
+            <button
+              className="btn btn--secondary btn--sm"
+              onClick={handleExportCSV}
+              disabled={filas.length === 0}
+            >
+              <PiDownloadSimpleBold size={15} />
+              Exportar CSV
+            </button>
+            <button className="modal__close" onClick={onClose}>
+              <PiXBold size={24} />
+            </button>
+          </div>
         </div>
 
         <div className="modal__body">

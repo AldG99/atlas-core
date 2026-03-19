@@ -161,12 +161,19 @@
     white-space: nowrap;
   }
 
+  &__profile-bottom {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
   &__profile-role {
     font-size: $font-size-xs;
     color: $color-gray-500;
     line-height: 1.2;
     white-space: nowrap;
   }
+
 
   &__overlay {
     position: fixed;

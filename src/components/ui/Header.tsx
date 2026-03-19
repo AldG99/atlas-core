@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold } from 'react-icons/pi';
+import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold, PiShieldCheckBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotificaciones, type Notificacion } from '../../hooks/useNotificaciones';
 import { ROUTES } from '../../config/routes';
 import './Header.scss';
 
 const Header = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, role } = useAuth();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -115,11 +115,17 @@ const Header = () => {
             </div>
             <div className="header__profile-info">
               <span className="header__profile-name">{user?.nombreNegocio}</span>
-              <span className="header__profile-role">
-                {user?.nombre && user?.apellido
-                  ? `${user.nombre} ${user.apellido}`
-                  : 'Administrador'}
-              </span>
+              <div className="header__profile-bottom">
+                <span className="header__profile-role">
+                  {user?.nombre && user?.apellido
+                    ? `${user.nombre} ${user.apellido}`
+                    : 'Administrador'}
+                </span>
+                {role === 'empleado'
+                  ? <PiUserBold size={11} color="#3b82f6" />
+                  : <PiShieldCheckBold size={11} color="#f59e0b" />
+                }
+              </div>
             </div>
             <PiCaretDownBold size={16} />
           </button>

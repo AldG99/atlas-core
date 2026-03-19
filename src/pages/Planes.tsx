@@ -24,7 +24,6 @@ const PLANES = [
       { texto: 'Hasta 6 etiquetas', incluido: true },
       { texto: 'Exportar CSV', incluido: true },
       { texto: 'Exportar e importar datos', incluido: false },
-      { texto: 'Google Drive', incluido: false },
     ],
   },
   {
@@ -36,13 +35,13 @@ const PLANES = [
     icono: <PiDiamondBold size={22} />,
     destacado: true,
     caracteristicas: [
-      { texto: 'Hasta 400 pedidos al mes', incluido: true },
-      { texto: 'Hasta 140 clientes', incluido: true },
-      { texto: 'Hasta 100 productos', incluido: true },
-      { texto: 'Hasta 12 etiquetas', incluido: true },
+      { texto: 'Hasta 450 pedidos al mes', incluido: true },
+      { texto: 'Hasta 160 clientes', incluido: true },
+      { texto: 'Hasta 120 productos', incluido: true },
+      { texto: 'Hasta 10 etiquetas', incluido: true },
       { texto: 'Exportar CSV', incluido: true },
       { texto: 'Exportar e importar datos', incluido: true },
-      { texto: 'Google Drive', incluido: true },
+      { texto: 'Hasta 2 miembros en tu negocio', incluido: true },
     ],
   },
   {
@@ -55,11 +54,11 @@ const PLANES = [
     caracteristicas: [
       { texto: 'Pedidos ilimitados', incluido: true },
       { texto: 'Clientes ilimitados', incluido: true },
-      { texto: 'Hasta 400 productos', incluido: true },
-      { texto: 'Hasta 20 etiquetas', incluido: true },
+      { texto: 'Hasta 420 productos', incluido: true },
+      { texto: 'Hasta 16 etiquetas', incluido: true },
       { texto: 'Exportar CSV', incluido: true },
       { texto: 'Exportar e importar datos', incluido: true },
-      { texto: 'Google Drive', incluido: true },
+      { texto: 'Hasta 6 miembros en tu negocio', incluido: true },
     ],
   },
 ];
@@ -92,7 +91,9 @@ const Planes = () => {
                 className={`planes__card${plan.destacado ? ' planes__card--destacado' : ''}${esActual ? ' planes__card--actual' : ''}`}
               >
                 {esActual && (
-                  <div className="planes__badge planes__badge--actual">Plan actual</div>
+                  <div className="planes__badge planes__badge--actual">
+                    Plan actual
+                  </div>
                 )}
 
                 <div className="planes__card-header">
@@ -101,8 +102,12 @@ const Planes = () => {
                   <div className="planes__card-precio">
                     {plan.precio ? (
                       <>
-                        <span className="planes__precio-monto">{plan.precio}</span>
-                        <span className="planes__precio-periodo">USD / {plan.periodo}</span>
+                        <span className="planes__precio-monto">
+                          {plan.precio}
+                        </span>
+                        <span className="planes__precio-periodo">
+                          USD / {plan.periodo}
+                        </span>
                       </>
                     ) : (
                       <span className="planes__precio-monto">Gratis</span>
@@ -113,9 +118,16 @@ const Planes = () => {
 
                 <ul className="planes__features">
                   {plan.caracteristicas.map((c, i) => (
-                    <li key={i} className={`planes__feature${c.incluido ? '' : ' planes__feature--no'}`}>
+                    <li
+                      key={i}
+                      className={`planes__feature${c.incluido ? '' : ' planes__feature--no'}`}
+                    >
                       <span className="planes__feature-icon">
-                        {c.incluido ? <PiCheckBold size={14} /> : <PiXBold size={14} />}
+                        {c.incluido ? (
+                          <PiCheckBold size={14} />
+                        ) : (
+                          <PiXBold size={14} />
+                        )}
                       </span>
                       {c.texto}
                     </li>
@@ -124,7 +136,10 @@ const Planes = () => {
 
                 <div className="planes__card-footer">
                   {esActual ? (
-                    <button className="btn btn--outline btn--sm planes__btn" disabled>
+                    <button
+                      className="btn btn--outline btn--sm planes__btn"
+                      disabled
+                    >
                       Plan actual
                     </button>
                   ) : (
@@ -132,7 +147,9 @@ const Planes = () => {
                       className="btn btn--primary btn--sm planes__btn"
                       onClick={() => navigate('/soporte')}
                     >
-                      {plan.id === 'gratuito' ? 'Cambiar a Gratuito' : `Contratar ${plan.nombre}`}
+                      {plan.id === 'gratuito'
+                        ? 'Cambiar a Gratuito'
+                        : `Contratar ${plan.nombre}`}
                     </button>
                   )}
                 </div>

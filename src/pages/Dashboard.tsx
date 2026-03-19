@@ -267,6 +267,14 @@ const Dashboard = () => {
           <h1>Mis Pedidos</h1>
           <div className="dashboard__header-actions">
             <button
+              onClick={handleExport}
+              className="btn btn--secondary"
+              disabled={pedidos.length === 0}
+            >
+              <PiDownloadSimpleBold size={18} style={{ marginRight: '6px' }} />
+              Exportar CSV
+            </button>
+            <button
               onClick={handleGoogleDrive}
               className="btn btn--outline"
               title="Exportar a Google Drive"
@@ -274,14 +282,6 @@ const Dashboard = () => {
             >
               <PiCloudArrowUpBold size={18} style={{ marginRight: '6px' }} />
               {uploadingDrive ? 'Subiendo...' : 'Google Drive'}
-            </button>
-            <button
-              onClick={handleExport}
-              className="btn btn--secondary"
-              disabled={pedidos.length === 0}
-            >
-              <PiDownloadSimpleBold size={18} style={{ marginRight: '6px' }} />
-              Exportar CSV
             </button>
             <Link to={ROUTES.NEW_PEDIDO} className="btn btn--primary">
               <PiPlusBold size={18} style={{ marginRight: '6px' }} />

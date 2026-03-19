@@ -262,8 +262,9 @@ const PedidoDetail = () => {
   const handleChangeStatus = async (status: PedidoStatus) => {
     if (!pedido) return;
     try {
-      await updatePedidoStatus(pedido.id, status);
-      setPedido({ ...pedido, estado: status });
+      const entregadoPor = status === 'entregado' && user ? buildCreadoPor(user) : undefined;
+      await updatePedidoStatus(pedido.id, status, entregadoPor);
+      setPedido({ ...pedido, estado: status, ...(entregadoPor ? { entregadoPor } : {}) });
       showToast(`Estado cambiado a "${PEDIDO_STATUS[status]}"`, 'success');
     } catch {
       showToast('Error al cambiar el estado', 'error');
@@ -453,8 +454,7 @@ const PedidoDetail = () => {
                     Abonar
                   </button>
                 </div>
-                {role === 'admin' && (
-                  <button
+                <button
                     onClick={() => handleChangeStatus('entregado')}
                     className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''} ${pedido.estado === 'entregado' ? 'pedido-detail__btn-entregado--done' : ''}`}
                     disabled={!puedeMarcarEntregado}
@@ -468,7 +468,6 @@ const PedidoDetail = () => {
                   >
                     <PiCheckBold size={18} />
                   </button>
-                )}
                 {abonoError && (
                   <span className="pedido-detail__top-bar-abono-error">
                     {abonoError}
@@ -891,6 +890,9 @@ const PedidoDetail = () => {
                   Creado por <span>{pedido.creadoPor.nombre}</span>
                 </div>
               )}
+              <div className="pedido-detail__creado-por-row">
+                Entregado por <span>{pedido.entregadoPor ? pedido.entregadoPor.nombre : <em>Aún sin entregar</em>}</span>
+              </div>
             </div>
           </div>
         </div>

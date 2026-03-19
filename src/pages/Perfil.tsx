@@ -294,7 +294,7 @@ const Perfil = () => {
               {!isEditing && (
                 <div className="perfil__avatar-name">
                   <span className="perfil__negocio">{user?.nombreNegocio}</span>
-                  <span className="perfil__email">{user?.email}</span>
+                  <span className="perfil__email">{isEmpleado ? user?.username : user?.email}</span>
                 </div>
               )}
             </div>
@@ -414,8 +414,8 @@ const Perfil = () => {
 
               {/* Email — solo lectura */}
               <div className="perfil__field perfil__field--full">
-                <label>Correo electrónico <span className="perfil__readonly-badge">Solo lectura</span></label>
-                <p className="perfil__readonly">{user?.email || '—'}</p>
+                <label>{isEmpleado ? 'Usuario' : 'Correo electrónico'} <span className="perfil__readonly-badge">Solo lectura</span></label>
+                <p className="perfil__readonly">{isEmpleado ? user?.username : user?.email || '—'}</p>
               </div>
 
               {/* Fecha de registro — solo lectura */}

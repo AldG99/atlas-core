@@ -1,5 +1,11 @@
 @use '../../styles/abstracts/variables' as *;
 
+.modal__header-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
 .historial-modal {
   &__empty {
     text-align: center;
