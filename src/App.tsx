@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ROUTES } from './config/routes';
 import ProtectedRoute from './components/ui/ProtectedRoute';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import Toast from './components/ui/Toast';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -26,6 +27,7 @@ import './styles/main.scss';
 
 function App() {
   return (
+    <ErrorBoundary>
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
@@ -145,6 +147,7 @@ function App() {
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

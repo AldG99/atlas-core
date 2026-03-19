@@ -3,7 +3,7 @@ import { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import type { User, AuthState, LoginCredentials, RegisterCredentials } from '../types/User';
-import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserData, deleteAccount as deleteAccountService, loginEmpleado as loginEmpleadoService } from '../services/authService';
+import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserData, deleteAccount as deleteAccountService, loginEmpleado as loginEmpleadoService, resetPassword } from '../services/authService';
 import type { UpdateProfileData } from '../services/authService';
 
 interface AuthContextType extends AuthState {
@@ -15,6 +15,7 @@ interface AuthContextType extends AuthState {
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   deleteAllData: () => Promise<void>;
   deleteAccount: (password: string) => Promise<void>;
+  sendPasswordReset: (email: string) => Promise<void>;
   negocioUid: string | null;
   role: 'admin' | 'empleado';
 }
@@ -142,6 +143,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const sendPasswordReset = async (email: string) => {
+    try {
+      await resetPassword(email);
+    } catch (err) {
+      throw new Error(err instanceof Error ? err.message : 'Error al enviar el correo');
+    }
+  };
+
   const deleteAccount = async (password: string) => {
     if (!user) return;
     try {
@@ -169,6 +178,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     changePassword,
     deleteAllData,
     deleteAccount,
+    sendPasswordReset,
     negocioUid,
     role,
   };

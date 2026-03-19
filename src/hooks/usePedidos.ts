@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { collection, query, where, getCountFromServer, Timestamp } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import type { QueryDocumentSnapshot } from 'firebase/firestore';
 import type { Pedido, PedidoFormData, PedidoStatus, CreadoPor } from '../types/Pedido';
 import type { User } from '../types/User';
+import { getPlanLimits } from '../constants/planLimits';
 
 export const buildCreadoPor = (user: User): CreadoPor => {
   const base = user.nombre
@@ -114,6 +117,22 @@ export const usePedidos = () => {
 
     try {
       setError(null);
+
+      const limites = getPlanLimits(user.plan);
+      if (limites.pedidosMes !== Infinity) {
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+        const snap = await getCountFromServer(query(
+          collection(db, 'pedidos'),
+          where('userId', '==', negocioUid),
+          where('fechaCreacion', '>=', Timestamp.fromDate(startOfMonth))
+        ));
+        if (snap.data().count >= limites.pedidosMes) {
+          throw new Error(`Has alcanzado el límite de ${limites.pedidosMes} pedidos este mes. Actualiza tu plan para continuar.`);
+        }
+      }
+
       const newPedido = await createPedido(data, negocioUid, buildCreadoPor(user));
       setPedidos((prev) => [newPedido, ...prev]);
       setAllPedidos((prev) => [newPedido, ...prev]);

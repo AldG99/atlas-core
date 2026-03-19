@@ -10,17 +10,35 @@ type LoginMode = 'admin' | 'empleado';
 
 const Login = () => {
   const [mode, setMode] = useState<LoginMode>('admin');
-  // Admin fields
   const [email, setEmail] = useState('');
-  // Employee fields
   const [username, setUsername] = useState('');
-  // Shared
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, loginEmpleado } = useAuth();
+  // Recuperación de contraseña
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetError, setResetError] = useState('');
+
+  const { login, loginEmpleado, sendPasswordReset } = useAuth();
   const navigate = useNavigate();
+
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError('');
+    setResetLoading(true);
+    try {
+      await sendPasswordReset(resetEmail);
+      setResetSent(true);
+    } catch {
+      setResetError('No se pudo enviar el correo. Verifica que el correo sea correcto.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -39,6 +57,50 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  if (showReset) {
+    return (
+      <AuthLayout>
+        <form onSubmit={handleReset} className="login-form">
+          <h2>Recuperar contraseña</h2>
+          <p className="login-form__subtitle">
+            Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
+          </p>
+
+          {resetSent ? (
+            <div className="login-form__success">
+              Correo enviado. Revisa tu bandeja de entrada.
+            </div>
+          ) : (
+            <>
+              {resetError && <div className="login-form__error">{resetError}</div>}
+              <div className="form-group">
+                <label htmlFor="resetEmail">Correo electrónico</label>
+                <input
+                  type="email"
+                  id="resetEmail"
+                  value={resetEmail}
+                  onChange={e => setResetEmail(e.target.value)}
+                  className="input"
+                  placeholder="tu@correo.com"
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn--primary btn--full" disabled={resetLoading}>
+                {resetLoading ? 'Enviando...' : 'Enviar enlace'}
+              </button>
+            </>
+          )}
+
+          <p className="login-form__link">
+            <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(false); setResetSent(false); setResetError(''); }}>
+              Volver al inicio de sesión
+            </button>
+          </p>
+        </form>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout>
@@ -111,9 +173,16 @@ const Login = () => {
         </button>
 
         {mode === 'admin' && (
-          <p className="login-form__link">
-            ¿No tienes cuenta? <Link to={ROUTES.REGISTER}>Regístrate</Link>
-          </p>
+          <>
+            <p className="login-form__link">
+              ¿No tienes cuenta? <Link to={ROUTES.REGISTER}>Regístrate</Link>
+            </p>
+            <p className="login-form__link">
+              <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(true); setResetEmail(email); }}>
+                ¿Olvidaste tu contraseña?
+              </button>
+            </p>
+          </>
         )}
       </form>
     </AuthLayout>

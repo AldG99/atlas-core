@@ -7,6 +7,7 @@ import {
   desactivarEmpleado,
   type EmpleadoFormData,
 } from '../services/equipoService';
+import { getPlanLimits } from '../constants/planLimits';
 
 export const useEquipo = () => {
   const { user, role, negocioUid } = useAuth();
@@ -25,6 +26,15 @@ export const useEquipo = () => {
 
   const crearEmpleado = async (data: EmpleadoFormData): Promise<void> => {
     if (!user || !negocioUid) throw new Error('No autenticado');
+
+    const limites = getPlanLimits(user.plan);
+    if (limites.miembros === 0) {
+      throw new Error('Tu plan no incluye miembros del equipo. Actualiza tu plan para agregar colaboradores.');
+    }
+    if (miembros.length >= limites.miembros) {
+      throw new Error(`Has alcanzado el límite de ${limites.miembros} miembros en tu plan. Actualiza tu plan para agregar más.`);
+    }
+
     await createEmpleado(data, negocioUid, user.nombreNegocio);
     // onSnapshot actualizará la lista automáticamente
   };
