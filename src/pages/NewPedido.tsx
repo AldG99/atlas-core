@@ -35,9 +35,10 @@ const NewPedido = () => {
       await addPedido(data);
       showToast('Pedido creado correctamente', 'success');
       navigate(ROUTES.DASHBOARD);
-    } catch {
-      setError(PEDIDO_MESSAGES.CREATE_ERROR);
-      showToast(PEDIDO_MESSAGES.CREATE_ERROR, 'error');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : PEDIDO_MESSAGES.CREATE_ERROR;
+      setError(msg);
+      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,7 @@ import {
   PiPackageBold,
   PiCalendarBold,
   PiCameraBold,
+  PiXBold,
 } from 'react-icons/pi';
 import type { Producto, ProductoFormData } from '../types/Producto';
 import { getProductoById, deleteProducto, updateProducto, uploadProductoImage } from '../services/productoService';
@@ -31,6 +32,7 @@ const ProductoDetail = () => {
 
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ProductoFormData | null>(null);
   const [saving, setSaving] = useState(false);
@@ -95,9 +97,14 @@ const ProductoDetail = () => {
       .filter((e): e is NonNullable<typeof e> => !!e);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!producto) return;
-    if (!window.confirm('¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer.')) return;
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!producto) return;
+    setShowDeleteModal(false);
     try {
       await deleteProducto(producto.id);
       showToast('Producto eliminado', 'success');
@@ -601,6 +608,26 @@ const ProductoDetail = () => {
           </div>
         </div>
       </div>
+
+      {showDeleteModal && (
+        <div className="producto-detail__modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="producto-detail__modal" onClick={e => e.stopPropagation()}>
+            <div className="producto-detail__modal-header">
+              <h3>Eliminar producto</h3>
+              <button className="producto-detail__modal-close" onClick={() => setShowDeleteModal(false)}>
+                <PiXBold size={18} />
+              </button>
+            </div>
+            <div className="producto-detail__modal-body">
+              <p>¿Estás seguro de eliminar <strong>{producto?.nombre}</strong>? Esta acción no se puede deshacer.</p>
+            </div>
+            <div className="producto-detail__modal-footer">
+              <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+              <button className="btn btn--danger btn--sm" onClick={confirmDelete}>Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 };

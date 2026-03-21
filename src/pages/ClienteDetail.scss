@@ -1015,3 +1015,67 @@ $topbar-height: 52px;
     }
   }
 }
+
+.cliente-detail__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cliente-detail__modal {
+  background-color: $color-white;
+  width: 100%;
+  max-width: 320px;
+  border-radius: $border-radius-lg;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.cliente-detail__modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid $color-gray-100;
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-base;
+    font-weight: 600;
+  }
+}
+
+.cliente-detail__modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: $color-gray-400;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+
+  &:hover { color: $color-gray-700; }
+}
+
+.cliente-detail__modal-body {
+  padding: $spacing-lg;
+
+  p {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+  }
+}
+
+.cliente-detail__modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-lg $spacing-md;
+}

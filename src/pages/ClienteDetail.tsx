@@ -9,7 +9,8 @@ import {
   PiCameraBold,
   PiStarFill,
   PiStarBold,
-  PiMagnifyingGlassBold
+  PiMagnifyingGlassBold,
+  PiXBold,
 } from 'react-icons/pi';
 import type { Cliente, ClienteFormData } from '../types/Cliente';
 import type { Pedido } from '../types/Pedido';
@@ -43,6 +44,7 @@ const ClienteDetail = () => {
 
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ClienteFormData | null>(null);
   const [saving, setSaving] = useState(false);
@@ -244,9 +246,14 @@ const ClienteDetail = () => {
     window.open(`https://wa.me/${dialCode}${cleanPhone}`, '_blank');
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!cliente) return;
-    if (!window.confirm('¿Estás seguro de eliminar este cliente? Esta acción no se puede deshacer.')) return;
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!cliente) return;
+    setShowDeleteModal(false);
     try {
       await deleteCliente(cliente.id);
       showToast('Cliente eliminado', 'success');
@@ -678,6 +685,26 @@ const ClienteDetail = () => {
           </div>
         </div>
       </div>
+
+      {showDeleteModal && (
+        <div className="cliente-detail__modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="cliente-detail__modal" onClick={e => e.stopPropagation()}>
+            <div className="cliente-detail__modal-header">
+              <h3>Eliminar cliente</h3>
+              <button className="cliente-detail__modal-close" onClick={() => setShowDeleteModal(false)}>
+                <PiXBold size={18} />
+              </button>
+            </div>
+            <div className="cliente-detail__modal-body">
+              <p>¿Estás seguro de eliminar a <strong>{cliente?.nombre} {cliente?.apellido}</strong>? Esta acción no se puede deshacer.</p>
+            </div>
+            <div className="cliente-detail__modal-footer">
+              <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+              <button className="btn btn--danger btn--sm" onClick={confirmDelete}>Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 };

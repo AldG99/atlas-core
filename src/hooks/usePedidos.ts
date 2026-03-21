@@ -1,6 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { collection, query, where, getCountFromServer, Timestamp } from 'firebase/firestore';
-import { db } from '../services/firebase';
 import type { QueryDocumentSnapshot } from 'firebase/firestore';
 import type { Pedido, PedidoFormData, PedidoStatus, CreadoPor } from '../types/Pedido';
 import type { User } from '../types/User';
@@ -37,6 +35,7 @@ export const usePedidos = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
+  const allPedidosRef = useRef<Pedido[]>([]);
 
   const fetchPedidos = useCallback(async () => {
     if (!user || !negocioUid) return;
@@ -48,6 +47,7 @@ export const usePedidos = () => {
       const active = result.pedidos.filter((p) => !p.archivado);
       setPedidos(active);
       setAllPedidos(active);
+      allPedidosRef.current = active;
       lastDocRef.current = result.lastDoc;
       setHasMore(result.hasMore);
       setShowArchived(false);
@@ -67,7 +67,11 @@ export const usePedidos = () => {
       const result = await getPedidos(negocioUid, lastDocRef.current);
       const active = result.pedidos.filter((p) => !p.archivado);
       setPedidos((prev) => [...prev, ...active]);
-      setAllPedidos((prev) => [...prev, ...active]);
+      setAllPedidos((prev) => {
+        const updated = [...prev, ...active];
+        allPedidosRef.current = updated;
+        return updated;
+      });
       lastDocRef.current = result.lastDoc;
       setHasMore(result.hasMore);
     } catch (err) {
@@ -120,15 +124,12 @@ export const usePedidos = () => {
 
       const limites = getPlanLimits(user.plan);
       if (limites.pedidosMes !== Infinity) {
-        const startOfMonth = new Date();
-        startOfMonth.setDate(1);
-        startOfMonth.setHours(0, 0, 0, 0);
-        const snap = await getCountFromServer(query(
-          collection(db, 'pedidos'),
-          where('userId', '==', negocioUid),
-          where('fechaCreacion', '>=', Timestamp.fromDate(startOfMonth))
-        ));
-        if (snap.data().count >= limites.pedidosMes) {
+        const ahora = new Date();
+        const pedidosEsteMes = allPedidosRef.current.filter(p => {
+          const f = new Date(p.fechaCreacion);
+          return f.getMonth() === ahora.getMonth() && f.getFullYear() === ahora.getFullYear();
+        }).length;
+        if (pedidosEsteMes >= limites.pedidosMes) {
           throw new Error(`Has alcanzado el límite de ${limites.pedidosMes} pedidos este mes. Actualiza tu plan para continuar.`);
         }
       }

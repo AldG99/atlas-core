@@ -33,6 +33,7 @@ import { getCodigoPais } from '../data/codigosPais';
 import {
   getPedidoById,
   updatePedidoStatus,
+  updatePedidoNotas,
   addAbono,
   updateAbono,
   deletePedido,
@@ -79,6 +80,8 @@ const PedidoDetail = () => {
   const capturaRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [fechaDescarga, setFechaDescarga] = useState<Date | null>(null);
+  const [editingNotas, setEditingNotas] = useState(false);
+  const [notasValue, setNotasValue] = useState('');
 
   const fetchPedido = useCallback(async () => {
     if (!id || !user || !negocioUid) return;
@@ -216,6 +219,23 @@ const PedidoDetail = () => {
       .filter((e): e is Etiqueta => !!e);
   };
 
+
+  const handleStartEditNotas = () => {
+    setNotasValue(pedido?.notas ?? '');
+    setEditingNotas(true);
+  };
+
+  const handleSaveNotas = async () => {
+    if (!pedido) return;
+    try {
+      await updatePedidoNotas(pedido.id, notasValue);
+      setPedido({ ...pedido, notas: notasValue });
+      setEditingNotas(false);
+      showToast('Notas guardadas', 'success');
+    } catch {
+      showToast('Error al guardar las notas', 'error');
+    }
+  };
 
   const handleDownload = async () => {
     if (!capturaRef.current || !pedido) return;
@@ -741,11 +761,37 @@ const PedidoDetail = () => {
             </div>
           </div>
 
-          <div className="pedido-detail__section pedido-detail__section--notes">
-            <div className="pedido-detail__notes">
-              <strong>Notas:</strong>{' '}
-              {pedido.notas ? pedido.notas : <span className="pedido-detail__notes--empty">Sin comentarios</span>}
-            </div>
+          <div className={`pedido-detail__section pedido-detail__section--notes${editingNotas ? ' pedido-detail__section--notes-editing' : ''}`}>
+            {editingNotas ? (
+              <div className="pedido-detail__notes-edit">
+                <textarea
+                  className="pedido-detail__notes-textarea"
+                  value={notasValue}
+                  onChange={e => setNotasValue(e.target.value)}
+                  placeholder="Agregar notas al pedido..."
+                  autoFocus
+                  rows={2}
+                  maxLength={500}
+                  onKeyDown={e => {
+                    if (e.key === 'Escape') setEditingNotas(false);
+                  }}
+                />
+                <div className="pedido-detail__notes-actions">
+                  <button className="btn btn--secondary btn--sm" onClick={() => setEditingNotas(false)}>Cancelar</button>
+                  <button className="btn btn--primary btn--sm" onClick={handleSaveNotas}>Guardar</button>
+                </div>
+              </div>
+            ) : (
+              <div className="pedido-detail__notes">
+                <strong>Notas:</strong>{' '}
+                {pedido.notas ? pedido.notas : <span className="pedido-detail__notes--empty">Sin comentarios</span>}
+                {!pedido.archivado && (
+                  <button className="pedido-detail__notes-edit-btn" onClick={handleStartEditNotas} title="Editar notas">
+                    <PiPencilSimpleBold size={13} />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="pedido-detail__section pedido-detail__section--no-pad">

@@ -338,6 +338,12 @@ $topbar-height: 52px;
       padding-bottom: 0;
     }
 
+    &--notes-editing {
+      height: auto;
+      padding-top: $spacing-xs;
+      padding-bottom: $spacing-xs;
+    }
+
     &--no-pad {
       padding: 0;
 
@@ -366,17 +372,70 @@ $topbar-height: 52px;
   }
 
   &__notes {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
     font-size: $font-size-sm;
     color: $color-gray-600;
+    width: 100%;
 
     strong {
       color: $color-gray-700;
+      flex-shrink: 0;
     }
 
     &--empty {
       font-style: italic;
       color: $color-gray-400;
     }
+  }
+
+  &__notes-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: $color-gray-400;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+
+  &__notes-edit {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    width: 100%;
+  }
+
+  &__notes-textarea {
+    width: 100%;
+    resize: none;
+    font-size: $font-size-sm;
+    font-family: inherit;
+    border: 1px solid $color-primary;
+    border-radius: $border-radius-sm;
+    padding: 6px 8px;
+    color: $color-gray-700;
+    outline: none;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: $color-gray-400;
+    }
+  }
+
+  &__notes-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-xs;
   }
 
   // Table layout: wrapper > head + scroll + foot
