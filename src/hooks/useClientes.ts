@@ -8,7 +8,7 @@ import {
   deleteCliente,
   toggleClienteFavorito
 } from '../services/clienteService';
-import { getPlanLimits } from '../constants/planLimits';
+import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
 
 export const useClientes = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -43,9 +43,7 @@ export const useClientes = () => {
     if (!user || !negocioUid) throw new Error('Usuario no autenticado');
 
     const limites = getPlanLimits(user.plan);
-    if (clientes.length >= limites.clientes) {
-      throw new Error(`Has alcanzado el límite de ${limites.clientes} clientes en tu plan. Actualiza tu plan para agregar más.`);
-    }
+    checkPlanLimit(clientes.length, limites.clientes, 'clientes');
 
     const id = await createCliente(data, negocioUid);
     const newCliente: Cliente = {

@@ -6,7 +6,7 @@ import {
   createEtiqueta,
   deleteEtiqueta,
 } from '../services/etiquetaService';
-import { getPlanLimits } from '../constants/planLimits';
+import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
 
 export const useEtiquetas = () => {
   const [etiquetas, setEtiquetas] = useState<Etiqueta[]>([]);
@@ -35,9 +35,7 @@ export const useEtiquetas = () => {
     if (!user || !negocioUid) return;
 
     const limites = getPlanLimits(user.plan);
-    if (etiquetas.length >= limites.etiquetas) {
-      throw new Error(`Has alcanzado el límite de ${limites.etiquetas} etiquetas en tu plan. Actualiza tu plan para agregar más.`);
-    }
+    checkPlanLimit(etiquetas.length, limites.etiquetas, 'etiquetas');
 
     const nueva = await createEtiqueta(nombre, color, icono, negocioUid);
     setEtiquetas((prev) => [...prev, nueva]);

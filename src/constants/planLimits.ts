@@ -9,6 +9,12 @@ export type PlanKey = keyof typeof PLAN_LIMITS;
 export const getPlanLimits = (plan?: string) =>
   PLAN_LIMITS[(plan as PlanKey) ?? 'gratuito'] ?? PLAN_LIMITS.gratuito;
 
+export const checkPlanLimit = (count: number, limit: number, resource: string): void => {
+  if (limit !== Infinity && count >= limit) {
+    throw new Error(`Has alcanzado el límite de ${limit} ${resource} en tu plan. Actualiza tu plan para agregar más.`);
+  }
+};
+
 export const PLAN_LABEL: Record<PlanKey, string> = {
   gratuito: 'Gratuito',
   pro: 'Pro',

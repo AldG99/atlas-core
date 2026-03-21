@@ -7,7 +7,7 @@ import {
   updateProducto,
   deleteProducto
 } from '../services/productoService';
-import { getPlanLimits } from '../constants/planLimits';
+import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
 
 export const useProductos = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -40,9 +40,7 @@ export const useProductos = () => {
     if (!user || !negocioUid) return;
 
     const limites = getPlanLimits(user.plan);
-    if (productos.length >= limites.productos) {
-      throw new Error(`Has alcanzado el límite de ${limites.productos} productos en tu plan. Actualiza tu plan para agregar más.`);
-    }
+    checkPlanLimit(productos.length, limites.productos, 'productos');
 
     const id = await createProducto(data, negocioUid);
     const newProducto = {

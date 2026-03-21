@@ -6,7 +6,6 @@ import {
   PiWhatsappLogoBold,
   PiCopyBold,
   PiCheckBold,
-  PiEyeBold,
   PiXBold,
   PiTrashBold,
   PiStarFill,
@@ -16,9 +15,8 @@ import {
 import { toPng } from 'html-to-image';
 import PedidoCaptura from '../components/pedidos/PedidoCaptura';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
-import type { Producto, Etiqueta } from '../types/Producto';
+import type { Producto } from '../types/Producto';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
-import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import {
   formatDate,
   getTotalPagado,
@@ -45,6 +43,8 @@ import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
+import PedidoProductosTable from '../components/pedidos/PedidoProductosTable';
+import PedidoAbonosTable from '../components/pedidos/PedidoAbonosTable';
 import ProductoDetalleModal from '../components/productos/ProductoDetalleModal';
 import MainLayout from '../layouts/MainLayout';
 import './PedidoDetail.scss';
@@ -209,16 +209,6 @@ const PedidoDetail = () => {
     });
     return result;
   }, [pedido]);
-
-  const getEtiquetasForClave = (clave?: string): Etiqueta[] => {
-    if (!clave) return [];
-    const producto = catalogoProductos.find(cp => cp.clave === clave);
-    if (!producto?.etiquetas) return [];
-    return producto.etiquetas
-      .map(etId => todasEtiquetas.find(e => e.id === etId))
-      .filter((e): e is Etiqueta => !!e);
-  };
-
 
   const handleStartEditNotas = () => {
     setNotasValue(pedido?.notas ?? '');
@@ -547,219 +537,23 @@ const PedidoDetail = () => {
             </div>
           </div>
 
-          <div className="pedido-detail__section pedido-detail__section--grow">
-            <div className="pedido-detail__table-wrapper">
-              {/* Header fijo */}
-              <div className="pedido-detail__table-head">
-                <table className="pedido-detail__products-table">
-                  <colgroup>
-                    <col style={{ width: '8%' }} />
-                    <col style={{ width: '7%' }} />
-                    <col style={{ width: '12%' }} />
-                    <col style={{ width: '9%' }} />
-                    <col style={{ width: '14%' }} />
-                    <col style={{ width: '13%' }} />
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '12%' }} />
-                    <col style={{ width: '10%' }} />
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th>Clave</th>
-                      <th>Cant.</th>
-                      <th>Producto</th>
-                      <th>Etiquetas</th>
-                      <th>Precio</th>
-                      <th>Abonado</th>
-                      <th className="pedido-detail__col--right">Subtotal</th>
-                      <th>Estado</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-                </table>
-              </div>
-              {/* Cuerpo scrolleable */}
-              <div ref={tableScrollRef} className="pedido-detail__table-scroll pedido-detail__table-scroll--grow">
-                <table className="pedido-detail__products-table">
-                  <colgroup>
-                    <col style={{ width: '8%' }} />
-                    <col style={{ width: '7%' }} />
-                    <col style={{ width: '12%' }} />
-                    <col style={{ width: '9%' }} />
-                    <col style={{ width: '14%' }} />
-                    <col style={{ width: '13%' }} />
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '12%' }} />
-                    <col style={{ width: '10%' }} />
-                  </colgroup>
-                  <tbody>
-                    {pedido.productos.map((p, index) => {
-                      const cubierto = Math.min(cobertura[index] || 0, p.subtotal);
-                      const porcentaje =
-                        p.subtotal > 0 ? (cubierto / p.subtotal) * 100 : 0;
-                      const status =
-                        porcentaje >= 100
-                          ? 'paid'
-                          : porcentaje > 0
-                            ? 'partial'
-                            : 'pending';
-                      return (
-                        <tr
-                          key={index}
-                          className={`pedido-detail__product-row--${status}${focusedRow === index ? ' pedido-detail__product-row--focused' : ''}`}
-                          onClick={() => { setFocusedRow(index); setFocusedAbonoRow(null); }}
-                        >
-                          <td>
-                            {p.clave ? (
-                              <span className="pedido-detail__clave">
-                                {p.clave}
-                              </span>
-                            ) : (
-                              '-'
-                            )}
-                          </td>
-                          <td>{p.cantidad}</td>
-                          <td>
-                            <span className="pedido-detail__product-name">{p.nombre}</span>
-                          </td>
-                          <td>
-                            <div className="pedido-detail__etiquetas">
-                              {getEtiquetasForClave(p.clave).map(et => {
-                                const iconData = ETIQUETA_ICONS[et.icono];
-                                const Icon = iconData?.icon;
-                                return (
-                                  <span
-                                    key={et.id}
-                                    className="pedido-detail__etiqueta"
-                                    style={{ backgroundColor: et.color }}
-                                    title={et.nombre}
-                                  >
-                                    {Icon && <Icon size={12} />}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          </td>
-                          <td>
-                            {p.precioOriginal && p.descuento ? (
-                              <div className="pedido-detail__product-subtotal-discount">
-                                <span className="pedido-detail__product-subtotal-original">
-                                  {format(p.precioOriginal)}
-                                </span>
-                                <span>{format(p.precioUnitario)}</span>
-                              </div>
-                            ) : (
-                              format(p.precioUnitario)
-                            )}
-                          </td>
-                          <td>
-                            <div className="pedido-detail__product-paid-cell">
-                              <span>{format(cubierto)}</span>
-                            </div>
-                          </td>
-                          <td className="pedido-detail__col--right">
-                            {p.precioOriginal && p.descuento ? (
-                              <div className="pedido-detail__product-subtotal-discount">
-                                <span className="pedido-detail__product-discount-badge">
-                                  -{p.descuento}%
-                                </span>
-                                <span className="pedido-detail__product-subtotal-original">
-                                  {format(p.precioOriginal * p.cantidad)}
-                                </span>
-                                <span>{format(p.subtotal)}</span>
-                              </div>
-                            ) : (
-                              format(p.subtotal)
-                            )}
-                          </td>
-                          <td>
-                            <span
-                              className={`pedido-detail__product-status pedido-detail__product-status--${status}`}
-                            >
-                              {status === 'paid'
-                                ? 'Pagado'
-                                : status === 'partial'
-                                  ? `${Math.round(porcentaje)}%`
-                                  : 'Pendiente'}
-                            </span>
-                          </td>
-                          <td>
-                            <button
-                              className="pedido-detail__product-eye"
-                              title="Ver detalles"
-                              onClick={() => {
-                                const found = p.clave
-                                  ? catalogoProductos.find(cp => cp.clave === p.clave)
-                                  : undefined;
-                                if (found) {
-                                  setSelectedProducto(found);
-                                } else {
-                                  showToast('Producto no disponible en el catálogo', 'warning');
-                                }
-                              }}
-                            >
-                              <PiEyeBold size={20} />
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              {/* Pie fijo (total) */}
-              <div className="pedido-detail__table-foot">
-                <table className="pedido-detail__products-table">
-                  <colgroup>
-                    <col style={{ width: '8%' }} />
-                    <col style={{ width: '7%' }} />
-                    <col style={{ width: '12%' }} />
-                    <col style={{ width: '9%' }} />
-                    <col style={{ width: '14%' }} />
-                    <col style={{ width: '13%' }} />
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '12%' }} />
-                    <col style={{ width: '10%' }} />
-                  </colgroup>
-                  <tfoot className="pedido-detail__products-tfoot">
-                    <tr className="pedido-detail__product-total-row">
-                      <td>
-                        <strong>Total</strong>
-                      </td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td>
-                        <div className="pedido-detail__product-paid-cell">
-                          <strong>{format(pagado)}</strong>
-                        </div>
-                      </td>
-                      <td>
-                        <strong>{format(pedido.total)}</strong>
-                      </td>
-                      <td>
-                        <strong
-                          className={
-                            pagado >= pedido.total
-                              ? 'pedido-detail__product-status--paid'
-                              : pagado > 0
-                                ? 'pedido-detail__product-status--partial'
-                                : 'pedido-detail__product-status--pending'
-                          }
-                        >
-                          {pagado >= pedido.total
-                            ? 'Liquidado'
-                            : format(pedido.total - pagado)}
-                        </strong>
-                      </td>
-                      <td></td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </div>
-          </div>
+          <PedidoProductosTable
+            productos={pedido.productos}
+            cobertura={cobertura}
+            focusedRow={focusedRow}
+            tableScrollRef={tableScrollRef}
+            format={format}
+            pagado={pagado}
+            total={pedido.total}
+            catalogoProductos={catalogoProductos}
+            todasEtiquetas={todasEtiquetas}
+            onRowClick={(index) => { setFocusedRow(index); setFocusedAbonoRow(null); }}
+            onProductoClick={(p) => {
+              const found = p.clave ? catalogoProductos.find(cp => cp.clave === p.clave) : undefined;
+              if (found) setSelectedProducto(found);
+              else showToast('Producto no disponible en el catálogo', 'warning');
+            }}
+          />
 
           <div className={`pedido-detail__section pedido-detail__section--notes${editingNotas ? ' pedido-detail__section--notes-editing' : ''}`}>
             {editingNotas ? (
@@ -794,152 +588,25 @@ const PedidoDetail = () => {
             )}
           </div>
 
-          <div className="pedido-detail__section pedido-detail__section--no-pad">
-              <div className="pedido-detail__table-wrapper">
-                {/* Header fijo */}
-                <div className="pedido-detail__table-head">
-                  <table className="pedido-detail__abonos-table">
-                    <colgroup>
-                      <col style={{ width: '8%' }} />
-                      <col style={{ width: '27%' }} />
-                      <col style={{ width: '14%' }} />
-                      <col style={{ width: '6%' }} />
-                      <col style={{ width: '8%' }} />
-                      <col style={{ width: '17%' }} />
-                      <col style={{ width: '20%' }} />
-                    </colgroup>
-                    <thead>
-                      <tr>
-                        <th>Clave</th>
-                        <th>Producto</th>
-                        <th>Monto</th>
-                        <th></th>
-                        <th></th>
-                        <th>Por</th>
-                        <th>Fecha</th>
-                      </tr>
-                    </thead>
-                  </table>
-                </div>
-                {/* Cuerpo scrolleable */}
-                <div ref={abonoScrollRef} className="pedido-detail__table-scroll pedido-detail__table-scroll--fixed">
-                  <table className="pedido-detail__abonos-table">
-                    <colgroup>
-                      <col style={{ width: '8%' }} />
-                      <col style={{ width: '27%' }} />
-                      <col style={{ width: '14%' }} />
-                      <col style={{ width: '6%' }} />
-                      <col style={{ width: '8%' }} />
-                      <col style={{ width: '17%' }} />
-                      <col style={{ width: '20%' }} />
-                    </colgroup>
-                    <tbody>
-                      {abonos.length === 0 ? (
-                        <tr>
-                          <td colSpan={6} className="pedido-detail__abonos-empty">
-                            Sin abonos registrados
-                          </td>
-                        </tr>
-                      ) : (
-                        [...abonos]
-                          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
-                          .map((abono, i) => (
-                            <tr
-                              key={abono.id}
-                              className={focusedAbonoRow === i ? 'pedido-detail__product-row--focused' : ''}
-                              onClick={() => { setFocusedAbonoRow(i); setFocusedRow(null); }}
-                            >
-                              <td>
-                                {typeof abono.productoIndex === 'number' &&
-                                pedido.productos[abono.productoIndex]?.clave ? (
-                                  <span className="pedido-detail__clave">
-                                    {pedido.productos[abono.productoIndex].clave}
-                                  </span>
-                                ) : '-'}
-                              </td>
-                              <td>
-                                {typeof abono.productoIndex === 'number' &&
-                                pedido.productos[abono.productoIndex] ? (
-                                  pedido.productos[abono.productoIndex].nombre
-                                ) : (
-                                  <span className="pedido-detail__general-label">General</span>
-                                )}
-                              </td>
-                              <td>
-                                {editingAbonoId === abono.id ? (
-                                  <div className="pedido-detail__abono-edit" onClick={e => e.stopPropagation()}>
-                                    <input
-                                      type="number"
-                                      min="0"
-                                      step="0.01"
-                                      autoFocus
-                                      value={editingAbonoValue}
-                                      onChange={e => setEditingAbonoValue(e.target.value)}
-                                      onKeyDown={e => {
-                                        if (e.key === 'Enter') handleUpdateAbono(abono.id);
-                                        if (e.key === 'Escape') setEditingAbonoId(null);
-                                      }}
-                                    />
-                                    <button className="pedido-detail__abono-edit-confirm" onClick={() => handleUpdateAbono(abono.id)} title="Confirmar">
-                                      <PiCheckBold size={14} />
-                                    </button>
-                                    <button className="pedido-detail__abono-edit-cancel" onClick={() => setEditingAbonoId(null)} title="Cancelar">
-                                      <PiXBold size={14} />
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <span>{format(abono.monto)}</span>
-                                )}
-                              </td>
-                              <td>
-                                {abono.montoOriginal && (
-                                  <span
-                                    className="pedido-detail__abono-editado"
-                                    title={`Corregido de ${format(abono.montoOriginal)}${abono.editadoEn ? ` · ${formatDate(abono.editadoEn)}` : ''}`}
-                                  >
-                                    Editado
-                                  </span>
-                                )}
-                              </td>
-                              <td onClick={e => e.stopPropagation()}>
-                                {role === 'admin' && editingAbonoId !== abono.id && (
-                                  <button
-                                    className="pedido-detail__abono-edit-btn"
-                                    title={pedido.estado === 'entregado' || pedido.archivado ? 'No se puede editar un pedido entregado' : 'Corregir monto'}
-                                    disabled={pedido.estado === 'entregado' || pedido.archivado}
-                                    onClick={() => {
-                                      setEditingAbonoId(abono.id);
-                                      setEditingAbonoValue(String(abono.monto));
-                                    }}
-                                  >
-                                    <PiPencilSimpleBold size={14} />
-                                  </button>
-                                )}
-                              </td>
-                              <td>
-                                {abono.creadoPor && (
-                                  <span className="pedido-detail__abono-autor" title={abono.creadoPor.nombre}>
-                                    {abono.creadoPor.nombre}
-                                  </span>
-                                )}
-                              </td>
-                              <td>{formatDate(abono.fecha)}</td>
-                            </tr>
-                          ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              {pedido.creadoPor && (
-                <div className="pedido-detail__creado-por-row">
-                  Creado por <span>{pedido.creadoPor.nombre}</span>
-                </div>
-              )}
-              <div className="pedido-detail__creado-por-row">
-                Entregado por <span>{pedido.entregadoPor ? pedido.entregadoPor.nombre : <em>Aún sin entregar</em>}</span>
-              </div>
-            </div>
+          <PedidoAbonosTable
+            abonos={abonos}
+            productos={pedido.productos}
+            focusedAbonoRow={focusedAbonoRow}
+            editingAbonoId={editingAbonoId}
+            editingAbonoValue={editingAbonoValue}
+            role={role}
+            estado={pedido.estado}
+            archivado={pedido.archivado}
+            abonoScrollRef={abonoScrollRef}
+            format={format}
+            creadoPor={pedido.creadoPor}
+            entregadoPor={pedido.entregadoPor}
+            onRowClick={(i) => { setFocusedAbonoRow(i); setFocusedRow(null); }}
+            onEditStart={(id, monto) => { setEditingAbonoId(id); setEditingAbonoValue(String(monto)); }}
+            onEditConfirm={handleUpdateAbono}
+            onEditCancel={() => setEditingAbonoId(null)}
+            onEditValueChange={setEditingAbonoValue}
+          />
           </div>
         </div>
 
