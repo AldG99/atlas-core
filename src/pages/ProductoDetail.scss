@@ -242,10 +242,11 @@ $topbar-height: 52px;
     display: inline-block;
     padding: 2px 8px;
     font-size: $font-size-sm;
-    font-weight: 600;
+    font-weight: 700;
     color: $color-primary;
     background-color: rgba($color-primary, 0.1);
     font-family: monospace;
+    border-radius: 4px;
     width: fit-content;
   }
 
@@ -697,12 +698,40 @@ $topbar-height: 52px;
 
 .producto-detail__modal-body {
   padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
 
   p {
     margin: 0;
     font-size: $font-size-sm;
     color: $color-gray-600;
   }
+}
+
+.producto-detail__delete-label {
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $color-gray-700;
+}
+
+.producto-detail__modal-body .input {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.producto-detail__delete-code {
+  display: block;
+  text-align: center;
+  font-family: monospace;
+  font-size: $font-size-lg;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: $color-danger;
+  background-color: rgba($color-danger, 0.06);
+  border: 1px dashed rgba($color-danger, 0.3);
+  padding: $spacing-sm $spacing-md;
+  user-select: all;
 }
 
 .producto-detail__modal-footer {

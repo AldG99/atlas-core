@@ -7,7 +7,7 @@ interface Props {
   productos: ProductoItem[];
   cobertura: number[];
   focusedRow: number | null;
-  tableScrollRef: React.RefObject<HTMLDivElement>;
+  tableScrollRef: React.RefObject<HTMLDivElement | null>;
   format: (n: number) => string;
   pagado: number;
   total: number;

@@ -11,7 +11,7 @@ interface Props {
   role: string;
   estado: PedidoStatus;
   archivado: boolean;
-  abonoScrollRef: React.RefObject<HTMLDivElement>;
+  abonoScrollRef: React.RefObject<HTMLDivElement | null>;
   format: (n: number) => string;
   creadoPor?: CreadoPor;
   entregadoPor?: CreadoPor;

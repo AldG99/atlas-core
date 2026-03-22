@@ -24,6 +24,7 @@ fase-2-escalabilidad-saas.md
 fase-3-produccion.md
 
 firestore.rules
+storage.rules
 
 # Vite
 vite-env.d.ts

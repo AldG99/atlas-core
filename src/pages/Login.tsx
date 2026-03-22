@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { ROUTES } from '../config/routes';
@@ -15,6 +15,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockedUntil, setLockedUntil] = useState<Date | null>(null);
+  const [lockCountdown, setLockCountdown] = useState(0);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Recuperación de contraseña
   const [showReset, setShowReset] = useState(false);
@@ -25,6 +29,25 @@ const Login = () => {
 
   const { login, loginEmpleado, sendPasswordReset } = useAuth();
   const navigate = useNavigate();
+
+  // Live countdown when account is temporarily locked
+  useEffect(() => {
+    if (!lockedUntil) return;
+    const tick = () => {
+      const remaining = Math.ceil((lockedUntil.getTime() - Date.now()) / 1000);
+      if (remaining <= 0) {
+        setLockedUntil(null);
+        setLockCountdown(0);
+        setError('');
+        if (countdownRef.current) clearInterval(countdownRef.current);
+      } else {
+        setLockCountdown(remaining);
+      }
+    };
+    tick();
+    countdownRef.current = setInterval(tick, 1000);
+    return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
+  }, [lockedUntil]);
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +65,12 @@ const Login = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (lockedUntil && Date.now() < lockedUntil.getTime()) {
+      setError(`Demasiados intentos fallidos. Espera ${lockCountdown} segundos.`);
+      return;
+    }
+
     setError('');
     setLoading(true);
     try {
@@ -50,9 +79,23 @@ const Login = () => {
       } else {
         await loginEmpleado(username, password);
       }
+      setFailedAttempts(0);
+      setLockedUntil(null);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Credenciales inválidas');
+      const newAttempts = failedAttempts + 1;
+      setFailedAttempts(newAttempts);
+      if (newAttempts >= 5) {
+        const until = new Date(Date.now() + 5 * 60 * 1000);
+        setLockedUntil(until);
+        setError('Demasiados intentos fallidos. Espera 5 minutos.');
+      } else if (newAttempts >= 3) {
+        const until = new Date(Date.now() + 30 * 1000);
+        setLockedUntil(until);
+        setError('Demasiados intentos fallidos. Espera 30 segundos.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Credenciales inválidas');
+      }
     } finally {
       setLoading(false);
     }
@@ -112,14 +155,14 @@ const Login = () => {
           <button
             type="button"
             className={`login-form__tab${mode === 'admin' ? ' login-form__tab--active' : ''}`}
-            onClick={() => { setMode('admin'); setError(''); }}
+            onClick={() => { setMode('admin'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
           >
             Administrador
           </button>
           <button
             type="button"
             className={`login-form__tab${mode === 'empleado' ? ' login-form__tab--active' : ''}`}
-            onClick={() => { setMode('empleado'); setError(''); }}
+            onClick={() => { setMode('empleado'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
           >
             Miembro
           </button>
@@ -168,7 +211,7 @@ const Login = () => {
           />
         </div>
 
-        <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+        <button type="submit" className="btn btn--primary btn--full" disabled={loading || (lockedUntil !== null && Date.now() < lockedUntil.getTime())}>
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
 

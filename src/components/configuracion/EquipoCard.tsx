@@ -155,7 +155,7 @@ const EquipoCard = () => {
           <div className="equipo-card__form-row">
             <div className="equipo-card__form-field">
               <label>Contraseña</label>
-              <input className="input" type="password" value={form.password} onChange={e => setForm(p => ({...p, password: e.target.value}))} placeholder="••••••••" required minLength={6} />
+              <input className="input" type="password" value={form.password} onChange={e => setForm(p => ({...p, password: e.target.value}))} placeholder="••••••••" required minLength={8} />
             </div>
             <div className="equipo-card__form-field">
               <label>Confirmar contraseña</label>

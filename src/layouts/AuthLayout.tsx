@@ -3,9 +3,10 @@ import './AuthLayout.scss';
 
 interface AuthLayoutProps {
   children: ReactNode;
+  showSubtitle?: boolean;
 }
 
-const AuthLayout = ({ children }: AuthLayoutProps) => {
+const AuthLayout = ({ children, showSubtitle = true }: AuthLayoutProps) => {
   return (
     <div className="auth-layout">
       <div className="auth-layout__container">
@@ -15,10 +16,12 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
             alt="Orderly"
             className="auth-layout__logo"
           />
-          <p className="auth-layout__subtitle">
-            Diseñado para gestionar tus pedidos. Construido para escalar tu
-            negocio.
-          </p>
+          {showSubtitle && (
+            <p className="auth-layout__subtitle">
+              Diseñado para gestionar tus pedidos. Construido para escalar tu
+              negocio.
+            </p>
+          )}
           <span className="auth-layout__beta">Versión Beta</span>
         </div>
         <div className="auth-layout__content">{children}</div>

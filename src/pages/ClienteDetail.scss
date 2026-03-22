@@ -777,10 +777,11 @@ $topbar-height: 52px;
     display: inline-block;
     padding: 1px 5px;
     font-size: $font-size-xs;
-    font-weight: 500;
+    font-weight: 700;
     color: $color-primary;
     background-color: rgba($color-primary, 0.1);
     font-family: monospace;
+    border-radius: 4px;
   }
 
   &__pedidos-product-row {
@@ -1071,12 +1072,40 @@ $topbar-height: 52px;
 
 .cliente-detail__modal-body {
   padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
 
   p {
     margin: 0;
     font-size: $font-size-sm;
     color: $color-gray-600;
   }
+}
+
+.cliente-detail__delete-label {
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $color-gray-700;
+}
+
+.cliente-detail__modal-body .input {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cliente-detail__delete-code {
+  display: block;
+  text-align: center;
+  font-family: monospace;
+  font-size: $font-size-lg;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: $color-danger;
+  background-color: rgba($color-danger, 0.06);
+  border: 1px dashed rgba($color-danger, 0.3);
+  padding: $spacing-sm $spacing-md;
+  user-select: all;
 }
 
 .cliente-detail__modal-footer {

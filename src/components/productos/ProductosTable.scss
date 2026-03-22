@@ -115,11 +115,11 @@
     display: inline-flex;
     align-items: center;
     padding: 2px 8px;
-    border-radius: $border-radius-full;
+    border-radius: 4px;
     background-color: rgba($color-primary, 0.1);
     color: $color-primary;
     font-size: $font-size-xs;
-    font-weight: 600;
+    font-weight: 700;
     font-family: monospace;
   }
 

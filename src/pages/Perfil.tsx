@@ -210,7 +210,7 @@ const Perfil = () => {
   const handleChangePassword = async () => {
     setPasswordError('');
     if (!passwordData.current) return setPasswordError('Ingresa tu contraseña actual');
-    if (passwordData.new.length < 6) return setPasswordError('La nueva contraseña debe tener al menos 6 caracteres');
+    if (passwordData.new.length < 8) return setPasswordError('La nueva contraseña debe tener al menos 8 caracteres');
     if (passwordData.new !== passwordData.confirm) return setPasswordError('Las contraseñas no coinciden');
     setSavingPassword(true);
     try {

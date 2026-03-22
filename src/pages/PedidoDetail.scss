@@ -663,10 +663,11 @@ $topbar-height: 52px;
     display: inline-block;
     padding: 1px 5px;
     font-size: $font-size-xs;
-    font-weight: 500;
+    font-weight: 700;
     color: $color-primary;
     background-color: rgba($color-primary, 0.1);
     font-family: monospace;
+    border-radius: 4px;
   }
 
   &__etiquetas {
@@ -1015,6 +1016,9 @@ $topbar-height: 52px;
 
   &__modal-body--confirm {
     padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
 
     p {
       margin: 0;
@@ -1022,6 +1026,12 @@ $topbar-height: 52px;
       color: $color-gray-600;
       line-height: 1.5;
     }
+  }
+
+  &__delete-label {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-gray-700;
   }
 
 

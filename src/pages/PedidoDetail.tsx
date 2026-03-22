@@ -65,6 +65,7 @@ const PedidoDetail = () => {
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [abonoInput, setAbonoInput] = useState('');
   const [abonoProducto, setAbonoProducto] = useState('general');
   const [abonoError, setAbonoError] = useState<string | null>(null);
@@ -283,11 +284,13 @@ const PedidoDetail = () => {
 
   const handleDelete = () => {
     if (!pedido) return;
+    setDeleteConfirmText('');
     setShowDeleteModal(true);
   };
 
   const confirmDelete = async () => {
     if (!pedido) return;
+    if (deleteConfirmText !== pedido.folio) return;
     setShowDeleteModal(false);
     try {
       await deletePedido(pedido.id);
@@ -370,7 +373,6 @@ const PedidoDetail = () => {
   const clienteFavorito = clienteData?.favorito ?? false;
   const abonos = pedido.abonos || [];
 
-  const restante = pedido.total - pagado;
   const liquidado = pagado >= pedido.total;
   const puedeMarcarEntregado = pedido.estado === 'en_preparacion';
 
@@ -638,7 +640,18 @@ const PedidoDetail = () => {
               </button>
             </div>
             <div className="pedido-detail__modal-body pedido-detail__modal-body--confirm">
-              <p>¿Estás seguro de eliminar este pedido? Esta acción no se puede deshacer.</p>
+              <p>Esta acción es <strong>permanente</strong> y no se puede deshacer. Se eliminarán todos los datos del pedido.</p>
+              <p className="pedido-detail__delete-label">
+                Escribe <strong>{pedido?.folio}</strong> para confirmar:
+              </p>
+              <input
+                type="text"
+                className="input"
+                placeholder={pedido?.folio}
+                value={deleteConfirmText}
+                onChange={e => setDeleteConfirmText(e.target.value)}
+                autoComplete="off"
+              />
             </div>
             <div className="pedido-detail__modal-footer">
               <button
@@ -650,6 +663,7 @@ const PedidoDetail = () => {
               <button
                 className="btn btn--danger btn--sm"
                 onClick={confirmDelete}
+                disabled={deleteConfirmText !== pedido?.folio}
               >
                 Eliminar
               </button>

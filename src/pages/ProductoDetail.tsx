@@ -33,6 +33,8 @@ const ProductoDetail = () => {
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleteCode, setDeleteCode] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ProductoFormData | null>(null);
   const [saving, setSaving] = useState(false);
@@ -97,13 +99,19 @@ const ProductoDetail = () => {
       .filter((e): e is NonNullable<typeof e> => !!e);
   };
 
+  const generateDeleteCode = () =>
+    Array.from({ length: 10 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
+
   const handleDelete = () => {
     if (!producto) return;
+    setDeleteConfirmText('');
+    setDeleteCode(generateDeleteCode());
     setShowDeleteModal(true);
   };
 
   const confirmDelete = async () => {
     if (!producto) return;
+    if (deleteConfirmText !== deleteCode) return;
     setShowDeleteModal(false);
     try {
       await deleteProducto(producto.id);
@@ -619,11 +627,29 @@ const ProductoDetail = () => {
               </button>
             </div>
             <div className="producto-detail__modal-body">
-              <p>¿Estás seguro de eliminar <strong>{producto?.nombre}</strong>? Esta acción no se puede deshacer.</p>
+              <p>Esta acción es <strong>permanente</strong> y no se puede deshacer. Se eliminarán todos los datos del producto.</p>
+              <p className="producto-detail__delete-label">
+                Escribe el siguiente código para confirmar:
+              </p>
+              <code className="producto-detail__delete-code">{deleteCode}</code>
+              <input
+                type="text"
+                className="input"
+                placeholder="Escribe el código"
+                value={deleteConfirmText}
+                onChange={e => setDeleteConfirmText(e.target.value.toUpperCase())}
+                autoComplete="off"
+              />
             </div>
             <div className="producto-detail__modal-footer">
               <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
-              <button className="btn btn--danger btn--sm" onClick={confirmDelete}>Eliminar</button>
+              <button
+                className="btn btn--danger btn--sm"
+                onClick={confirmDelete}
+                disabled={deleteConfirmText !== deleteCode}
+              >
+                Eliminar
+              </button>
             </div>
           </div>
         </div>

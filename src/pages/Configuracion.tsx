@@ -267,13 +267,17 @@ const Configuracion = () => {
 
   const handleDeleteData = async () => {
     setDangerError('');
+    if (!dangerPassword) {
+      setDangerError('Ingresa tu contraseña para confirmar');
+      return;
+    }
     setDangerLoading(true);
     try {
-      await deleteAllData();
+      await deleteAllData(dangerPassword);
       showToast('Todos los datos han sido eliminados', 'success');
       closeDangerModal();
     } catch {
-      setDangerError('Ocurrió un error al eliminar los datos');
+      setDangerError('Contraseña incorrecta');
     } finally {
       setDangerLoading(false);
     }
@@ -780,10 +784,27 @@ const Configuracion = () => {
             </div>
             <div className="configuracion__modal-body">
               {dangerModal === 'deleteData' ? (
-                <p>
-                  Se eliminarán permanentemente todos tus <strong>clientes, productos, pedidos y etiquetas</strong>.
-                  Tu cuenta seguirá activa. Esta acción <strong>no se puede deshacer</strong>.
-                </p>
+                <>
+                  <p>
+                    Se eliminarán permanentemente todos tus <strong>clientes, productos, pedidos y etiquetas</strong>.
+                    Tu cuenta seguirá activa. Esta acción <strong>no se puede deshacer</strong>.
+                  </p>
+                  <div className="configuracion__modal-field">
+                    <label>Confirma tu contraseña</label>
+                    <div className="configuracion__modal-pwd">
+                      <input
+                        type={showDangerPwd ? 'text' : 'password'}
+                        className="input"
+                        placeholder="••••••••"
+                        value={dangerPassword}
+                        onChange={e => setDangerPassword(e.target.value)}
+                      />
+                      <button type="button" onClick={() => setShowDangerPwd(v => !v)}>
+                        {showDangerPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                </>
               ) : (
                 <>
                   <p>

@@ -3,7 +3,7 @@ import { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import type { User, AuthState, LoginCredentials, RegisterCredentials } from '../types/User';
-import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserData, deleteAccount as deleteAccountService, loginEmpleado as loginEmpleadoService, resetPassword } from '../services/authService';
+import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserDataWithAuth, deleteAccount as deleteAccountService, loginEmpleado as loginEmpleadoService, resetPassword } from '../services/authService';
 import type { UpdateProfileData } from '../services/authService';
 
 interface AuthContextType extends AuthState {
@@ -13,7 +13,7 @@ interface AuthContextType extends AuthState {
   logout: () => Promise<void>;
   updateProfile: (data: UpdateProfileData, imageFile?: File | null) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
-  deleteAllData: () => Promise<void>;
+  deleteAllData: (password: string) => Promise<void>;
   deleteAccount: (password: string) => Promise<void>;
   sendPasswordReset: (email: string) => Promise<void>;
   negocioUid: string | null;
@@ -132,11 +132,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const deleteAllData = async () => {
+  const deleteAllData = async (password: string) => {
     if (!user) return;
     try {
       setError(null);
-      await deleteAllUserData(user.uid);
+      await deleteAllUserDataWithAuth(password, user.uid);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al eliminar los datos');
       throw err;

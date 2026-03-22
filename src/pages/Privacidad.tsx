@@ -10,12 +10,17 @@ const Privacidad = () => {
 
         <div className="legal-page__card">
           <h1 className="legal-page__title">Aviso de Privacidad</h1>
-          <p className="legal-page__date">Última actualización: 15 de marzo de 2026</p>
+          <p className="legal-page__date">Última actualización: 22 de marzo de 2026</p>
 
           <section className="legal-page__section">
             <h2>1. Responsable del tratamiento</h2>
             <p>
-              Orderly es responsable del tratamiento de los datos personales que nos proporcionas.
+              <strong>Al García</strong>, operador de Orderly, es el responsable del tratamiento
+              de los datos personales que nos proporcionas. Para cualquier solicitud relacionada
+              con tus datos, contáctanos en{' '}
+              <a href="mailto:orderly.vault@gmail.com">orderly.vault@gmail.com</a>.
+            </p>
+            <p>
               Este aviso cumple con las legislaciones de protección de datos aplicables
               internacionalmente, incluyendo:
             </p>
@@ -99,6 +104,12 @@ const Privacidad = () => {
               SOC 2) y cumplen con el GDPR mediante cláusulas contractuales estándar (SCCs).
             </p>
             <p>
+              Al usar el Servicio, reconoces que tus datos pueden ser procesados en servidores
+              ubicados fuera de tu país de residencia. En todos los casos, Google Firebase aplica
+              las garantías de transferencia internacional exigidas por la legislación aplicable,
+              incluyendo SCCs para usuarios de la Unión Europea.
+            </p>
+            <p>
               No transferimos tus datos a otros terceros, salvo obligación legal o con tu
               consentimiento explícito.
             </p>
@@ -122,12 +133,13 @@ const Privacidad = () => {
               <li>Derecho al olvido (supresión completa).</li>
               <li>Limitar el tratamiento en determinadas circunstancias.</li>
               <li>Presentar una reclamación ante la autoridad de control de tu país.</li>
+              <li>Respuesta en un plazo máximo de <strong>30 días calendario</strong>.</li>
             </ul>
 
             <p><strong>México (LFPDPPP) — Derechos ARCO:</strong></p>
             <ul>
               <li>Acceso, Rectificación, Cancelación y Oposición al tratamiento.</li>
-              <li>Respuesta en un plazo máximo de 20 días hábiles.</li>
+              <li>Respuesta en un plazo máximo de <strong>20 días hábiles</strong>.</li>
             </ul>
 
             <p><strong>California, EE.UU. (CCPA):</strong></p>
@@ -148,8 +160,9 @@ const Privacidad = () => {
             </ul>
 
             <p>
-              Para ejercer cualquiera de estos derechos, contáctanos a través de la sección de
-              Soporte dentro de la plataforma.
+              Para ejercer cualquiera de estos derechos, contáctanos en{' '}
+              <a href="mailto:orderly.vault@gmail.com">orderly.vault@gmail.com</a> o a través
+              de la sección de Soporte dentro de la plataforma.
             </p>
           </section>
 
@@ -202,7 +215,9 @@ const Privacidad = () => {
             <h2>12. Contacto</h2>
             <p>
               Para cualquier duda, ejercicio de derechos o reclamación relacionada con tus datos
-              personales, contáctanos a través de la sección de Soporte dentro de la plataforma.
+              personales, contáctanos en{' '}
+              <a href="mailto:orderly.vault@gmail.com">orderly.vault@gmail.com</a> o a través
+              de la sección de Soporte dentro de la plataforma.
             </p>
           </section>
         </div>

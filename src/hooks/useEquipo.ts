@@ -5,6 +5,8 @@ import {
   suscribirMiembros,
   createEmpleado,
   desactivarEmpleado,
+  actualizarEmpleado,
+  actualizarContrasenaEmpleado,
   type EmpleadoFormData,
 } from '../services/equipoService';
 import { getPlanLimits } from '../constants/planLimits';
@@ -41,8 +43,18 @@ export const useEquipo = () => {
 
   const remover = async (uid: string): Promise<void> => {
     await desactivarEmpleado(uid);
-    // onSnapshot actualizará la lista automáticamente
   };
 
-  return { miembros, loading, crearEmpleado, remover };
+  const actualizar = async (
+    uid: string,
+    data: Partial<Pick<User, 'nombre' | 'apellido' | 'telefono' | 'telefonoCodigoPais' | 'fechaNacimiento'>>,
+  ): Promise<void> => {
+    await actualizarEmpleado(uid, data);
+  };
+
+  const actualizarContrasena = async (uid: string, nuevaContrasena: string): Promise<void> => {
+    await actualizarContrasenaEmpleado(uid, nuevaContrasena);
+  };
+
+  return { miembros, loading, crearEmpleado, remover, actualizar, actualizarContrasena };
 };

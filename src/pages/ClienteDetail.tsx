@@ -40,6 +40,8 @@ const ClienteDetail = () => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleteCode, setDeleteCode] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ClienteFormData | null>(null);
   const [saving, setSaving] = useState(false);
@@ -135,13 +137,19 @@ const ClienteDetail = () => {
     window.open(`https://wa.me/${dialCode}${cleanPhone}`, '_blank');
   };
 
+  const generateDeleteCode = () =>
+    Array.from({ length: 10 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
+
   const handleDelete = () => {
     if (!cliente) return;
+    setDeleteConfirmText('');
+    setDeleteCode(generateDeleteCode());
     setShowDeleteModal(true);
   };
 
   const confirmDelete = async () => {
     if (!cliente) return;
+    if (deleteConfirmText !== deleteCode) return;
     setShowDeleteModal(false);
     try {
       await deleteCliente(cliente.id);
@@ -428,11 +436,29 @@ const ClienteDetail = () => {
               </button>
             </div>
             <div className="cliente-detail__modal-body">
-              <p>¿Estás seguro de eliminar a <strong>{cliente?.nombre} {cliente?.apellido}</strong>? Esta acción no se puede deshacer.</p>
+              <p>Esta acción es <strong>permanente</strong> y no se puede deshacer. Se eliminarán todos los datos del cliente.</p>
+              <p className="cliente-detail__delete-label">
+                Escribe el siguiente código para confirmar:
+              </p>
+              <code className="cliente-detail__delete-code">{deleteCode}</code>
+              <input
+                type="text"
+                className="input"
+                placeholder="Escribe el código"
+                value={deleteConfirmText}
+                onChange={e => setDeleteConfirmText(e.target.value.toUpperCase())}
+                autoComplete="off"
+              />
             </div>
             <div className="cliente-detail__modal-footer">
               <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
-              <button className="btn btn--danger btn--sm" onClick={confirmDelete}>Eliminar</button>
+              <button
+                className="btn btn--danger btn--sm"
+                onClick={confirmDelete}
+                disabled={deleteConfirmText !== deleteCode}
+              >
+                Eliminar
+              </button>
             </div>
           </div>
         </div>
