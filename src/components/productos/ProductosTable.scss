@@ -33,7 +33,7 @@
 
   &::-webkit-scrollbar-thumb {
     background: $color-gray-300;
-    border-radius: 4px;
+    border-radius: 0;
 
     &:hover {
       background: $color-gray-400;
@@ -143,8 +143,8 @@
     display: inline-flex;
     align-items: center;
     padding: 1px 6px;
-    border-radius: 10px;
-    background-color: #dc2626;
+    border-radius: 0;
+    background-color: $color-danger;
     color: $color-white;
     font-size: 10px;
     font-weight: 700;

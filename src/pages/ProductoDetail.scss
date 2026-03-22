@@ -73,17 +73,20 @@ $topbar-height: 52px;
     cursor: pointer;
     padding: $spacing-xs;
     text-decoration: none;
+    transition: color $transition-base;
 
     &:hover {
-      color: $color-gray-800;
+      color: $color-gray-900;
     }
 
     &--primary {
       color: $color-primary;
+      &:hover { color: $color-primary-dark; }
     }
 
     &--danger {
-      color: #dc2626;
+      color: $color-danger;
+      &:hover { color: $color-danger-dark; }
     }
 
     &--back {
@@ -107,7 +110,7 @@ $topbar-height: 52px;
 
   &__card {
     background-color: $color-white;
-    box-shadow: $shadow-sm;
+    border: 1px solid $color-gray-200;
     flex: 1;
     min-height: 0;
     display: flex;
@@ -133,12 +136,12 @@ $topbar-height: 52px;
   &__header-info {
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;
+    gap: $spacing-md;
     flex: 1;
     min-width: 0;
 
     @include md {
-      padding: $spacing-md;
+      padding: $spacing-lg $spacing-xl;
     }
   }
 
@@ -165,7 +168,7 @@ $topbar-height: 52px;
   // Image Section
   &__image-section {
     background-color: $color-gray-100;
-    border-radius: 0;
+    border-radius: $border-radius-lg;
     width: 100%;
     aspect-ratio: 1 / 1;
     max-width: 420px;
@@ -232,7 +235,7 @@ $topbar-height: 52px;
   &__title-section {
     display: flex;
     flex-direction: column;
-    gap: $spacing-xs;
+    gap: $spacing-sm;
   }
 
   &__clave {
@@ -290,7 +293,7 @@ $topbar-height: 52px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: $spacing-xs;
   }
 
   &__cancel-descuento {
@@ -302,13 +305,13 @@ $topbar-height: 52px;
     font-size: $font-size-xs;
     font-weight: 500;
     white-space: nowrap;
-    border-radius: 6px;
+    border-radius: 0;
     transition: all 0.2s;
 
     &:hover {
-      color: #dc2626;
-      border-color: #dc2626;
-      background-color: rgba(#dc2626, 0.05);
+      color: $color-danger;
+      border-color: $color-danger;
+      background-color: rgba($color-danger, 0.05);
     }
   }
 
@@ -316,8 +319,8 @@ $topbar-height: 52px;
     display: inline-flex;
     align-items: center;
     padding: 2px 10px;
-    border-radius: 12px;
-    background-color: #dc2626;
+    border-radius: 0;
+    background-color: $color-danger;
     color: $color-white;
     font-size: $font-size-xs;
     font-weight: 700;
@@ -333,7 +336,7 @@ $topbar-height: 52px;
   &__price-final {
     font-size: $font-size-xl;
     font-weight: 700;
-    color: #16a34a;
+    color: $color-success;
   }
 
   &__price-expiry {
@@ -380,6 +383,8 @@ $topbar-height: 52px;
   // Etiquetas en header (encima de fecha de creación)
   &__header-etiquetas {
     margin-top: auto;
+    padding-top: $spacing-sm;
+    border-top: 1px solid $color-gray-100;
   }
 
   &__header-etiquetas-row {
@@ -461,7 +466,7 @@ $topbar-height: 52px;
     padding: $spacing-xs $spacing-sm;
     font-size: $font-size-sm;
     border: 1px solid $color-gray-300;
-    border-radius: 6px;
+    border-radius: 0;
     background-color: $color-white;
     color: $color-gray-800;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -510,7 +515,7 @@ $topbar-height: 52px;
     padding: $spacing-sm;
     font-size: $font-size-sm;
     border: 1px solid $color-gray-300;
-    border-radius: 6px;
+    border-radius: 0;
     background-color: $color-white;
     color: $color-gray-800;
     resize: none;
@@ -685,7 +690,7 @@ $topbar-height: 52px;
   color: $color-gray-400;
   cursor: pointer;
   padding: 4px;
-  border-radius: 4px;
+  border-radius: 0;
 
   &:hover { color: $color-gray-700; }
 }

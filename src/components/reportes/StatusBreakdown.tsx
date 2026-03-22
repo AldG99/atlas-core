@@ -41,7 +41,7 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
                 <circle
                   cx={CX} cy={CY} r={RADIUS}
                   fill="none"
-                  stroke="#e5e7eb"
+                  stroke="#DDD9D2"
                   strokeWidth={STROKE_WIDTH}
                 />
                 {segments.map((seg) => (
@@ -60,14 +60,14 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
               <text
                 x="50" y="46"
                 textAnchor="middle"
-                style={{ fontSize: '14px', fontWeight: 700, fill: '#111827' }}
+                style={{ fontSize: '14px', fontWeight: 700, fill: '#1A1917' }}
               >
                 {total}
               </text>
               <text
                 x="50" y="57"
                 textAnchor="middle"
-                style={{ fontSize: '7px', fill: '#6b7280', fontWeight: 500 }}
+                style={{ fontSize: '7px', fill: '#716D66', fontWeight: 500 }}
               >
                 pedidos
               </text>

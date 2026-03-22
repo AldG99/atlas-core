@@ -103,8 +103,8 @@
     white-space: nowrap;
 
     &--active {
-      color: #f59e0b;
-      border-color: #f59e0b;
+      color: $color-favorite;
+      border-color: $color-favorite;
     }
   }
 
@@ -133,7 +133,7 @@
     text-align: center;
     padding: $spacing-2xl;
     background-color: $color-white;
-    border-radius: 0;
+    border-radius: $border-radius-lg;
     box-shadow: $shadow-sm;
 
     p {

@@ -24,6 +24,7 @@ import {
   PiPhoneBold,
   PiCalendarBold,
   PiIdentificationBadgeBold,
+  PiGearSixBold,
 } from 'react-icons/pi';
 import type { User } from '../types/User';
 import { formatTelefono } from '../utils/formatters';
@@ -46,7 +47,7 @@ import './Configuracion.scss';
 
 type ImportStep = 'idle' | 'preview' | 'importing' | 'done';
 type DangerModal = null | 'deleteData' | 'deleteAccount';
-type Section = 'moneda' | 'notificaciones' | 'instalar' | 'plantillas' | 'equipo' | 'respaldo' | 'peligro' | 'membresia';
+type Section = 'moneda' | 'notificaciones' | 'instalar' | 'plantillas' | 'equipo' | 'respaldo' | 'gestion' | 'membresia';
 
 const SIMBOLOS_MONEDA = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
 
@@ -61,8 +62,8 @@ const getSectionTitle = (section: Section): string => {
     case 'plantillas':    return 'Plantillas de mensajes';
     case 'equipo':        return 'Equipo';
     case 'respaldo':      return 'Respaldo';
-    case 'peligro':       return 'Zona de peligro';
-    case 'membresia':     return 'Membresía';
+    case 'gestion':       return 'Gestionar cuenta';
+    case 'membresia':     return 'Equipo';
   }
 };
 
@@ -117,7 +118,7 @@ const Configuracion = () => {
   const [dangerLoading, setDangerLoading] = useState(false);
 
   // Equipo
-  const { miembros, loading: equipoLoading, crearEmpleado, remover } = useEquipo();
+  const { miembros, loading: equipoLoading, crearEmpleado, remover, actualizar, actualizarContrasena } = useEquipo();
   const [showCrearEmpleado, setShowCrearEmpleado] = useState(false);
   const [empleadoForm, setEmpleadoForm] = useState({
     nombre: '', apellido: '', fechaNacimiento: '', telefono: '', telefonoCodigoPais: 'MX', password: '', confirmarPassword: ''
@@ -127,6 +128,11 @@ const Configuracion = () => {
 
   // Perfil de miembro
   const [selectedMiembro, setSelectedMiembro] = useState<User | null>(null);
+  const [editingMiembro, setEditingMiembro] = useState(false);
+  const [editMiembroForm, setEditMiembroForm] = useState({ nombre: '', apellido: '', telefono: '', telefonoCodigoPais: 'MX', fechaNacimiento: '', password: '', confirmarPassword: '' });
+  const [showEditPwd, setShowEditPwd] = useState(false);
+  const [showEditConfirmPwd, setShowEditConfirmPwd] = useState(false);
+  const [savingMiembro, setSavingMiembro] = useState(false);
 
   // Membresía (datos del negocio para miembros)
   const [salirLoading, setSalirLoading] = useState(false);
@@ -299,7 +305,7 @@ const Configuracion = () => {
     ? [
         { label: 'Preferencias', items: preferenciasItems },
         { label: 'Negocio', items: [{ id: 'plantillas', icon: <PiChatTextBold size={16} />, title: 'Plantillas', color: 'purple' }] },
-        { label: 'Cuenta', items: [{ id: 'membresia', icon: <PiUsersThreeBold size={16} />, title: 'Membresía', color: 'blue' }] },
+        { label: 'Cuenta', items: [{ id: 'membresia', icon: <PiUsersThreeBold size={16} />, title: 'Equipo', color: 'blue' }] },
       ]
     : [
         { label: 'Preferencias', items: preferenciasItems },
@@ -311,7 +317,7 @@ const Configuracion = () => {
           ],
         },
         { label: 'Datos', items: [{ id: 'respaldo', icon: <PiDownloadSimpleBold size={16} />, title: 'Respaldo', color: 'teal' }] },
-        { label: 'Cuenta', items: [{ id: 'peligro', icon: <PiWarningBold size={16} />, title: 'Zona de peligro', color: 'danger' }] },
+        { label: 'Cuenta', items: [{ id: 'gestion', icon: <PiWarningBold size={16} />, title: 'Gestionar cuenta', color: 'gray' }] },
       ];
 
   // ── Panel renderer ───────────────────────────────────
@@ -396,7 +402,7 @@ const Configuracion = () => {
 
       case 'plantillas':
         return (
-          <>
+          <div className="configuracion__plantillas-panel">
             <p className="configuracion__desc">
               Personaliza el mensaje que se envía por WhatsApp según el estado del pedido.
             </p>
@@ -413,10 +419,9 @@ const Configuracion = () => {
               ))}
             </div>
             <textarea
-              className="configuracion__textarea"
+              className="configuracion__textarea configuracion__textarea--grow"
               value={plantillas[plantillaTab]}
               onChange={e => setPlantillas(prev => ({ ...prev, [plantillaTab]: e.target.value }))}
-              rows={6}
               placeholder="Escribe tu plantilla..."
             />
             <div className="configuracion__actions">
@@ -443,7 +448,7 @@ const Configuracion = () => {
                 {savingPlantillas ? 'Guardando...' : 'Guardar'}
               </button>
             </div>
-          </>
+          </div>
         );
 
       case 'equipo':
@@ -475,16 +480,10 @@ const Configuracion = () => {
                     <div className="configuracion__equipo-info">
                       <div className="configuracion__equipo-name-row">
                         <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
-                        <PiUserBold size={11} color="#3b82f6" />
+                        <PiUserBold size={11} color="#2368C4" />
                       </div>
                       <span className="configuracion__equipo-email">{m.username}{m.numeroEmpleado ? ` · Nº ${m.numeroEmpleado}` : ''}</span>
                     </div>
-                    <button
-                      className="btn btn--outline btn--sm"
-                      onClick={e => { e.stopPropagation(); remover(m.uid); }}
-                    >
-                      Remover
-                    </button>
                   </div>
                 ))}
               </div>
@@ -616,34 +615,34 @@ const Configuracion = () => {
           </div>
         );
 
-      case 'peligro':
+      case 'gestion':
         return (
-          <>
-            <div className="configuracion__danger-item">
-              <div>
-                <p className="configuracion__danger-label">Eliminar todos los datos</p>
-                <p className="configuracion__desc">
-                  Borra permanentemente todos tus clientes, productos, pedidos y etiquetas. Tu cuenta permanece activa.
-                </p>
+          <div className="configuracion__backup-blocks">
+            <div className="configuracion__backup-block">
+              <p className="configuracion__backup-title">Eliminar todos los datos</p>
+              <p className="configuracion__desc">
+                Borra permanentemente todos tus clientes, productos, pedidos y etiquetas. Tu cuenta permanece activa.
+              </p>
+              <div className="configuracion__actions">
+                <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteData')}>
+                  <PiTrashBold size={14} />
+                  Eliminar datos
+                </button>
               </div>
-              <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteData')}>
-                <PiTrashBold size={14} />
-                Eliminar datos
-              </button>
             </div>
-            <div className="configuracion__danger-item">
-              <div>
-                <p className="configuracion__danger-label">Eliminar cuenta</p>
-                <p className="configuracion__desc">
-                  Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.
-                </p>
+            <div className="configuracion__backup-block">
+              <p className="configuracion__backup-title">Eliminar cuenta</p>
+              <p className="configuracion__desc">
+                Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.
+              </p>
+              <div className="configuracion__actions">
+                <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteAccount')}>
+                  <PiUserMinusBold size={14} />
+                  Eliminar cuenta
+                </button>
               </div>
-              <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteAccount')}>
-                <PiUserMinusBold size={14} />
-                Eliminar cuenta
-              </button>
             </div>
-          </>
+          </div>
         );
 
       case 'membresia':
@@ -666,7 +665,7 @@ const Configuracion = () => {
                   <div className="configuracion__equipo-info">
                     <div className="configuracion__equipo-name-row">
                       <span className="configuracion__equipo-name">{adminNegocio.nombre} {adminNegocio.apellido}</span>
-                      <PiShieldCheckBold size={11} color="#f59e0b" />
+                      <PiShieldCheckBold size={11} color="#F8A800" />
                     </div>
                     <span className="configuracion__equipo-email">{adminNegocio.nombreNegocio}</span>
                   </div>
@@ -689,7 +688,7 @@ const Configuracion = () => {
                       <div className="configuracion__equipo-info">
                         <div className="configuracion__equipo-name-row">
                           <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
-                          <PiUserBold size={11} color="#3b82f6" />
+                          <PiUserBold size={11} color="#2368C4" />
                         </div>
                         <span className="configuracion__equipo-email">{m.username}{m.numeroEmpleado ? ` · Nº ${m.numeroEmpleado}` : ''}</span>
                       </div>
@@ -756,7 +755,11 @@ const Configuracion = () => {
             </div>
           ) : (
             <div className="configuracion__placeholder">
-              Selecciona una opción
+              <div className="configuracion__placeholder-icon">
+                <PiGearSixBold size={56} />
+              </div>
+              <p className="configuracion__placeholder-title">Configuración</p>
+              <p className="configuracion__placeholder-desc">Selecciona una opción del menú para comenzar</p>
             </div>
           )}
         </div>
@@ -948,67 +951,179 @@ const Configuracion = () => {
         const fechaNacStr = m.fechaNacimiento
           ? new Date(m.fechaNacimiento + 'T12:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })
           : null;
+
+        const handleStartEdit = () => {
+          setEditMiembroForm({
+            nombre: m.nombre ?? '',
+            apellido: m.apellido ?? '',
+            telefono: m.telefono ?? '',
+            telefonoCodigoPais: m.telefonoCodigoPais ?? 'MX',
+            fechaNacimiento: m.fechaNacimiento ?? '',
+            password: '',
+            confirmarPassword: '',
+          });
+          setShowEditPwd(false);
+          setShowEditConfirmPwd(false);
+          setEditingMiembro(true);
+        };
+
+        const handleSaveEdit = async () => {
+          if (editMiembroForm.password && editMiembroForm.password !== editMiembroForm.confirmarPassword) {
+            showToast('Las contraseñas no coinciden', 'warning');
+            return;
+          }
+          if (editMiembroForm.password && editMiembroForm.password.length < 6) {
+            showToast('La contraseña debe tener al menos 6 caracteres', 'warning');
+            return;
+          }
+          setSavingMiembro(true);
+          try {
+            const { password, confirmarPassword, ...profileData } = editMiembroForm;
+            await actualizar(m.uid, profileData);
+            if (password) await actualizarContrasena(m.uid, password);
+            setSelectedMiembro({ ...m, ...profileData });
+            setEditingMiembro(false);
+            showToast('Miembro actualizado', 'success');
+          } catch {
+            showToast('Error al guardar cambios', 'error');
+          } finally {
+            setSavingMiembro(false);
+          }
+        };
+
         return (
-          <div className="configuracion__modal-overlay" onClick={() => setSelectedMiembro(null)}>
-            <div className="configuracion__modal" onClick={e => e.stopPropagation()}>
+          <div className="configuracion__modal-overlay" onClick={() => { setSelectedMiembro(null); setEditingMiembro(false); }}>
+            <div className="configuracion__modal configuracion__modal--wide" onClick={e => e.stopPropagation()}>
               <div className="configuracion__modal-header">
                 <PiUserBold size={20} className="configuracion__modal-icon--user" />
-                <h3>Perfil del miembro</h3>
-                <button className="configuracion__modal-close" onClick={() => setSelectedMiembro(null)}>
+                <h3>{editingMiembro ? 'Editar miembro' : 'Perfil del miembro'}</h3>
+                <button className="configuracion__modal-close" onClick={() => { setSelectedMiembro(null); setEditingMiembro(false); }}>
                   <PiXBold size={16} />
                 </button>
               </div>
               <div className="configuracion__modal-body">
-                <div className="configuracion__miembro-profile">
-                  <div className="configuracion__miembro-avatar">
-                    {m.fotoPerfil
-                      ? <img src={m.fotoPerfil} alt={nombreCompleto} />
-                      : <span>{initials || '?'}</span>
-                    }
-                  </div>
-                  <div className="configuracion__miembro-name">{nombreCompleto || '—'}</div>
-                  {m.numeroEmpleado && (
-                    <div className="configuracion__miembro-badge">#{m.numeroEmpleado}</div>
-                  )}
-                </div>
-                <div className="configuracion__miembro-fields">
-                  <div className="configuracion__miembro-field">
-                    <PiIdentificationBadgeBold size={14} className="configuracion__miembro-field-icon" />
-                    <div>
-                      <p className="configuracion__miembro-field-label">Usuario</p>
-                      <p className="configuracion__miembro-field-value">{m.username ?? '—'}</p>
+                {!editingMiembro ? (
+                  <>
+                    <div className="configuracion__miembro-profile">
+                      <div className="configuracion__miembro-avatar">
+                        {m.fotoPerfil
+                          ? <img src={m.fotoPerfil} alt={nombreCompleto} />
+                          : <span>{initials || '?'}</span>
+                        }
+                      </div>
+                      <div className="configuracion__miembro-name">{nombreCompleto || '—'}</div>
+                      {m.numeroEmpleado && (
+                        <div className="configuracion__miembro-badge">#{m.numeroEmpleado}</div>
+                      )}
                     </div>
-                  </div>
-                  {telefonoFormateado && (
-                    <div className="configuracion__miembro-field">
-                      <PiPhoneBold size={14} className="configuracion__miembro-field-icon" />
-                      <div>
-                        <p className="configuracion__miembro-field-label">Teléfono</p>
-                        <p className="configuracion__miembro-field-value">{telefonoFormateado}</p>
+                    <div className="configuracion__miembro-fields">
+                      <div className="configuracion__miembro-field">
+                        <PiIdentificationBadgeBold size={14} className="configuracion__miembro-field-icon" />
+                        <div>
+                          <p className="configuracion__miembro-field-label">Usuario</p>
+                          <p className="configuracion__miembro-field-value">{m.username ?? '—'}</p>
+                        </div>
+                      </div>
+                      {telefonoFormateado && (
+                        <div className="configuracion__miembro-field">
+                          <PiPhoneBold size={14} className="configuracion__miembro-field-icon" />
+                          <div>
+                            <p className="configuracion__miembro-field-label">Teléfono</p>
+                            <p className="configuracion__miembro-field-value">{telefonoFormateado}</p>
+                          </div>
+                        </div>
+                      )}
+                      {fechaNacStr && (
+                        <div className="configuracion__miembro-field">
+                          <PiCalendarBold size={14} className="configuracion__miembro-field-icon" />
+                          <div>
+                            <p className="configuracion__miembro-field-label">Fecha de nacimiento</p>
+                            <p className="configuracion__miembro-field-value">{fechaNacStr}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="configuracion__modal-row" style={{ gridTemplateColumns: '1fr' }}>
+                    <div className="configuracion__modal-row">
+                      <div className="configuracion__modal-field">
+                        <label>Nombre</label>
+                        <input type="text" className="input" value={editMiembroForm.nombre} onChange={e => setEditMiembroForm(f => ({ ...f, nombre: e.target.value }))} />
+                      </div>
+                      <div className="configuracion__modal-field">
+                        <label>Apellido</label>
+                        <input type="text" className="input" value={editMiembroForm.apellido} onChange={e => setEditMiembroForm(f => ({ ...f, apellido: e.target.value }))} />
                       </div>
                     </div>
-                  )}
-                  {fechaNacStr && (
-                    <div className="configuracion__miembro-field">
-                      <PiCalendarBold size={14} className="configuracion__miembro-field-icon" />
-                      <div>
-                        <p className="configuracion__miembro-field-label">Fecha de nacimiento</p>
-                        <p className="configuracion__miembro-field-value">{fechaNacStr}</p>
+                    <div className="configuracion__modal-field">
+                      <label>Teléfono</label>
+                      <PhoneInput
+                        value={editMiembroForm.telefono}
+                        codigoPais={editMiembroForm.telefonoCodigoPais}
+                        onChange={(val, cod) => setEditMiembroForm(f => ({ ...f, telefono: val, telefonoCodigoPais: cod }))}
+                      />
+                    </div>
+                    <div className="configuracion__modal-field">
+                      <label>Fecha de nacimiento</label>
+                      <input type="date" className="input" value={editMiembroForm.fechaNacimiento} onChange={e => setEditMiembroForm(f => ({ ...f, fechaNacimiento: e.target.value }))} />
+                    </div>
+                    <div className="configuracion__modal-field">
+                      <label>Nueva contraseña <span className="configuracion__modal-optional">(opcional)</span></label>
+                      <div className="configuracion__modal-pwd">
+                        <input
+                          type={showEditPwd ? 'text' : 'password'}
+                          className="input"
+                          placeholder="••••••••"
+                          value={editMiembroForm.password}
+                          onChange={e => setEditMiembroForm(f => ({ ...f, password: e.target.value }))}
+                        />
+                        <button type="button" onClick={() => setShowEditPwd(v => !v)}>
+                          {showEditPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                        </button>
                       </div>
                     </div>
-                  )}
-                </div>
+                    <div className="configuracion__modal-field">
+                      <label>Confirmar contraseña</label>
+                      <div className="configuracion__modal-pwd">
+                        <input
+                          type={showEditConfirmPwd ? 'text' : 'password'}
+                          className="input"
+                          placeholder="••••••••"
+                          value={editMiembroForm.confirmarPassword}
+                          onChange={e => setEditMiembroForm(f => ({ ...f, confirmarPassword: e.target.value }))}
+                        />
+                        <button type="button" onClick={() => setShowEditConfirmPwd(v => !v)}>
+                          {showEditConfirmPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="configuracion__modal-actions">
-                <button
-                  className="btn btn--danger btn--sm"
-                  onClick={() => { remover(m.uid); setSelectedMiembro(null); }}
-                >
-                  Remover del equipo
-                </button>
-                <button className="btn btn--outline btn--sm" onClick={() => setSelectedMiembro(null)}>
-                  Cerrar
-                </button>
+                {!editingMiembro ? (
+                  <>
+                    <button className="btn btn--danger btn--sm" onClick={() => { remover(m.uid); setSelectedMiembro(null); }}>
+                      Remover
+                    </button>
+                    <button className="btn btn--outline btn--sm" onClick={() => { setSelectedMiembro(null); }}>
+                      Cerrar
+                    </button>
+                    <button className="btn btn--primary btn--sm" onClick={handleStartEdit}>
+                      Editar
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="btn btn--outline btn--sm" onClick={() => setEditingMiembro(false)} disabled={savingMiembro}>
+                      Cancelar
+                    </button>
+                    <button className="btn btn--primary btn--sm" onClick={handleSaveEdit} disabled={savingMiembro}>
+                      {savingMiembro ? 'Guardando...' : 'Guardar'}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

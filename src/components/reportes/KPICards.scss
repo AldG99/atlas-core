@@ -42,13 +42,13 @@
   gap: $spacing-sm;
   padding: $spacing-sm $spacing-md;
   background-color: $color-white;
-  border-radius: 0;
-  box-shadow: none;
+  border-radius: $border-radius-lg;
+  border: 1px solid $color-gray-200;
 
   &__icon {
     width: 36px;
     height: 36px;
-    border-radius: 0;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;

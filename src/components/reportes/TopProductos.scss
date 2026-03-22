@@ -3,6 +3,7 @@
 
 .top-productos {
   background-color: $color-white;
+  border: 1px solid $color-gray-200;
   padding: $spacing-md;
   flex: 1;
   min-height: 0;
@@ -49,7 +50,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-color: $color-primary;
+    background-color: $color-gray-400;
     color: $color-white;
     font-size: $font-size-xs;
     font-weight: 600;
@@ -57,9 +58,6 @@
     flex-shrink: 0;
   }
 
-  &__item:nth-child(1) &__rank { background-color: #fbbf24; }
-  &__item:nth-child(2) &__rank { background-color: #9ca3af; }
-  &__item:nth-child(3) &__rank { background-color: #d97706; }
 
   &__info {
     flex: 1;

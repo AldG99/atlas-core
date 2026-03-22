@@ -64,12 +64,9 @@
     gap: $spacing-sm;
     padding: $spacing-sm $spacing-md;
     background-color: $color-white;
-    border-radius: 0;
-    box-shadow: none;
+    border-radius: $border-radius-lg;
+    border: 1px solid $color-gray-200;
 
-    &:hover {
-      box-shadow: none;
-    }
   }
 
   &__summary-icon {
@@ -78,7 +75,7 @@
     justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: 0;
+    border-radius: 8px;
     background-color: $color-gray-100;
     color: $color-gray-600;
     flex-shrink: 0;
@@ -182,11 +179,11 @@
     background-color: $color-white;
     color: $color-gray-700;
     border: 1px solid $color-gray-200;
-    transition: all 0.2s ease;
+    transition: all $transition-fast;
 
     &:hover {
       border-color: $color-gray-300;
-      background-color: $color-gray-50;
+      background-color: $color-gray-100;
     }
 
     &--active {
@@ -220,7 +217,7 @@
     min-width: 20px;
     height: 20px;
     padding: 0 $spacing-xs;
-    border-radius: 0;
+    border-radius: 999px;
     font-size: $font-size-xs;
     font-weight: 600;
     background-color: $color-gray-100;
@@ -241,8 +238,8 @@
     text-align: center;
     padding: $spacing-2xl;
     background-color: $color-white;
-    border-radius: 0;
-    box-shadow: $shadow-sm;
+    border-radius: $border-radius-lg;
+    border: 1px solid $color-gray-200;
 
     p {
       margin-bottom: $spacing-md;

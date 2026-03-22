@@ -45,6 +45,7 @@
 
     &:hover:not(:disabled) {
       background-color: $color-primary-dark;
+      color: $color-white;
     }
   }
 
@@ -54,6 +55,7 @@
 
     &:hover:not(:disabled) {
       background-color: $color-gray-300;
+      color: $color-gray-700;
     }
   }
 
@@ -63,6 +65,7 @@
 
     &:hover:not(:disabled) {
       background-color: color.adjust($color-danger, $lightness: -10%);
+      color: $color-white;
     }
   }
 
@@ -78,11 +81,12 @@
   }
 
   &--whatsapp {
-    background-color: #25d366;
+    background-color: $color-whatsapp;
     color: $color-white;
 
     &:hover:not(:disabled) {
-      background-color: #128c7e;
+      background-color: $color-whatsapp-dark;
+      color: $color-white;
     }
   }
 
@@ -159,7 +163,7 @@
   width: 44px;
   height: 44px;
   border: none;
-  border-radius: $border-radius-md;
+  border-radius: 0;
   cursor: pointer;
   transition: all $transition-fast;
   background-color: transparent;
@@ -194,10 +198,10 @@
   }
 
   &--whatsapp {
-    color: #25d366;
+    color: $color-whatsapp;
 
     &:hover {
-      background-color: rgba(#25d366, 0.1);
+      background-color: rgba($color-whatsapp, 0.1);
     }
   }
 

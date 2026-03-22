@@ -2,11 +2,6 @@
 @use '../../styles/abstracts/mixins' as *;
 
 $sidebar-width: 220px;
-$sidebar-bg: $color-white;
-$sidebar-text: $color-gray-600;
-$sidebar-text-active: $color-gray-800;
-$sidebar-hover-bg: $color-gray-100;
-$sidebar-active-bg: $color-gray-900;
 
 .sidebar-toggle {
   display: flex;
@@ -16,12 +11,13 @@ $sidebar-active-bg: $color-gray-900;
   top: $spacing-md;
   left: $spacing-md;
   z-index: 1001;
-  width: 40px;
-  height: 40px;
-  background-color: $sidebar-bg;
+  width: 36px;
+  height: 36px;
+  background-color: rgba($color-white, 0.85);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   border: 1px solid $color-gray-200;
-  border-radius: 0;
-  color: $sidebar-text;
+  color: $color-gray-700;
   cursor: pointer;
   box-shadow: $shadow-sm;
   transition: all $transition-fast;
@@ -31,18 +27,17 @@ $sidebar-active-bg: $color-gray-900;
   }
 
   &:hover {
-    background-color: $color-gray-200;
+    background-color: $color-white;
   }
 }
 
 .sidebar-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.25);
   z-index: 999;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 
   @include md {
     display: none;
@@ -55,13 +50,14 @@ $sidebar-active-bg: $color-gray-900;
   left: 0;
   height: 100vh;
   width: $sidebar-width;
-  background-color: $sidebar-bg;
+  background-color: rgba($color-white, 0.92);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-right: 1px solid $color-gray-200;
-  box-shadow: $shadow-sm;
   display: flex;
   flex-direction: column;
   z-index: 1000;
-  transition: all $transition-base;
+  transition: transform $transition-base;
   transform: translateX(-100%);
 
   @include md {
@@ -72,102 +68,109 @@ $sidebar-active-bg: $color-gray-900;
     transform: translateX(0);
   }
 
+  // ── Logo ────────────────────────────────────────────────
   &__header {
     display: flex;
     align-items: center;
     height: 70px;
-    padding: 0 $spacing-lg;
+    padding: 0 $spacing-md;
     border-bottom: 1px solid $color-gray-200;
   }
 
   &__logo {
-    max-width: 150px;
+    width: 100%;
     height: auto;
     display: block;
+    opacity: 0.9;
   }
 
+  // ── Navegación ──────────────────────────────────────────
   &__nav {
     flex: 1;
-    padding: $spacing-md;
+    padding: $spacing-sm;
     display: flex;
     flex-direction: column;
-    gap: $spacing-xs;
+    gap: 2px;
     overflow-y: auto;
   }
 
   &__link {
     display: flex;
     align-items: center;
-    gap: $spacing-sm;
+    gap: 9px;
     padding: $spacing-sm $spacing-md;
-    border-radius: 0;
-    color: $sidebar-text;
+    color: $color-gray-700;
     text-decoration: none;
-    transition: all $transition-fast;
+    transition: background-color $transition-fast, color $transition-fast;
     white-space: nowrap;
 
     &:hover {
-      background-color: $sidebar-hover-bg;
-      color: $sidebar-text-active;
+      background-color: $color-gray-200;
+      color: $color-gray-900;
     }
 
     &--active {
-      background-color: $sidebar-active-bg;
+      background-color: $color-primary;
       color: $color-white;
-      font-weight: 500;
+      font-weight: 600;
+
+      .sidebar__link-icon svg {
+        opacity: 1;
+      }
 
       &:hover {
-        background-color: $color-gray-800;
+        background-color: $color-primary-dark;
         color: $color-white;
       }
     }
 
     &--disabled {
       cursor: default;
-      opacity: 0.7;
-
-      &:hover {
-        background-color: transparent;
-        color: $sidebar-text;
-      }
+      opacity: 0.4;
+      pointer-events: none;
     }
   }
 
   &__link-icon {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 
     svg {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
+      opacity: 0.75;
+      transition: opacity $transition-fast;
     }
   }
 
   &__link-text {
     font-size: $font-size-sm;
     font-weight: 500;
+    letter-spacing: -0.01em;
   }
 
   &__badge {
     margin-left: auto;
-    padding: 2px 6px;
+    padding: 1px 6px;
     font-size: 10px;
     font-weight: 600;
     background-color: $color-gray-200;
     color: $color-gray-500;
-    border-radius: 0;
     white-space: nowrap;
+    border-radius: 999px;
   }
 
+  // ── Footer ──────────────────────────────────────────────
   &__footer {
-    padding: $spacing-md;
+    padding: $spacing-sm;
+    padding-bottom: $spacing-md;
     border-top: 1px solid $color-gray-200;
     display: flex;
     flex-direction: column;
-    gap: $spacing-xs;
+    gap: 2px;
   }
 }

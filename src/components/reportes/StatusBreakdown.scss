@@ -3,6 +3,7 @@
 
 .status-breakdown {
   background-color: $color-white;
+  border: 1px solid $color-gray-200;
   padding: $spacing-md;
   flex: 1;
   min-height: 0;
@@ -42,10 +43,10 @@
   &__list {
     list-style: none;
     padding: 0;
-    margin: 4px 0 0;
+    margin: $spacing-sm 0 0;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: $spacing-xs;
     flex-shrink: 0;
   }
 
@@ -53,7 +54,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2px 0;
+    padding: $spacing-xs 0;
+    border-bottom: 1px solid $color-gray-100;
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 
   &__item-header {

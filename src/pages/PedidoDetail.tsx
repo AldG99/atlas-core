@@ -463,8 +463,7 @@ const PedidoDetail = () => {
                   >
                     Abonar
                   </button>
-                </div>
-                <button
+                  <button
                     onClick={() => handleChangeStatus('entregado')}
                     className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''} ${pedido.estado === 'entregado' ? 'pedido-detail__btn-entregado--done' : ''}`}
                     disabled={!puedeMarcarEntregado}
@@ -476,8 +475,9 @@ const PedidoDetail = () => {
                           : ''
                     }
                   >
-                    <PiCheckBold size={18} />
+                    {pedido.estado === 'entregado' ? 'Entregado' : 'Entregar'}
                   </button>
+                </div>
                 {abonoError && (
                   <span className="pedido-detail__top-bar-abono-error">
                     {abonoError}
@@ -513,9 +513,21 @@ const PedidoDetail = () => {
               </div>
             </div>
             <div className="pedido-detail__header-right">
-              {pedido.folio && (
-                <span className="pedido-detail__folio">{pedido.folio}</span>
-              )}
+              <div className="pedido-detail__header-top-row">
+                {pedido.folio && (
+                  <span className="pedido-detail__folio">{pedido.folio}</span>
+                )}
+                <span
+                  className="pedido-detail__status-badge"
+                  style={{ color: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                >
+                  <span
+                    className="pedido-detail__status-dot"
+                    style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                  />
+                  {PEDIDO_STATUS[pedido.estado]}
+                </span>
+              </div>
               <div className="pedido-detail__date-status-row">
                 <span className="pedido-detail__date">
                   {formatDate(pedido.fechaCreacion)}
@@ -528,11 +540,6 @@ const PedidoDetail = () => {
                     </span>
                   </>
                 )}
-                <span
-                  className="pedido-detail__status-dot"
-                  style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-                  title={PEDIDO_STATUS[pedido.estado]}
-                />
               </div>
             </div>
           </div>

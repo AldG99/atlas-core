@@ -17,17 +17,17 @@
     align-items: center;
     gap: $spacing-xs;
     padding: $spacing-xs $spacing-sm;
-    border-radius: 0;
+    border-radius: $border-radius-full;
     font-size: $font-size-sm;
     font-weight: 500;
     background-color: $color-white;
     color: $color-gray-700;
     border: 1px solid $color-gray-200;
-    transition: all 0.2s ease;
+    transition: all $transition-fast;
 
     &:hover {
       border-color: $color-gray-300;
-      background-color: $color-gray-50;
+      background-color: $color-gray-100;
     }
 
     &--active {

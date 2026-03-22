@@ -3,6 +3,7 @@
 
 .inventario-status {
   background-color: $color-white;
+  border: 1px solid $color-gray-200;
   padding: $spacing-md;
   flex: 1;
   min-height: 0;
@@ -47,7 +48,7 @@
     }
 
     .inventario-status__kpi--warning & {
-      color: #d97706;
+      color: $color-warning;
     }
   }
 
@@ -69,6 +70,7 @@
     gap: $spacing-sm;
     flex: 1;
     min-height: 0;
+    max-height: 200px;
     overflow-y: auto;
   }
 
@@ -85,7 +87,7 @@
     letter-spacing: 0.05em;
 
     &--danger { color: $color-danger; }
-    &--warning { color: #d97706; }
+    &--warning { color: $color-warning; }
   }
 
   &__list {
@@ -105,7 +107,7 @@
     font-size: $font-size-sm;
 
     &--danger { background-color: rgba($color-danger, 0.06); }
-    &--warning { background-color: rgba(#f59e0b, 0.06); }
+    &--warning { background-color: rgba($color-warning, 0.06); }
   }
 
   &__clave {
@@ -131,6 +133,6 @@
     flex-shrink: 0;
 
     .inventario-status__item--danger & { color: $color-danger; }
-    .inventario-status__item--warning & { color: #d97706; }
+    .inventario-status__item--warning & { color: $color-warning; }
   }
 }

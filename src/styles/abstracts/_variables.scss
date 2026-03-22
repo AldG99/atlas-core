@@ -1,27 +1,52 @@
-// Colores
-$color-primary: #3b82f6;
-$color-primary-dark: #2563eb;
-$color-secondary: #64748b;
-$color-success: #10b981;
-$color-warning: #f59e0b;
-$color-danger: #ef4444;
-$color-white: #ffffff;
-$color-black: #000000;
+// ============================================================
+// Design System — Sand + Slate
+// "Weniger, aber besser" — Less, but better.
+// Paleta Arena: fondos cálidos + pizarra azulada funcional
+// ============================================================
 
-// Grises
-$color-gray-50: #f8fafc;
-$color-gray-100: #f1f5f9;
-$color-gray-200: #e2e8f0;
-$color-gray-300: #cbd5e1;
-$color-gray-400: #94a3b8;
-$color-gray-500: #64748b;
-$color-gray-600: #475569;
-$color-gray-700: #334155;
-$color-gray-800: #1e293b;
-$color-gray-900: #0f172a;
+// Colores — Sistema Arena
+$color-primary: #356aaf;
+$color-primary-dark: #335c93;
+$color-secondary: #5a5651;
+$color-success: #09a870;
+$color-success-dark: #057a52;
+$color-warning: #e88510;
+$color-danger: #e83530;
+$color-danger-dark: #c01e1a;
+$color-white: #fdfcfa;
+$color-black: #2a2824;
 
-// Tipografía
-$font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+// Colores semánticos
+$color-favorite: #f8a800; // Estrella favorito — ámbar
+$color-whatsapp: #30bb63; // WhatsApp brand
+$color-whatsapp-dark: #128c7e; // WhatsApp hover
+$color-rank-gold: #f5b400; // Ranking #1 — oro
+$color-rank-silver: #ada9a1; // Ranking #2 — plata
+$color-rank-bronze: #e88510; // Ranking #3 — bronce (= warning)
+$color-badge-purple: #7c3aed; // Badge — violeta
+$color-badge-teal: #0891b2; // Badge — teal
+$color-badge-equipo: #7c3aed; // Ícono equipo en config
+$color-plan-enterprise: #c49a10; // Plan enterprise — oro
+$color-canvas-dark: #1a1a1a; // Fondo canvas ImageCropper
+
+// Escala arena cálida
+$color-gray-50: #fdfcfa; // Fondo de página — blanco arena
+$color-gray-100: #f7f5f1; // Fondo secundario — arena clara
+$color-gray-200: #e5e1da; // Divisores — arena línea
+$color-gray-300: #cec9c1; // Bordes — arena borde
+$color-gray-400: #ada9a1; // Íconos, placeholders
+$color-gray-500: #857f78; // Texto terciario
+$color-gray-600: #635f59; // Texto secundario
+$color-gray-700: #4a4742; // Cuerpo
+$color-gray-800: #3a3733; // Texto fuerte
+$color-gray-900: #2a2824; // Títulos — grafito arena
+
+// Tipografía — Apple system font stack
+$font-family:
+  'Inter',
+  -apple-system,
+  BlinkMacSystemFont,
+  sans-serif;
 $font-size-xs: 0.75rem;
 $font-size-sm: 0.875rem;
 $font-size-base: 1rem;
@@ -38,16 +63,23 @@ $spacing-lg: 1.5rem;
 $spacing-xl: 2rem;
 $spacing-2xl: 3rem;
 
-// Bordes
-$border-radius-sm: 0.25rem;
-$border-radius-md: 0.5rem;
-$border-radius-lg: 0.75rem;
-$border-radius-full: 9999px;
+// Bordes — sin redondeo
+$border-radius-sm: 0;
+$border-radius-md: 0;
+$border-radius-lg: 0;
+$border-radius-xl: 0;
+$border-radius-full: 0;
 
 // Sombras
-$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-sm:
+  0 1px 4px rgba(0, 0, 0, 0.05),
+  0 0 1px rgba(0, 0, 0, 0.04);
+$shadow-md:
+  0 4px 12px rgba(0, 0, 0, 0.07),
+  0 1px 3px rgba(0, 0, 0, 0.04);
+$shadow-lg:
+  0 8px 24px rgba(0, 0, 0, 0.09),
+  0 2px 6px rgba(0, 0, 0, 0.04);
 
 // Breakpoints
 $breakpoint-sm: 640px;
@@ -56,6 +88,6 @@ $breakpoint-lg: 1024px;
 $breakpoint-xl: 1280px;
 
 // Transiciones
-$transition-fast: 150ms ease;
-$transition-base: 200ms ease;
-$transition-slow: 300ms ease;
+$transition-fast: 120ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$transition-base: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$transition-slow: 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);

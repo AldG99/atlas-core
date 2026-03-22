@@ -6,6 +6,7 @@
   height: 100%;
   overflow: hidden;
   background-color: $color-gray-50;
+  border: 1px solid $color-gray-200;
 
   // === Left nav panel ===
   &__nav {
@@ -85,7 +86,7 @@
   &__row-icon {
     width: 30px;
     height: 30px;
-    border-radius: $border-radius-md;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -93,12 +94,12 @@
     color: $color-white;
 
     &--blue    { background-color: $color-primary; }
-    &--yellow  { background-color: #f59e0b; }
-    &--green   { background-color: #16a34a; }
+    &--yellow  { background-color: $color-favorite; }
+    &--green   { background-color: $color-success; }
     &--gray    { background-color: $color-gray-400; }
-    &--purple  { background-color: #7c3aed; }
-    &--teal    { background-color: #0891b2; }
-    &--danger  { background-color: #dc2626; }
+    &--purple  { background-color: $color-badge-purple; }
+    &--teal    { background-color: $color-badge-teal; }
+    &--danger  { background-color: $color-danger; }
   }
 
   &__row-title {
@@ -138,6 +139,15 @@
     flex-direction: column;
     gap: $spacing-lg;
     max-width: 560px;
+    min-height: 0;
+  }
+
+  &__plantillas-panel {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    flex: 1;
+    min-height: 0;
   }
 
   // Back button (mobile only)
@@ -171,11 +181,36 @@
   &__placeholder {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: $color-gray-400;
-    font-size: $font-size-sm;
+    gap: $spacing-xs;
     background-color: $color-gray-50;
+  }
+
+  &__placeholder-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 112px;
+    height: 112px;
+    border-radius: 28px;
+    background-color: $color-gray-100;
+    color: $color-gray-400;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__placeholder-title {
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $color-gray-600;
+    margin: 0;
+  }
+
+  &__placeholder-desc {
+    font-size: $font-size-sm;
+    color: $color-gray-400;
+    margin: 0;
   }
 
   // === Section content styles ===
@@ -234,9 +269,9 @@
   // Notif
   &__notif-denied {
     font-size: $font-size-sm;
-    color: #dc2626;
-    background-color: rgba(#dc2626, 0.06);
-    border-radius: $border-radius-md;
+    color: $color-danger;
+    background-color: rgba($color-danger, 0.06);
+    border-radius: 8px;
     padding: $spacing-xs $spacing-sm;
     margin: 0;
   }
@@ -248,11 +283,11 @@
     font-size: $font-size-xs;
     font-weight: 600;
     padding: 4px $spacing-sm;
-    border-radius: $border-radius-sm;
+    border-radius: 999px;
 
     &--on {
-      color: #16a34a;
-      background-color: rgba(#16a34a, 0.1);
+      color: $color-success;
+      background-color: rgba($color-success, 0.1);
     }
   }
 
@@ -288,7 +323,7 @@
 
   &__textarea {
     width: 100%;
-    resize: vertical;
+    resize: none;
     padding: $spacing-sm;
     border: 1px solid $color-gray-300;
     border-radius: $border-radius-md;
@@ -303,6 +338,12 @@
     &:focus {
       border-color: $color-primary;
       box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
+    }
+
+    &--grow {
+      flex: 1;
+      min-height: 0;
+      resize: none;
     }
   }
 
@@ -349,15 +390,15 @@
     align-items: center;
     gap: $spacing-xs;
     font-size: $font-size-xs;
-    color: #dc2626;
-    background-color: rgba(#dc2626, 0.08);
+    color: $color-danger;
+    background-color: rgba($color-danger, 0.08);
     padding: $spacing-xs $spacing-sm;
-    border-radius: $border-radius-md;
+    border-radius: 8px;
   }
 
   &__preview {
     border: 1px solid $color-gray-200;
-    border-radius: $border-radius-md;
+    border-radius: 8px;
     padding: $spacing-sm $spacing-md;
     background-color: $color-gray-50;
     display: flex;
@@ -383,7 +424,7 @@
     align-items: center;
     background-color: $color-white;
     border: 1px solid $color-gray-200;
-    border-radius: $border-radius-md;
+    border-radius: 6px;
     padding: $spacing-xs;
     font-size: $font-size-xs;
     color: $color-gray-500;
@@ -423,7 +464,7 @@
   }
 
   &__done-icon {
-    color: #16a34a;
+    color: $color-success;
   }
 
   &__done-title {
@@ -491,7 +532,7 @@
     flex-direction: column;
     gap: 1px;
     border: 1px solid $color-gray-200;
-    border-radius: $border-radius-md;
+    border-radius: 8px;
     overflow: hidden;
   }
 
@@ -515,8 +556,8 @@
   &__equipo-avatar {
     width: 32px;
     height: 32px;
-    border-radius: 0;
-    background: linear-gradient(135deg, $color-primary, #2563eb);
+    border-radius: 8px;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -536,6 +577,9 @@
   &__equipo-info {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
   }
 
   &__equipo-name-row {
@@ -562,7 +606,7 @@
     font-size: $font-size-xs;
     font-weight: 600;
     padding: 2px 8px;
-    border-radius: $border-radius-full;
+    border-radius: 999px;
     background-color: rgba($color-primary, 0.1);
     color: $color-primary;
   }
@@ -615,7 +659,7 @@
     gap: $spacing-sm;
     padding: $spacing-md;
     border: 1px solid $color-gray-200;
-    border-radius: $border-radius-md;
+    border-radius: 8px;
     background-color: $color-gray-50;
   }
 
@@ -639,8 +683,8 @@
 
   &__modal {
     background-color: $color-white;
-    border-radius: $border-radius-lg;
-    box-shadow: $shadow-lg;
+    border-radius: 12px;
+    border: 1px solid $color-gray-200;
     width: 100%;
     max-width: 440px;
     display: flex;
@@ -668,7 +712,7 @@
   }
 
   &__modal-icon {
-    color: #dc2626;
+    color: $color-danger;
     flex-shrink: 0;
   }
 
@@ -678,7 +722,7 @@
     color: $color-gray-400;
     cursor: pointer;
     padding: 4px;
-    border-radius: $border-radius-sm;
+    border-radius: 6px;
     display: flex;
     align-items: center;
 
@@ -717,7 +761,7 @@
     display: flex;
     align-items: center;
     border: 1px solid $color-gray-300;
-    border-radius: $border-radius-md;
+    border-radius: 8px;
     overflow: hidden;
 
     .input {
@@ -784,8 +828,8 @@
   &__miembro-avatar {
     width: 96px;
     height: 96px;
-    border-radius: $border-radius-lg;
-    background: linear-gradient(135deg, $color-primary, #2563eb);
+    border-radius: 20px;
+    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -814,7 +858,7 @@
     color: $color-primary;
     background-color: rgba($color-primary, 0.1);
     padding: 2px 10px;
-    border-radius: $border-radius-full;
+    border-radius: 999px;
   }
 
   &__miembro-fields {
@@ -850,13 +894,13 @@
 }
 
 .btn--danger {
-  background-color: #dc2626;
-  color: #ffffff;
-  border: 1px solid #dc2626;
+  background-color: $color-danger;
+  color: $color-white;
+  border: 1px solid $color-danger;
 
   &:hover:not(:disabled) {
-    background-color: #b91c1c;
-    border-color: #b91c1c;
+    background-color: $color-danger-dark;
+    border-color: $color-danger-dark;
   }
 
   &:disabled {

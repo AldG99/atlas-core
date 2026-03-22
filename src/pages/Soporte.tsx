@@ -8,7 +8,8 @@ import './Soporte.scss';
 
 const MIN_MENSAJE_LENGTH = 20;
 const MAX_MENSAJE_LENGTH = 500;
-const LIMITE_DIARIO = 3;
+const MAX_ASUNTO_LENGTH = 80;
+const LIMITE_DIARIO = 1;
 const COOLDOWN_SEGUNDOS = 300; // 5 minutos
 const MAX_SALTOS_LINEA = 5;
 const MAX_ESPACIOS_CONSECUTIVOS = 3;
@@ -220,11 +221,6 @@ const Soporte = () => {
                   <h3>¿Necesitas más ayuda?</h3>
                   <p>Envíanos un mensaje y te responderemos lo antes posible.</p>
                 </div>
-                {!limitado && (
-                  <span className="soporte__mensajes-contador">
-                    {mensajesHoy}/{LIMITE_DIARIO} hoy
-                  </span>
-                )}
               </div>
 
               {limitado ? (
@@ -241,6 +237,7 @@ const Soporte = () => {
                       className="input"
                       placeholder="¿En qué podemos ayudarte?"
                       value={formData.asunto}
+                      maxLength={MAX_ASUNTO_LENGTH}
                       onChange={(e) => setFormData({ ...formData, asunto: e.target.value })}
                       disabled={bloqueado}
                     />
@@ -248,8 +245,8 @@ const Soporte = () => {
                   <div className="soporte__form-group soporte__form-group--grow">
                     <label htmlFor="mensaje">
                       Mensaje
-                      <span className={`soporte__char-count ${mensajeValido ? 'soporte__char-count--ok' : ''} ${formData.mensaje.trim().length >= MAX_MENSAJE_LENGTH ? 'soporte__char-count--max' : ''}`}>
-                        {formData.mensaje.trim().length}/{MAX_MENSAJE_LENGTH}
+                      <span className={`soporte__char-count ${mensajeValido ? 'soporte__char-count--ok' : ''} ${formData.mensaje.length >= MAX_MENSAJE_LENGTH ? 'soporte__char-count--max' : ''}`}>
+                        {formData.mensaje.length}/{MAX_MENSAJE_LENGTH}
                       </span>
                     </label>
                     <textarea

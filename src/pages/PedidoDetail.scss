@@ -58,10 +58,10 @@ $topbar-height: 52px;
 
   &__top-bar-abono {
     display: flex;
-    gap: 2px;
+    gap: $spacing-xs;
     align-items: center;
     background-color: $color-gray-100;
-    border-radius: 8px;
+    border-radius: 0;
     padding: 2px;
     margin-left: auto;
 
@@ -79,7 +79,7 @@ $topbar-height: 52px;
 
       &:focus {
         background-color: $color-white;
-        border-radius: 6px;
+        border-radius: 0;
       }
     }
 
@@ -87,7 +87,7 @@ $topbar-height: 52px;
       cursor: pointer;
       min-width: 100px;
       color: $color-gray-700;
-      border-radius: 6px 0 0 6px;
+      border-radius: 0;
 
       &:hover {
         background-color: rgba($color-white, 0.5);
@@ -107,9 +107,10 @@ $topbar-height: 52px;
 
     .btn {
       height: 32px;
-      border-radius: 6px;
+      min-height: 32px;
+      border-radius: 0;
       font-weight: 600;
-      padding: 0 $spacing-lg;
+      padding: 0 $spacing-md;
       display: flex;
       align-items: center;
       gap: $spacing-xs;
@@ -122,11 +123,11 @@ $topbar-height: 52px;
     top: 100%;
     right: $spacing-md;
     font-size: $font-size-xs;
-    color: #dc2626;
+    color: $color-danger;
     font-weight: 500;
     padding: $spacing-xs $spacing-sm;
-    background-color: rgba(#dc2626, 0.1);
-    border-radius: 6px;
+    background-color: rgba($color-danger, 0.1);
+    border-radius: 0;
     margin-top: $spacing-xs;
     white-space: nowrap;
   }
@@ -141,25 +142,30 @@ $topbar-height: 52px;
     cursor: pointer;
     padding: $spacing-xs;
     text-decoration: none;
+    transition: color $transition-base;
 
     &:hover {
-      color: $color-gray-800;
+      color: $color-gray-900;
     }
 
     &--whatsapp {
-      color: #25d366;
+      color: $color-whatsapp;
+      &:hover { color: $color-whatsapp-dark; }
     }
 
     &--primary {
       color: $color-primary;
+      &:hover { color: $color-primary-dark; }
     }
 
     &--success {
-      color: #16a34a;
+      color: $color-success;
+      &:hover { color: $color-success-dark; }
     }
 
     &--danger {
-      color: #dc2626;
+      color: $color-danger;
+      &:hover { color: $color-danger-dark; }
     }
 
     &--back {
@@ -183,7 +189,7 @@ $topbar-height: 52px;
 
   &__card {
     background-color: $color-white;
-    box-shadow: $shadow-sm;
+    border: 1px solid $color-gray-200;
     flex: 1;
     min-height: 0;
     display: flex;
@@ -249,7 +255,7 @@ $topbar-height: 52px;
   }
 
   &__fav-icon {
-    color: #f59e0b;
+    color: $color-favorite;
     flex-shrink: 0;
   }
 
@@ -267,7 +273,22 @@ $topbar-height: 52px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 2px;
+    gap: 4px;
+  }
+
+  &__header-top-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  &__status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: $font-size-xs;
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   &__date-status-row {
@@ -275,7 +296,6 @@ $topbar-height: 52px;
     align-items: center;
     gap: $spacing-sm;
   }
-
 
   &__status {
     display: inline-block;
@@ -299,13 +319,13 @@ $topbar-height: 52px;
     color: $color-gray-500;
 
     &--entrega {
-      color: #16a34a;
+      color: $color-success;
       font-weight: 500;
     }
   }
 
   &__date-arrow {
-    color: #16a34a;
+    color: $color-success;
     flex-shrink: 0;
   }
 
@@ -371,6 +391,48 @@ $topbar-height: 52px;
     font-weight: 500;
   }
 
+  &__abono-section {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    border-top: 1px solid $color-gray-100;
+    background-color: $color-gray-50;
+  }
+
+  &__abono-controls {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  &__abono-select {
+    height: 34px;
+    padding: 0 $spacing-sm;
+    border: 1px solid $color-gray-200;
+    font-size: $font-size-sm;
+    color: $color-gray-700;
+    background-color: $color-white;
+    outline: none;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  &__abono-input {
+    width: 120px;
+    flex-shrink: 0;
+  }
+
+  &__abono-error {
+    font-size: $font-size-xs;
+    color: $color-danger;
+  }
+
   &__notes {
     display: flex;
     align-items: center;
@@ -398,7 +460,7 @@ $topbar-height: 52px;
     color: $color-gray-400;
     cursor: pointer;
     padding: 2px;
-    border-radius: 4px;
+    border-radius: 0;
     margin-left: auto;
     flex-shrink: 0;
     transition: color $transition-fast;
@@ -475,7 +537,7 @@ $topbar-height: 52px;
 
     &::-webkit-scrollbar-thumb {
       background: $color-gray-300;
-      border-radius: 4px;
+      border-radius: 0;
 
       &:hover {
         background: $color-gray-400;
@@ -640,8 +702,8 @@ $topbar-height: 52px;
     display: inline-flex;
     align-items: center;
     padding: 1px 5px;
-    border-radius: 10px;
-    background-color: #dc2626;
+    border-radius: 0;
+    background-color: $color-danger;
     color: $color-white;
     font-size: 10px;
     font-weight: 700;
@@ -705,8 +767,8 @@ $topbar-height: 52px;
     font-size: $font-size-xs;
     font-weight: 600;
 
-    &--paid { color: #16a34a; }
-    &--partial { color: #ea580c; }
+    &--paid { color: $color-success; }
+    &--partial { color: $color-warning; }
     &--pending { color: $color-gray-400; }
   }
 
@@ -750,7 +812,7 @@ $topbar-height: 52px;
     color: $color-primary;
     background-color: rgba($color-primary, 0.08);
     padding: 1px 5px;
-    border-radius: 4px;
+    border-radius: 0;
     cursor: default;
     white-space: nowrap;
   }
@@ -764,7 +826,7 @@ $topbar-height: 52px;
     color: $color-gray-400;
     cursor: pointer;
     padding: 4px;
-    border-radius: 4px;
+    border-radius: 0;
     transition: all $transition-fast;
 
     &:hover:not(:disabled) {
@@ -788,7 +850,7 @@ $topbar-height: 52px;
       padding: 2px 6px;
       font-size: $font-size-sm;
       border: 1px solid $color-primary;
-      border-radius: 4px;
+      border-radius: 0;
       outline: none;
     }
   }
@@ -799,7 +861,7 @@ $topbar-height: 52px;
     justify-content: center;
     background-color: $color-success;
     border: none;
-    border-radius: 4px;
+    border-radius: 0;
     color: $color-white;
     padding: 4px;
     cursor: pointer;
@@ -812,7 +874,7 @@ $topbar-height: 52px;
     justify-content: center;
     background-color: $color-gray-200;
     border: none;
-    border-radius: 4px;
+    border-radius: 0;
     color: $color-gray-600;
     padding: 4px;
     cursor: pointer;
@@ -822,7 +884,7 @@ $topbar-height: 52px;
 
   &__fecha-entrega {
     font-size: $font-size-sm;
-    color: #16a34a;
+    color: $color-success;
     font-weight: 500;
     margin-left: auto;
   }
@@ -831,39 +893,32 @@ $topbar-height: 52px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    width: 34px;
-    height: 34px;
-    font-size: $font-size-sm;
+    padding: 0 $spacing-md;
+    height: 32px;
+    min-height: 32px;
+    font-size: $font-size-xs;
     font-weight: 600;
     border: none;
-    border-radius: 10px;
+    border-radius: 0;
     background-color: $color-gray-100;
     color: $color-gray-400;
     cursor: not-allowed;
+    white-space: nowrap;
     transition: all 0.2s ease;
 
     &--active {
-      background-color: #16a34a;
+      background-color: $color-success;
       color: $color-white;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
 
       &:hover {
-        background-color: #15803d;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
-      }
-
-      &:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+        background-color: $color-success-dark;
       }
     }
 
     &--done {
-      background-color: rgba(22, 163, 74, 0.12);
-      color: #16a34a;
+      background-color: rgba($color-success, 0.12);
+      color: $color-success;
       cursor: default;
     }
   }
@@ -954,7 +1009,7 @@ $topbar-height: 52px;
 
     &::-webkit-scrollbar-thumb {
       background: $color-gray-300;
-      border-radius: 3px;
+      border-radius: 0;
     }
   }
 
@@ -1104,8 +1159,8 @@ $topbar-height: 52px;
     display: inline-flex;
     align-items: center;
     padding: 1px 6px;
-    border-radius: 10px;
-    background-color: #dc2626;
+    border-radius: 0;
+    background-color: $color-danger;
     color: $color-white;
     font-size: $font-size-xs;
     font-weight: 700;

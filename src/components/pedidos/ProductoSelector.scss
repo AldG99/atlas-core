@@ -56,7 +56,7 @@
     height: 16px;
     border: 2px solid $color-gray-300;
     border-top-color: $color-primary;
-    border-radius: 50%;
+    border-radius: 0;
     animation: spin 0.8s linear infinite;
   }
 
@@ -182,7 +182,7 @@
     justify-content: center;
     width: 18px;
     height: 18px;
-    border-radius: 50%;
+    border-radius: 0;
     color: $color-white;
   }
 
@@ -204,8 +204,8 @@
     display: inline-flex;
     align-items: center;
     padding: 1px 6px;
-    border-radius: 10px;
-    background-color: #dc2626;
+    border-radius: 0;
+    background-color: $color-danger;
     color: $color-white;
     font-size: $font-size-xs;
     font-weight: 700;
@@ -219,7 +219,7 @@
 
   &__dropdown-final {
     font-weight: 700;
-    color: #16a34a;
+    color: $color-success;
   }
 
   &__dropdown-empty {
@@ -315,7 +315,7 @@
 
     &::-webkit-scrollbar-thumb {
       background: $color-gray-300;
-      border-radius: 4px;
+      border-radius: 0;
 
       &:hover {
         background: $color-gray-400;
@@ -444,7 +444,7 @@
     justify-content: center;
     width: 18px;
     height: 18px;
-    border-radius: 50%;
+    border-radius: 0;
     color: $color-white;
   }
 
@@ -466,8 +466,8 @@
     display: inline-flex;
     align-items: center;
     padding: 1px 5px;
-    border-radius: 8px;
-    background-color: #dc2626;
+    border-radius: 0;
+    background-color: $color-danger;
     color: $color-white;
     font-size: 10px;
     font-weight: 700;
@@ -491,7 +491,7 @@
     color: $color-gray-800;
 
     &--zero {
-      color: #d97706;
+      color: $color-warning;
     }
 
     &--over {
@@ -694,7 +694,7 @@
 
     &::-webkit-scrollbar-thumb {
       background: $color-gray-300;
-      border-radius: 3px;
+      border-radius: 0;
     }
   }
 
@@ -820,7 +820,7 @@
     justify-content: center;
     width: 22px;
     height: 22px;
-    border-radius: 50%;
+    border-radius: 0;
     color: $color-white;
   }
 
@@ -829,7 +829,7 @@
     align-items: center;
     gap: 4px;
     padding: 2px 8px;
-    border-radius: 10px;
+    border-radius: 0;
     font-size: $font-size-xs;
     font-weight: 600;
     background-color: rgba($color-success, 0.12);
@@ -865,8 +865,8 @@
     display: inline-flex;
     align-items: center;
     padding: 1px 6px;
-    border-radius: 10px;
-    background-color: #dc2626;
+    border-radius: 0;
+    background-color: $color-danger;
     color: $color-white;
     font-size: $font-size-xs;
     font-weight: 700;

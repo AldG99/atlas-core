@@ -53,7 +53,7 @@ const Header = () => {
         {/* Notifications */}
         <div className="header__notifications">
           <button
-            className="header__icon-btn"
+            className="header__icon-btn header__icon-btn--notifications"
             onClick={() => setShowNotifications(!showNotifications)}
           >
             <PiBellBold size={20} />
@@ -66,9 +66,6 @@ const Header = () => {
             <div className="header__dropdown header__dropdown--notifications">
               <div className="header__dropdown-header">
                 <span>Notificaciones</span>
-                {notificaciones.length > 0 && (
-                  <span className="header__notification-count">{notificaciones.length}</span>
-                )}
               </div>
               <div className="header__dropdown-content">
                 {notificaciones.length === 0 ? (
@@ -122,8 +119,8 @@ const Header = () => {
                     : 'Administrador'}
                 </span>
                 {role === 'empleado'
-                  ? <PiUserBold size={11} color="#3b82f6" />
-                  : <PiShieldCheckBold size={11} color="#f59e0b" />
+                  ? <PiUserBold size={11} color="#2368C4" />
+                  : <PiShieldCheckBold size={11} color="#F8A800" />
                 }
               </div>
             </div>

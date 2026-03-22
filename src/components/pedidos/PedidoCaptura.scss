@@ -158,7 +158,7 @@
 
   &__discount {
     font-size: $font-size-xs;
-    color: #dc2626;
+    color: $color-danger;
     font-weight: 600;
   }
 
@@ -167,8 +167,8 @@
     font-weight: 700;
     white-space: nowrap;
 
-    &--paid    { color: #16a34a; }
-    &--partial { color: #ea580c; }
+    &--paid    { color: $color-success; }
+    &--partial { color: $color-warning; }
     &--pending { color: $color-gray-400; }
   }
 
@@ -206,8 +206,8 @@
     }
   }
 
-  &__total-paid    { color: #16a34a !important; }
-  &__total-pending { color: #ea580c !important; }
+  &__total-paid    { color: $color-success !important; }
+  &__total-pending { color: $color-warning !important; }
 
   &__notes {
     font-size: $font-size-xs;

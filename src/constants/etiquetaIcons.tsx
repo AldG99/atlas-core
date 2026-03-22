@@ -34,7 +34,14 @@ export const ETIQUETA_ICONS: Record<string, { icon: IconType; label: string }> =
 };
 
 export const ETIQUETA_COLORES = [
-  '#ef4444', '#f97316', '#f59e0b', '#10b981',
-  '#3b82f6', '#8b5cf6', '#ec4899', '#6366f1',
-  '#14b8a6', '#84cc16',
+  '#C0392B', // terracota
+  '#B45309', // ámbar
+  '#D97706', // dorado
+  '#2E7D5A', // musgo
+  '#334E68', // pizarra
+  '#5B8A8A', // teal muted
+  '#7C5C8E', // ciruela
+  '#A0522D', // cobre
+  '#6B7C3B', // oliva
+  '#524F4A', // grafito cálido
 ];

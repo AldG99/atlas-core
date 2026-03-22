@@ -52,7 +52,7 @@
     flex-shrink: 0;
     background: linear-gradient(135deg, $color-primary, $color-primary-dark);
     color: $color-white;
-    border-radius: 0;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -143,8 +143,8 @@
     align-items: center;
     gap: $spacing-xs;
     font-size: $font-size-xs;
-    color: #dc2626;
-    background-color: rgba(#dc2626, 0.08);
+    color: $color-danger;
+    background-color: rgba($color-danger, 0.08);
     padding: $spacing-xs $spacing-sm;
     border-radius: $border-radius-md;
   }
@@ -157,6 +157,6 @@
 }
 
 .configuracion__card-icon--equipo {
-  background-color: rgba(#8b5cf6, 0.12);
-  color: #8b5cf6;
+  background-color: rgba($color-badge-equipo, 0.12);
+  color: $color-badge-equipo;
 }
