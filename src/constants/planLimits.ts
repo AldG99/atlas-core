@@ -18,5 +18,5 @@ export const checkPlanLimit = (count: number, limit: number, resource: string): 
 export const PLAN_LABEL: Record<PlanKey, string> = {
   gratuito: 'Gratuito',
   pro: 'Pro',
-  enterprise: 'Max',
+  enterprise: 'Business',
 };

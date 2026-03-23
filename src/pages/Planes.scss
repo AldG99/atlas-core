@@ -75,11 +75,7 @@
     background-color: $color-white;
     border: 1px solid $color-gray-200;
     padding: $spacing-lg;
-    transition: box-shadow $transition-fast;
 
-    &:hover {
-      box-shadow: $shadow-md;
-    }
 
 &--actual {
       background-color: $color-gray-50;
@@ -113,10 +109,10 @@
     justify-content: center;
     width: 40px;
     height: 40px;
+    border-radius: 8px;
     background-color: rgba($color-primary, 0.1);
     color: $color-primary;
     margin-bottom: $spacing-sm;
-
   }
 
   &__card-nombre {
@@ -178,7 +174,7 @@
     justify-content: center;
     width: 18px;
     height: 18px;
-    border-radius: 0;
+    border-radius: 50%;
     flex-shrink: 0;
     background-color: rgba($color-success, 0.12);
     color: $color-success;
@@ -196,5 +192,84 @@
   &__btn {
     width: 100%;
     justify-content: center;
+  }
+
+  &__modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 300;
+  }
+
+  &__modal-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 301;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-md;
+    pointer-events: none;
+  }
+
+  &__modal {
+    position: relative;
+    background-color: $color-white;
+    border: 1px solid $color-gray-200;
+    padding: $spacing-xl $spacing-lg $spacing-lg;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: $shadow-lg;
+    pointer-events: all;
+  }
+
+  &__modal-close {
+    position: absolute;
+    top: $spacing-sm;
+    right: $spacing-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $color-gray-500;
+
+    &:hover { color: $color-gray-900; }
+  }
+
+  &__modal-title {
+    margin: 0 0 $spacing-sm;
+    font-size: $font-size-lg;
+    color: $color-gray-900;
+  }
+
+  &__modal-body {
+    margin: 0 0 $spacing-sm;
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+    line-height: 1.6;
+  }
+
+  &__modal-price {
+    margin: 0 0 $spacing-md;
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__modal-actions {
+    display: flex;
+    gap: $spacing-sm;
+
+    .btn {
+      flex: 1;
+      justify-content: center;
+      gap: $spacing-xs;
+      display: flex;
+      align-items: center;
+    }
   }
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   PiCheckBold,
@@ -6,6 +7,8 @@ import {
   PiDiamondsFourBold,
   PiStorefrontBold,
   PiArrowLeftBold,
+  PiEnvelopeBold,
+  PiHeadsetBold,
 } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
 import './Planes.scss';
@@ -24,6 +27,7 @@ const PLANES = [
       { texto: 'Hasta 6 etiquetas', incluido: true },
       { texto: 'Exportar CSV', incluido: true },
       { texto: 'Exportar e importar datos', incluido: false },
+      { texto: 'Miembros del equipo', incluido: false },
     ],
   },
   {
@@ -46,7 +50,7 @@ const PLANES = [
   },
   {
     id: 'enterprise',
-    nombre: 'Max',
+    nombre: 'Business',
     precio: '$7',
     periodo: 'mes',
     descripcion: 'Para equipos y negocios con operaciones de alto volumen.',
@@ -67,13 +71,45 @@ const Planes = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const planActual = user?.plan ?? 'gratuito';
+  const [modalPlan, setModalPlan] = useState<typeof PLANES[number] | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+
+  // Cerrar con Escape + trampa de foco
+  useEffect(() => {
+    if (!modalPlan) return;
+
+    const focusables = modalRef.current?.querySelectorAll<HTMLElement>(
+      'button, a, [tabindex]:not([tabindex="-1"])'
+    );
+    focusables?.[0]?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { closeModal(); return; }
+      if (e.key !== 'Tab' || !focusables?.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [modalPlan]);
+
+  const closeModal = () => {
+    setModalPlan(null);
+    triggerRef.current?.focus();
+  };
 
   return (
     <div className="planes-page">
       <div className="planes">
         <div className="planes__controls">
-          <button className="planes__back-btn" onClick={() => navigate(-1)}>
-            <PiArrowLeftBold size={20} />
+          <button className="planes__back-btn" onClick={() => navigate(-1)} aria-label="Volver">
+            <PiArrowLeftBold size={20} aria-hidden="true" />
           </button>
         </div>
 
@@ -99,18 +135,18 @@ const Planes = () => {
                 <div className="planes__card-header">
                   <div className="planes__card-icon">{plan.icono}</div>
                   <h2 className="planes__card-nombre">{plan.nombre}</h2>
-                  <div className="planes__card-precio">
+                  <div className="planes__card-precio" aria-label={plan.precio ? `${plan.precio} dólares USD por ${plan.periodo}` : 'Gratis'}>
                     {plan.precio ? (
                       <>
-                        <span className="planes__precio-monto">
+                        <span className="planes__precio-monto" aria-hidden="true">
                           {plan.precio}
                         </span>
-                        <span className="planes__precio-periodo">
+                        <span className="planes__precio-periodo" aria-hidden="true">
                           USD / {plan.periodo}
                         </span>
                       </>
                     ) : (
-                      <span className="planes__precio-monto">Gratis</span>
+                      <span className="planes__precio-monto" aria-hidden="true">Gratis</span>
                     )}
                   </div>
                   <p className="planes__card-desc">{plan.descripcion}</p>
@@ -122,14 +158,13 @@ const Planes = () => {
                       key={i}
                       className={`planes__feature${c.incluido ? '' : ' planes__feature--no'}`}
                     >
-                      <span className="planes__feature-icon">
-                        {c.incluido ? (
-                          <PiCheckBold size={14} />
-                        ) : (
-                          <PiXBold size={14} />
-                        )}
+                      <span className="planes__feature-icon" aria-hidden="true">
+                        {c.incluido ? <PiCheckBold size={14} /> : <PiXBold size={14} />}
                       </span>
-                      {c.texto}
+                      <span>
+                        <span className="sr-only">{c.incluido ? 'Incluido: ' : 'No incluido: '}</span>
+                        {c.texto}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -145,7 +180,7 @@ const Planes = () => {
                   ) : (
                     <button
                       className="btn btn--primary btn--sm planes__btn"
-                      onClick={() => navigate('/soporte')}
+                      onClick={e => { triggerRef.current = e.currentTarget; setModalPlan(plan); }}
                     >
                       {plan.id === 'gratuito'
                         ? 'Cambiar a Gratuito'
@@ -158,6 +193,54 @@ const Planes = () => {
           })}
         </div>
       </div>
+
+      {/* Modal de contratación */}
+      {modalPlan && (
+        <div className="planes__modal-overlay" onClick={closeModal} aria-hidden="true" />
+      )}
+      {modalPlan && (
+        <div
+          ref={modalRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="planes-modal-title"
+          className="planes__modal-wrapper"
+        >
+          <div className="planes__modal">
+            <button className="planes__modal-close" onClick={closeModal} aria-label="Cerrar">
+              <PiXBold size={16} aria-hidden="true" />
+            </button>
+            <h3 id="planes-modal-title" className="planes__modal-title">
+              {modalPlan.id === 'gratuito' ? 'Cambiar a Gratuito' : `Contratar plan ${modalPlan.nombre}`}
+            </h3>
+            <p className="planes__modal-body">
+              Durante la <strong>versión Beta</strong> los cambios de plan se gestionan manualmente.
+              Contáctanos y te ayudamos a actualizar tu cuenta.
+            </p>
+            {modalPlan.precio && (
+              <p className="planes__modal-price" aria-label={`${modalPlan.precio} dólares USD por ${modalPlan.periodo}`}>
+                <span aria-hidden="true">{modalPlan.precio} USD / {modalPlan.periodo}</span>
+              </p>
+            )}
+            <div className="planes__modal-actions">
+              <button
+                className="btn btn--primary btn--sm"
+                onClick={() => { closeModal(); navigate('/soporte'); }}
+              >
+                <PiHeadsetBold size={15} aria-hidden="true" />
+                Ir a Soporte
+              </button>
+              <a
+                className="btn btn--outline btn--sm"
+                href="mailto:orderly.vault@gmail.com"
+              >
+                <PiEnvelopeBold size={15} aria-hidden="true" />
+                Enviar correo
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
