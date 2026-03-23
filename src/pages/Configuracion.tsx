@@ -118,13 +118,13 @@ const Configuracion = () => {
   const [dangerLoading, setDangerLoading] = useState(false);
 
   // Equipo
-  const { miembros, loading: equipoLoading, crearEmpleado, remover, actualizar, actualizarContrasena } = useEquipo();
-  const [showCrearEmpleado, setShowCrearEmpleado] = useState(false);
-  const [empleadoForm, setEmpleadoForm] = useState({
+  const { miembros, loading: equipoLoading, crearMiembro, remover, actualizar, actualizarContrasena } = useEquipo();
+  const [showCrearMiembro, setShowCrearMiembro] = useState(false);
+  const [miembroForm, setMiembroForm] = useState({
     nombre: '', apellido: '', fechaNacimiento: '', telefono: '', telefonoCodigoPais: 'MX', password: '', confirmarPassword: ''
   });
-  const [creandoEmpleado, setCreandoEmpleado] = useState(false);
-  const [empleadoError, setEmpleadoError] = useState('');
+  const [creandoMiembro, setCreandoMiembro] = useState(false);
+  const [miembroError, setMiembroError] = useState('');
 
   // Perfil de miembro
   const [selectedMiembro, setSelectedMiembro] = useState<User | null>(null);
@@ -140,7 +140,7 @@ const Configuracion = () => {
   const [companeros, setCompaneros] = useState<User[]>([]);
 
   useEffect(() => {
-    if (role !== 'empleado' || !user?.negocioUid) return;
+    if (role !== 'miembro' || !user?.negocioUid) return;
     getAdminPorUid(user.negocioUid).then(setAdminNegocio);
     getMiembros(user.negocioUid).then(data =>
       setCompaneros(data.filter(m => m.uid !== user.uid))
@@ -209,38 +209,38 @@ const Configuracion = () => {
   };
 
   // ── Equipo ──────────────────────────────────────────
-  const handleCrearEmpleado = async (e: React.FormEvent) => {
+  const handleCrearMiembro = async (e: React.FormEvent) => {
     e.preventDefault();
-    setEmpleadoError('');
-    if (empleadoForm.password !== empleadoForm.confirmarPassword) {
-      setEmpleadoError('Las contraseñas no coinciden');
+    setMiembroError('');
+    if (miembroForm.password !== miembroForm.confirmarPassword) {
+      setMiembroError('Las contraseñas no coinciden');
       return;
     }
-    if (!empleadoForm.fechaNacimiento) {
-      setEmpleadoError('La fecha de nacimiento es requerida');
+    if (!miembroForm.fechaNacimiento) {
+      setMiembroError('La fecha de nacimiento es requerida');
       return;
     }
-    if (!empleadoForm.telefono || empleadoForm.telefono.length < 10) {
-      setEmpleadoError('Ingresa un número de teléfono válido');
+    if (!miembroForm.telefono || miembroForm.telefono.length < 10) {
+      setMiembroError('Ingresa un número de teléfono válido');
       return;
     }
-    setCreandoEmpleado(true);
+    setCreandoMiembro(true);
     try {
-      await crearEmpleado({
-        nombre: empleadoForm.nombre,
-        apellido: empleadoForm.apellido,
-        fechaNacimiento: empleadoForm.fechaNacimiento,
-        telefono: empleadoForm.telefono,
-        telefonoCodigoPais: empleadoForm.telefonoCodigoPais,
-        password: empleadoForm.password,
+      await crearMiembro({
+        nombre: miembroForm.nombre,
+        apellido: miembroForm.apellido,
+        fechaNacimiento: miembroForm.fechaNacimiento,
+        telefono: miembroForm.telefono,
+        telefonoCodigoPais: miembroForm.telefonoCodigoPais,
+        password: miembroForm.password,
       });
       showToast('Miembro creado correctamente', 'success');
-      setEmpleadoForm({ nombre: '', apellido: '', fechaNacimiento: '', telefono: '', telefonoCodigoPais: 'MX', password: '', confirmarPassword: '' });
-      setShowCrearEmpleado(false);
+      setMiembroForm({ nombre: '', apellido: '', fechaNacimiento: '', telefono: '', telefonoCodigoPais: 'MX', password: '', confirmarPassword: '' });
+      setShowCrearMiembro(false);
     } catch (err) {
-      setEmpleadoError(err instanceof Error ? err.message : 'Error al crear miembro');
+      setMiembroError(err instanceof Error ? err.message : 'Error al crear miembro');
     } finally {
-      setCreandoEmpleado(false);
+      setCreandoMiembro(false);
     }
   };
 
@@ -300,12 +300,12 @@ const Configuracion = () => {
 
   // ── Nav groups ───────────────────────────────────────
   const preferenciasItems: NavItem[] = [
-    ...(role !== 'empleado' ? [{ id: 'moneda' as Section, icon: <PiCurrencyDollarBold size={16} />, title: 'Moneda', color: 'yellow' }] : []),
+    ...(role !== 'miembro' ? [{ id: 'moneda' as Section, icon: <PiCurrencyDollarBold size={16} />, title: 'Moneda', color: 'yellow' }] : []),
     { id: 'notificaciones', icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: 'Notificaciones', color: notifPermission === 'granted' ? 'green' : 'gray' },
     ...(canInstall ? [{ id: 'instalar' as Section, icon: <PiDownloadBold size={16} />, title: 'Instalar app', color: 'teal' }] : []),
   ];
 
-  const navGroups: NavGroup[] = role === 'empleado'
+  const navGroups: NavGroup[] = role === 'miembro'
     ? [
         { label: 'Preferencias', items: preferenciasItems },
         { label: 'Negocio', items: [{ id: 'plantillas', icon: <PiChatTextBold size={16} />, title: 'Plantillas', color: 'purple' }] },
@@ -328,7 +328,7 @@ const Configuracion = () => {
   const renderPanel = () => {
     switch (activeSection) {
       case 'moneda':
-        if (role === 'empleado') return (
+        if (role === 'miembro') return (
           <p className="configuracion__desc">Solo el administrador puede cambiar la moneda.</p>
         );
         return (
@@ -486,14 +486,14 @@ const Configuracion = () => {
                         <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
                         <PiUserBold size={11} color="#2368C4" />
                       </div>
-                      <span className="configuracion__equipo-email">{m.username}{m.numeroEmpleado ? ` · Nº ${m.numeroEmpleado}` : ''}</span>
+                      <span className="configuracion__equipo-email">{m.username}{m.numeroMiembro ? ` · Nº ${m.numeroMiembro}` : ''}</span>
                     </div>
                   </div>
                 ))}
               </div>
             )}
 
-            <button className="btn btn--primary btn--sm" onClick={() => setShowCrearEmpleado(true)}>
+            <button className="btn btn--primary btn--sm" onClick={() => setShowCrearMiembro(true)}>
               + Nuevo miembro
             </button>
           </>
@@ -694,7 +694,7 @@ const Configuracion = () => {
                           <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
                           <PiUserBold size={11} color="#2368C4" />
                         </div>
-                        <span className="configuracion__equipo-email">{m.username}{m.numeroEmpleado ? ` · Nº ${m.numeroEmpleado}` : ''}</span>
+                        <span className="configuracion__equipo-email">{m.username}{m.numeroMiembro ? ` · Nº ${m.numeroMiembro}` : ''}</span>
                       </div>
                     </div>
                   ))}
@@ -856,17 +856,17 @@ const Configuracion = () => {
       )}
 
       {/* Modal nuevo miembro */}
-      {showCrearEmpleado && (
-        <div className="configuracion__modal-overlay" onClick={() => { setShowCrearEmpleado(false); setEmpleadoError(''); }}>
+      {showCrearMiembro && (
+        <div className="configuracion__modal-overlay" onClick={() => { setShowCrearMiembro(false); setMiembroError(''); }}>
           <div className="configuracion__modal configuracion__modal--wide" onClick={e => e.stopPropagation()}>
             <div className="configuracion__modal-header">
               <PiUsersThreeBold size={20} className="configuracion__modal-icon" />
               <h3>Nuevo miembro</h3>
-              <button className="configuracion__modal-close" onClick={() => { setShowCrearEmpleado(false); setEmpleadoError(''); }}>
+              <button className="configuracion__modal-close" onClick={() => { setShowCrearMiembro(false); setMiembroError(''); }}>
                 <PiXBold size={16} />
               </button>
             </div>
-            <form onSubmit={handleCrearEmpleado}>
+            <form onSubmit={handleCrearMiembro}>
               <div className="configuracion__modal-body">
                 <div className="configuracion__modal-row">
                   <div className="configuracion__modal-field">
@@ -875,9 +875,10 @@ const Configuracion = () => {
                       type="text"
                       className="input"
                       placeholder="Juan"
-                      value={empleadoForm.nombre}
-                      onChange={e => setEmpleadoForm(f => ({ ...f, nombre: e.target.value }))}
+                      value={miembroForm.nombre}
+                      onChange={e => setMiembroForm(f => ({ ...f, nombre: e.target.value }))}
                       required
+                      maxLength={40}
                     />
                   </div>
                   <div className="configuracion__modal-field">
@@ -886,9 +887,10 @@ const Configuracion = () => {
                       type="text"
                       className="input"
                       placeholder="Pérez"
-                      value={empleadoForm.apellido}
-                      onChange={e => setEmpleadoForm(f => ({ ...f, apellido: e.target.value }))}
+                      value={miembroForm.apellido}
+                      onChange={e => setMiembroForm(f => ({ ...f, apellido: e.target.value }))}
                       required
+                      maxLength={40}
                     />
                   </div>
                 </div>
@@ -897,8 +899,8 @@ const Configuracion = () => {
                   <input
                     type="date"
                     className="input"
-                    value={empleadoForm.fechaNacimiento}
-                    onChange={e => setEmpleadoForm(f => ({ ...f, fechaNacimiento: e.target.value }))}
+                    value={miembroForm.fechaNacimiento}
+                    onChange={e => setMiembroForm(f => ({ ...f, fechaNacimiento: e.target.value }))}
                     max={new Date().toISOString().split('T')[0]}
                     required
                   />
@@ -906,9 +908,9 @@ const Configuracion = () => {
                 <div className="configuracion__modal-field">
                   <label>Número de teléfono</label>
                   <PhoneInput
-                    value={empleadoForm.telefono}
-                    codigoPais={empleadoForm.telefonoCodigoPais}
-                    onChange={(numero, iso) => setEmpleadoForm(f => ({ ...f, telefono: numero, telefonoCodigoPais: iso }))}
+                    value={miembroForm.telefono}
+                    codigoPais={miembroForm.telefonoCodigoPais}
+                    onChange={(numero, iso) => setMiembroForm(f => ({ ...f, telefono: numero, telefonoCodigoPais: iso }))}
                     placeholder="Número de celular"
                   />
                 </div>
@@ -919,9 +921,10 @@ const Configuracion = () => {
                       type="password"
                       className="input"
                       placeholder="••••••••"
-                      value={empleadoForm.password}
-                      onChange={e => setEmpleadoForm(f => ({ ...f, password: e.target.value }))}
+                      value={miembroForm.password}
+                      onChange={e => setMiembroForm(f => ({ ...f, password: e.target.value }))}
                       required
+                      maxLength={32}
                     />
                   </div>
                   <div className="configuracion__modal-field">
@@ -930,16 +933,17 @@ const Configuracion = () => {
                       type="password"
                       className="input"
                       placeholder="••••••••"
-                      value={empleadoForm.confirmarPassword}
-                      onChange={e => setEmpleadoForm(f => ({ ...f, confirmarPassword: e.target.value }))}
+                      value={miembroForm.confirmarPassword}
+                      onChange={e => setMiembroForm(f => ({ ...f, confirmarPassword: e.target.value }))}
                       required
+                      maxLength={32}
                     />
                   </div>
                 </div>
-                {empleadoError && (
+                {miembroError && (
                   <div className="configuracion__file-error">
                     <PiWarningBold size={14} />
-                    {empleadoError}
+                    {miembroError}
                   </div>
                 )}
               </div>
@@ -947,13 +951,13 @@ const Configuracion = () => {
                 <button
                   type="button"
                   className="btn btn--outline btn--sm"
-                  onClick={() => { setShowCrearEmpleado(false); setEmpleadoError(''); }}
-                  disabled={creandoEmpleado}
+                  onClick={() => { setShowCrearMiembro(false); setMiembroError(''); }}
+                  disabled={creandoMiembro}
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn--primary btn--sm" disabled={creandoEmpleado}>
-                  {creandoEmpleado ? 'Creando...' : 'Crear miembro'}
+                <button type="submit" className="btn btn--primary btn--sm" disabled={creandoMiembro}>
+                  {creandoMiembro ? 'Creando...' : 'Crear miembro'}
                 </button>
               </div>
             </form>
@@ -1033,8 +1037,8 @@ const Configuracion = () => {
                         }
                       </div>
                       <div className="configuracion__miembro-name">{nombreCompleto || '—'}</div>
-                      {m.numeroEmpleado && (
-                        <div className="configuracion__miembro-badge">#{m.numeroEmpleado}</div>
+                      {m.numeroMiembro && (
+                        <div className="configuracion__miembro-badge">#{m.numeroMiembro}</div>
                       )}
                     </div>
                     <div className="configuracion__miembro-fields">
@@ -1070,11 +1074,11 @@ const Configuracion = () => {
                     <div className="configuracion__modal-row">
                       <div className="configuracion__modal-field">
                         <label>Nombre</label>
-                        <input type="text" className="input" value={editMiembroForm.nombre} onChange={e => setEditMiembroForm(f => ({ ...f, nombre: e.target.value }))} />
+                        <input type="text" className="input" value={editMiembroForm.nombre} onChange={e => setEditMiembroForm(f => ({ ...f, nombre: e.target.value }))} maxLength={40} />
                       </div>
                       <div className="configuracion__modal-field">
                         <label>Apellido</label>
-                        <input type="text" className="input" value={editMiembroForm.apellido} onChange={e => setEditMiembroForm(f => ({ ...f, apellido: e.target.value }))} />
+                        <input type="text" className="input" value={editMiembroForm.apellido} onChange={e => setEditMiembroForm(f => ({ ...f, apellido: e.target.value }))} maxLength={40} />
                       </div>
                     </div>
                     <div className="configuracion__modal-field">
@@ -1098,6 +1102,7 @@ const Configuracion = () => {
                           placeholder="••••••••"
                           value={editMiembroForm.password}
                           onChange={e => setEditMiembroForm(f => ({ ...f, password: e.target.value }))}
+                          maxLength={32}
                         />
                         <button type="button" onClick={() => setShowEditPwd(v => !v)}>
                           {showEditPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
@@ -1113,6 +1118,7 @@ const Configuracion = () => {
                           placeholder="••••••••"
                           value={editMiembroForm.confirmarPassword}
                           onChange={e => setEditMiembroForm(f => ({ ...f, confirmarPassword: e.target.value }))}
+                          maxLength={32}
                         />
                         <button type="button" onClick={() => setShowEditConfirmPwd(v => !v)}>
                           {showEditConfirmPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}

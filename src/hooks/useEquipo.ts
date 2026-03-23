@@ -3,11 +3,11 @@ import { useAuth } from './useAuth';
 import type { User } from '../types/User';
 import {
   suscribirMiembros,
-  createEmpleado,
-  desactivarEmpleado,
-  actualizarEmpleado,
-  actualizarContrasenaEmpleado,
-  type EmpleadoFormData,
+  createMiembro,
+  desactivarMiembro,
+  actualizarMiembro,
+  actualizarContrasenaMiembro,
+  type MiembroFormData,
 } from '../services/equipoService';
 import { getPlanLimits } from '../constants/planLimits';
 
@@ -26,7 +26,7 @@ export const useEquipo = () => {
     return unsub;
   }, [user, role, negocioUid]);
 
-  const crearEmpleado = async (data: EmpleadoFormData): Promise<void> => {
+  const crearMiembro = async (data: MiembroFormData): Promise<void> => {
     if (!user || !negocioUid) throw new Error('No autenticado');
 
     const limites = getPlanLimits(user.plan);
@@ -37,24 +37,24 @@ export const useEquipo = () => {
       throw new Error(`Has alcanzado el límite de ${limites.miembros} miembros en tu plan. Actualiza tu plan para agregar más.`);
     }
 
-    await createEmpleado(data, negocioUid, user.nombreNegocio);
+    await createMiembro(data, negocioUid, user.nombreNegocio);
     // onSnapshot actualizará la lista automáticamente
   };
 
   const remover = async (uid: string): Promise<void> => {
-    await desactivarEmpleado(uid);
+    await desactivarMiembro(uid);
   };
 
   const actualizar = async (
     uid: string,
     data: Partial<Pick<User, 'nombre' | 'apellido' | 'telefono' | 'telefonoCodigoPais' | 'fechaNacimiento'>>,
   ): Promise<void> => {
-    await actualizarEmpleado(uid, data);
+    await actualizarMiembro(uid, data);
   };
 
   const actualizarContrasena = async (uid: string, nuevaContrasena: string): Promise<void> => {
-    await actualizarContrasenaEmpleado(uid, nuevaContrasena);
+    await actualizarContrasenaMiembro(uid, nuevaContrasena);
   };
 
-  return { miembros, loading, crearEmpleado, remover, actualizar, actualizarContrasena };
+  return { miembros, loading, crearMiembro, remover, actualizar, actualizarContrasena };
 };

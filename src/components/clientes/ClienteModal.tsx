@@ -299,6 +299,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   onChange={handleChange}
                   className={`input ${errors.nombre ? 'input--error' : ''}`}
                   placeholder="Nombre"
+                  maxLength={40}
                 />
                 {errors.nombre && <span className="form-error">{errors.nombre}</span>}
               </div>
@@ -313,6 +314,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   onChange={handleChange}
                   className={`input ${errors.apellido ? 'input--error' : ''}`}
                   placeholder="Apellido"
+                  maxLength={40}
                 />
                 {errors.apellido && <span className="form-error">{errors.apellido}</span>}
               </div>
@@ -342,6 +344,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   onChange={handleChange}
                   className={`input ${errors.correo ? 'input--error' : ''}`}
                   placeholder="correo@ejemplo.com"
+                  maxLength={100}
                 />
                 {errors.correo && <span className="form-error">{errors.correo}</span>}
               </div>
@@ -362,6 +365,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   onChange={handleChange}
                   className="input"
                   placeholder="Ej: México"
+                  maxLength={40}
                 />
               </div>
 
@@ -375,6 +379,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   onChange={handleChange}
                   className={`input ${errors.ciudad ? 'input--error' : ''}`}
                   placeholder="Ciudad"
+                  maxLength={60}
                 />
                 {errors.ciudad && <span className="form-error">{errors.ciudad}</span>}
               </div>
@@ -389,6 +394,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   onChange={handleChange}
                   className={`input ${errors.colonia ? 'input--error' : ''}`}
                   placeholder="Nombre de la colonia"
+                  maxLength={60}
                 />
                 {errors.colonia && <span className="form-error">{errors.colonia}</span>}
               </div>
@@ -403,6 +409,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   onChange={handleChange}
                   className={`input ${errors.calle ? 'input--error' : ''}`}
                   placeholder="Nombre de la calle"
+                  maxLength={80}
                 />
                 {errors.calle && <span className="form-error">{errors.calle}</span>}
               </div>
@@ -417,6 +424,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   onChange={handleChange}
                   className={`input ${errors.numeroExterior ? 'input--error' : ''}`}
                   placeholder="Ej: 123"
+                  maxLength={10}
                 />
                 {errors.numeroExterior && <span className="form-error">{errors.numeroExterior}</span>}
               </div>
@@ -431,6 +439,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   onChange={handleChange}
                   className="input"
                   placeholder="Ej: Depto 4 (opcional)"
+                  maxLength={20}
                 />
               </div>
 

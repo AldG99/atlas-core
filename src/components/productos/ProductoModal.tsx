@@ -231,6 +231,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   onChange={handleChange}
                   className={`input ${errors.clave ? 'input--error' : ''}`}
                   placeholder="Ej: PAST-001"
+                  maxLength={8}
                 />
                 {errors.clave && <span className="form-error">{errors.clave}</span>}
               </div>
@@ -245,6 +246,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   onChange={handleChange}
                   className={`input ${errors.nombre ? 'input--error' : ''}`}
                   placeholder="Ej: Pastel de chocolate"
+                  maxLength={60}
                 />
                 {errors.nombre && <span className="form-error">{errors.nombre}</span>}
               </div>

@@ -229,6 +229,7 @@ const Register = () => {
                 onChange={(e) => setNombreNegocio(e.target.value)}
                 className={`input${errors.nombreNegocio ? ' input--error' : ''}`}
                 placeholder="Mi Negocio"
+                maxLength={60}
               />
               {errors.nombreNegocio && <span className="register-form__field-error">{errors.nombreNegocio}</span>}
             </div>
@@ -243,6 +244,7 @@ const Register = () => {
                   onChange={(e) => setNombre(e.target.value)}
                   className={`input${errors.nombre ? ' input--error' : ''}`}
                   placeholder="Nombre"
+                  maxLength={40}
                 />
                 {errors.nombre && <span className="register-form__field-error">{errors.nombre}</span>}
               </div>
@@ -255,6 +257,7 @@ const Register = () => {
                   onChange={(e) => setApellido(e.target.value)}
                   className={`input${errors.apellido ? ' input--error' : ''}`}
                   placeholder="Apellido"
+                  maxLength={40}
                 />
                 {errors.apellido && <span className="register-form__field-error">{errors.apellido}</span>}
               </div>
@@ -319,6 +322,7 @@ const Register = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 className={`input${errors.email ? ' input--error' : ''}`}
                 placeholder="tu@correo.com"
+                maxLength={100}
               />
               {errors.email && <span className="register-form__field-error">{errors.email}</span>}
             </div>
@@ -333,6 +337,7 @@ const Register = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className={`input${errors.password ? ' input--error' : ''}`}
                   placeholder="Mínimo 8 caracteres"
+                  maxLength={32}
                 />
                 <button
                   type="button"
@@ -356,6 +361,7 @@ const Register = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className={`input${errors.confirmPassword ? ' input--error' : ''}`}
                   placeholder="Repite tu contraseña"
+                  maxLength={32}
                 />
                 <button
                   type="button"

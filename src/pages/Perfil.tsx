@@ -56,7 +56,7 @@ interface FormErrors {
 
 const Perfil = () => {
   const { user, updateProfile, changePassword, role } = useAuth();
-  const isEmpleado = role === 'empleado';
+  const isMiembro = role === 'miembro';
   const { showToast } = useToast();
   const { clientes } = useClientes();
   const { productos } = useProductos();
@@ -167,10 +167,10 @@ const Perfil = () => {
   };
 
   const handleSave = async () => {
-    if (!isEmpleado && !validate()) return;
+    if (!isMiembro && !validate()) return;
     setSaving(true);
     try {
-      if (isEmpleado) {
+      if (isMiembro) {
         await updateProfile({}, imageFile ?? undefined);
       } else {
         await updateProfile({
@@ -294,21 +294,21 @@ const Perfil = () => {
               {!isEditing && (
                 <div className="perfil__avatar-name">
                   <span className="perfil__negocio">{user?.nombreNegocio}</span>
-                  <span className="perfil__email">{isEmpleado ? user?.username : user?.email}</span>
+                  <span className="perfil__email">{isMiembro ? user?.username : user?.email}</span>
                 </div>
               )}
             </div>
 
             <div className="perfil__card-header">
               <PiUserBold size={16} />
-              <span>{isEmpleado ? 'Información del miembro' : 'Información del administrador'}</span>
+              <span>{isMiembro ? 'Información del miembro' : 'Información del administrador'}</span>
             </div>
 
             <div className="perfil__fields">
               {/* Nombre del negocio */}
               <div className="perfil__field perfil__field--full">
                 <label>Nombre del negocio</label>
-                {isEditing && !isEmpleado ? (
+                {isEditing && !isMiembro ? (
                   <>
                     <input
                       type="text"
@@ -317,6 +317,7 @@ const Perfil = () => {
                       onChange={handleChange}
                       className={`input${errors.nombreNegocio ? ' input--error' : ''}`}
                       placeholder="Mi Negocio"
+                      maxLength={60}
                     />
                     {errors.nombreNegocio && <span className="perfil__field-error">{errors.nombreNegocio}</span>}
                   </>
@@ -328,7 +329,7 @@ const Perfil = () => {
               {/* Nombre y Apellido */}
               <div className="perfil__field">
                 <label>Nombre</label>
-                {isEditing && !isEmpleado ? (
+                {isEditing && !isMiembro ? (
                   <>
                     <input
                       type="text"
@@ -337,6 +338,7 @@ const Perfil = () => {
                       onChange={handleChange}
                       className={`input${errors.nombre ? ' input--error' : ''}`}
                       placeholder="Nombre"
+                      maxLength={40}
                     />
                     {errors.nombre && <span className="perfil__field-error">{errors.nombre}</span>}
                   </>
@@ -347,7 +349,7 @@ const Perfil = () => {
 
               <div className="perfil__field">
                 <label>Apellido</label>
-                {isEditing && !isEmpleado ? (
+                {isEditing && !isMiembro ? (
                   <>
                     <input
                       type="text"
@@ -356,6 +358,7 @@ const Perfil = () => {
                       onChange={handleChange}
                       className={`input${errors.apellido ? ' input--error' : ''}`}
                       placeholder="Apellido"
+                      maxLength={40}
                     />
                     {errors.apellido && <span className="perfil__field-error">{errors.apellido}</span>}
                   </>
@@ -367,7 +370,7 @@ const Perfil = () => {
               {/* Fecha de nacimiento */}
               <div className="perfil__field">
                 <label>Fecha de nacimiento</label>
-                {isEditing && !isEmpleado ? (
+                {isEditing && !isMiembro ? (
                   <>
                     <input
                       type="date"
@@ -392,7 +395,7 @@ const Perfil = () => {
               {/* Teléfono */}
               <div className="perfil__field">
                 <label>Número de celular</label>
-                {isEditing && !isEmpleado ? (
+                {isEditing && !isMiembro ? (
                   <>
                     <PhoneInput
                       value={formData.telefono}
@@ -414,8 +417,8 @@ const Perfil = () => {
 
               {/* Email — solo lectura */}
               <div className="perfil__field perfil__field--full">
-                <label>{isEmpleado ? 'Usuario' : 'Correo electrónico'} <span className="perfil__readonly-badge">Solo lectura</span></label>
-                <p className="perfil__readonly">{isEmpleado ? user?.username : user?.email || '—'}</p>
+                <label>{isMiembro ? 'Usuario' : 'Correo electrónico'} <span className="perfil__readonly-badge">Solo lectura</span></label>
+                <p className="perfil__readonly">{isMiembro ? user?.username : user?.email || '—'}</p>
               </div>
 
               {/* Fecha de registro — solo lectura */}
@@ -431,7 +434,7 @@ const Perfil = () => {
           </div>
 
           {/* Cambiar contraseña — solo admin */}
-          {!isEmpleado && <div className="perfil__card">
+          {!isMiembro && <div className="perfil__card">
             <div className="perfil__card-header">
               <PiLockKeyBold size={16} />
               <span>Seguridad</span>
@@ -454,6 +457,7 @@ const Perfil = () => {
                       placeholder="••••••••"
                       value={passwordData.current}
                       onChange={e => setPasswordData(p => ({ ...p, current: e.target.value }))}
+                      maxLength={32}
                     />
                     <button type="button" onClick={() => setShowCurrentPwd(v => !v)}>
                       {showCurrentPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
@@ -469,6 +473,7 @@ const Perfil = () => {
                       placeholder="••••••••"
                       value={passwordData.new}
                       onChange={e => setPasswordData(p => ({ ...p, new: e.target.value }))}
+                      maxLength={32}
                     />
                     <button type="button" onClick={() => setShowNewPwd(v => !v)}>
                       {showNewPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
@@ -484,6 +489,7 @@ const Perfil = () => {
                       placeholder="••••••••"
                       value={passwordData.confirm}
                       onChange={e => setPasswordData(p => ({ ...p, confirm: e.target.value }))}
+                      maxLength={32}
                     />
                   </div>
                 </div>

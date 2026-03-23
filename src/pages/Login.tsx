@@ -6,7 +6,7 @@ import { ROUTES } from '../config/routes';
 import AuthLayout from '../layouts/AuthLayout';
 import './Login.scss';
 
-type LoginMode = 'admin' | 'empleado';
+type LoginMode = 'admin' | 'miembro';
 
 const Login = () => {
   const [mode, setMode] = useState<LoginMode>('admin');
@@ -27,7 +27,7 @@ const Login = () => {
   const [resetSent, setResetSent] = useState(false);
   const [resetError, setResetError] = useState('');
 
-  const { login, loginEmpleado, sendPasswordReset } = useAuth();
+  const { login, loginMiembro, sendPasswordReset } = useAuth();
   const navigate = useNavigate();
 
   // Live countdown when account is temporarily locked
@@ -77,7 +77,7 @@ const Login = () => {
       if (mode === 'admin') {
         await login({ email, password });
       } else {
-        await loginEmpleado(username, password);
+        await loginMiembro(username, password);
       }
       setFailedAttempts(0);
       setLockedUntil(null);
@@ -161,8 +161,8 @@ const Login = () => {
           </button>
           <button
             type="button"
-            className={`login-form__tab${mode === 'empleado' ? ' login-form__tab--active' : ''}`}
-            onClick={() => { setMode('empleado'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
+            className={`login-form__tab${mode === 'miembro' ? ' login-form__tab--active' : ''}`}
+            onClick={() => { setMode('miembro'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
           >
             Miembro
           </button>

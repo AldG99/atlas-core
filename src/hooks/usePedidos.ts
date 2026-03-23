@@ -8,8 +8,8 @@ export const buildCreadoPor = (user: User): CreadoPor => {
   const base = user.nombre
     ? `${user.nombre}${user.apellido ? ' ' + user.apellido : ''}`
     : user.nombreNegocio;
-  const sufijo = user.role === 'empleado'
-    ? (user.numeroEmpleado ? ` #${user.numeroEmpleado}` : '')
+  const sufijo = user.role === 'miembro'
+    ? (user.numeroMiembro ? ` #${user.numeroMiembro}` : '')
     : ' (Adm.)';
   return { uid: user.uid, nombre: `${base}${sufijo}` };
 };

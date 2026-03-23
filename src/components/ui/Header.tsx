@@ -118,7 +118,7 @@ const Header = () => {
                     ? `${user.nombre} ${user.apellido}`
                     : 'Administrador'}
                 </span>
-                {role === 'empleado'
+                {role === 'miembro'
                   ? <PiUserBold size={11} color="#2368C4" />
                   : <PiShieldCheckBold size={11} color="#F8A800" />
                 }

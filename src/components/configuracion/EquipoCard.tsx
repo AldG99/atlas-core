@@ -6,7 +6,7 @@ import PhoneInput from '../clientes/PhoneInput';
 import './EquipoCard.scss';
 
 const EquipoCard = () => {
-  const { miembros, loading, crearEmpleado, remover } = useEquipo();
+  const { miembros, loading, crearMiembro, remover } = useEquipo();
   const { showToast } = useToast();
 
   const [showForm, setShowForm] = useState(false);
@@ -33,7 +33,7 @@ const EquipoCard = () => {
     }
     setCreando(true);
     try {
-      await crearEmpleado({
+      await crearMiembro({
         nombre: form.nombre,
         apellido: form.apellido,
         fechaNacimiento: form.fechaNacimiento,
@@ -93,7 +93,7 @@ const EquipoCard = () => {
                         {m.nombre} {m.apellido}
                       </span>
                       <span className="equipo-card__item-email">
-                        {m.username}{m.numeroEmpleado ? ` · Nº ${m.numeroEmpleado}` : ''}
+                        {m.username}{m.numeroMiembro ? ` · Nº ${m.numeroMiembro}` : ''}
                       </span>
                     </div>
                     <button
@@ -125,11 +125,11 @@ const EquipoCard = () => {
           <div className="equipo-card__form-row">
             <div className="equipo-card__form-field">
               <label>Nombre</label>
-              <input className="input" value={form.nombre} onChange={e => setForm(p => ({...p, nombre: e.target.value}))} placeholder="Nombre" required />
+              <input className="input" value={form.nombre} onChange={e => setForm(p => ({...p, nombre: e.target.value}))} placeholder="Nombre" maxLength={40} required />
             </div>
             <div className="equipo-card__form-field">
               <label>Apellido</label>
-              <input className="input" value={form.apellido} onChange={e => setForm(p => ({...p, apellido: e.target.value}))} placeholder="Apellido" required />
+              <input className="input" value={form.apellido} onChange={e => setForm(p => ({...p, apellido: e.target.value}))} placeholder="Apellido" maxLength={40} required />
             </div>
           </div>
           <div className="equipo-card__form-field">
@@ -155,11 +155,11 @@ const EquipoCard = () => {
           <div className="equipo-card__form-row">
             <div className="equipo-card__form-field">
               <label>Contraseña</label>
-              <input className="input" type="password" value={form.password} onChange={e => setForm(p => ({...p, password: e.target.value}))} placeholder="••••••••" required minLength={8} />
+              <input className="input" type="password" value={form.password} onChange={e => setForm(p => ({...p, password: e.target.value}))} placeholder="••••••••" required minLength={8} maxLength={32} />
             </div>
             <div className="equipo-card__form-field">
               <label>Confirmar contraseña</label>
-              <input className="input" type="password" value={form.confirmarPassword} onChange={e => setForm(p => ({...p, confirmarPassword: e.target.value}))} placeholder="••••••••" required />
+              <input className="input" type="password" value={form.confirmarPassword} onChange={e => setForm(p => ({...p, confirmarPassword: e.target.value}))} placeholder="••••••••" required maxLength={32} />
             </div>
           </div>
           {formError && (

@@ -3,12 +3,12 @@ import { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import type { User, AuthState, LoginCredentials, RegisterCredentials } from '../types/User';
-import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserDataWithAuth, deleteAccount as deleteAccountService, loginEmpleado as loginEmpleadoService, resetPassword } from '../services/authService';
+import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserDataWithAuth, deleteAccount as deleteAccountService, loginMiembro as loginMiembroService, resetPassword } from '../services/authService';
 import type { UpdateProfileData } from '../services/authService';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
-  loginEmpleado: (username: string, password: string) => Promise<void>;
+  loginMiembro: (username: string, password: string) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: UpdateProfileData, imageFile?: File | null) => Promise<void>;
@@ -17,7 +17,7 @@ interface AuthContextType extends AuthState {
   deleteAccount: (password: string) => Promise<void>;
   sendPasswordReset: (email: string) => Promise<void>;
   negocioUid: string | null;
-  role: 'admin' | 'empleado';
+  role: 'admin' | 'miembro';
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -64,11 +64,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const loginEmpleado = async (username: string, password: string) => {
+  const loginMiembro = async (username: string, password: string) => {
     try {
       setError(null);
       setLoading(true);
-      const userData = await loginEmpleadoService(username, password);
+      const userData = await loginMiembroService(username, password);
       setUser(userData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
@@ -164,14 +164,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const negocioUid = user?.negocioUid ?? user?.uid ?? null;
-  const role = (user?.role ?? 'admin') as 'admin' | 'empleado';
+  const role = (user?.role ?? 'admin') as 'admin' | 'miembro';
 
   const value: AuthContextType = {
     user,
     loading,
     error,
     login,
-    loginEmpleado,
+    loginMiembro,
     register,
     logout,
     updateProfile,
