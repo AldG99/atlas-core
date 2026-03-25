@@ -1,5 +1,6 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
+@use 'sass:color';
 
 $topbar-height: 52px;
 
@@ -101,7 +102,7 @@ $topbar-height: 52px;
 
     &--fav-active {
       color: $color-favorite;
-      &:hover { color: darken($color-favorite, 15%); }
+      &:hover { color: color.adjust($color-favorite, $lightness: -15%); }
     }
 
     &--back {
