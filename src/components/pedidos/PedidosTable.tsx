@@ -229,7 +229,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
 
       {!loading && (
         <div className="pedidos-table__pagination">
-          <span className="pedidos-table__page-info">
+          <span className="pedidos-table__page-info pedidos-table__page-info--total">
             {pedidos.length} {pedidos.length === 1 ? 'pedido' : 'pedidos'}
           </span>
           {totalPages > 1 && (
