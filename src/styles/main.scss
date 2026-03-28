@@ -23,7 +23,7 @@
 
 .btn {
   @include button-base;
-  gap: $spacing-xs;
+  gap: $spacing-sm;
 
   // Mobile: botones más grandes para mejor touch target
   padding: $spacing-sm $spacing-md;
@@ -180,6 +180,11 @@
   cursor: pointer;
   transition: all $transition-fast;
   background-color: transparent;
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
 
   @include sm {
     width: 36px;

@@ -14,11 +14,11 @@ const NotFound = () => {
         </p>
         <div className="not-found__actions">
           <Link to={ROUTES.DASHBOARD} className="btn btn--primary">
-            <PiArrowLeftBold size={16} style={{ marginRight: '6px' }} />
+            <PiArrowLeftBold size={16} />
             Ir al inicio
           </Link>
           <Link to={ROUTES.SOPORTE} className="btn btn--outline">
-            <PiMagnifyingGlassBold size={16} style={{ marginRight: '6px' }} />
+            <PiMagnifyingGlassBold size={16} />
             Soporte
           </Link>
         </div>

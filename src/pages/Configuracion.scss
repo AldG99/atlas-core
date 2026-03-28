@@ -92,6 +92,7 @@
     justify-content: center;
     flex-shrink: 0;
     color: $color-white;
+    border: 1px solid rgba(0, 0, 0, 0.12);
 
     &--blue    { background-color: $color-primary; }
     &--yellow  { background-color: $color-favorite; }
@@ -890,22 +891,6 @@
     color: $color-gray-800;
     font-weight: 500;
     margin: 0;
-  }
-}
-
-.btn--danger {
-  background-color: $color-danger;
-  color: $color-white;
-  border: 1px solid $color-danger;
-
-  &:hover:not(:disabled) {
-    background-color: $color-danger-dark;
-    border-color: $color-danger-dark;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
   }
 }
 

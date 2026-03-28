@@ -17,6 +17,8 @@ $topbar-height: 52px;
   padding-top: 48px;
   padding-bottom: 12px;
   min-height: 100%;
+  display: flex;
+  flex-direction: column;
 
   // Controles flotantes
   &__controls {
@@ -27,7 +29,6 @@ $topbar-height: 52px;
     z-index: 201;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     pointer-events: none;
 
     > * { pointer-events: all; }
@@ -64,25 +65,18 @@ $topbar-height: 52px;
   }
 
   &__title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: $font-size-xl;
     font-weight: 700;
     color: $color-gray-900;
-    margin: 0 0 $spacing-sm;
+    margin: 0;
+    pointer-events: none;
+    white-space: nowrap;
 
     @include sm {
       font-size: $font-size-2xl;
-    }
-  }
-
-  &__top-actions {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: $spacing-xs;
     }
   }
 
@@ -104,6 +98,7 @@ $topbar-height: 52px;
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
+    flex: 1;
 
     @include md {
       padding: $spacing-sm $spacing-lg;
@@ -115,8 +110,8 @@ $topbar-height: 52px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: $spacing-xs;
-    padding: $spacing-sm $spacing-md;
+    gap: 4px;
+    padding: $spacing-md $spacing-md 2px;
     border-bottom: 1px solid $color-gray-100;
   }
 
@@ -221,7 +216,8 @@ $topbar-height: 52px;
     height: 36px;
     background-color: rgba($color-primary, 0.08);
     color: $color-primary;
-    border-radius: $border-radius-md;
+    border-radius: 8px;
+    border: 1px solid rgba($color-primary, 0.15);
     flex-shrink: 0;
   }
 
@@ -250,6 +246,10 @@ $topbar-height: 52px;
     border-radius: $border-radius-lg;
     box-shadow: $shadow-sm;
     overflow: hidden;
+
+    &--main {
+      flex: 1;
+    }
   }
 
   &__card-header {
@@ -262,6 +262,14 @@ $topbar-height: 52px;
     font-weight: 600;
     color: $color-gray-600;
     background-color: $color-gray-50;
+    justify-content: space-between;
+  }
+
+  &__card-header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    margin-left: auto;
   }
 
   &__fields {
@@ -393,6 +401,6 @@ $topbar-height: 52px;
     color: $color-gray-400;
     background-color: $color-gray-100;
     padding: 1px 6px;
-    border-radius: 0;
+    border-radius: $border-radius-pill;
   }
 }

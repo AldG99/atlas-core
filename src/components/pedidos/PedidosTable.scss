@@ -10,14 +10,6 @@
   border: 1px solid $color-gray-200;
 }
 
-.pedidos-table-header {
-  flex-shrink: 0;
-  background-color: $color-gray-50;
-  overflow: hidden;
-  scrollbar-gutter: stable;
-  box-shadow: inset 0 -1px 0 $color-gray-200;
-}
-
 .pedidos-table-container {
   background-color: $color-white;
   overflow-x: auto;
@@ -49,8 +41,11 @@
   min-width: 700px;
 
   thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     background-color: $color-gray-50;
-    border-bottom: 1px solid $color-gray-200;
+    box-shadow: inset 0 -1px 0 $color-gray-200;
 
     th {
       padding: $spacing-sm $spacing-md;
@@ -203,7 +198,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-    transition: color 0.2s ease;
+    transition: color $transition-fast;
   }
 
   &__fav-icon {
@@ -324,7 +319,12 @@
     background-color: $color-white;
     color: $color-gray-600;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all $transition-fast;
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 2px;
+    }
 
     &:hover:not(:disabled) {
       background-color: $color-gray-100;

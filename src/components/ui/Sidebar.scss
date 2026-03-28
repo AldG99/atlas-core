@@ -48,7 +48,7 @@ $sidebar-width: 220px;
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
+  height: 100dvh;
   width: $sidebar-width;
   background-color: rgba($color-white, 0.92);
   backdrop-filter: blur(24px) saturate(180%);
@@ -161,7 +161,7 @@ $sidebar-width: 220px;
     background-color: $color-gray-200;
     color: $color-gray-500;
     white-space: nowrap;
-    border-radius: 999px;
+    border-radius: $border-radius-pill;
   }
 
   // ── Footer ──────────────────────────────────────────────

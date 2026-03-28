@@ -14,7 +14,7 @@ const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
   registro_asc: 'Más antiguos',
 };
 import { useLocation } from 'react-router-dom';
-import { PiCloudArrowUpBold, PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPlusBold } from 'react-icons/pi';
+import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPlusBold } from 'react-icons/pi';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
@@ -117,23 +117,15 @@ const Productos = () => {
               onClick={() => setShowHistorial(true)}
               className="btn btn--outline"
             >
-              <PiClockCounterClockwiseBold size={18} style={{ marginRight: '6px' }} />
+              <PiClockCounterClockwiseBold size={18} />
               Registro de descuentos
-            </button>
-            <button
-              onClick={() => {}}
-              className="btn btn--outline"
-              title="Exportar a Google Drive"
-            >
-              <PiCloudArrowUpBold size={18} style={{ marginRight: '6px' }} />
-              Google Drive
             </button>
             {role === 'admin' && (
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="btn btn--primary"
               >
-                <PiPlusBold size={18} style={{ marginRight: '6px' }} />
+                <PiPlusBold size={18} />
                 Nuevo Producto
               </button>
             )}

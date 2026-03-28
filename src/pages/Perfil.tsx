@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   PiArrowLeftBold,
@@ -75,7 +75,14 @@ const Perfil = () => {
   const [showNewPwd, setShowNewPwd] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(user?.fotoPerfil ?? null);
+  const [photoRemoved, setPhotoRemoved] = useState(false);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isEditing) {
+      setPreviewImage(user?.fotoPerfil ?? null);
+    }
+  }, [user?.fotoPerfil]);
 
   const [formData, setFormData] = useState({
     nombreNegocio: user?.nombreNegocio ?? '',
@@ -120,6 +127,7 @@ const Perfil = () => {
   const removeImage = () => {
     setPreviewImage(null);
     setImageFile(null);
+    setPhotoRemoved(true);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -169,11 +177,13 @@ const Perfil = () => {
   const handleSave = async () => {
     if (!isMiembro && !validate()) return;
     setSaving(true);
+    const removePhotoData = photoRemoved && !imageFile ? { fotoPerfil: '' } : {};
     try {
       if (isMiembro) {
-        await updateProfile({}, imageFile ?? undefined);
+        await updateProfile(removePhotoData, imageFile ?? undefined);
       } else {
         await updateProfile({
+          ...removePhotoData,
           nombreNegocio: formData.nombreNegocio.trim(),
           nombre: formData.nombre.trim(),
           apellido: formData.apellido.trim(),
@@ -184,6 +194,7 @@ const Perfil = () => {
       }
       setIsEditing(false);
       setImageFile(null);
+      setPhotoRemoved(false);
       showToast('Perfil actualizado correctamente', 'success');
     } catch {
       showToast('Error al guardar el perfil', 'error');
@@ -203,6 +214,7 @@ const Perfil = () => {
     });
     setPreviewImage(user?.fotoPerfil ?? null);
     setImageFile(null);
+    setPhotoRemoved(false);
     setErrors({});
     setIsEditing(false);
   };
@@ -238,29 +250,13 @@ const Perfil = () => {
           <button className="perfil__back-btn" onClick={() => navigate(-1)}>
             <PiArrowLeftBold size={20} />
           </button>
-          <div className="perfil__top-actions">
-            {isEditing ? (
-              <>
-                <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving}>
-                  Cancelar
-                </button>
-                <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving}>
-                  {saving ? 'Guardando...' : 'Guardar cambios'}
-                </button>
-              </>
-            ) : (
-              <button className="perfil__action-btn perfil__action-btn--primary" onClick={() => setIsEditing(true)} title="Editar perfil">
-                <PiPencilBold size={20} />
-              </button>
-            )}
-          </div>
+          <h1 className="perfil__title">Mi perfil</h1>
         </div>
 
         <div className="perfil__body">
-          <h1 className="perfil__title">Mi perfil</h1>
 
           {/* Formulario */}
-          <div className="perfil__card">
+          <div className="perfil__card perfil__card--main">
             {/* Avatar dentro del card */}
             <div className="perfil__avatar-section">
               <div
@@ -302,6 +298,24 @@ const Perfil = () => {
             <div className="perfil__card-header">
               <PiUserBold size={16} />
               <span>{isMiembro ? 'Información del miembro' : 'Información del administrador'}</span>
+              {!isMiembro && (
+                <div className="perfil__card-header-actions">
+                  {isEditing ? (
+                    <>
+                      <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving}>
+                        Cancelar
+                      </button>
+                      <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving}>
+                        {saving ? 'Guardando...' : 'Guardar cambios'}
+                      </button>
+                    </>
+                  ) : (
+                    <button className="perfil__action-btn perfil__action-btn--primary" onClick={() => setIsEditing(true)} title="Editar perfil">
+                      <PiPencilBold size={20} />
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="perfil__fields">

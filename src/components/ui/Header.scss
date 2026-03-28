@@ -75,6 +75,7 @@
     &--notifications {
       &:hover {
         background-color: transparent;
+        color: $color-primary;
       }
     }
   }
@@ -90,7 +91,7 @@
     color: $color-white;
     font-size: 10px;
     font-weight: 600;
-    border-radius: 999px;
+    border-radius: $border-radius-pill;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -133,7 +134,7 @@
     height: 32px;
     background: linear-gradient(135deg, $color-primary, $color-primary-dark);
     color: $color-white;
-    border-radius: 8px;
+    border-radius: $border-radius-avatar;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -294,6 +295,8 @@
 
   &__dropdown-content {
     padding: $spacing-xs 0;
+    max-height: 60vh;
+    overflow-y: auto;
   }
 
   &__dropdown-item {
@@ -359,6 +362,11 @@
     padding: $spacing-xs $spacing-md;
     cursor: pointer;
     transition: all $transition-fast;
+    border-bottom: 1px solid $color-gray-100;
+
+    &:last-child {
+      border-bottom: none;
+    }
 
     &:hover {
       background-color: $color-gray-50;

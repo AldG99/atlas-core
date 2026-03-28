@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold, PiShieldCheckBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
@@ -35,6 +35,17 @@ const Header = () => {
     return `${day} ${monthCapitalized}, ${year}`;
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowProfileMenu(false);
+        setShowNotifications(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleNotificacionClick = (n: Notificacion) => {
     setShowNotifications(false);
     navigate(n.link, { state: n.filterState });
@@ -55,10 +66,13 @@ const Header = () => {
           <button
             className="header__icon-btn header__icon-btn--notifications"
             onClick={() => setShowNotifications(!showNotifications)}
+            aria-label={`Notificaciones${notificaciones.length > 0 ? ` (${notificaciones.length} nuevas)` : ''}`}
+            aria-haspopup="true"
+            aria-expanded={showNotifications}
           >
             <PiBellBold size={20} />
             {notificaciones.length > 0 && (
-              <span className="header__notification-badge">{notificaciones.length}</span>
+              <span className="header__notification-badge" aria-hidden="true">{notificaciones.length > 99 ? '99+' : notificaciones.length}</span>
             )}
           </button>
 
@@ -102,6 +116,9 @@ const Header = () => {
           <button
             className="header__profile-btn"
             onClick={() => setShowProfileMenu(!showProfileMenu)}
+            aria-haspopup="true"
+            aria-expanded={showProfileMenu}
+            aria-label={`Menú de perfil — ${user?.nombreNegocio ?? 'Usuario'}`}
           >
             <div className="header__avatar">
               {user?.fotoPerfil ? (

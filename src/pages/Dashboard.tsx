@@ -40,6 +40,8 @@ const DATE_FILTERS: Record<DateFilter, string> = {
   mes: 'Este mes'
 };
 
+const FILTER_ORDER: StatusFilter[] = ['todos', ...Object.keys(PEDIDO_STATUS) as PedidoStatus[]];
+
 const Dashboard = () => {
   const [filterStatus, setFilterStatus] = useState<StatusFilter>('todos');
   const [searchTerm, setSearchTerm] = useState('');
@@ -117,7 +119,7 @@ const Dashboard = () => {
   }, [allPedidos]);
 
   const filteredAndSortedPedidos = useMemo(() => {
-    let result = [...pedidos];
+    let result = filterStatus === 'abono_pendiente' ? [...allPedidos] : [...pedidos];
 
     // Filtro por fecha
     if (dateFilter !== 'todos') {
@@ -201,8 +203,6 @@ const Dashboard = () => {
     }
   };
 
-  const FILTER_ORDER: StatusFilter[] = ['todos', ...Object.keys(PEDIDO_STATUS) as PedidoStatus[]];
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName.toLowerCase();
@@ -213,7 +213,7 @@ const Dashboard = () => {
       const nextIndex = e.key === 'ArrowRight'
         ? Math.min(currentIndex + 1, FILTER_ORDER.length - 1)
         : Math.max(currentIndex - 1, 0);
-      if (nextIndex !== currentIndex) handleFilterChange(FILTER_ORDER[nextIndex]);
+      if (nextIndex !== currentIndex) void handleFilterChange(FILTER_ORDER[nextIndex]);
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
@@ -271,7 +271,7 @@ const Dashboard = () => {
               className="btn btn--secondary"
               disabled={pedidos.length === 0}
             >
-              <PiDownloadSimpleBold size={18} style={{ marginRight: '6px' }} />
+              <PiDownloadSimpleBold size={18} />
               Exportar CSV
             </button>
             <button
@@ -280,11 +280,11 @@ const Dashboard = () => {
               title="Exportar a Google Drive"
               disabled={uploadingDrive}
             >
-              <PiCloudArrowUpBold size={18} style={{ marginRight: '6px' }} />
+              <PiCloudArrowUpBold size={18} />
               {uploadingDrive ? 'Subiendo...' : 'Google Drive'}
             </button>
             <Link to={ROUTES.NEW_PEDIDO} className="btn btn--primary">
-              <PiPlusBold size={18} style={{ marginRight: '6px' }} />
+              <PiPlusBold size={18} />
               Nuevo pedido
             </Link>
           </div>
@@ -394,7 +394,7 @@ const Dashboard = () => {
           searchTerm={searchTerm}
         />
         {hasMore && filterStatus === 'todos' && !searchTerm.trim() && (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0', flexShrink: 0 }}>
+          <div className="dashboard__load-more">
             <button
               className="btn btn--outline"
               onClick={loadMore}

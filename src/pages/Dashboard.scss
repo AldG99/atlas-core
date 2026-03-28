@@ -66,7 +66,14 @@
     background-color: $color-white;
     border-radius: $border-radius-lg;
     border: 1px solid $color-gray-200;
+    box-shadow: $shadow-sm;
+  }
 
+  &__load-more {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0;
+    flex-shrink: 0;
   }
 
   &__summary-icon {
@@ -78,16 +85,19 @@
     border-radius: 8px;
     background-color: $color-gray-100;
     color: $color-gray-600;
+    border: 1px solid rgba($color-gray-600, 0.15);
     flex-shrink: 0;
 
     &--primary {
       background-color: rgba($color-primary, 0.1);
       color: $color-primary;
+      border-color: rgba($color-primary, 0.15);
     }
 
     &--success {
       background-color: rgba($color-success, 0.1);
       color: $color-success;
+      border-color: rgba($color-success, 0.15);
     }
   }
 

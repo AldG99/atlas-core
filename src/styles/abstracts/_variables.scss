@@ -25,9 +25,11 @@ $color-rank-silver: #ada9a1; // Ranking #2 — plata
 $color-rank-bronze: #e88510; // Ranking #3 — bronce (= warning)
 $color-badge-purple: #7c3aed; // Badge — violeta
 $color-badge-teal: #0891b2; // Badge — teal
-$color-badge-equipo: #7c3aed; // Ícono equipo en config
 $color-plan-enterprise: #c49a10; // Plan enterprise — oro
-$color-canvas-dark: #1a1a1a; // Fondo canvas ImageCropper
+
+// Layout — dimensiones compartidas
+$sidebar-width: 220px;
+$header-height: 70px;
 
 // Escala arena cálida
 $color-gray-50: #fdfcfa; // Fondo de página — blanco arena
@@ -63,12 +65,16 @@ $spacing-lg: 1.5rem;
 $spacing-xl: 2rem;
 $spacing-2xl: 3rem;
 
-// Bordes — sin redondeo
+// Bordes — sin redondeo (flat design)
 $border-radius-sm: 0;
 $border-radius-md: 0;
 $border-radius-lg: 0;
 $border-radius-xl: 0;
 $border-radius-full: 0;
+// Excepciones explícitas — usar solo en contextos específicos:
+$border-radius-pill: 999px;    // Badges, chips, tags
+$border-radius-circle: 50%;   // Avatares circulares
+$border-radius-avatar: 8px;   // Avatares cuadrado-redondeados (estilo app icon)
 
 // Sombras
 $shadow-sm:

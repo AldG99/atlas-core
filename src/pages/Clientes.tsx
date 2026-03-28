@@ -3,7 +3,6 @@ import { useState, useMemo } from 'react';
 type SortOption = 'nombre_asc' | 'nombre_desc' | 'cp_asc' | 'cp_desc' | 'registro_desc' | 'registro_asc';
 
 import {
-  PiCloudArrowUpBold,
   PiMagnifyingGlassBold,
   PiPlusBold,
 } from 'react-icons/pi';
@@ -93,20 +92,12 @@ const Clientes = () => {
             <h1>Clientes</h1>
           </div>
           <div className="clientes__header-actions">
-            <button
-              onClick={() => {}}
-              className="btn btn--outline"
-              title="Exportar a Google Drive"
-            >
-              <PiCloudArrowUpBold size={18} style={{ marginRight: '6px' }} />
-              Google Drive
-            </button>
             {role === 'admin' && (
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="btn btn--primary"
               >
-                <PiPlusBold size={18} style={{ marginRight: '6px' }} />
+                <PiPlusBold size={18} />
                 Nuevo Cliente
               </button>
             )}

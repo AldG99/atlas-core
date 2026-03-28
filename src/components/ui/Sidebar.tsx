@@ -17,13 +17,21 @@ const Sidebar = () => {
 
   return (
     <>
-      <button className="sidebar-toggle" onClick={toggleMobile}>
+      <button
+        className="sidebar-toggle"
+        onClick={toggleMobile}
+        aria-label={isMobileOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-expanded={isMobileOpen}
+        aria-controls="sidebar"
+      >
         {isMobileOpen ? <PiXBold size={24} /> : <PiListBold size={24} />}
       </button>
 
-      {isMobileOpen && <div className="sidebar-overlay" onClick={closeMobile} />}
+      {isMobileOpen && (
+        <div className="sidebar-overlay" onClick={closeMobile} aria-hidden="true" />
+      )}
 
-      <aside className={`sidebar ${isMobileOpen ? 'sidebar--mobile-open' : ''}`}>
+      <aside id="sidebar" className={`sidebar ${isMobileOpen ? 'sidebar--mobile-open' : ''}`}>
         <div className="sidebar__header">
           <img
             src="/logo-orderly.svg"

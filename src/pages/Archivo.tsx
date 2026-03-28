@@ -145,7 +145,7 @@ const Archivo = () => {
               className="btn btn--secondary"
               disabled={pedidos.length === 0}
             >
-              <PiDownloadSimpleBold size={18} style={{ marginRight: '6px' }} />
+              <PiDownloadSimpleBold size={18} />
               Exportar CSV
             </button>
           </div>

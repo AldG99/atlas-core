@@ -131,8 +131,8 @@
   }
 }
 
-// Form group
-.form-group {
+// Form group — scoped to modal to avoid polluting global .form-group
+.modal .form-group {
   margin-bottom: $spacing-sm;
 
   &:last-child {

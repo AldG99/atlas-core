@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PiStarFill, PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
 
 const PAGE_SIZE = 20;
 import type { Pedido } from '../../types/Pedido';
+import type { Cliente } from '../../types/Cliente';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatShortDate, getTotalPagado } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
@@ -34,15 +35,21 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
     setFocusedRow(null);
   }, [pedidos]);
 
+  const clienteMap = useMemo(() => {
+    const map = new Map<string, Cliente>();
+    for (const cliente of clientes) {
+      map.set(cliente.telefono, cliente);
+    }
+    return map;
+  }, [clientes]);
+
   const getClienteFoto = (pedido: Pedido): string | undefined => {
     if (pedido.clienteFoto) return pedido.clienteFoto;
-    const cliente = clientes.find(c => c.telefono === pedido.clienteTelefono);
-    return cliente?.fotoPerfil;
+    return clienteMap.get(pedido.clienteTelefono)?.fotoPerfil;
   };
 
   const getClienteFavorito = (pedido: Pedido): boolean => {
-    const cliente = clientes.find(c => c.telefono === pedido.clienteTelefono);
-    return cliente?.favorito ?? false;
+    return clienteMap.get(pedido.clienteTelefono)?.favorito ?? false;
   };
 
   useEffect(() => {
@@ -75,7 +82,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
 
   return (
     <div className="pedidos-table-wrapper">
-      <div className="pedidos-table-header">
+      <div ref={tableContainerRef} className="pedidos-table-container">
         <table className="pedidos-table">
           <colgroup>
             <col style={{ width: '20%' }} />
@@ -99,20 +106,6 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
               <th>Fecha</th>
             </tr>
           </thead>
-        </table>
-      </div>
-      <div ref={tableContainerRef} className="pedidos-table-container">
-        <table className="pedidos-table">
-          <colgroup>
-            <col style={{ width: '20%' }} />
-            <col style={{ width: '7%' }} />
-            <col style={{ width: '15%' }} />
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '12%' }} />
-            <col style={{ width: '10%' }} />
-            <col style={{ width: '7%' }} />
-            <col style={{ width: '12%' }} />
-          </colgroup>
           <tbody>
           {loading ? (
             Array.from({ length: 10 }).map((_, i) => (
@@ -214,8 +207,9 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                 <span
                   className="pedidos-table__status-dot-indicator"
                   style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
-                  title={PEDIDO_STATUS[pedido.estado]}
+                  aria-hidden="true"
                 />
+                <span className="sr-only">{PEDIDO_STATUS[pedido.estado]}</span>
               </td>
               <td>
                 <span className="pedidos-table__date">{formatShortDate(pedido.fechaCreacion)}</span>
