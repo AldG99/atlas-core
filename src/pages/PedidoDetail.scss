@@ -21,7 +21,7 @@ $topbar-height: 52px;
   // Fixed Top Bar
   &__top-bar {
     position: fixed;
-    top: 70px; // Altura del header del MainLayout
+    top: 70px;
     left: 0;
     right: 0;
     z-index: 100;
@@ -29,13 +29,16 @@ $topbar-height: 52px;
     background-color: $color-white;
     border-bottom: 1px solid $color-gray-200;
     padding: 0 $spacing-md;
-    padding-left: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
 
     @include md {
-      left: 220px;
+      left: $sidebar-width-tablet;
+    }
+
+    @include lg {
+      left: $sidebar-width;
       padding: 0 $spacing-lg;
     }
   }
@@ -424,11 +427,11 @@ $topbar-height: 52px;
 
     &--grow {
       flex: 1;
-      min-height: 120px;
+      min-height: 148px;
     }
 
     &--fixed {
-      height: 220px;
+      height: 195px;
     }
   }
 

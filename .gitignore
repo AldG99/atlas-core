@@ -26,6 +26,9 @@ fase-3-produccion.md
 firestore.rules
 storage.rules
 
+firebase.json
+cors.json
+
 # Vite
 vite-env.d.ts
 

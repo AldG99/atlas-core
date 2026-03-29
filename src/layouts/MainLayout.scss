@@ -1,22 +1,29 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
-$sidebar-width: 220px;
 $header-height: 70px;
+$bottom-nav-height: 56px;
 
 .main-layout {
   min-height: 100dvh;
   background-color: $color-gray-100;
+  overflow-x: hidden;
 
   &__wrapper {
-    height: 100dvh;
     padding-top: $header-height;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
 
+    // Mobile: flujo natural, el body scrollea
+    // Tablet/Desktop: contenedor fijo, tablas scrollean internamente
     @include md {
-      margin-left: $sidebar-width;
+      height: 100dvh;
+      overflow: hidden;
+      margin-left: $sidebar-width-tablet; // 60px en tablet
+    }
+
+    @include lg {
+      margin-left: $sidebar-width; // 220px en desktop
     }
   }
 
@@ -34,10 +41,14 @@ $header-height: 70px;
     display: flex;
     align-items: center;
     padding: 0 $spacing-md;
-    padding-left: 60px;
 
     @include md {
-      left: $sidebar-width;
+      left: $sidebar-width-tablet; // 60px en tablet
+      padding: 0 $spacing-md;
+    }
+
+    @include lg {
+      left: $sidebar-width; // 220px en desktop
       padding: 0 $spacing-lg;
     }
   }
@@ -49,11 +60,18 @@ $header-height: 70px;
     padding: $spacing-md;
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
+
+    // Mobile: padding inferior para el bottom nav
+    padding-bottom: calc(#{$bottom-nav-height} + env(safe-area-inset-bottom) + #{$spacing-md});
 
     @include md {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      padding: $spacing-md;
+    }
+
+    @include lg {
       padding: $spacing-md $spacing-lg;
     }
   }

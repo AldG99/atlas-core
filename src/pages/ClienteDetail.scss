@@ -30,13 +30,16 @@ $topbar-height: 52px;
     background-color: $color-white;
     border-bottom: 1px solid $color-gray-200;
     padding: 0 $spacing-md;
-    padding-left: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
 
     @include md {
-      left: 220px;
+      left: $sidebar-width-tablet;
+    }
+
+    @include lg {
+      left: $sidebar-width;
       padding: 0 $spacing-lg;
     }
   }

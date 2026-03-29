@@ -1,6 +1,7 @@
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode, useState, useEffect, useRef } from 'react';
 import Sidebar from '../components/ui/Sidebar';
 import Header from '../components/ui/Header';
+import BottomNav from '../components/ui/BottomNav';
 import InstallBanner from '../components/ui/InstallBanner';
 import { useNotificaciones } from '../hooks/useNotificaciones';
 import { usePWA } from '../hooks/usePWA';
@@ -11,6 +12,7 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { notificaciones } = useNotificaciones();
   const { notifPermission, sendNotification } = usePWA();
   const prevCountRef = useRef(notificaciones.length);
@@ -29,7 +31,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="main-layout">
-      <Sidebar />
+      <Sidebar
+        isMobileOpen={isSidebarOpen}
+        onToggle={() => setIsSidebarOpen(prev => !prev)}
+        onClose={() => setIsSidebarOpen(false)}
+      />
       <div className="main-layout__header">
         <Header />
       </div>
@@ -38,6 +44,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           {children}
         </main>
       </div>
+      <BottomNav onOpenMenu={() => setIsSidebarOpen(prev => !prev)} />
       <InstallBanner />
     </div>
   );

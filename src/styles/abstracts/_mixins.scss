@@ -25,6 +25,13 @@
   }
 }
 
+// Tablet-only: entre md y lg (768px–1023px)
+@mixin tablet {
+  @media (min-width: $breakpoint-md) and (max-width: #{$breakpoint-lg - 1px}) {
+    @content;
+  }
+}
+
 // Flexbox
 @mixin flex-center {
   display: flex;
