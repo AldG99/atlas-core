@@ -13,6 +13,7 @@ import {
 import type { Cliente, ClienteFormData } from '../types/Cliente';
 import type { Pedido } from '../types/Pedido';
 import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito } from '../services/clienteService';
+import Avatar from '../components/ui/Avatar';
 import PhoneInput from '../components/clientes/PhoneInput';
 import ClienteHistorialPedidos from '../components/clientes/ClienteHistorialPedidos';
 import { getPedidosByClientPhone } from '../services/pedidoService';
@@ -313,11 +314,11 @@ const ClienteDetail = () => {
                   className={`cliente-detail__avatar ${isEditing ? 'cliente-detail__avatar--editable' : ''}`}
                   onClick={() => isEditing && fileInputRef.current?.click()}
                 >
-                  {(isEditing ? editData?.fotoPerfil : cliente.fotoPerfil) ? (
-                    <img src={(isEditing ? editData?.fotoPerfil : cliente.fotoPerfil) || ''} alt={cliente.nombre} />
-                  ) : (
-                    <span>{(editData?.nombre || cliente.nombre)[0]}{(editData?.apellido || cliente.apellido)?.[0] ?? ''}</span>
-                  )}
+                  <Avatar
+                    src={isEditing ? editData?.fotoPerfil : cliente.fotoPerfil}
+                    initials={`${(editData?.nombre || cliente.nombre)[0]}${(editData?.apellido || cliente.apellido)?.[0] ?? ''}`}
+                    alt={cliente.nombre}
+                  />
                   {isEditing && (
                     <div className="cliente-detail__avatar-overlay"><PiCameraBold size={20} /></div>
                   )}

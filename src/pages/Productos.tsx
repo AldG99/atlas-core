@@ -14,12 +14,13 @@ const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
   registro_asc: 'Más antiguos',
 };
 import { useLocation } from 'react-router-dom';
-import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPlusBold } from 'react-icons/pi';
+import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPlusBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
 import type { ProductoFormData } from '../types/Producto';
+import { exportProductosCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
 import ProductosTable from '../components/productos/ProductosTable';
 import ProductoModal from '../components/productos/ProductoModal';
@@ -95,6 +96,16 @@ const Productos = () => {
     }
   };
 
+  const handleExport = () => {
+    if (filteredProductos.length === 0) {
+      showToast('No hay productos para exportar', 'warning');
+      return;
+    }
+    const etiquetaMap = new Map(etiquetas.map(e => [e.id, e.nombre]));
+    exportProductosCSV(filteredProductos, (ids) => ids.map(id => etiquetaMap.get(id) ?? id).join(' | '));
+    showToast('Productos exportados', 'success');
+  };
+
   const handleEdit = async (data: ProductoFormData) => {
     if (!editingProducto) return;
 
@@ -113,6 +124,14 @@ const Productos = () => {
         <div className="productos__header">
           <h1>Productos</h1>
           <div className="productos__header-actions">
+            <button
+              onClick={handleExport}
+              className="btn btn--secondary"
+              disabled={productos.length === 0}
+            >
+              <PiDownloadSimpleBold size={18} />
+              Exportar CSV
+            </button>
             <button
               onClick={() => setShowHistorial(true)}
               className="btn btn--outline"

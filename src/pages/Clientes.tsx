@@ -5,11 +5,13 @@ type SortOption = 'nombre_asc' | 'nombre_desc' | 'cp_asc' | 'cp_desc' | 'registr
 import {
   PiMagnifyingGlassBold,
   PiPlusBold,
+  PiDownloadSimpleBold,
 } from 'react-icons/pi';
 import { useClientes } from '../hooks/useClientes';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
 import type { ClienteFormData } from '../types/Cliente';
+import { exportClientesCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
 import ClientesTable from '../components/clientes/ClientesTable';
 import ClienteModal from '../components/clientes/ClienteModal';
@@ -81,6 +83,15 @@ const Clientes = () => {
     }
   };
 
+  const handleExport = () => {
+    if (filteredClientes.length === 0) {
+      showToast('No hay clientes para exportar', 'warning');
+      return;
+    }
+    exportClientesCSV(filteredClientes);
+    showToast('Clientes exportados', 'success');
+  };
+
   const cpValue = sortBy in CP_OPTIONS ? sortBy : '';
   const nombreValue = sortBy in NOMBRE_OPTIONS ? sortBy : '';
 
@@ -92,6 +103,14 @@ const Clientes = () => {
             <h1>Clientes</h1>
           </div>
           <div className="clientes__header-actions">
+            <button
+              onClick={handleExport}
+              className="btn btn--secondary"
+              disabled={clientes.length === 0}
+            >
+              <PiDownloadSimpleBold size={18} />
+              Exportar CSV
+            </button>
             {role === 'admin' && (
               <button
                 onClick={() => setIsModalOpen(true)}

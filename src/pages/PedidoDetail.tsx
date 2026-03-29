@@ -1,16 +1,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
-  PiArrowLeftBold,
   PiArrowRightBold,
-  PiWhatsappLogoBold,
-  PiCopyBold,
-  PiCheckBold,
-  PiXBold,
-  PiTrashBold,
   PiStarFill,
-  PiDownloadSimpleBold,
-  PiPencilSimpleBold,
 } from 'react-icons/pi';
 import { toPng } from 'html-to-image';
 import PedidoCaptura from '../components/pedidos/PedidoCaptura';
@@ -20,7 +12,7 @@ import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import {
   formatDate,
   getTotalPagado,
-  applyTemplate,
+  buildMensajePedido,
   openWhatsApp,
   copyToClipboard,
   formatTelefono,
@@ -31,7 +23,6 @@ import { getCodigoPais } from '../data/codigosPais';
 import {
   getPedidoById,
   updatePedidoStatus,
-  updatePedidoNotas,
   addAbono,
   updateAbono,
   deletePedido,
@@ -43,9 +34,12 @@ import { useProductos } from '../hooks/useProductos';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
+import PedidoTopBar from '../components/pedidos/PedidoTopBar';
+import PedidoDeleteModal from '../components/pedidos/PedidoDeleteModal';
 import PedidoProductosTable from '../components/pedidos/PedidoProductosTable';
 import PedidoAbonosTable from '../components/pedidos/PedidoAbonosTable';
 import ProductoDetalleModal from '../components/productos/ProductoDetalleModal';
+import Avatar from '../components/ui/Avatar';
 import MainLayout from '../layouts/MainLayout';
 import './PedidoDetail.scss';
 
@@ -63,6 +57,7 @@ const PedidoDetail = () => {
 
   const [pedido, setPedido] = useState<Pedido | null>(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
@@ -81,30 +76,40 @@ const PedidoDetail = () => {
   const capturaRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [fechaDescarga, setFechaDescarga] = useState<Date | null>(null);
-  const [editingNotas, setEditingNotas] = useState(false);
-  const [notasValue, setNotasValue] = useState('');
 
-  const fetchPedido = useCallback(async () => {
+  const fetchPedido = useCallback(async (silent = false) => {
     if (!id || !user || !negocioUid) return;
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const data = await getPedidoById(id, negocioUid);
       if (!data) {
-        showToast('Pedido no encontrado', 'error');
-        navigate(backRoute);
+        if (!silent) {
+          showToast('Pedido no encontrado', 'error');
+          navigate(backRoute);
+        }
         return;
       }
       setPedido(data);
     } catch {
-      showToast('Error al cargar el pedido', 'error');
-      navigate(backRoute);
+      if (!silent) {
+        showToast('Error al cargar el pedido', 'error');
+        navigate(backRoute);
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  }, [id, user, negocioUid, navigate, showToast]);
+  }, [id, user, negocioUid, navigate, showToast, backRoute]);
 
   useEffect(() => {
     fetchPedido();
+  }, [fetchPedido]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') fetchPedido(true);
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [fetchPedido]);
 
   useEffect(() => {
@@ -211,29 +216,13 @@ const PedidoDetail = () => {
     return result;
   }, [pedido]);
 
-  const handleStartEditNotas = () => {
-    setNotasValue(pedido?.notas ?? '');
-    setEditingNotas(true);
-  };
-
-  const handleSaveNotas = async () => {
-    if (!pedido) return;
-    try {
-      await updatePedidoNotas(pedido.id, notasValue);
-      setPedido({ ...pedido, notas: notasValue });
-      setEditingNotas(false);
-      showToast('Notas guardadas', 'success');
-    } catch {
-      showToast('Error al guardar las notas', 'error');
-    }
-  };
-
   const handleDownload = async () => {
-    if (!capturaRef.current || !pedido) return;
+    if (!pedido) return;
     setDownloading(true);
     setFechaDescarga(new Date());
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, 80));
     try {
+      if (!capturaRef.current) throw new Error('Ref no disponible');
       const dataUrl = await toPng(capturaRef.current, { pixelRatio: 2 });
       const link = document.createElement('a');
       link.download = `${pedido.folio || pedido.id}.png`;
@@ -248,12 +237,7 @@ const PedidoDetail = () => {
 
   const buildMensaje = (p: typeof pedido): string => {
     if (!p) return '';
-    const plantillas = user?.plantillas ?? PLANTILLAS_DEFAULT;
-    const template =
-      p.estado === 'entregado' ? plantillas.entrega :
-      p.estado === 'en_preparacion' ? plantillas.preparacion :
-      plantillas.confirmacion;
-    return applyTemplate(template, p, simbolo, user?.nombreNegocio ?? '');
+    return buildMensajePedido(p, user?.plantillas ?? PLANTILLAS_DEFAULT, simbolo, user?.nombreNegocio ?? '');
   };
 
   const handleCopy = async () => {
@@ -271,14 +255,17 @@ const PedidoDetail = () => {
   };
 
   const handleChangeStatus = async (status: PedidoStatus) => {
-    if (!pedido) return;
+    if (!pedido || submitting) return;
     try {
+      setSubmitting(true);
       const entregadoPor = status === 'entregado' && user ? buildCreadoPor(user) : undefined;
       await updatePedidoStatus(pedido.id, status, entregadoPor);
       setPedido({ ...pedido, estado: status, ...(entregadoPor ? { entregadoPor } : {}) });
       showToast(`Estado cambiado a "${PEDIDO_STATUS[status]}"`, 'success');
     } catch {
       showToast('Error al cambiar el estado', 'error');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -302,7 +289,7 @@ const PedidoDetail = () => {
   };
 
   const handleAddAbono = async () => {
-    if (!pedido) return;
+    if (!pedido || submitting) return;
     const monto = parseFloat(abonoInput);
     if (!monto || monto <= 0) return;
     setAbonoError(null);
@@ -323,14 +310,11 @@ const PedidoDetail = () => {
     }
 
     try {
+      setSubmitting(true);
       const productoIndex =
         abonoProducto === 'general' ? undefined : parseInt(abonoProducto, 10);
       const creadoPor = user ? buildCreadoPor(user) : undefined;
-      const { abono: nuevoAbono, nuevoEstado } = await addAbono(pedido.id, monto, productoIndex, {
-        total: pedido.total,
-        estadoActual: pedido.estado,
-        pagadoHastaAhora: totalPagado
-      }, creadoPor);
+      const { abono: nuevoAbono, nuevoEstado } = await addAbono(pedido.id, monto, productoIndex, creadoPor);
       const updatedAbonos = [...(pedido.abonos || []), nuevoAbono];
       setPedido({ ...pedido, abonos: updatedAbonos, estado: nuevoEstado ?? pedido.estado });
       setAbonoInput('');
@@ -338,13 +322,24 @@ const PedidoDetail = () => {
       showToast('Abono registrado', 'success');
     } catch {
       showToast('Error al registrar abono', 'error');
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleUpdateAbono = async (abonoId: string) => {
     if (!pedido) return;
     const nuevoMonto = parseFloat(editingAbonoValue);
-    if (!nuevoMonto || nuevoMonto <= 0) return;
+    if (isNaN(nuevoMonto) || nuevoMonto <= 0) {
+      showToast('El monto debe ser mayor a cero', 'error');
+      return;
+    }
+    const otrosAbonos = (pedido.abonos || []).filter(a => a.id !== abonoId);
+    const totalOtros = otrosAbonos.reduce((s, a) => s + a.monto, 0);
+    if (Math.round((totalOtros + nuevoMonto) * 100) / 100 > pedido.total) {
+      showToast(`El total de abonos no puede superar ${format(pedido.total)}`, 'error');
+      return;
+    }
     try {
       const updatedAbonos = await updateAbono(pedido.id, abonoId, nuevoMonto);
       setPedido({ ...pedido, abonos: updatedAbonos });
@@ -354,6 +349,11 @@ const PedidoDetail = () => {
       showToast('Error al corregir el abono', 'error');
     }
   };
+
+  const clienteData = useMemo(
+    () => clientes.find(c => c.telefono === pedido?.clienteTelefono),
+    [clientes, pedido?.clienteTelefono]
+  );
 
   if (loading) {
     return (
@@ -368,7 +368,6 @@ const PedidoDetail = () => {
   if (!pedido) return null;
 
   const pagado = getTotalPagado(pedido);
-  const clienteData = clientes.find(c => c.telefono === pedido.clienteTelefono);
   const clienteFoto = pedido.clienteFoto ?? clienteData?.fotoPerfil;
   const clienteFavorito = clienteData?.favorito ?? false;
   const abonos = pedido.abonos || [];
@@ -379,116 +378,27 @@ const PedidoDetail = () => {
   return (
     <MainLayout>
       <div className="pedido-detail">
-        {/* Fixed Top Bar */}
-        <div className="pedido-detail__top-bar">
-          <div className="pedido-detail__top-bar-inner">
-            <button
-              className="pedido-detail__icon-btn pedido-detail__icon-btn--back"
-              onClick={() => navigate(backRoute)}
-              title="Volver"
-            >
-              <PiArrowLeftBold size={20} />
-            </button>
-            <button
-              onClick={handleWhatsApp}
-              className="pedido-detail__icon-btn pedido-detail__icon-btn--whatsapp"
-              title="Enviar por WhatsApp"
-            >
-              <PiWhatsappLogoBold size={20} />
-            </button>
-            <button
-              onClick={handleCopy}
-              className={`pedido-detail__icon-btn ${copiedId ? 'pedido-detail__icon-btn--success' : ''}`}
-              title={copiedId ? 'Copiado!' : 'Copiar al portapapeles'}
-            >
-              {copiedId ? (
-                <PiCheckBold size={20} />
-              ) : (
-                <PiCopyBold size={20} />
-              )}
-            </button>
-            <button
-              onClick={handleDownload}
-              className="pedido-detail__icon-btn"
-              title="Descargar imagen"
-              disabled={downloading}
-            >
-              <PiDownloadSimpleBold size={20} />
-            </button>
-            {role === 'admin' && (
-              <>
-                <span className="pedido-detail__top-divider" />
-                <button
-                  onClick={handleDelete}
-                  className="pedido-detail__icon-btn pedido-detail__icon-btn--danger"
-                  title="Eliminar pedido"
-                >
-                  <PiTrashBold size={20} />
-                </button>
-              </>
-            )}
-            {!pedido.archivado && (
-              <>
-                <div className="pedido-detail__top-bar-abono">
-                  <select
-                    value={abonoProducto}
-                    onChange={e => setAbonoProducto(e.target.value)}
-                    disabled={liquidado}
-                  >
-                    <option value="general">General</option>
-                    {pedido.productos.map((p, idx) => (
-                      <option key={idx} value={idx}>
-                        {p.clave ? `[${p.clave}] ` : ''}
-                        {p.nombre}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="$0.00"
-                    value={abonoInput}
-                    onChange={e => {
-                      setAbonoInput(e.target.value);
-                      setAbonoError(null);
-                    }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') handleAddAbono();
-                    }}
-                    disabled={liquidado}
-                  />
-                  <button
-                    className="btn btn--primary btn--sm"
-                    onClick={handleAddAbono}
-                    disabled={liquidado}
-                  >
-                    Abonar
-                  </button>
-                  <button
-                    onClick={() => handleChangeStatus('entregado')}
-                    className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''} ${pedido.estado === 'entregado' ? 'pedido-detail__btn-entregado--done' : ''}`}
-                    disabled={!puedeMarcarEntregado}
-                    title={
-                      pedido.estado === 'entregado'
-                        ? 'Pedido ya entregado'
-                        : !puedeMarcarEntregado
-                          ? 'Solo disponible cuando el pedido está en preparación'
-                          : ''
-                    }
-                  >
-                    {pedido.estado === 'entregado' ? 'Entregado' : 'Entregar'}
-                  </button>
-                </div>
-                {abonoError && (
-                  <span className="pedido-detail__top-bar-abono-error">
-                    {abonoError}
-                  </span>
-                )}
-              </>
-            )}
-          </div>
-        </div>
+        <PedidoTopBar
+          pedido={pedido}
+          copiedId={copiedId}
+          downloading={downloading}
+          submitting={submitting}
+          role={role}
+          liquidado={liquidado}
+          puedeMarcarEntregado={puedeMarcarEntregado}
+          abonoInput={abonoInput}
+          abonoProducto={abonoProducto}
+          abonoError={abonoError}
+          onBack={() => navigate(backRoute)}
+          onWhatsApp={handleWhatsApp}
+          onCopy={handleCopy}
+          onDownload={handleDownload}
+          onDelete={handleDelete}
+          onAbonoInputChange={v => { setAbonoInput(v); setAbonoError(null); }}
+          onAbonoProductoChange={setAbonoProducto}
+          onAbonar={handleAddAbono}
+          onEntregar={() => handleChangeStatus('entregado')}
+        />
 
         {/* Scrollable Content */}
         <div className="pedido-detail__content">
@@ -496,11 +406,11 @@ const PedidoDetail = () => {
           <div className="pedido-detail__header">
             <div className="pedido-detail__client">
               <div className="pedido-detail__avatar">
-                {clienteFoto ? (
-                  <img src={clienteFoto} alt={pedido.clienteNombre} />
-                ) : (
-                  <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
-                )}
+                <Avatar
+                  src={clienteFoto}
+                  initials={clienteData ? `${clienteData.nombre[0]}${clienteData.apellido?.[0] ?? ''}`.toUpperCase() : pedido.clienteNombre[0].toUpperCase()}
+                  alt={pedido.clienteNombre}
+                />
               </div>
               <div className="pedido-detail__client-info">
                 <div className="pedido-detail__name-row">
@@ -564,37 +474,11 @@ const PedidoDetail = () => {
             }}
           />
 
-          <div className={`pedido-detail__section pedido-detail__section--notes${editingNotas ? ' pedido-detail__section--notes-editing' : ''}`}>
-            {editingNotas ? (
-              <div className="pedido-detail__notes-edit">
-                <textarea
-                  className="pedido-detail__notes-textarea"
-                  value={notasValue}
-                  onChange={e => setNotasValue(e.target.value)}
-                  placeholder="Agregar notas al pedido..."
-                  autoFocus
-                  rows={2}
-                  maxLength={500}
-                  onKeyDown={e => {
-                    if (e.key === 'Escape') setEditingNotas(false);
-                  }}
-                />
-                <div className="pedido-detail__notes-actions">
-                  <button className="btn btn--secondary btn--sm" onClick={() => setEditingNotas(false)}>Cancelar</button>
-                  <button className="btn btn--primary btn--sm" onClick={handleSaveNotas}>Guardar</button>
-                </div>
-              </div>
-            ) : (
-              <div className="pedido-detail__notes">
-                <strong>Notas:</strong>{' '}
-                {pedido.notas ? pedido.notas : <span className="pedido-detail__notes--empty">Sin comentarios</span>}
-                {!pedido.archivado && (
-                  <button className="pedido-detail__notes-edit-btn" onClick={handleStartEditNotas} title="Editar notas">
-                    <PiPencilSimpleBold size={13} />
-                  </button>
-                )}
-              </div>
-            )}
+          <div className="pedido-detail__section pedido-detail__section--notes">
+            <div className="pedido-detail__notes">
+              <strong>Notas:</strong>{' '}
+              {pedido.notas ? pedido.notas : <span className="pedido-detail__notes--empty">Sin comentarios</span>}
+            </div>
           </div>
 
           <PedidoAbonosTable
@@ -622,54 +506,13 @@ const PedidoDetail = () => {
       </div>
 
       {showDeleteModal && (
-        <div
-          className="pedido-detail__modal-overlay"
-          onClick={() => setShowDeleteModal(false)}
-        >
-          <div
-            className="pedido-detail__modal pedido-detail__modal--confirm"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="pedido-detail__modal-header">
-              <h3>Eliminar pedido</h3>
-              <button
-                className="pedido-detail__modal-close"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                <PiXBold size={18} />
-              </button>
-            </div>
-            <div className="pedido-detail__modal-body pedido-detail__modal-body--confirm">
-              <p>Esta acción es <strong>permanente</strong> y no se puede deshacer. Se eliminarán todos los datos del pedido.</p>
-              <p className="pedido-detail__delete-label">
-                Escribe <strong>{pedido?.folio}</strong> para confirmar:
-              </p>
-              <input
-                type="text"
-                className="input"
-                placeholder={pedido?.folio}
-                value={deleteConfirmText}
-                onChange={e => setDeleteConfirmText(e.target.value)}
-                autoComplete="off"
-              />
-            </div>
-            <div className="pedido-detail__modal-footer">
-              <button
-                className="btn btn--secondary btn--sm"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                Cancelar
-              </button>
-              <button
-                className="btn btn--danger btn--sm"
-                onClick={confirmDelete}
-                disabled={deleteConfirmText !== pedido?.folio}
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
+        <PedidoDeleteModal
+          folio={pedido?.folio}
+          confirmText={deleteConfirmText}
+          onConfirmTextChange={setDeleteConfirmText}
+          onConfirm={confirmDelete}
+          onClose={() => setShowDeleteModal(false)}
+        />
       )}
 
       {selectedProducto && (
@@ -679,10 +522,11 @@ const PedidoDetail = () => {
           onClose={() => setSelectedProducto(null)}
         />
       )}
-      {/* Componente de captura fuera de pantalla */}
-      <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', zIndex: -1 }}>
-        <PedidoCaptura ref={capturaRef} pedido={pedido} cobertura={cobertura} telefonoCodigoPais={clienteData?.telefonoCodigoPais} fechaDescarga={fechaDescarga} />
-      </div>
+      {downloading && (
+        <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', zIndex: -1 }}>
+          <PedidoCaptura ref={capturaRef} pedido={pedido} cobertura={cobertura} telefonoCodigoPais={clienteData?.telefonoCodigoPais} fechaDescarga={fechaDescarga} />
+        </div>
+      )}
     </MainLayout>
   );
 };

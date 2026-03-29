@@ -56,6 +56,12 @@ $topbar-height: 52px;
     margin: 0 $spacing-xs;
   }
 
+  &__top-bar-abono-group {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
   &__top-bar-abono {
     display: flex;
     gap: $spacing-xs;
@@ -63,7 +69,6 @@ $topbar-height: 52px;
     background-color: $color-gray-100;
     border-radius: 0;
     padding: 2px;
-    margin-left: auto;
 
     select,
     input {
@@ -75,12 +80,6 @@ $topbar-height: 52px;
       outline: none;
       background-color: transparent;
       box-sizing: border-box;
-      transition: all 0.2s ease;
-
-      &:focus {
-        background-color: $color-white;
-        border-radius: 0;
-      }
     }
 
     select {
@@ -88,10 +87,6 @@ $topbar-height: 52px;
       min-width: 100px;
       color: $color-gray-700;
       border-radius: 0;
-
-      &:hover {
-        background-color: rgba($color-white, 0.5);
-      }
     }
 
     input {
@@ -104,18 +99,22 @@ $topbar-height: 52px;
         color: $color-gray-400;
       }
     }
+  }
 
-    .btn {
-      height: 32px;
-      min-height: 32px;
-      border-radius: 0;
-      font-weight: 600;
-      padding: 0 $spacing-md;
-      display: flex;
-      align-items: center;
-      gap: $spacing-xs;
-      white-space: nowrap;
-    }
+  // Botones de acción — misma altura y anchura
+  &__top-bar-abono-group > .btn,
+  &__top-bar-inner > .pedido-detail__btn-entregado {
+    height: 36px;
+    min-height: 36px;
+    width: 96px;
+    border-radius: 0;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
   }
 
   &__top-bar-abono-error {
@@ -202,7 +201,6 @@ $topbar-height: 52px;
     justify-content: space-between;
     align-items: center;
     padding: $spacing-sm $spacing-md;
-    border-bottom: 1px solid $color-gray-100;
   }
 
   &__client {
@@ -264,11 +262,6 @@ $topbar-height: 52px;
     color: $color-gray-500;
   }
 
-  &__cp {
-    font-size: $font-size-xs;
-    color: $color-gray-400;
-  }
-
   &__header-right {
     display: flex;
     flex-direction: column;
@@ -295,15 +288,6 @@ $topbar-height: 52px;
     display: flex;
     align-items: center;
     gap: $spacing-sm;
-  }
-
-  &__status {
-    display: inline-block;
-    padding: 4px 12px;
-    font-size: $font-size-xs;
-    font-weight: 600;
-    color: $color-white;
-    white-space: nowrap;
   }
 
   &__status-dot {
@@ -339,7 +323,7 @@ $topbar-height: 52px;
 
   &__section {
     padding: $spacing-sm $spacing-md;
-    border-top: 1px solid $color-gray-100;
+    border-top: 1px solid $color-gray-200;
     flex-shrink: 0;
 
     &--grow {
@@ -348,6 +332,10 @@ $topbar-height: 52px;
       display: flex;
       flex-direction: column;
       padding: 0;
+
+      > .pedido-detail__table-wrapper > .pedido-detail__table-head {
+        background-color: $color-gray-100;
+      }
     }
 
     &--notes {
@@ -358,79 +346,17 @@ $topbar-height: 52px;
       padding-bottom: 0;
     }
 
-    &--notes-editing {
-      height: auto;
-      padding-top: $spacing-xs;
-      padding-bottom: $spacing-xs;
-    }
-
     &--no-pad {
       padding: 0;
 
       > .pedido-detail__table-wrapper {
-        border-bottom: 1px solid $color-gray-100;
+        border-bottom: 1px solid $color-gray-200;
+      }
+
+      > .pedido-detail__table-wrapper > .pedido-detail__table-head {
+        background-color: $color-gray-100;
       }
     }
-  }
-
-  &__section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: $font-size-sm;
-    margin-bottom: $spacing-xs;
-
-    strong {
-      color: $color-gray-800;
-    }
-  }
-
-  &__payment-info {
-    font-size: $font-size-sm;
-    color: $color-gray-600;
-    font-weight: 500;
-  }
-
-  &__abono-section {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
-    padding: $spacing-sm $spacing-md;
-    border-top: 1px solid $color-gray-100;
-    background-color: $color-gray-50;
-  }
-
-  &__abono-controls {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    flex-wrap: wrap;
-  }
-
-  &__abono-select {
-    height: 34px;
-    padding: 0 $spacing-sm;
-    border: 1px solid $color-gray-200;
-    font-size: $font-size-sm;
-    color: $color-gray-700;
-    background-color: $color-white;
-    outline: none;
-    cursor: pointer;
-    flex-shrink: 0;
-
-    &:focus {
-      border-color: $color-primary;
-    }
-  }
-
-  &__abono-input {
-    width: 120px;
-    flex-shrink: 0;
-  }
-
-  &__abono-error {
-    font-size: $font-size-xs;
-    color: $color-danger;
   }
 
   &__notes {
@@ -452,54 +378,6 @@ $topbar-height: 52px;
     }
   }
 
-  &__notes-edit-btn {
-    display: inline-flex;
-    align-items: center;
-    background: none;
-    border: none;
-    color: $color-gray-400;
-    cursor: pointer;
-    padding: 2px;
-    border-radius: 0;
-    margin-left: auto;
-    flex-shrink: 0;
-    transition: color $transition-fast;
-
-    &:hover {
-      color: $color-primary;
-    }
-  }
-
-  &__notes-edit {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
-    width: 100%;
-  }
-
-  &__notes-textarea {
-    width: 100%;
-    resize: none;
-    font-size: $font-size-sm;
-    font-family: inherit;
-    border: 1px solid $color-primary;
-    border-radius: $border-radius-sm;
-    padding: 6px 8px;
-    color: $color-gray-700;
-    outline: none;
-    box-sizing: border-box;
-
-    &::placeholder {
-      color: $color-gray-400;
-    }
-  }
-
-  &__notes-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: $spacing-xs;
-  }
-
   // Table layout: wrapper > head + scroll + foot
   &__table-wrapper {
     display: flex;
@@ -518,7 +396,7 @@ $topbar-height: 52px;
 
   &__table-foot {
     flex-shrink: 0;
-    background-color: $color-white;
+    background-color: $color-gray-100;
     overflow: hidden;
     scrollbar-gutter: stable;
     box-shadow: inset 0 1px 0 $color-gray-200;
@@ -579,11 +457,7 @@ $topbar-height: 52px;
     tbody {
       tr {
         height: 32px;
-        border-bottom: 1px solid $color-gray-100;
-
-        &:last-child {
-          border-bottom: none;
-        }
+        border-bottom: 1px solid $color-gray-200;
       }
     }
 
@@ -604,6 +478,10 @@ $topbar-height: 52px;
   }
 
   &__abonos-table {
+    thead {
+      background-color: $color-gray-100;
+    }
+
     thead th,
     tbody td {
       &:nth-child(3) { text-align: right; } // Monto
@@ -612,6 +490,10 @@ $topbar-height: 52px;
   }
 
   &__products-table {
+
+    thead {
+      background-color: $color-gray-100;
+    }
 
     thead th,
     tbody td,
@@ -632,18 +514,9 @@ $topbar-height: 52px;
     }
   }
 
-  &__spacer-row {
-    height: 100%;
-
-    td {
-      padding: 0 !important;
-      border: none !important;
-    }
-  }
-
   &__products-tfoot {
-    background-color: $color-white;
-    border-top: 1px solid $color-gray-100;
+    background-color: $color-gray-100;
+    border-top: 1px solid $color-gray-200;
   }
 
   &__product-total-row {
@@ -883,13 +756,6 @@ $topbar-height: 52px;
   }
 
 
-  &__fecha-entrega {
-    font-size: $font-size-sm;
-    color: $color-success;
-    font-weight: 500;
-    margin-left: auto;
-  }
-
   &__btn-entregado {
     display: inline-flex;
     align-items: center;
@@ -901,7 +767,7 @@ $topbar-height: 52px;
     font-weight: 600;
     border: none;
     border-radius: 0;
-    background-color: $color-gray-100;
+    background-color: $color-gray-200;
     color: $color-gray-400;
     cursor: not-allowed;
     white-space: nowrap;
@@ -975,7 +841,7 @@ $topbar-height: 52px;
         height: 420px;
         aspect-ratio: unset;
         flex-shrink: 0;
-        border-right: 1px solid $color-gray-100;
+        border-right: 1px solid $color-gray-200;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1040,7 +906,7 @@ $topbar-height: 52px;
     align-items: center;
     justify-content: space-between;
     padding: $spacing-md;
-    border-bottom: 1px solid $color-gray-100;
+    border-bottom: 1px solid $color-gray-200;
 
     h3 {
       margin: 0;
@@ -1076,7 +942,7 @@ $topbar-height: 52px;
   &__modal-image {
     width: 100%;
     aspect-ratio: 16 / 9;
-    background-color: $color-gray-100;
+    background-color: $color-gray-200;
     overflow: hidden;
 
     img {
@@ -1127,7 +993,7 @@ $topbar-height: 52px;
     justify-content: space-between;
     align-items: center;
     padding: $spacing-xs 0;
-    border-bottom: 1px solid $color-gray-100;
+    border-bottom: 1px solid $color-gray-200;
 
     &:last-child {
       border-bottom: none;
@@ -1184,7 +1050,7 @@ $topbar-height: 52px;
 
   &__modal-footer {
     padding: $spacing-sm $spacing-md;
-    border-top: 1px solid $color-gray-100;
+    border-top: 1px solid $color-gray-200;
     display: flex;
     justify-content: flex-end;
     gap: $spacing-sm;

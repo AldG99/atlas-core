@@ -22,6 +22,7 @@ import PhoneInput from '../components/clientes/PhoneInput';
 import { formatTelefono } from '../utils/formatters';
 import { getCodigoPais } from '../data/codigosPais';
 import ImageCropper from '../components/ui/ImageCropper';
+import Avatar from '../components/ui/Avatar';
 import './Perfil.scss';
 
 const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s\-]+$/;
@@ -263,11 +264,7 @@ const Perfil = () => {
                 className={`perfil__avatar${isEditing ? ' perfil__avatar--editable' : ''}`}
                 onClick={handleImageClick}
               >
-                {previewImage ? (
-                  <img src={previewImage} alt="Foto de perfil" />
-                ) : (
-                  <span>{getInitials()}</span>
-                )}
+                <Avatar src={previewImage} initials={getInitials()} alt="Foto de perfil" />
                 {isEditing && (
                   <div className="perfil__avatar-overlay">
                     <PiCameraBold size={22} />

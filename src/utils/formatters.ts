@@ -34,6 +34,7 @@ export const formatShortDate = (date: Date): string => {
 };
 
 import type { Pedido, ProductoItem } from '../types/Pedido';
+import { getCodigoPais } from '../data/codigosPais';
 
 export const getTotalPagado = (pedido: Pedido): number =>
   (pedido.abonos || []).reduce((sum, a) => sum + a.monto, 0);
@@ -84,6 +85,25 @@ export const applyTemplate = (
     .replace(/\{\{productos\}\}/g, formatProductosText(pedido.productos, simbolo))
     .replace(/\{\{notas\}\}/g, pedido.notas ?? '')
     .replace(/\{\{negocio\}\}/g, negocio);
+};
+
+interface PlantillasConfig {
+  confirmacion: string;
+  preparacion: string;
+  entrega: string;
+}
+
+export const buildMensajePedido = (
+  pedido: PedidoForWhatsApp & { folio?: string; estado: string; notas?: string; abonos?: { monto: number }[] },
+  plantillas: PlantillasConfig,
+  simbolo: string,
+  negocio: string
+): string => {
+  const template =
+    pedido.estado === 'entregado' ? plantillas.entrega :
+    pedido.estado === 'en_preparacion' ? plantillas.preparacion :
+    plantillas.confirmacion;
+  return applyTemplate(template, pedido, simbolo, negocio);
 };
 
 export const openWhatsApp = (phone: string, message: string): void => {
@@ -151,6 +171,106 @@ export const exportToCSV = (pedidos: PedidoForCSV[], filename: string = 'pedidos
 
   link.setAttribute('href', url);
   link.setAttribute('download', `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+interface ClienteForCSV {
+  nombre: string;
+  apellido: string;
+  telefono: string;
+  telefonoCodigoPais?: string;
+  correo?: string;
+  calle: string;
+  numeroExterior: string;
+  numeroInterior?: string;
+  colonia: string;
+  ciudad: string;
+  codigoPostal: string;
+  pais?: string;
+  referencia?: string;
+  favorito?: boolean;
+  fechaCreacion: Date;
+}
+
+export const exportClientesCSV = (clientes: ClienteForCSV[]): void => {
+
+  const headers = ['Nombre', 'Apellido', 'Teléfono', 'Correo', 'Calle', 'Núm. Ext.', 'Núm. Int.', 'Colonia', 'Ciudad', 'C.P.', 'País', 'Referencia', 'Favorito', 'Registro'];
+
+  const rows = clientes.map(c => [
+    escapeCSV(c.nombre),
+    escapeCSV(c.apellido),
+    escapeCSV(c.telefonoCodigoPais ? `${getCodigoPais(c.telefonoCodigoPais)?.codigo ?? c.telefonoCodigoPais} ${formatTelefono(c.telefono)}` : formatTelefono(c.telefono)),
+    escapeCSV(c.correo || ''),
+    escapeCSV(c.calle),
+    escapeCSV(c.numeroExterior),
+    escapeCSV(c.numeroInterior || ''),
+    escapeCSV(c.colonia),
+    escapeCSV(c.ciudad),
+    escapeCSV(c.codigoPostal),
+    escapeCSV(c.pais || ''),
+    escapeCSV(c.referencia || ''),
+    c.favorito ? 'Sí' : 'No',
+    formatDate(c.fechaCreacion)
+  ]);
+
+  const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+
+  link.setAttribute('href', url);
+  link.setAttribute('download', `clientes_${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+interface ProductoForCSV {
+  clave: string;
+  nombre: string;
+  precio: number;
+  descripcion?: string;
+  descuento?: number;
+  fechaFinDescuento?: Date;
+  controlStock?: boolean;
+  stock?: number;
+  unidad?: string;
+  unidadCantidad?: number;
+  etiquetas?: string[];
+  fechaCreacion: Date;
+}
+
+export const exportProductosCSV = (productos: ProductoForCSV[], etiquetaNombres: (ids: string[]) => string): void => {
+  const headers = ['Clave', 'Nombre', 'Precio', 'Descuento %', 'Fin descuento', 'Stock', 'Unidad', 'Cant. unidad', 'Etiquetas', 'Registro'];
+
+  const rows = productos.map(p => [
+    escapeCSV(p.clave),
+    escapeCSV(p.nombre),
+    p.precio.toFixed(2),
+    p.descuento ? p.descuento.toString() : '',
+    p.fechaFinDescuento ? formatDate(p.fechaFinDescuento) : '',
+    p.controlStock ? (p.stock ?? 0).toString() : '',
+    escapeCSV(p.unidad || ''),
+    p.unidadCantidad ? p.unidadCantidad.toString() : '',
+    escapeCSV(etiquetaNombres(p.etiquetas || [])),
+    formatDate(p.fechaCreacion)
+  ]);
+
+  const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+
+  link.setAttribute('href', url);
+  link.setAttribute('download', `productos_${new Date().toISOString().split('T')[0]}.csv`);
   link.style.visibility = 'hidden';
 
   document.body.appendChild(link);

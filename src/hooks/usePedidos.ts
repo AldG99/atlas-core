@@ -22,7 +22,8 @@ import {
   deletePedido,
   archivePedido,
   unarchivePedido,
-  addAbono
+  addAbono,
+  countPedidosMes
 } from '../services/pedidoService';
 import { useAuth } from './useAuth';
 
@@ -123,11 +124,7 @@ export const usePedidos = () => {
       setError(null);
 
       const limites = getPlanLimits(user.plan);
-      const ahora = new Date();
-      const pedidosEsteMes = allPedidosRef.current.filter(p => {
-        const f = new Date(p.fechaCreacion);
-        return f.getMonth() === ahora.getMonth() && f.getFullYear() === ahora.getFullYear();
-      }).length;
+      const pedidosEsteMes = await countPedidosMes(negocioUid);
       checkPlanLimit(pedidosEsteMes, limites.pedidosMes, 'pedidos este mes');
 
       const newPedido = await createPedido(data, negocioUid, buildCreadoPor(user));
@@ -199,16 +196,7 @@ export const usePedidos = () => {
   const registrarAbono = useCallback(async (pedidoId: string, monto: number, productoIndex?: number) => {
     try {
       setError(null);
-      const pedido = pedidos.find((p) => p.id === pedidoId);
-      const opts = pedido
-        ? {
-            total: pedido.total,
-            estadoActual: pedido.estado,
-            pagadoHastaAhora: (pedido.abonos || []).reduce((s, a) => s + a.monto, 0)
-          }
-        : undefined;
-
-      const { abono: nuevoAbono, nuevoEstado } = await addAbono(pedidoId, monto, productoIndex, opts, user ? buildCreadoPor(user) : undefined);
+      const { abono: nuevoAbono, nuevoEstado } = await addAbono(pedidoId, monto, productoIndex, user ? buildCreadoPor(user) : undefined);
 
       const updateFn = (prev: Pedido[]) =>
         prev.map((p) => {
@@ -222,7 +210,7 @@ export const usePedidos = () => {
       setError(err instanceof Error ? err.message : 'Error al registrar abono');
       throw err;
     }
-  }, [pedidos]);
+  }, [user]);
 
   useEffect(() => {
     fetchPedidos();

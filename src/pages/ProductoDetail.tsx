@@ -19,6 +19,7 @@ import { useCurrency } from '../hooks/useCurrency';
 import { ROUTES } from '../config/routes';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import { compressImage } from '../utils/imageUtils';
+import ProductImage from '../components/ui/ProductImage';
 import MainLayout from '../layouts/MainLayout';
 import './ProductoDetail.scss';
 
@@ -309,14 +310,11 @@ const ProductoDetail = () => {
                 className={`producto-detail__image-section ${isEditing ? 'producto-detail__image-section--editable' : ''}`}
                 onClick={() => isEditing && fileInputRef.current?.click()}
               >
-                {(isEditing ? editData?.imagen : producto.imagen) ? (
-                  <img src={(isEditing ? editData?.imagen : producto.imagen) || ''} alt={producto.nombre} />
-                ) : (
-                  <div className="producto-detail__image-placeholder">
-                    <PiPackageBold size={48} />
-                    <span>Sin imagen</span>
-                  </div>
-                )}
+                <ProductImage
+                  src={isEditing ? editData?.imagen : producto.imagen}
+                  alt={producto.nombre}
+                  placeholderClassName="producto-detail__image-placeholder"
+                />
                 {isEditing && (
                   <div className="producto-detail__image-overlay">
                     <PiCameraBold size={28} />

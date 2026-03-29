@@ -36,7 +36,7 @@ export const useProductos = () => {
     fetchProductos();
   }, [fetchProductos]);
 
-  const addProducto = async (data: ProductoFormData) => {
+  const addProducto = async (data: ProductoFormData): Promise<Producto | undefined> => {
     if (!user || !negocioUid) return;
 
     const limites = getPlanLimits(user.plan);
@@ -50,6 +50,7 @@ export const useProductos = () => {
       fechaCreacion: new Date()
     } as Producto;
     setProductos((prev) => [...prev, newProducto].sort((a, b) => a.nombre.localeCompare(b.nombre)));
+    return newProducto;
   };
 
   const editProducto = async (id: string, data: Partial<ProductoFormData>) => {

@@ -38,6 +38,7 @@
     .btn {
       flex: 1;
       min-width: fit-content;
+      height: 36px;
 
       @include sm {
         flex: initial;

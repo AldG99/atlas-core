@@ -43,6 +43,7 @@ import {
 } from '../services/backupService';
 import { salirDelNegocio, getAdminPorUid, getMiembros } from '../services/equipoService';
 import PhoneInput from '../components/clientes/PhoneInput';
+import Avatar from '../components/ui/Avatar';
 import './Configuracion.scss';
 
 type ImportStep = 'idle' | 'preview' | 'importing' | 'done';
@@ -476,10 +477,11 @@ const Configuracion = () => {
                     onClick={() => setSelectedMiembro(m)}
                   >
                     <div className="configuracion__equipo-avatar">
-                      {m.fotoPerfil
-                        ? <img src={m.fotoPerfil} alt={m.nombre} />
-                        : <span>{(m.nombre?.[0] ?? '?').toUpperCase()}{(m.apellido?.[0] ?? '').toUpperCase()}</span>
-                      }
+                      <Avatar
+                        src={m.fotoPerfil}
+                        initials={`${(m.nombre?.[0] ?? '?').toUpperCase()}${(m.apellido?.[0] ?? '').toUpperCase()}`}
+                        alt={m.nombre}
+                      />
                     </div>
                     <div className="configuracion__equipo-info">
                       <div className="configuracion__equipo-name-row">
@@ -661,10 +663,11 @@ const Configuracion = () => {
                 <p className="configuracion__membresia-label">Administrador</p>
                 <div className="configuracion__equipo-item">
                   <div className="configuracion__equipo-avatar">
-                    {adminNegocio.fotoPerfil
-                      ? <img src={adminNegocio.fotoPerfil} alt={adminNegocio.nombre} />
-                      : <span>{(adminNegocio.nombre?.[0] ?? '?').toUpperCase()}{(adminNegocio.apellido?.[0] ?? '').toUpperCase()}</span>
-                    }
+                    <Avatar
+                      src={adminNegocio.fotoPerfil}
+                      initials={`${(adminNegocio.nombre?.[0] ?? '?').toUpperCase()}${(adminNegocio.apellido?.[0] ?? '').toUpperCase()}`}
+                      alt={adminNegocio.nombre}
+                    />
                   </div>
                   <div className="configuracion__equipo-info">
                     <div className="configuracion__equipo-name-row">
@@ -684,10 +687,11 @@ const Configuracion = () => {
                   {companeros.map(m => (
                     <div key={m.uid} className="configuracion__equipo-item">
                       <div className="configuracion__equipo-avatar">
-                        {m.fotoPerfil
-                          ? <img src={m.fotoPerfil} alt={m.nombre} />
-                          : <span>{(m.nombre?.[0] ?? '?').toUpperCase()}{(m.apellido?.[0] ?? '').toUpperCase()}</span>
-                        }
+                        <Avatar
+                          src={m.fotoPerfil}
+                          initials={`${(m.nombre?.[0] ?? '?').toUpperCase()}${(m.apellido?.[0] ?? '').toUpperCase()}`}
+                          alt={m.nombre}
+                        />
                       </div>
                       <div className="configuracion__equipo-info">
                         <div className="configuracion__equipo-name-row">
@@ -1031,10 +1035,11 @@ const Configuracion = () => {
                   <>
                     <div className="configuracion__miembro-profile">
                       <div className="configuracion__miembro-avatar">
-                        {m.fotoPerfil
-                          ? <img src={m.fotoPerfil} alt={nombreCompleto} />
-                          : <span>{initials || '?'}</span>
-                        }
+                        <Avatar
+                          src={m.fotoPerfil}
+                          initials={initials || '?'}
+                          alt={nombreCompleto}
+                        />
                       </div>
                       <div className="configuracion__miembro-name">{nombreCompleto || '—'}</div>
                       {m.numeroMiembro && (
