@@ -1,34 +1,8 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
-$sidebar-width: 220px;
-
 .sidebar-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: $spacing-md;
-  left: $spacing-md;
-  z-index: 1001;
-  width: 36px;
-  height: 36px;
-  background-color: rgba($color-white, 0.85);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border: 1px solid $color-gray-200;
-  color: $color-gray-700;
-  cursor: pointer;
-  box-shadow: $shadow-sm;
-  transition: all $transition-fast;
-
-  @include md {
-    display: none;
-  }
-
-  &:hover {
-    background-color: $color-white;
-  }
+  display: none;
 }
 
 .sidebar-overlay {
@@ -57,11 +31,18 @@ $sidebar-width: 220px;
   display: flex;
   flex-direction: column;
   z-index: 1000;
-  transition: transform $transition-base;
+  transition: transform $transition-base, width $transition-base;
   transform: translateX(-100%);
 
+  // Tablet: sidebar icon-only (60px) — maximiza espacio de contenido
   @include md {
     transform: translateX(0);
+    width: $sidebar-width-tablet;
+  }
+
+  // Desktop: sidebar completo con iconos + texto
+  @include lg {
+    width: $sidebar-width;
   }
 
   &--mobile-open {
@@ -72,9 +53,15 @@ $sidebar-width: 220px;
   &__header {
     display: flex;
     align-items: center;
+    justify-content: center;
     height: 70px;
     padding: 0 $spacing-md;
     border-bottom: 1px solid $color-gray-200;
+    overflow: hidden;
+
+    @include lg {
+      justify-content: flex-start;
+    }
   }
 
   &__logo {
@@ -82,6 +69,15 @@ $sidebar-width: 220px;
     height: auto;
     display: block;
     opacity: 0.9;
+
+    // Tablet: ocultar logo de texto (no cabe en 60px)
+    @include md {
+      display: none;
+    }
+
+    @include lg {
+      display: block;
+    }
   }
 
   // ── Navegación ──────────────────────────────────────────
@@ -92,6 +88,14 @@ $sidebar-width: 220px;
     flex-direction: column;
     gap: 2px;
     overflow-y: auto;
+
+    @include md {
+      padding: $spacing-xs;
+    }
+
+    @include lg {
+      padding: $spacing-sm;
+    }
   }
 
   &__link {
@@ -103,6 +107,20 @@ $sidebar-width: 220px;
     text-decoration: none;
     transition: background-color $transition-fast, color $transition-fast;
     white-space: nowrap;
+
+    // Tablet: centrar icono
+    @include md {
+      justify-content: center;
+      gap: 0;
+      padding: 10px $spacing-xs;
+    }
+
+    // Desktop: restablecer layout completo
+    @include lg {
+      justify-content: flex-start;
+      gap: 9px;
+      padding: $spacing-sm $spacing-md;
+    }
 
     &:hover {
       background-color: $color-gray-200;
@@ -139,11 +157,32 @@ $sidebar-width: 220px;
     justify-content: center;
     flex-shrink: 0;
 
+    // Tablet: iconos ligeramente más grandes (touch target)
+    @include md {
+      width: 40px;
+      height: 40px;
+    }
+
+    @include lg {
+      width: 26px;
+      height: 26px;
+    }
+
     svg {
       width: 22px;
       height: 22px;
       opacity: 0.75;
       transition: opacity $transition-fast;
+
+      @include md {
+        width: 24px;
+        height: 24px;
+      }
+
+      @include lg {
+        width: 22px;
+        height: 22px;
+      }
     }
   }
 
@@ -151,6 +190,15 @@ $sidebar-width: 220px;
     font-size: $font-size-sm;
     font-weight: 500;
     letter-spacing: -0.01em;
+
+    // Tablet: ocultar texto de links
+    @include md {
+      display: none;
+    }
+
+    @include lg {
+      display: inline;
+    }
   }
 
   &__badge {
@@ -162,6 +210,14 @@ $sidebar-width: 220px;
     color: $color-gray-500;
     white-space: nowrap;
     border-radius: $border-radius-pill;
+
+    @include md {
+      display: none;
+    }
+
+    @include lg {
+      display: inline-flex;
+    }
   }
 
   // ── Footer ──────────────────────────────────────────────
@@ -172,5 +228,15 @@ $sidebar-width: 220px;
     display: flex;
     flex-direction: column;
     gap: 2px;
+
+    @include md {
+      padding: $spacing-xs;
+      padding-bottom: $spacing-sm;
+    }
+
+    @include lg {
+      padding: $spacing-sm;
+      padding-bottom: $spacing-md;
+    }
   }
 }

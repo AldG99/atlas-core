@@ -1,7 +1,8 @@
-import { PiXBold, PiPackageBold } from 'react-icons/pi';
+import { PiXBold } from 'react-icons/pi';
 import type { Producto, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import { useCurrency } from '../../hooks/useCurrency';
+import ProductImage from '../ui/ProductImage';
 import '../../pages/PedidoDetail.scss';
 
 interface ProductoDetalleModalProps {
@@ -47,14 +48,11 @@ const ProductoDetalleModal = ({ producto, etiquetas, onClose }: ProductoDetalleM
         </div>
         <div className="pedido-detail__modal-body">
           <div className="pedido-detail__modal-image">
-            {producto.imagen ? (
-              <img src={producto.imagen} alt={producto.nombre} />
-            ) : (
-              <div className="pedido-detail__modal-placeholder">
-                <PiPackageBold size={48} />
-                <span>Sin imagen</span>
-              </div>
-            )}
+            <ProductImage
+              src={producto.imagen}
+              alt={producto.nombre}
+              placeholderClassName="pedido-detail__modal-placeholder"
+            />
           </div>
           <div className="pedido-detail__modal-right">
             <div className="pedido-detail__modal-section">

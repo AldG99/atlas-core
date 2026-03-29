@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { PiStarFill } from 'react-icons/pi';
+import { PiStarFill, PiPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import { useClientes } from '../../hooks/useClientes';
 import { useToast } from '../../hooks/useToast';
 import { formatTelefono } from '../../utils/formatters';
 import { getCodigoPais } from '../../data/codigosPais';
 import type { Cliente } from '../../types/Cliente';
+import Avatar from '../ui/Avatar';
 import './ClienteSelector.scss';
 
 interface ClienteSelectorProps {
@@ -12,7 +13,10 @@ interface ClienteSelectorProps {
   selectedCliente?: Cliente | null;
 }
 
-const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) => {
+const ClienteSelector = ({
+  onSelect,
+  selectedCliente,
+}: ClienteSelectorProps) => {
   const { clientes, loading, addCliente } = useClientes();
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,7 +30,7 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
 
   const filteredClientes = clientes
     .filter(
-      (c) =>
+      c =>
         c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.telefono.includes(searchTerm)
@@ -76,13 +80,24 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
   };
 
   const scrollItemIntoView = (index: number) => {
-    const items = dropdownRef.current?.querySelectorAll<HTMLElement>('.cliente-selector__dropdown-item');
+    const items = dropdownRef.current?.querySelectorAll<HTMLElement>(
+      '.cliente-selector__dropdown-item'
+    );
     items?.[index]?.scrollIntoView({ block: 'nearest' });
   };
 
   const handleAddNew = async () => {
     if (!nombre.trim() || !telefono.trim()) {
       showToast('Completa nombre y teléfono', 'warning');
+      return;
+    }
+
+    const existente = clientes.find(c => c.telefono === telefono.trim());
+    if (existente) {
+      showToast(
+        `Ya existe un cliente con ese teléfono: ${existente.nombre} ${existente.apellido}`.trim(),
+        'warning'
+      );
       return;
     }
 
@@ -96,7 +111,7 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
         numeroExterior: '',
         colonia: '',
         ciudad: '',
-        codigoPostal: ''
+        codigoPostal: '',
       });
       if (newCliente) {
         onSelect(newCliente);
@@ -116,7 +131,10 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
@@ -131,7 +149,10 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
         <div className="cliente-selector__selected-row">
           <div className="cliente-selector__avatar">
             {selectedCliente.fotoPerfil ? (
-              <img src={selectedCliente.fotoPerfil} alt={selectedCliente.nombre} />
+              <img
+                src={selectedCliente.fotoPerfil}
+                alt={selectedCliente.nombre}
+              />
             ) : (
               <span>{selectedCliente.nombre.charAt(0).toUpperCase()}</span>
             )}
@@ -139,7 +160,12 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
           <div className="cliente-selector__client-info">
             <span className="cliente-selector__client-name">
               {selectedCliente.nombre} {selectedCliente.apellido}
-              {selectedCliente.favorito && <PiStarFill size={12} className="cliente-selector__dropdown-fav" />}
+              {selectedCliente.favorito && (
+                <PiStarFill
+                  size={12}
+                  className="cliente-selector__dropdown-fav"
+                />
+              )}
             </span>
             <span className="cliente-selector__client-phone">
               {selectedCliente.telefonoCodigoPais
@@ -165,11 +191,15 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
 
       <div className="cliente-selector__search-row">
         <div className="cliente-selector__search-wrapper">
+          <PiMagnifyingGlassBold
+            size={16}
+            className="cliente-selector__search-icon"
+          />
           <input
             type="text"
             placeholder="Buscar por nombre o teléfono..."
             value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={e => handleSearch(e.target.value)}
             onFocus={() => searchTerm && setShowDropdown(true)}
             onKeyDown={handleKeyDown}
             className="input cliente-selector__search"
@@ -182,7 +212,7 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
           onClick={() => setShowForm(!showForm)}
           title="Agregar nuevo cliente"
         >
-          +
+          <PiPlusBold size={14} />
         </button>
       </div>
 
@@ -198,18 +228,21 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
                 onMouseEnter={() => setFocusedIndex(index)}
               >
                 <div className="cliente-selector__dropdown-avatar">
-                  {cliente.fotoPerfil ? (
-                    <img src={cliente.fotoPerfil} alt={cliente.nombre} />
-                  ) : (
-                    <span className="cliente-selector__dropdown-avatar-placeholder">
-                      {cliente.nombre.charAt(0).toUpperCase()}
-                    </span>
-                  )}
+                  <Avatar
+                    src={cliente.fotoPerfil}
+                    initials={`${cliente.nombre[0]}${cliente.apellido?.[0] ?? ''}`.toUpperCase()}
+                    alt={cliente.nombre}
+                  />
                 </div>
                 <div className="cliente-selector__dropdown-info">
                   <span className="cliente-selector__dropdown-name">
                     {cliente.nombre} {cliente.apellido}
-                    {cliente.favorito && <PiStarFill size={12} className="cliente-selector__dropdown-fav" />}
+                    {cliente.favorito && (
+                      <PiStarFill
+                        size={12}
+                        className="cliente-selector__dropdown-fav"
+                      />
+                    )}
                   </span>
                   <span className="cliente-selector__dropdown-phone">
                     {cliente.telefonoCodigoPais
@@ -234,14 +267,14 @@ const ClienteSelector = ({ onSelect, selectedCliente }: ClienteSelectorProps) =>
             type="text"
             placeholder="Nombre del cliente"
             value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            onChange={e => setNombre(e.target.value)}
             className="input"
           />
           <input
             type="text"
             placeholder="Teléfono"
             value={telefono}
-            onChange={(e) => setTelefono(e.target.value)}
+            onChange={e => setTelefono(e.target.value)}
             className="input"
           />
           <div className="cliente-selector__form-actions">

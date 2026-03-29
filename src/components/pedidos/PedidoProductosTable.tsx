@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { PiEyeBold } from 'react-icons/pi';
 import type { ProductoItem } from '../../types/Pedido';
 import type { Producto, Etiqueta } from '../../types/Producto';
@@ -44,14 +45,19 @@ const PedidoProductosTable: React.FC<Props> = ({
   onRowClick,
   onProductoClick,
 }) => {
-  const getEtiquetasForClave = (clave?: string): Etiqueta[] => {
-    if (!clave) return [];
-    const producto = catalogoProductos.find(cp => cp.clave === clave);
-    if (!producto?.etiquetas) return [];
-    return producto.etiquetas
-      .map(etId => todasEtiquetas.find(e => e.id === etId))
-      .filter((e): e is Etiqueta => !!e);
-  };
+  const etiquetasPorClave = useMemo(() => {
+    const map = new Map<string, Etiqueta[]>();
+    for (const cp of catalogoProductos) {
+      if (!cp.clave || !cp.etiquetas?.length) continue;
+      map.set(cp.clave, cp.etiquetas
+        .map(etId => todasEtiquetas.find(e => e.id === etId))
+        .filter((e): e is Etiqueta => !!e));
+    }
+    return map;
+  }, [catalogoProductos, todasEtiquetas]);
+
+  const getEtiquetasForClave = (clave?: string): Etiqueta[] =>
+    clave ? (etiquetasPorClave.get(clave) ?? []) : [];
 
   return (
     <div className="pedido-detail__section pedido-detail__section--grow">

@@ -4,6 +4,7 @@ import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBo
 import { useAuth } from '../../hooks/useAuth';
 import { useNotificaciones, type Notificacion } from '../../hooks/useNotificaciones';
 import { ROUTES } from '../../config/routes';
+import Avatar from './Avatar';
 import './Header.scss';
 
 const Header = () => {
@@ -121,11 +122,11 @@ const Header = () => {
             aria-label={`Menú de perfil — ${user?.nombreNegocio ?? 'Usuario'}`}
           >
             <div className="header__avatar">
-              {user?.fotoPerfil ? (
-                <img src={user.fotoPerfil} alt={user.nombreNegocio} />
-              ) : (
-                getInitials(user?.nombreNegocio)
-              )}
+              <Avatar
+                src={user?.fotoPerfil}
+                initials={getInitials(user?.nombreNegocio)}
+                alt={user?.nombreNegocio}
+              />
             </div>
             <div className="header__profile-info">
               <span className="header__profile-name">{user?.nombreNegocio}</span>

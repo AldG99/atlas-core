@@ -1,25 +1,20 @@
-import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { PiListBold, PiXBold, PiClipboardTextBold, PiUsersBold, PiPackageBold, PiChartBarBold, PiArchiveBold, PiGearBold, PiLifebuoyBold } from 'react-icons/pi';
 import { ROUTES } from '../../config/routes';
 import './Sidebar.scss';
 
-const Sidebar = () => {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+interface SidebarProps {
+  isMobileOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+}
 
-  const toggleMobile = () => {
-    setIsMobileOpen(!isMobileOpen);
-  };
-
-  const closeMobile = () => {
-    setIsMobileOpen(false);
-  };
-
+const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
   return (
     <>
       <button
         className="sidebar-toggle"
-        onClick={toggleMobile}
+        onClick={onToggle}
         aria-label={isMobileOpen ? 'Cerrar menú' : 'Abrir menú'}
         aria-expanded={isMobileOpen}
         aria-controls="sidebar"
@@ -28,7 +23,7 @@ const Sidebar = () => {
       </button>
 
       {isMobileOpen && (
-        <div className="sidebar-overlay" onClick={closeMobile} aria-hidden="true" />
+        <div className="sidebar-overlay" onClick={onClose} aria-hidden="true" />
       )}
 
       <aside id="sidebar" className={`sidebar ${isMobileOpen ? 'sidebar--mobile-open' : ''}`}>
@@ -44,7 +39,7 @@ const Sidebar = () => {
           <NavLink
             to={ROUTES.DASHBOARD}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-            onClick={closeMobile}
+            onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiClipboardTextBold size={22} /></span>
             <span className="sidebar__link-text">Pedidos</span>
@@ -53,7 +48,7 @@ const Sidebar = () => {
           <NavLink
             to={ROUTES.CLIENTES}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-            onClick={closeMobile}
+            onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiUsersBold size={22} /></span>
             <span className="sidebar__link-text">Clientes</span>
@@ -62,7 +57,7 @@ const Sidebar = () => {
           <NavLink
             to={ROUTES.PRODUCTOS}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-            onClick={closeMobile}
+            onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiPackageBold size={22} /></span>
             <span className="sidebar__link-text">Productos</span>
@@ -71,7 +66,7 @@ const Sidebar = () => {
           <NavLink
             to={ROUTES.REPORTES}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-            onClick={closeMobile}
+            onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiChartBarBold size={22} /></span>
             <span className="sidebar__link-text">Reportes</span>
@@ -80,7 +75,7 @@ const Sidebar = () => {
           <NavLink
             to={ROUTES.ARCHIVO}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-            onClick={closeMobile}
+            onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiArchiveBold size={22} /></span>
             <span className="sidebar__link-text">Archivados</span>
@@ -92,7 +87,7 @@ const Sidebar = () => {
           <NavLink
             to={ROUTES.CONFIGURACION}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-            onClick={closeMobile}
+            onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiGearBold size={22} /></span>
             <span className="sidebar__link-text">Configuración</span>
@@ -101,7 +96,7 @@ const Sidebar = () => {
           <NavLink
             to={ROUTES.SOPORTE}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-            onClick={closeMobile}
+            onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiLifebuoyBold size={22} /></span>
             <span className="sidebar__link-text">Soporte</span>

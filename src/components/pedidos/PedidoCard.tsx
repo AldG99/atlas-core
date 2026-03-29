@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import type { Pedido, PedidoStatus } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
-import { applyTemplate, openWhatsApp, copyToClipboard } from '../../utils/formatters';
+import { buildMensajePedido, openWhatsApp, copyToClipboard } from '../../utils/formatters';
 import { useCurrency } from '../../hooks/useCurrency';
 import { useAuth } from '../../hooks/useAuth';
 import { PLANTILLAS_DEFAULT } from '../../types/User';
@@ -23,14 +22,8 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
   const { format, simbolo } = useCurrency();
   const { user } = useAuth();
 
-  const buildMensaje = () => {
-    const plantillas = user?.plantillas ?? PLANTILLAS_DEFAULT;
-    const template =
-      pedido.estado === 'entregado' ? plantillas.entrega :
-      pedido.estado === 'en_preparacion' ? plantillas.preparacion :
-      plantillas.confirmacion;
-    return applyTemplate(template, pedido, simbolo, user?.nombreNegocio ?? '');
-  };
+  const getMensaje = () =>
+    buildMensajePedido(pedido, user?.plantillas ?? PLANTILLAS_DEFAULT, simbolo, user?.nombreNegocio ?? '');
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-MX', {
@@ -42,7 +35,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
   };
 
   const handleCopy = async () => {
-    const success = await copyToClipboard(buildMensaje());
+    const success = await copyToClipboard(getMensaje());
     if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -50,7 +43,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
   };
 
   const handleWhatsApp = () => {
-    openWhatsApp(pedido.clienteTelefono, buildMensaje());
+    openWhatsApp(pedido.clienteTelefono, getMensaje());
   };
 
   return (
@@ -113,10 +106,6 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
                   </option>
                 ))}
               </select>
-
-              <Link to={`/pedido/${pedido.id}/editar`} className="btn btn--secondary">
-                Editar
-              </Link>
 
               {onArchive && (
                 <button

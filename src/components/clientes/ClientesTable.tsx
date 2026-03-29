@@ -4,6 +4,7 @@ import { PiStarFill } from 'react-icons/pi';
 import type { Cliente } from '../../types/Cliente';
 import { getCodigoPais } from '../../data/codigosPais';
 import { formatTelefono } from '../../utils/formatters';
+import Avatar from '../ui/Avatar';
 import './ClientesTable.scss';
 
 interface ClientesTableProps {
@@ -118,11 +119,11 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
               <td>
                 <div className="clientes-table__client">
                   <div className="clientes-table__avatar">
-                    {cliente.fotoPerfil ? (
-                      <img src={cliente.fotoPerfil} alt={cliente.nombre} />
-                    ) : (
-                      <span>{cliente.nombre[0]}{cliente.apellido[0]}</span>
-                    )}
+                    <Avatar
+                      src={cliente.fotoPerfil}
+                      initials={`${cliente.nombre[0]}${cliente.apellido[0]}`}
+                      alt={cliente.nombre}
+                    />
                   </div>
                   <span className="clientes-table__name" title={`${cliente.nombre} ${cliente.apellido}`}>
                     {cliente.nombre} {cliente.apellido}

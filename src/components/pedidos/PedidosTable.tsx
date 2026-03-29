@@ -9,6 +9,7 @@ import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatu
 import { formatShortDate, getTotalPagado } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
 import { useCurrency } from '../../hooks/useCurrency';
+import Avatar from '../ui/Avatar';
 import './PedidosTable.scss';
 
 interface PedidosTableProps {
@@ -82,7 +83,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
 
   return (
     <div className="pedidos-table-wrapper">
-      <div ref={tableContainerRef} className="pedidos-table-container">
+      <div className="pedidos-table-header">
         <table className="pedidos-table">
           <colgroup>
             <col style={{ width: '20%' }} />
@@ -106,6 +107,20 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
               <th>Fecha</th>
             </tr>
           </thead>
+        </table>
+      </div>
+      <div ref={tableContainerRef} className="pedidos-table-container">
+        <table className="pedidos-table">
+          <colgroup>
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '15%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '12%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '12%' }} />
+          </colgroup>
           <tbody>
           {loading ? (
             Array.from({ length: 10 }).map((_, i) => (
@@ -145,11 +160,11 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
               <td>
                 <div className="pedidos-table__client">
                   <div className="pedidos-table__avatar">
-                    {foto ? (
-                      <img src={foto} alt={pedido.clienteNombre} />
-                    ) : (
-                      <span>{pedido.clienteNombre.charAt(0).toUpperCase()}</span>
-                    )}
+                    <Avatar
+                      src={foto}
+                      initials={(() => { const c = clienteMap.get(pedido.clienteTelefono); return c ? `${c.nombre[0]}${c.apellido?.[0] ?? ''}`.toUpperCase() : pedido.clienteNombre[0].toUpperCase(); })()}
+                      alt={pedido.clienteNombre}
+                    />
                   </div>
                   <span className="pedidos-table__name" title={pedido.clienteNombre}>
                     {pedido.clienteNombre}
@@ -218,8 +233,8 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
             );
           })}
         </tbody>
-      </table>
-    </div>
+        </table>
+      </div>
 
       {!loading && (
         <div className="pedidos-table__pagination">

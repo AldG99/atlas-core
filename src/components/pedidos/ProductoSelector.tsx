@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
+import { PiPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import ProductoDetalleModal from '../productos/ProductoDetalleModal';
 import { useProductos } from '../../hooks/useProductos';
 import { useEtiquetas } from '../../hooks/useEtiquetas';
 import { useToast } from '../../hooks/useToast';
+import { useCurrency } from '../../hooks/useCurrency';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import type { Producto } from '../../types/Producto';
 import './ProductoSelector.scss';
@@ -20,7 +22,58 @@ interface ProductoSelectorProps {
   onRemoveItem: (productoId: string) => void;
   total: number;
   disabled?: boolean;
+  error?: string;
 }
+
+interface NuevoProductoFormProps {
+  onSave: (nombre: string, clave: string, precio: string) => Promise<void>;
+  onCancel: () => void;
+}
+
+const NuevoProductoForm = ({ onSave, onCancel }: NuevoProductoFormProps) => {
+  const [nombre, setNombre] = useState('');
+  const [clave, setClave] = useState('');
+  const [precio, setPrecio] = useState('');
+
+  const handleSave = () => onSave(nombre, clave, precio);
+
+  return (
+    <div className="producto-selector__form">
+      <div className="producto-selector__form-title">Nuevo producto</div>
+      <input
+        type="text"
+        placeholder="Nombre del producto"
+        value={nombre}
+        onChange={(e) => setNombre(e.target.value)}
+        className="input"
+      />
+      <input
+        type="text"
+        placeholder="Clave (opcional)"
+        value={clave}
+        onChange={(e) => setClave(e.target.value)}
+        className="input"
+      />
+      <input
+        type="number"
+        placeholder="Precio"
+        value={precio}
+        onChange={(e) => setPrecio(e.target.value)}
+        className="input"
+        min="0"
+        step="0.01"
+      />
+      <div className="producto-selector__form-actions">
+        <button type="button" className="btn btn--outline btn--sm" onClick={onCancel}>
+          Cancelar
+        </button>
+        <button type="button" className="btn btn--primary btn--sm" onClick={handleSave}>
+          Guardar
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const ProductoSelector = ({
   items,
@@ -28,18 +81,17 @@ const ProductoSelector = ({
   onUpdateCantidad,
   onRemoveItem,
   total,
-  disabled = false
+  disabled = false,
+  error
 }: ProductoSelectorProps) => {
   const { productos, loading, addProducto } = useProductos();
+  const { format } = useCurrency();
   const { etiquetas: todasEtiquetas } = useEtiquetas();
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
-  const [nombre, setNombre] = useState('');
-  const [clave, setClave] = useState('');
-  const [precio, setPrecio] = useState('');
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -113,22 +165,22 @@ const ProductoSelector = ({
     setShowDropdown(false);
   };
 
-  const handleAddNew = async () => {
+  const handleAddNew = async (nombre: string, clave: string, precio: string) => {
     if (!nombre.trim() || !precio) {
       showToast('Completa nombre y precio', 'warning');
       return;
     }
-
+    const precioNum = parseFloat(precio);
+    if (isNaN(precioNum) || precioNum < 0) {
+      showToast('El precio debe ser un número válido', 'warning');
+      return;
+    }
     try {
-      await addProducto({
-        nombre: nombre.trim(),
-        clave: clave.trim(),
-        precio: parseFloat(precio)
-      });
+      const newProducto = await addProducto({ nombre: nombre.trim(), clave: clave.trim(), precio: precioNum });
+      if (newProducto) {
+        onAddItem(newProducto);
+      }
       showToast('Producto creado correctamente', 'success');
-      setNombre('');
-      setClave('');
-      setPrecio('');
       setShowForm(false);
     } catch {
       showToast('Error al crear producto', 'error');
@@ -193,6 +245,7 @@ const ProductoSelector = ({
 
       <div className="producto-selector__search-row" ref={wrapperRef}>
         <div className="producto-selector__search-wrapper">
+          <PiMagnifyingGlassBold size={16} className="producto-selector__search-icon" />
           <input
             type="text"
             placeholder="Buscar por nombre o clave..."
@@ -252,12 +305,12 @@ const ProductoSelector = ({
                     {isDescuentoActivo(producto) ? (
                       <span className="producto-selector__dropdown-discount">
                         <span className="producto-selector__dropdown-badge">-{producto.descuento}%</span>
-                        <span className="producto-selector__dropdown-original">${producto.precio.toFixed(2)}</span>
-                        <span className="producto-selector__dropdown-final">${getEffectivePrice(producto).toFixed(2)}</span>
+                        <span className="producto-selector__dropdown-original">{format(producto.precio)}</span>
+                        <span className="producto-selector__dropdown-final">{format(getEffectivePrice(producto))}</span>
                       </span>
                     ) : (
                       <span className="producto-selector__dropdown-price">
-                        ${producto.precio.toFixed(2)}
+                        {format(producto.precio)}
                       </span>
                     )}
                   </button>
@@ -277,53 +330,19 @@ const ProductoSelector = ({
           title="Agregar nuevo producto"
           disabled={disabled}
         >
-          +
+          <PiPlusBold size={18} />
         </button>
       </div>
 
       {showForm && (
-        <div className="producto-selector__form">
-          <div className="producto-selector__form-title">Nuevo producto</div>
-          <input
-            type="text"
-            placeholder="Nombre del producto"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            className="input"
-          />
-          <input
-            type="text"
-            placeholder="Clave (opcional)"
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
-            className="input"
-          />
-          <input
-            type="number"
-            placeholder="Precio"
-            value={precio}
-            onChange={(e) => setPrecio(e.target.value)}
-            className="input"
-            min="0"
-            step="0.01"
-          />
-          <div className="producto-selector__form-actions">
-            <button
-              type="button"
-              className="btn btn--outline btn--sm"
-              onClick={() => setShowForm(false)}
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              className="btn btn--primary btn--sm"
-              onClick={handleAddNew}
-            >
-              Guardar
-            </button>
-          </div>
-        </div>
+        <NuevoProductoForm
+          onSave={handleAddNew}
+          onCancel={() => setShowForm(false)}
+        />
+      )}
+
+      {error && (
+        <span className="error-message producto-selector__error">{error}</span>
       )}
 
       <div className="producto-selector__items">
@@ -464,15 +483,15 @@ const ProductoSelector = ({
                       {isDescuentoActivo(item.producto) ? (
                         <div className="producto-selector__table-price-discount">
                           <span className="producto-selector__table-price-badge">-{item.producto.descuento}%</span>
-                          <span className="producto-selector__table-price-original">${item.producto.precio.toFixed(2)}</span>
-                          <span>${getEffectivePrice(item.producto).toFixed(2)}</span>
+                          <span className="producto-selector__table-price-original">{format(item.producto.precio)}</span>
+                          <span>{format(getEffectivePrice(item.producto))}</span>
                         </div>
                       ) : (
-                        <span>${item.producto.precio.toFixed(2)}</span>
+                        <span>{format(item.producto.precio)}</span>
                       )}
                     </td>
                     <td className="producto-selector__table-subtotal">
-                      ${item.subtotal.toFixed(2)}
+                      {format(item.subtotal)}
                     </td>
                     <td>
                       <button
@@ -512,7 +531,7 @@ const ProductoSelector = ({
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td className="producto-selector__total-value">${total.toFixed(2)}</td>
+                  <td className="producto-selector__total-value">{format(total)}</td>
                   <td></td>
                 </tr>
               </tfoot>

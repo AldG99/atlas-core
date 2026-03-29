@@ -11,7 +11,6 @@ interface PedidoFormProps {
   onSubmit: (data: PedidoFormData) => Promise<void>;
   onCancel?: () => void;
   loading?: boolean;
-  initialData?: PedidoFormData;
   submitText?: string;
   defaultCliente?: Cliente;
   defaultProductos?: ProductoItem[];
@@ -21,7 +20,6 @@ const PedidoForm = ({
   onSubmit,
   onCancel,
   loading = false,
-  initialData,
   submitText = 'Crear pedido',
   defaultCliente,
   defaultProductos
@@ -47,13 +45,6 @@ const PedidoForm = ({
   const [total, setTotal] = useState(0);
   const [notas, setNotas] = useState('');
   const [errors, setErrors] = useState<{ cliente?: string; productos?: string }>({});
-
-  useEffect(() => {
-    if (initialData) {
-      setNotas(initialData.notas || '');
-      setTotal(initialData.total);
-    }
-  }, [initialData]);
 
   useEffect(() => {
     const newTotal = items.reduce((sum, item) => sum + item.subtotal, 0);
@@ -113,12 +104,10 @@ const PedidoForm = ({
 
     await onSubmit(data);
 
-    if (!initialData) {
-      setSelectedCliente(null);
-      setItems([]);
-      setTotal(0);
-      setNotas('');
-    }
+    setSelectedCliente(null);
+    setItems([]);
+    setTotal(0);
+    setNotas('');
   };
 
   const handleClienteSelect = (cliente: Cliente | null) => {
@@ -197,26 +186,23 @@ const PedidoForm = ({
         onRemoveItem={handleRemoveItem}
         total={total}
         disabled={!selectedCliente}
+        error={errors.productos}
       />
 
       <div className="pedido-form__fields">
-        {errors.productos && (
-          <span className="error-message">{errors.productos}</span>
-        )}
-
         <div className="form-group">
           <label htmlFor="notas">Notas (opcional)</label>
           <input
-            type="text"
             id="notas"
             name="notas"
+            type="text"
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
             className="input"
             placeholder="Notas adicionales"
             maxLength={80}
+            disabled={!selectedCliente || items.length === 0}
           />
-          <span className="pedido-form__notas-counter">{notas.length}/80</span>
         </div>
 
         <div className="pedido-form__actions">
@@ -233,7 +219,7 @@ const PedidoForm = ({
           <button
             type="submit"
             className="btn btn--primary btn--full"
-            disabled={loading}
+            disabled={loading || !selectedCliente || items.length === 0}
           >
             {loading ? 'Guardando...' : submitText}
           </button>

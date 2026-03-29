@@ -3,6 +3,7 @@ import { PiUsersThreeBold, PiWarningBold } from 'react-icons/pi';
 import { useEquipo } from '../../hooks/useEquipo';
 import { useToast } from '../../hooks/useToast';
 import PhoneInput from '../clientes/PhoneInput';
+import Avatar from '../ui/Avatar';
 import './EquipoCard.scss';
 
 const EquipoCard = () => {
@@ -83,10 +84,11 @@ const EquipoCard = () => {
                 {miembros.map((m) => (
                   <li key={m.uid} className="equipo-card__item">
                     <div className="equipo-card__item-avatar">
-                      {m.fotoPerfil
-                        ? <img src={m.fotoPerfil} alt={m.nombre} />
-                        : <span>{(m.nombre?.[0] ?? '').toUpperCase()}{(m.apellido?.[0] ?? '').toUpperCase()}</span>
-                      }
+                      <Avatar
+                        src={m.fotoPerfil}
+                        initials={`${(m.nombre?.[0] ?? '').toUpperCase()}${(m.apellido?.[0] ?? '').toUpperCase()}`}
+                        alt={m.nombre}
+                      />
                     </div>
                     <div className="equipo-card__item-info">
                       <span className="equipo-card__item-name">

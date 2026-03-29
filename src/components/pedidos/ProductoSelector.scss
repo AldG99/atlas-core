@@ -43,6 +43,25 @@
     position: relative;
   }
 
+  &__search-wrapper {
+    flex: 1;
+    position: relative;
+
+    .input {
+      padding-left: 36px;
+    }
+  }
+
+  &__search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $color-gray-400;
+    pointer-events: none;
+    z-index: 1;
+  }
+
   &__search {
     width: 100%;
   }
@@ -68,9 +87,9 @@
 
   &__add-btn {
     width: 40px;
-    height: 40px;
+    align-self: stretch;
     padding: 0;
-    font-size: $font-size-lg;
+    font-size: inherit;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -119,18 +138,13 @@
 
   &__dropdown-clave {
     font-size: $font-size-xs;
-    font-weight: 600;
-    color: $color-gray-500;
-    background-color: $color-gray-100;
-    padding: 2px 6px;
-    border-radius: $border-radius-sm;
+    font-weight: 700;
+    color: $color-primary;
+    background-color: rgba($color-primary, 0.1);
+    padding: 1px 5px;
+    border-radius: 4px;
     white-space: nowrap;
     font-family: monospace;
-
-    &--match {
-      color: $color-primary;
-      background-color: rgba($color-primary, 0.12);
-    }
   }
 
   &__dropdown-unidad {
@@ -182,7 +196,7 @@
     justify-content: center;
     width: 18px;
     height: 18px;
-    border-radius: 0;
+    border-radius: 50%;
     color: $color-white;
   }
 
@@ -266,6 +280,14 @@
         width: auto;
       }
     }
+  }
+
+  &__error {
+    display: block;
+    padding: 0 $spacing-md;
+    color: $color-danger;
+    font-size: $font-size-sm;
+    margin-top: $spacing-xs;
   }
 
   &__items {
@@ -424,10 +446,11 @@
     display: inline-block;
     padding: 1px 5px;
     font-size: $font-size-xs;
-    font-weight: 500;
+    font-weight: 700;
     color: $color-primary;
     background-color: rgba($color-primary, 0.1);
     font-family: monospace;
+    border-radius: 4px;
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -444,7 +467,7 @@
     justify-content: center;
     width: 18px;
     height: 18px;
-    border-radius: 0;
+    border-radius: 50%;
     color: $color-white;
   }
 
@@ -820,7 +843,7 @@
     justify-content: center;
     width: 22px;
     height: 22px;
-    border-radius: 0;
+    border-radius: 50%;
     color: $color-white;
   }
 

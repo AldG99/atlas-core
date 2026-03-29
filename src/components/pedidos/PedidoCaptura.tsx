@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useMemo } from 'react';
 import type { Pedido } from '../../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatDate, formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
@@ -18,8 +18,9 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
     const { format } = useCurrency();
     const pagado = getTotalPagado(pedido);
     const restante = pedido.total - pagado;
-    const abonos = [...(pedido.abonos || [])].sort(
-      (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+    const abonos = useMemo(
+      () => [...(pedido.abonos || [])].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()),
+      [pedido.abonos]
     );
 
     return (

@@ -11,7 +11,7 @@
 
 .productos-table-header {
   flex-shrink: 0;
-  background-color: $color-gray-50;
+  background-color: $color-gray-100;
   overflow: hidden;
   scrollbar-gutter: stable;
   box-shadow: inset 0 -1px 0 $color-gray-200;
@@ -20,11 +20,15 @@
 .productos-table-container {
   background-color: $color-white;
   overflow-x: auto;
-  overflow-y: scroll;
+  overflow-y: auto;
   flex: 1;
   min-height: 0;
   scrollbar-gutter: stable;
   scrollbar-color: $color-gray-300 $color-white;
+
+  @include md {
+    overflow-y: scroll;
+  }
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -48,7 +52,7 @@
   min-width: 700px;
 
   thead {
-    background-color: $color-gray-50;
+    background-color: $color-gray-100;
     border-bottom: 1px solid $color-gray-200;
 
     th {
@@ -65,10 +69,6 @@
     tr {
       border-bottom: 1px solid $color-gray-200;
       transition: background-color $transition-fast;
-
-      &:last-child {
-        border-bottom: none;
-      }
     }
 
     td {
