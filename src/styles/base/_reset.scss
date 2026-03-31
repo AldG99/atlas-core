@@ -7,7 +7,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: clamp(14px, calc(0.625vw + 12px), 16px);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scrollbar-gutter: stable;

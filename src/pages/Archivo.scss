@@ -85,8 +85,13 @@
 
     .select {
       font-size: $font-size-sm;
-      width: 190px;
+      flex: 1;
       height: 100%;
+
+      @include sm {
+        flex: none;
+        width: 190px;
+      }
     }
   }
 

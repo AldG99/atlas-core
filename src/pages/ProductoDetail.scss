@@ -94,7 +94,7 @@ $topbar-height: 52px;
 
     &--back {
       position: absolute;
-      left: 60px;
+      left: $spacing-md;
 
       @include md {
         left: $spacing-lg;

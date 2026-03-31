@@ -121,8 +121,12 @@
 
   &__bottom-left {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: $spacing-md;
     min-height: 200px;
+
+    @include sm {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 }

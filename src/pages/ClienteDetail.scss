@@ -110,7 +110,7 @@ $topbar-height: 52px;
 
     &--back {
       position: absolute;
-      left: 60px;
+      left: $spacing-md;
 
       @include md {
         left: $spacing-lg;
@@ -486,7 +486,7 @@ $topbar-height: 52px;
   // Info del cliente en el header (modo vista)
   &__header-fields {
     display: grid;
-    grid-template-columns: 3fr 4fr;
+    grid-template-columns: 1fr;
     gap: $spacing-sm $spacing-lg;
     flex: 0 0 calc(100% + 2 * #{$spacing-md});
     border-top: 1px solid $color-gray-200;
@@ -495,12 +495,20 @@ $topbar-height: 52px;
     padding-left: $spacing-md;
     padding-right: $spacing-md;
     padding-top: $spacing-sm;
+
+    @include sm {
+      grid-template-columns: 3fr 4fr;
+    }
   }
 
   &__header-contact {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: $spacing-sm $spacing-lg;
+
+    @include sm {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   &__header-field {
@@ -528,8 +536,12 @@ $topbar-height: 52px;
 
   &__edit-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: $spacing-md;
+
+    @include sm {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   &__edit-col {

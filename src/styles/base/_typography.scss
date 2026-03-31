@@ -8,27 +8,15 @@ body {
 }
 
 h1 {
-  font-size: $font-size-2xl;
-
-  @media (min-width: $breakpoint-md) {
-    font-size: $font-size-3xl;
-  }
+  font-size: clamp($font-size-xl, 2.5vw + 0.875rem, $font-size-3xl);
 }
 
 h2 {
-  font-size: $font-size-xl;
-
-  @media (min-width: $breakpoint-md) {
-    font-size: $font-size-2xl;
-  }
+  font-size: clamp($font-size-lg, 2vw + 0.75rem, $font-size-2xl);
 }
 
 h3 {
-  font-size: $font-size-lg;
-
-  @media (min-width: $breakpoint-md) {
-    font-size: $font-size-xl;
-  }
+  font-size: clamp($font-size-base, 1.5vw + 0.625rem, $font-size-xl);
 }
 
 p {

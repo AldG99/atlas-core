@@ -87,16 +87,25 @@ $topbar-height: 52px;
 
     select {
       cursor: pointer;
-      min-width: 100px;
+      min-width: 70px;
       color: $color-gray-700;
       border-radius: 0;
+
+      @include sm {
+        min-width: 100px;
+      }
     }
 
     input {
-      min-width: 140px;
-      width: 140px;
+      min-width: 80px;
+      width: 80px;
       color: $color-gray-800;
       text-align: right;
+
+      @include sm {
+        min-width: 140px;
+        width: 140px;
+      }
 
       &::placeholder {
         color: $color-gray-400;
@@ -109,7 +118,7 @@ $topbar-height: 52px;
   &__top-bar-inner > .pedido-detail__btn-entregado {
     height: 36px;
     min-height: 36px;
-    width: 96px;
+    width: 64px;
     border-radius: 0;
     font-size: $font-size-sm;
     font-weight: 600;
@@ -118,6 +127,10 @@ $topbar-height: 52px;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
+
+    @include sm {
+      width: 96px;
+    }
   }
 
   &__top-bar-abono-error {
@@ -172,7 +185,7 @@ $topbar-height: 52px;
 
     &--back {
       position: absolute;
-      left: 60px;
+      left: $spacing-md;
 
       @include md {
         left: $spacing-lg;
@@ -833,21 +846,32 @@ $topbar-height: 52px;
       }
 
       .pedido-detail__modal-body {
-        flex-direction: row;
+        flex-direction: column;
         padding: 0;
         overflow: hidden;
         gap: 0;
+
+        @include md {
+          flex-direction: row;
+        }
       }
 
       .pedido-detail__modal-image {
-        width: 420px;
-        height: 420px;
+        width: 100%;
+        height: 220px;
         aspect-ratio: unset;
         flex-shrink: 0;
-        border-right: 1px solid $color-gray-200;
+        border-bottom: 1px solid $color-gray-200;
         display: flex;
         align-items: center;
         justify-content: center;
+
+        @include md {
+          width: 380px;
+          height: auto;
+          border-bottom: none;
+          border-right: 1px solid $color-gray-200;
+        }
 
         img {
           width: 100%;

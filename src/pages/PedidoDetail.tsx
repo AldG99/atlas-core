@@ -223,7 +223,7 @@ const PedidoDetail = () => {
     await new Promise(resolve => setTimeout(resolve, 80));
     try {
       if (!capturaRef.current) throw new Error('Ref no disponible');
-      const dataUrl = await toPng(capturaRef.current, { pixelRatio: 2 });
+      const dataUrl = await toPng(capturaRef.current, { pixelRatio: 2, skipFonts: true });
       const link = document.createElement('a');
       link.download = `${pedido.folio || pedido.id}.png`;
       link.href = dataUrl;

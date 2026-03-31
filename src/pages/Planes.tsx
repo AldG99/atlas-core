@@ -21,9 +21,9 @@ const PLANES = [
     descripcion: 'Para empezar a gestionar tu negocio sin costo.',
     icono: <PiStorefrontBold size={22} />,
     caracteristicas: [
-      { texto: 'Hasta 180 pedidos al mes', incluido: true },
-      { texto: 'Hasta 60 clientes', incluido: true },
-      { texto: 'Hasta 40 productos', incluido: true },
+      { texto: 'Hasta 360 pedidos al mes', incluido: true },
+      { texto: 'Hasta 120 clientes', incluido: true },
+      { texto: 'Hasta 80 productos', incluido: true },
       { texto: 'Hasta 6 etiquetas', incluido: true },
       { texto: 'Exportar CSV', incluido: true },
       { texto: 'Exportar e importar datos', incluido: false },
@@ -39,9 +39,9 @@ const PLANES = [
     icono: <PiDiamondBold size={22} />,
     destacado: true,
     caracteristicas: [
-      { texto: 'Hasta 450 pedidos al mes', incluido: true },
-      { texto: 'Hasta 160 clientes', incluido: true },
-      { texto: 'Hasta 120 productos', incluido: true },
+      { texto: 'Hasta 720 pedidos al mes', incluido: true },
+      { texto: 'Hasta 240 clientes', incluido: true },
+      { texto: 'Hasta 160 productos', incluido: true },
       { texto: 'Hasta 10 etiquetas', incluido: true },
       { texto: 'Exportar CSV', incluido: true },
       { texto: 'Exportar e importar datos', incluido: true },
@@ -58,7 +58,7 @@ const PLANES = [
     caracteristicas: [
       { texto: 'Pedidos ilimitados', incluido: true },
       { texto: 'Clientes ilimitados', incluido: true },
-      { texto: 'Hasta 420 productos', incluido: true },
+      { texto: 'Hasta 640 productos', incluido: true },
       { texto: 'Hasta 16 etiquetas', incluido: true },
       { texto: 'Exportar CSV', incluido: true },
       { texto: 'Exportar e importar datos', incluido: true },
@@ -71,7 +71,9 @@ const Planes = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const planActual = user?.plan ?? 'gratuito';
-  const [modalPlan, setModalPlan] = useState<typeof PLANES[number] | null>(null);
+  const [modalPlan, setModalPlan] = useState<(typeof PLANES)[number] | null>(
+    null
+  );
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
@@ -85,14 +87,23 @@ const Planes = () => {
     focusables?.[0]?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { closeModal(); return; }
+      if (e.key === 'Escape') {
+        closeModal();
+        return;
+      }
       if (e.key !== 'Tab' || !focusables?.length) return;
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
       if (e.shiftKey) {
-        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
       } else {
-        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -108,7 +119,11 @@ const Planes = () => {
     <div className="planes-page">
       <div className="planes">
         <div className="planes__controls">
-          <button className="planes__back-btn" onClick={() => navigate(-1)} aria-label="Volver">
+          <button
+            className="planes__back-btn"
+            onClick={() => navigate(-1)}
+            aria-label="Volver"
+          >
             <PiArrowLeftBold size={20} aria-hidden="true" />
           </button>
         </div>
@@ -135,18 +150,33 @@ const Planes = () => {
                 <div className="planes__card-header">
                   <div className="planes__card-icon">{plan.icono}</div>
                   <h2 className="planes__card-nombre">{plan.nombre}</h2>
-                  <div className="planes__card-precio" aria-label={plan.precio ? `${plan.precio} dólares USD por ${plan.periodo}` : 'Gratis'}>
+                  <div
+                    className="planes__card-precio"
+                    aria-label={
+                      plan.precio
+                        ? `${plan.precio} dólares USD por ${plan.periodo}`
+                        : 'Gratis'
+                    }
+                  >
                     {plan.precio ? (
                       <>
-                        <span className="planes__precio-monto" aria-hidden="true">
+                        <span
+                          className="planes__precio-monto"
+                          aria-hidden="true"
+                        >
                           {plan.precio}
                         </span>
-                        <span className="planes__precio-periodo" aria-hidden="true">
+                        <span
+                          className="planes__precio-periodo"
+                          aria-hidden="true"
+                        >
                           USD / {plan.periodo}
                         </span>
                       </>
                     ) : (
-                      <span className="planes__precio-monto" aria-hidden="true">Gratis</span>
+                      <span className="planes__precio-monto" aria-hidden="true">
+                        Gratis
+                      </span>
                     )}
                   </div>
                   <p className="planes__card-desc">{plan.descripcion}</p>
@@ -159,10 +189,16 @@ const Planes = () => {
                       className={`planes__feature${c.incluido ? '' : ' planes__feature--no'}`}
                     >
                       <span className="planes__feature-icon" aria-hidden="true">
-                        {c.incluido ? <PiCheckBold size={14} /> : <PiXBold size={14} />}
+                        {c.incluido ? (
+                          <PiCheckBold size={14} />
+                        ) : (
+                          <PiXBold size={14} />
+                        )}
                       </span>
                       <span>
-                        <span className="sr-only">{c.incluido ? 'Incluido: ' : 'No incluido: '}</span>
+                        <span className="sr-only">
+                          {c.incluido ? 'Incluido: ' : 'No incluido: '}
+                        </span>
                         {c.texto}
                       </span>
                     </li>
@@ -180,7 +216,10 @@ const Planes = () => {
                   ) : (
                     <button
                       className="btn btn--primary btn--sm planes__btn"
-                      onClick={e => { triggerRef.current = e.currentTarget; setModalPlan(plan); }}
+                      onClick={e => {
+                        triggerRef.current = e.currentTarget;
+                        setModalPlan(plan);
+                      }}
                     >
                       {plan.id === 'gratuito'
                         ? 'Cambiar a Gratuito'
@@ -196,7 +235,11 @@ const Planes = () => {
 
       {/* Modal de contratación */}
       {modalPlan && (
-        <div className="planes__modal-overlay" onClick={closeModal} aria-hidden="true" />
+        <div
+          className="planes__modal-overlay"
+          onClick={closeModal}
+          aria-hidden="true"
+        />
       )}
       {modalPlan && (
         <div
@@ -207,25 +250,40 @@ const Planes = () => {
           className="planes__modal-wrapper"
         >
           <div className="planes__modal">
-            <button className="planes__modal-close" onClick={closeModal} aria-label="Cerrar">
+            <button
+              className="planes__modal-close"
+              onClick={closeModal}
+              aria-label="Cerrar"
+            >
               <PiXBold size={16} aria-hidden="true" />
             </button>
             <h3 id="planes-modal-title" className="planes__modal-title">
-              {modalPlan.id === 'gratuito' ? 'Cambiar a Gratuito' : `Contratar plan ${modalPlan.nombre}`}
+              {modalPlan.id === 'gratuito'
+                ? 'Cambiar a Gratuito'
+                : `Contratar plan ${modalPlan.nombre}`}
             </h3>
             <p className="planes__modal-body">
-              Durante la <strong>versión Beta</strong> los cambios de plan se gestionan manualmente.
-              Contáctanos y te ayudamos a actualizar tu cuenta.
+              Durante la <strong>versión Beta</strong> los cambios de plan se
+              gestionan manualmente. Contáctanos y te ayudamos a actualizar tu
+              cuenta.
             </p>
             {modalPlan.precio && (
-              <p className="planes__modal-price" aria-label={`${modalPlan.precio} dólares USD por ${modalPlan.periodo}`}>
-                <span aria-hidden="true">{modalPlan.precio} USD / {modalPlan.periodo}</span>
+              <p
+                className="planes__modal-price"
+                aria-label={`${modalPlan.precio} dólares USD por ${modalPlan.periodo}`}
+              >
+                <span aria-hidden="true">
+                  {modalPlan.precio} USD / {modalPlan.periodo}
+                </span>
               </p>
             )}
             <div className="planes__modal-actions">
               <button
                 className="btn btn--primary btn--sm"
-                onClick={() => { closeModal(); navigate('/soporte'); }}
+                onClick={() => {
+                  closeModal();
+                  navigate('/soporte');
+                }}
               >
                 <PiHeadsetBold size={15} aria-hidden="true" />
                 Ir a Soporte

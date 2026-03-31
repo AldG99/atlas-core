@@ -25,7 +25,7 @@ const TopProductos = ({ productos }: TopProductosProps) => {
                   {producto.nombre}
                 </span>
               </div>
-              <span className="top-productos__unidades">{producto.unidades} uds</span>
+              <span className="top-productos__unidades">{producto.unidades} vendidos</span>
             </li>
           ))}
         </ul>
