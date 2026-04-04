@@ -23,7 +23,8 @@ import {
   archivePedido,
   unarchivePedido,
   addAbono,
-  countPedidosMes
+  countPedidosMes,
+  subscribeToPedidos
 } from '../services/pedidoService';
 import { useAuth } from './useAuth';
 
@@ -37,26 +38,58 @@ export const usePedidos = () => {
   const [hasMore, setHasMore] = useState(false);
   const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
   const allPedidosRef = useRef<Pedido[]>([]);
+  // Tracks if the displayed list is from the live subscription or a manual filter
+  const isLiveViewRef = useRef(true);
+  // Cache last pagination state from snapshot for restoring after filter
+  const hasMoreFromSnapshotRef = useRef(false);
 
+  // Real-time subscription: always running, updates allPedidos and pedidos when in live view
+  useEffect(() => {
+    if (!user || !negocioUid) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const unsubscribe = subscribeToPedidos(
+      negocioUid,
+      ({ pedidos: data, hasMore: more, lastDoc: doc }) => {
+        const active = data.filter((p) => !p.archivado);
+        // Always keep allPedidos fresh for counts/summaries
+        setAllPedidos(active);
+        allPedidosRef.current = active;
+        // Cache pagination state for later restoration
+        lastDocRef.current = doc;
+        hasMoreFromSnapshotRef.current = more;
+        // Only update the displayed list if not in a manual filter/archived view
+        if (isLiveViewRef.current) {
+          setPedidos(active);
+          setHasMore(more);
+          setShowArchived(false);
+        }
+        setLoading(false);
+      },
+      (err) => {
+        setError(err.message);
+        setLoading(false);
+      }
+    );
+
+    return unsubscribe;
+  }, [user, negocioUid]);
+
+  // Returns to the live "todos" view using the latest snapshot data
   const fetchPedidos = useCallback(async () => {
     if (!user || !negocioUid) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      const result = await getPedidos(negocioUid);
-      const active = result.pedidos.filter((p) => !p.archivado);
-      setPedidos(active);
-      setAllPedidos(active);
-      allPedidosRef.current = active;
-      lastDocRef.current = result.lastDoc;
-      setHasMore(result.hasMore);
-      setShowArchived(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar pedidos');
-    } finally {
-      setLoading(false);
-    }
+    isLiveViewRef.current = true;
+    const active = allPedidosRef.current;
+    setPedidos(active);
+    setAllPedidos(active);
+    setHasMore(hasMoreFromSnapshotRef.current);
+    setShowArchived(false);
+    setError(null);
   }, [user, negocioUid]);
 
   const loadMore = useCallback(async () => {
@@ -88,6 +121,7 @@ export const usePedidos = () => {
     try {
       setLoading(true);
       setError(null);
+      isLiveViewRef.current = false;
       const data = await getArchivedPedidos(negocioUid);
       setPedidos(data);
       setShowArchived(true);
@@ -106,6 +140,7 @@ export const usePedidos = () => {
     try {
       setLoading(true);
       setError(null);
+      isLiveViewRef.current = false;
       const data = await getPedidosByStatus(negocioUid, estado);
       setPedidos(data.filter((p) => !p.archivado));
       setHasMore(false);
@@ -128,6 +163,7 @@ export const usePedidos = () => {
       checkPlanLimit(pedidosEsteMes, limites.pedidosMes, 'pedidos este mes');
 
       const newPedido = await createPedido(data, negocioUid, buildCreadoPor(user));
+      // onSnapshot will auto-update the list, but add optimistically for instant feedback
       setPedidos((prev) => [newPedido, ...prev]);
       setAllPedidos((prev) => [newPedido, ...prev]);
       return newPedido;
@@ -141,6 +177,7 @@ export const usePedidos = () => {
     try {
       setError(null);
       await updatePedidoStatus(pedidoId, estado);
+      // onSnapshot will auto-update, but optimistically update for instant feedback
       const updateFn = (prev: Pedido[]) =>
         prev.map((p) => {
           if (p.id !== pedidoId) return p;
@@ -211,10 +248,6 @@ export const usePedidos = () => {
       throw err;
     }
   }, [user]);
-
-  useEffect(() => {
-    fetchPedidos();
-  }, [fetchPedidos]);
 
   return {
     pedidos,

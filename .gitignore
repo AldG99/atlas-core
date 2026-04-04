@@ -29,6 +29,9 @@ storage.rules
 firebase.json
 cors.json
 
+# Tests
+src/__tests__
+
 # Vite
 vite-env.d.ts
 

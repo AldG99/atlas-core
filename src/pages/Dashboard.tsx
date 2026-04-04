@@ -1,10 +1,11 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold, PiDownloadSimpleBold, PiPlusBold } from 'react-icons/pi';
 import { usePedidos } from '../hooks/usePedidos';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useClientes } from '../hooks/useClientes';
+import { useDashboardFilters, SORT_OPTIONS, DATE_FILTERS, type StatusFilter } from '../hooks/useDashboardFilters';
 import { getCodigoPais } from '../data/codigosPais';
 import type { PedidoStatus } from '../types/Pedido';
 import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
@@ -16,37 +17,9 @@ import MainLayout from '../layouts/MainLayout';
 import PedidosTable from '../components/pedidos/PedidosTable';
 import './Dashboard.scss';
 
-type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc' | 'nombre_desc';
-type DateFilter = 'todos' | 'hoy' | 'semana' | 'mes';
-type StatusFilter = PedidoStatus | 'todos' | 'abono_pendiente';
-
-const DIAS_ABONO_SIN_MOVIMIENTO = 3;
-const diffDiasAbono = (fecha: Date): number =>
-  Math.floor((Date.now() - new Date(fecha).getTime()) / (1000 * 60 * 60 * 24));
-
-const SORT_OPTIONS: Record<SortOption, string> = {
-  fecha_desc: 'Más recientes',
-  fecha_asc: 'Más antiguos',
-  total_desc: 'Mayor total',
-  total_asc: 'Menor total',
-  nombre_asc: 'Nombre A-Z',
-  nombre_desc: 'Nombre Z-A'
-};
-
-const DATE_FILTERS: Record<DateFilter, string> = {
-  todos: 'Todas las fechas',
-  hoy: 'Hoy',
-  semana: 'Esta semana',
-  mes: 'Este mes'
-};
-
 const FILTER_ORDER: StatusFilter[] = ['todos', ...Object.keys(PEDIDO_STATUS) as PedidoStatus[]];
 
 const Dashboard = () => {
-  const [filterStatus, setFilterStatus] = useState<StatusFilter>('todos');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
-  const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
   const {
     pedidos,
     allPedidos,
@@ -62,6 +35,21 @@ const Dashboard = () => {
   const { clientes } = useClientes();
   const location = useLocation();
 
+  const {
+    filterStatus,
+    setFilterStatus,
+    searchTerm,
+    setSearchTerm,
+    sortBy,
+    setSortBy,
+    dateFilter,
+    setDateFilter,
+    statusCounts,
+    todaySummary,
+    filteredAndSortedPedidos,
+    handleFilterChange,
+  } = useDashboardFilters({ pedidos, allPedidos, fetchPedidos, fetchByStatus });
+
   // Apply filter from notification navigation
   useEffect(() => {
     const state = location.state as Record<string, unknown> | null;
@@ -73,135 +61,18 @@ const Dashboard = () => {
     }
   }, []);
 
-  // Auto-archivar pedidos entregados hace más de 48 horas
+  // Auto-archivar pedidos entregados hace más de 48 horas (solo una vez por sesión)
+  const hasArchivedRef = useRef(false);
   useEffect(() => {
-    if (!user || loading) return;
-
+    if (!user || loading || hasArchivedRef.current) return;
+    hasArchivedRef.current = true;
     archiveAllDelivered(user.uid).then((count) => {
       if (count > 0) {
         showToast(`${count} pedido${count > 1 ? 's' : ''} archivado${count > 1 ? 's' : ''} automáticamente`, 'success');
         fetchPedidos();
       }
     }).catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading]);
-
-
-  // Conteo de pedidos por estado
-  const statusCounts = useMemo(() => {
-    return {
-      pendiente: allPedidos.filter((p) => p.estado === 'pendiente').length,
-      en_preparacion: allPedidos.filter((p) => p.estado === 'en_preparacion').length,
-      entregado: allPedidos.filter((p) => p.estado === 'entregado').length
-    };
-  }, [allPedidos]);
-
-  // Resumen de ventas del día de hoy
-  const todaySummary = useMemo(() => {
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-    const pedidosHoy = allPedidos.filter((pedido) => {
-      const pedidoDate = new Date(pedido.fechaCreacion);
-      return pedidoDate >= startOfDay;
-    });
-
-    const totalVentas = pedidosHoy.reduce((sum, pedido) => sum + pedido.total, 0);
-    const pedidosEntregados = pedidosHoy.filter((p) => p.estado === 'entregado');
-    const ventasEntregadas = pedidosEntregados.reduce((sum, pedido) => sum + pedido.total, 0);
-
-    return {
-      cantidadPedidos: pedidosHoy.length,
-      totalVentas,
-      pedidosEntregados: pedidosEntregados.length,
-      ventasEntregadas
-    };
-  }, [allPedidos]);
-
-  const filteredAndSortedPedidos = useMemo(() => {
-    let result = filterStatus === 'abono_pendiente' ? [...allPedidos] : [...pedidos];
-
-    // Filtro por fecha
-    if (dateFilter !== 'todos') {
-      const now = new Date();
-      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-      result = result.filter((pedido) => {
-        const pedidoDate = new Date(pedido.fechaCreacion);
-
-        switch (dateFilter) {
-          case 'hoy':
-            return pedidoDate >= startOfDay;
-          case 'semana': {
-            const startOfWeek = new Date(startOfDay);
-            startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-            return pedidoDate >= startOfWeek;
-          }
-          case 'mes': {
-            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            return pedidoDate >= startOfMonth;
-          }
-          default:
-            return true;
-        }
-      });
-    }
-
-    // Filtro por abono pendiente
-    if (filterStatus === 'abono_pendiente') {
-      result = result.filter(p => {
-        const abonos = p.abonos || [];
-        if (abonos.length === 0) return false;
-        const totalPagado = abonos.reduce((sum, a) => sum + a.monto, 0);
-        if (totalPagado <= 0 || totalPagado >= p.total) return false;
-        const ultimoAbono = abonos.reduce((max, a) =>
-          new Date(a.fecha) > new Date(max.fecha) ? a : max
-        );
-        return diffDiasAbono(ultimoAbono.fecha) >= DIAS_ABONO_SIN_MOVIMIENTO;
-      });
-    }
-
-    // Filtro por búsqueda
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(
-        (pedido) =>
-          pedido.clienteNombre.toLowerCase().includes(term) ||
-          pedido.clienteTelefono.toLowerCase().includes(term)
-      );
-    }
-
-    // Ordenamiento
-    result.sort((a, b) => {
-      switch (sortBy) {
-        case 'fecha_desc':
-          return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
-        case 'fecha_asc':
-          return new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
-        case 'total_desc':
-          return b.total - a.total;
-        case 'total_asc':
-          return a.total - b.total;
-        case 'nombre_asc':
-          return a.clienteNombre.localeCompare(b.clienteNombre);
-        case 'nombre_desc':
-          return b.clienteNombre.localeCompare(a.clienteNombre);
-        default:
-          return 0;
-      }
-    });
-
-    return result;
-  }, [pedidos, searchTerm, sortBy, dateFilter, filterStatus]);
-
-  const handleFilterChange = async (status: StatusFilter) => {
-    setFilterStatus(status);
-    if (status === 'todos') {
-      await fetchPedidos();
-    } else if (status !== 'abono_pendiente') {
-      await fetchByStatus(status as PedidoStatus);
-    }
-  };
+  }, [user, loading, showToast, fetchPedidos]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -217,7 +88,7 @@ const Dashboard = () => {
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [filterStatus]);
+  }, [filterStatus, handleFilterChange]);
 
   const [uploadingDrive, setUploadingDrive] = useState(false);
 
@@ -339,10 +210,10 @@ const Dashboard = () => {
           <div className="dashboard__selects">
             <select
               value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value as DateFilter)}
+              onChange={(e) => setDateFilter(e.target.value as typeof dateFilter)}
               className="select"
             >
-              {(Object.keys(DATE_FILTERS) as DateFilter[]).map((filter) => (
+              {(Object.keys(DATE_FILTERS) as (keyof typeof DATE_FILTERS)[]).map((filter) => (
                 <option key={filter} value={filter}>
                   {DATE_FILTERS[filter]}
                 </option>
@@ -351,10 +222,10 @@ const Dashboard = () => {
 
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
               className="select"
             >
-              {(Object.keys(SORT_OPTIONS) as SortOption[]).map((option) => (
+              {(Object.keys(SORT_OPTIONS) as (keyof typeof SORT_OPTIONS)[]).map((option) => (
                 <option key={option} value={option}>
                   {SORT_OPTIONS[option]}
                 </option>

@@ -9,8 +9,6 @@ import {
   PiCurrencyDollarBold,
   PiTrashBold,
   PiUserMinusBold,
-  PiEyeBold,
-  PiEyeSlashBold,
   PiChatTextBold,
   PiArrowCounterClockwiseBold,
   PiBellBold,
@@ -21,14 +19,9 @@ import {
   PiArrowLeftBold,
   PiUserBold,
   PiShieldCheckBold,
-  PiPhoneBold,
-  PiCalendarBold,
-  PiIdentificationBadgeBold,
   PiGearSixBold,
 } from 'react-icons/pi';
 import type { User } from '../types/User';
-import { formatTelefono } from '../utils/formatters';
-import { getCodigoPais } from '../data/codigosPais';
 import { usePWA } from '../hooks/usePWA';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../hooks/useAuth';
@@ -42,12 +35,13 @@ import {
   type BackupData,
 } from '../services/backupService';
 import { salirDelNegocio, getAdminPorUid, getMiembros } from '../services/equipoService';
-import PhoneInput from '../components/clientes/PhoneInput';
 import Avatar from '../components/ui/Avatar';
+import DangerModal from '../components/configuracion/DangerModal';
+import CrearMiembroModal from '../components/configuracion/CrearMiembroModal';
+import MiembroPerfilModal from '../components/configuracion/MiembroPerfilModal';
 import './Configuracion.scss';
 
 type ImportStep = 'idle' | 'preview' | 'importing' | 'done';
-type DangerModal = null | 'deleteData' | 'deleteAccount';
 type Section = 'moneda' | 'notificaciones' | 'instalar' | 'plantillas' | 'equipo' | 'respaldo' | 'gestion' | 'membresia';
 
 const SIMBOLOS_MONEDA = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
@@ -112,28 +106,14 @@ const Configuracion = () => {
   const VARIABLES_INFO = '{{nombre}} · {{folio}} · {{total}} · {{pagado}} · {{restante}} · {{productos}} · {{notas}} · {{negocio}}';
 
   // Zona de peligro
-  const [dangerModal, setDangerModal] = useState<DangerModal>(null);
-  const [dangerPassword, setDangerPassword] = useState('');
-  const [showDangerPwd, setShowDangerPwd] = useState(false);
-  const [dangerError, setDangerError] = useState('');
-  const [dangerLoading, setDangerLoading] = useState(false);
+  const [dangerModal, setDangerModal] = useState<'deleteData' | 'deleteAccount' | null>(null);
 
   // Equipo
   const { miembros, loading: equipoLoading, crearMiembro, remover, actualizar, actualizarContrasena } = useEquipo();
   const [showCrearMiembro, setShowCrearMiembro] = useState(false);
-  const [miembroForm, setMiembroForm] = useState({
-    nombre: '', apellido: '', fechaNacimiento: '', telefono: '', telefonoCodigoPais: 'MX', password: '', confirmarPassword: ''
-  });
-  const [creandoMiembro, setCreandoMiembro] = useState(false);
-  const [miembroError, setMiembroError] = useState('');
 
   // Perfil de miembro
   const [selectedMiembro, setSelectedMiembro] = useState<User | null>(null);
-  const [editingMiembro, setEditingMiembro] = useState(false);
-  const [editMiembroForm, setEditMiembroForm] = useState({ nombre: '', apellido: '', telefono: '', telefonoCodigoPais: 'MX', fechaNacimiento: '', password: '', confirmarPassword: '' });
-  const [showEditPwd, setShowEditPwd] = useState(false);
-  const [showEditConfirmPwd, setShowEditConfirmPwd] = useState(false);
-  const [savingMiembro, setSavingMiembro] = useState(false);
 
   // Membresía (datos del negocio para miembros)
   const [salirLoading, setSalirLoading] = useState(false);
@@ -210,39 +190,9 @@ const Configuracion = () => {
   };
 
   // ── Equipo ──────────────────────────────────────────
-  const handleCrearMiembro = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMiembroError('');
-    if (miembroForm.password !== miembroForm.confirmarPassword) {
-      setMiembroError('Las contraseñas no coinciden');
-      return;
-    }
-    if (!miembroForm.fechaNacimiento) {
-      setMiembroError('La fecha de nacimiento es requerida');
-      return;
-    }
-    if (!miembroForm.telefono || miembroForm.telefono.length < 10) {
-      setMiembroError('Ingresa un número de teléfono válido');
-      return;
-    }
-    setCreandoMiembro(true);
-    try {
-      await crearMiembro({
-        nombre: miembroForm.nombre,
-        apellido: miembroForm.apellido,
-        fechaNacimiento: miembroForm.fechaNacimiento,
-        telefono: miembroForm.telefono,
-        telefonoCodigoPais: miembroForm.telefonoCodigoPais,
-        password: miembroForm.password,
-      });
-      showToast('Miembro creado correctamente', 'success');
-      setMiembroForm({ nombre: '', apellido: '', fechaNacimiento: '', telefono: '', telefonoCodigoPais: 'MX', password: '', confirmarPassword: '' });
-      setShowCrearMiembro(false);
-    } catch (err) {
-      setMiembroError(err instanceof Error ? err.message : 'Error al crear miembro');
-    } finally {
-      setCreandoMiembro(false);
-    }
+  const handleCrearMiembro = async (form: { nombre: string; apellido: string; fechaNacimiento: string; telefono: string; telefonoCodigoPais: string; password: string }) => {
+    await crearMiembro(form);
+    showToast('Miembro creado correctamente', 'success');
   };
 
   // ── Membresía ────────────────────────────────────────
@@ -259,44 +209,14 @@ const Configuracion = () => {
   };
 
   // ── Zona de peligro ─────────────────────────────────
-  const closeDangerModal = () => {
+  const handleDeleteData = async (password: string) => {
+    await deleteAllData(password);
+    showToast('Todos los datos han sido eliminados', 'success');
     setDangerModal(null);
-    setDangerPassword('');
-    setDangerError('');
-    setShowDangerPwd(false);
   };
 
-  const handleDeleteData = async () => {
-    setDangerError('');
-    if (!dangerPassword) {
-      setDangerError('Ingresa tu contraseña para confirmar');
-      return;
-    }
-    setDangerLoading(true);
-    try {
-      await deleteAllData(dangerPassword);
-      showToast('Todos los datos han sido eliminados', 'success');
-      closeDangerModal();
-    } catch {
-      setDangerError('Contraseña incorrecta');
-    } finally {
-      setDangerLoading(false);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    setDangerError('');
-    if (!dangerPassword) {
-      setDangerError('Ingresa tu contraseña para confirmar');
-      return;
-    }
-    setDangerLoading(true);
-    try {
-      await deleteAccount(dangerPassword);
-    } catch {
-      setDangerError('Contraseña incorrecta');
-      setDangerLoading(false);
-    }
+  const handleDeleteAccount = async (password: string) => {
+    await deleteAccount(password);
   };
 
   // ── Nav groups ───────────────────────────────────────
@@ -773,394 +693,31 @@ const Configuracion = () => {
         </div>
       </div>
 
-      {/* Modal zona de peligro */}
       {dangerModal && (
-        <div className="configuracion__modal-overlay" onClick={closeDangerModal}>
-          <div className="configuracion__modal" onClick={e => e.stopPropagation()}>
-            <div className="configuracion__modal-header">
-              <PiWarningBold size={20} className="configuracion__modal-icon" />
-              <h3>
-                {dangerModal === 'deleteData' ? 'Eliminar todos los datos' : 'Eliminar cuenta'}
-              </h3>
-              <button className="configuracion__modal-close" onClick={closeDangerModal}>
-                <PiXBold size={16} />
-              </button>
-            </div>
-            <div className="configuracion__modal-body">
-              {dangerModal === 'deleteData' ? (
-                <>
-                  <p>
-                    Se eliminarán permanentemente todos tus <strong>clientes, productos, pedidos y etiquetas</strong>.
-                    Tu cuenta seguirá activa. Esta acción <strong>no se puede deshacer</strong>.
-                  </p>
-                  <div className="configuracion__modal-field">
-                    <label>Confirma tu contraseña</label>
-                    <div className="configuracion__modal-pwd">
-                      <input
-                        type={showDangerPwd ? 'text' : 'password'}
-                        className="input"
-                        placeholder="••••••••"
-                        value={dangerPassword}
-                        onChange={e => setDangerPassword(e.target.value)}
-                      />
-                      <button type="button" onClick={() => setShowDangerPwd(v => !v)}>
-                        {showDangerPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
-                      </button>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p>
-                    Se eliminará tu cuenta y <strong>todos los datos</strong> de forma permanente.
-                    Esta acción <strong>no se puede deshacer</strong>.
-                  </p>
-                  <div className="configuracion__modal-field">
-                    <label>Confirma tu contraseña</label>
-                    <div className="configuracion__modal-pwd">
-                      <input
-                        type={showDangerPwd ? 'text' : 'password'}
-                        className="input"
-                        placeholder="••••••••"
-                        value={dangerPassword}
-                        onChange={e => setDangerPassword(e.target.value)}
-                      />
-                      <button type="button" onClick={() => setShowDangerPwd(v => !v)}>
-                        {showDangerPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-              {dangerError && (
-                <div className="configuracion__file-error">
-                  <PiWarningBold size={14} />
-                  {dangerError}
-                </div>
-              )}
-            </div>
-            <div className="configuracion__modal-actions">
-              <button className="btn btn--outline btn--sm" onClick={closeDangerModal} disabled={dangerLoading}>
-                Cancelar
-              </button>
-              <button
-                className="btn btn--danger btn--sm"
-                onClick={dangerModal === 'deleteData' ? handleDeleteData : handleDeleteAccount}
-                disabled={dangerLoading}
-              >
-                {dangerLoading
-                  ? 'Eliminando...'
-                  : dangerModal === 'deleteData'
-                    ? 'Sí, eliminar datos'
-                    : 'Sí, eliminar cuenta'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <DangerModal
+          type={dangerModal}
+          onClose={() => setDangerModal(null)}
+          onDeleteData={handleDeleteData}
+          onDeleteAccount={handleDeleteAccount}
+        />
       )}
 
-      {/* Modal nuevo miembro */}
       {showCrearMiembro && (
-        <div className="configuracion__modal-overlay" onClick={() => { setShowCrearMiembro(false); setMiembroError(''); }}>
-          <div className="configuracion__modal configuracion__modal--wide" onClick={e => e.stopPropagation()}>
-            <div className="configuracion__modal-header">
-              <PiUsersThreeBold size={20} className="configuracion__modal-icon" />
-              <h3>Nuevo miembro</h3>
-              <button className="configuracion__modal-close" onClick={() => { setShowCrearMiembro(false); setMiembroError(''); }}>
-                <PiXBold size={16} />
-              </button>
-            </div>
-            <form onSubmit={handleCrearMiembro}>
-              <div className="configuracion__modal-body">
-                <div className="configuracion__modal-row">
-                  <div className="configuracion__modal-field">
-                    <label>Nombre</label>
-                    <input
-                      type="text"
-                      className="input"
-                      placeholder="Juan"
-                      value={miembroForm.nombre}
-                      onChange={e => setMiembroForm(f => ({ ...f, nombre: e.target.value }))}
-                      required
-                      maxLength={40}
-                    />
-                  </div>
-                  <div className="configuracion__modal-field">
-                    <label>Apellido</label>
-                    <input
-                      type="text"
-                      className="input"
-                      placeholder="Pérez"
-                      value={miembroForm.apellido}
-                      onChange={e => setMiembroForm(f => ({ ...f, apellido: e.target.value }))}
-                      required
-                      maxLength={40}
-                    />
-                  </div>
-                </div>
-                <div className="configuracion__modal-field">
-                  <label>Fecha de nacimiento</label>
-                  <input
-                    type="date"
-                    className="input"
-                    value={miembroForm.fechaNacimiento}
-                    onChange={e => setMiembroForm(f => ({ ...f, fechaNacimiento: e.target.value }))}
-                    max={new Date().toISOString().split('T')[0]}
-                    required
-                  />
-                </div>
-                <div className="configuracion__modal-field">
-                  <label>Número de teléfono</label>
-                  <PhoneInput
-                    value={miembroForm.telefono}
-                    codigoPais={miembroForm.telefonoCodigoPais}
-                    onChange={(numero, iso) => setMiembroForm(f => ({ ...f, telefono: numero, telefonoCodigoPais: iso }))}
-                    placeholder="Número de celular"
-                  />
-                </div>
-                <div className="configuracion__modal-row">
-                  <div className="configuracion__modal-field">
-                    <label>Contraseña</label>
-                    <input
-                      type="password"
-                      className="input"
-                      placeholder="••••••••"
-                      value={miembroForm.password}
-                      onChange={e => setMiembroForm(f => ({ ...f, password: e.target.value }))}
-                      required
-                      maxLength={32}
-                    />
-                  </div>
-                  <div className="configuracion__modal-field">
-                    <label>Confirmar contraseña</label>
-                    <input
-                      type="password"
-                      className="input"
-                      placeholder="••••••••"
-                      value={miembroForm.confirmarPassword}
-                      onChange={e => setMiembroForm(f => ({ ...f, confirmarPassword: e.target.value }))}
-                      required
-                      maxLength={32}
-                    />
-                  </div>
-                </div>
-                {miembroError && (
-                  <div className="configuracion__file-error">
-                    <PiWarningBold size={14} />
-                    {miembroError}
-                  </div>
-                )}
-              </div>
-              <div className="configuracion__modal-actions">
-                <button
-                  type="button"
-                  className="btn btn--outline btn--sm"
-                  onClick={() => { setShowCrearMiembro(false); setMiembroError(''); }}
-                  disabled={creandoMiembro}
-                >
-                  Cancelar
-                </button>
-                <button type="submit" className="btn btn--primary btn--sm" disabled={creandoMiembro}>
-                  {creandoMiembro ? 'Creando...' : 'Crear miembro'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <CrearMiembroModal
+          onClose={() => setShowCrearMiembro(false)}
+          onSubmit={handleCrearMiembro}
+        />
       )}
-      {/* Modal perfil de miembro */}
-      {selectedMiembro && (() => {
-        const m = selectedMiembro;
-        const nombreCompleto = `${m.nombre ?? ''} ${m.apellido ?? ''}`.trim();
-        const initials = `${(m.nombre?.[0] ?? '').toUpperCase()}${(m.apellido?.[0] ?? '').toUpperCase()}`;
-        const codigoPais = m.telefonoCodigoPais ? getCodigoPais(m.telefonoCodigoPais) : null;
-        const telefonoFormateado = m.telefono
-          ? `${codigoPais ? `${codigoPais.codigo} ` : ''}${formatTelefono(m.telefono)}`
-          : null;
-        const fechaNacStr = m.fechaNacimiento
-          ? new Date(m.fechaNacimiento + 'T12:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })
-          : null;
 
-        const handleStartEdit = () => {
-          setEditMiembroForm({
-            nombre: m.nombre ?? '',
-            apellido: m.apellido ?? '',
-            telefono: m.telefono ?? '',
-            telefonoCodigoPais: m.telefonoCodigoPais ?? 'MX',
-            fechaNacimiento: m.fechaNacimiento ?? '',
-            password: '',
-            confirmarPassword: '',
-          });
-          setShowEditPwd(false);
-          setShowEditConfirmPwd(false);
-          setEditingMiembro(true);
-        };
-
-        const handleSaveEdit = async () => {
-          if (editMiembroForm.password && editMiembroForm.password !== editMiembroForm.confirmarPassword) {
-            showToast('Las contraseñas no coinciden', 'warning');
-            return;
-          }
-          if (editMiembroForm.password && editMiembroForm.password.length < 6) {
-            showToast('La contraseña debe tener al menos 6 caracteres', 'warning');
-            return;
-          }
-          setSavingMiembro(true);
-          try {
-            const { password, confirmarPassword, ...profileData } = editMiembroForm;
-            await actualizar(m.uid, profileData);
-            if (password) await actualizarContrasena(m.uid, password);
-            setSelectedMiembro({ ...m, ...profileData });
-            setEditingMiembro(false);
-            showToast('Miembro actualizado', 'success');
-          } catch {
-            showToast('Error al guardar cambios', 'error');
-          } finally {
-            setSavingMiembro(false);
-          }
-        };
-
-        return (
-          <div className="configuracion__modal-overlay" onClick={() => { setSelectedMiembro(null); setEditingMiembro(false); }}>
-            <div className="configuracion__modal configuracion__modal--wide" onClick={e => e.stopPropagation()}>
-              <div className="configuracion__modal-header">
-                <PiUserBold size={20} className="configuracion__modal-icon--user" />
-                <h3>{editingMiembro ? 'Editar miembro' : 'Perfil del miembro'}</h3>
-                <button className="configuracion__modal-close" onClick={() => { setSelectedMiembro(null); setEditingMiembro(false); }}>
-                  <PiXBold size={16} />
-                </button>
-              </div>
-              <div className="configuracion__modal-body">
-                {!editingMiembro ? (
-                  <>
-                    <div className="configuracion__miembro-profile">
-                      <div className="configuracion__miembro-avatar">
-                        <Avatar
-                          src={m.fotoPerfil}
-                          initials={initials || '?'}
-                          alt={nombreCompleto}
-                        />
-                      </div>
-                      <div className="configuracion__miembro-name">{nombreCompleto || '—'}</div>
-                      {m.numeroMiembro && (
-                        <div className="configuracion__miembro-badge">#{m.numeroMiembro}</div>
-                      )}
-                    </div>
-                    <div className="configuracion__miembro-fields">
-                      <div className="configuracion__miembro-field">
-                        <PiIdentificationBadgeBold size={14} className="configuracion__miembro-field-icon" />
-                        <div>
-                          <p className="configuracion__miembro-field-label">Usuario</p>
-                          <p className="configuracion__miembro-field-value">{m.username ?? '—'}</p>
-                        </div>
-                      </div>
-                      {telefonoFormateado && (
-                        <div className="configuracion__miembro-field">
-                          <PiPhoneBold size={14} className="configuracion__miembro-field-icon" />
-                          <div>
-                            <p className="configuracion__miembro-field-label">Teléfono</p>
-                            <p className="configuracion__miembro-field-value">{telefonoFormateado}</p>
-                          </div>
-                        </div>
-                      )}
-                      {fechaNacStr && (
-                        <div className="configuracion__miembro-field">
-                          <PiCalendarBold size={14} className="configuracion__miembro-field-icon" />
-                          <div>
-                            <p className="configuracion__miembro-field-label">Fecha de nacimiento</p>
-                            <p className="configuracion__miembro-field-value">{fechaNacStr}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="configuracion__modal-row" style={{ gridTemplateColumns: '1fr' }}>
-                    <div className="configuracion__modal-row">
-                      <div className="configuracion__modal-field">
-                        <label>Nombre</label>
-                        <input type="text" className="input" value={editMiembroForm.nombre} onChange={e => setEditMiembroForm(f => ({ ...f, nombre: e.target.value }))} maxLength={40} />
-                      </div>
-                      <div className="configuracion__modal-field">
-                        <label>Apellido</label>
-                        <input type="text" className="input" value={editMiembroForm.apellido} onChange={e => setEditMiembroForm(f => ({ ...f, apellido: e.target.value }))} maxLength={40} />
-                      </div>
-                    </div>
-                    <div className="configuracion__modal-field">
-                      <label>Teléfono</label>
-                      <PhoneInput
-                        value={editMiembroForm.telefono}
-                        codigoPais={editMiembroForm.telefonoCodigoPais}
-                        onChange={(val, cod) => setEditMiembroForm(f => ({ ...f, telefono: val, telefonoCodigoPais: cod }))}
-                      />
-                    </div>
-                    <div className="configuracion__modal-field">
-                      <label>Fecha de nacimiento</label>
-                      <input type="date" className="input" value={editMiembroForm.fechaNacimiento} onChange={e => setEditMiembroForm(f => ({ ...f, fechaNacimiento: e.target.value }))} />
-                    </div>
-                    <div className="configuracion__modal-field">
-                      <label>Nueva contraseña <span className="configuracion__modal-optional">(opcional)</span></label>
-                      <div className="configuracion__modal-pwd">
-                        <input
-                          type={showEditPwd ? 'text' : 'password'}
-                          className="input"
-                          placeholder="••••••••"
-                          value={editMiembroForm.password}
-                          onChange={e => setEditMiembroForm(f => ({ ...f, password: e.target.value }))}
-                          maxLength={32}
-                        />
-                        <button type="button" onClick={() => setShowEditPwd(v => !v)}>
-                          {showEditPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
-                        </button>
-                      </div>
-                    </div>
-                    <div className="configuracion__modal-field">
-                      <label>Confirmar contraseña</label>
-                      <div className="configuracion__modal-pwd">
-                        <input
-                          type={showEditConfirmPwd ? 'text' : 'password'}
-                          className="input"
-                          placeholder="••••••••"
-                          value={editMiembroForm.confirmarPassword}
-                          onChange={e => setEditMiembroForm(f => ({ ...f, confirmarPassword: e.target.value }))}
-                          maxLength={32}
-                        />
-                        <button type="button" onClick={() => setShowEditConfirmPwd(v => !v)}>
-                          {showEditConfirmPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="configuracion__modal-actions">
-                {!editingMiembro ? (
-                  <>
-                    <button className="btn btn--danger btn--sm" onClick={() => { remover(m.uid); setSelectedMiembro(null); }}>
-                      Remover
-                    </button>
-                    <button className="btn btn--outline btn--sm" onClick={() => { setSelectedMiembro(null); }}>
-                      Cerrar
-                    </button>
-                    <button className="btn btn--primary btn--sm" onClick={handleStartEdit}>
-                      Editar
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button className="btn btn--outline btn--sm" onClick={() => setEditingMiembro(false)} disabled={savingMiembro}>
-                      Cancelar
-                    </button>
-                    <button className="btn btn--primary btn--sm" onClick={handleSaveEdit} disabled={savingMiembro}>
-                      {savingMiembro ? 'Guardando...' : 'Guardar'}
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+      {selectedMiembro && (
+        <MiembroPerfilModal
+          miembro={selectedMiembro}
+          onClose={() => setSelectedMiembro(null)}
+          onRemover={(uid) => { remover(uid); setSelectedMiembro(null); }}
+          onActualizar={actualizar}
+          onActualizarContrasena={actualizarContrasena}
+        />
+      )}
     </MainLayout>
   );
 };
