@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { PiDownloadSimpleBold, PiXBold } from 'react-icons/pi';
 import { usePWA } from '../../hooks/usePWA';
 import './InstallBanner.scss';
 
 const InstallBanner = () => {
+  const { t } = useTranslation();
   const { canInstall, promptInstall } = usePWA();
 
   if (!canInstall) return null;
@@ -12,8 +14,8 @@ const InstallBanner = () => {
       <div className="install-banner__content">
         <img src="/favicon.svg" alt="Orderly" className="install-banner__icon" />
         <div className="install-banner__text">
-          <span className="install-banner__title">Instalar Orderly</span>
-          <span className="install-banner__desc">Accede más rápido desde tu pantalla de inicio</span>
+          <span className="install-banner__title">{t('settings.install.bannerTitle')}</span>
+          <span className="install-banner__desc">{t('settings.install.bannerDesc')}</span>
         </div>
       </div>
       <div className="install-banner__actions">
@@ -22,12 +24,12 @@ const InstallBanner = () => {
           onClick={promptInstall}
         >
           <PiDownloadSimpleBold size={15} />
-          Instalar
+          {t('settings.install.bannerButton')}
         </button>
         <button
           className="install-banner__btn install-banner__btn--dismiss"
           onClick={() => {/* el banner desaparece al instalar o al navegar */}}
-          aria-label="Cerrar"
+          aria-label={t('settings.install.bannerClose')}
         >
           <PiXBold size={14} />
         </button>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   PiUserBold, PiXBold, PiIdentificationBadgeBold,
   PiPhoneBold, PiCalendarBold, PiEyeBold, PiEyeSlashBold,
@@ -33,6 +34,7 @@ const MiembroPerfilModal = ({
   onActualizar,
   onActualizarContrasena,
 }: MiembroPerfilModalProps) => {
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -77,11 +79,11 @@ const MiembroPerfilModal = ({
 
   const handleSave = async () => {
     if (editForm.password && editForm.password !== editForm.confirmarPassword) {
-      showToast('Las contraseñas no coinciden', 'warning');
+      showToast(t('settings.team.profileModal.passwordMismatch'), 'warning');
       return;
     }
     if (editForm.password && editForm.password.length < 6) {
-      showToast('La contraseña debe tener al menos 6 caracteres', 'warning');
+      showToast(t('settings.team.profileModal.passwordShort'), 'warning');
       return;
     }
     setSaving(true);
@@ -90,9 +92,9 @@ const MiembroPerfilModal = ({
       await onActualizar(miembro.uid, profileData);
       if (password) await onActualizarContrasena(miembro.uid, password);
       setEditing(false);
-      showToast('Miembro actualizado', 'success');
+      showToast(t('settings.team.updated'), 'success');
     } catch {
-      showToast('Error al guardar cambios', 'error');
+      showToast(t('settings.team.updateError'), 'error');
     } finally {
       setSaving(false);
     }
@@ -103,7 +105,7 @@ const MiembroPerfilModal = ({
       <div className="configuracion__modal configuracion__modal--wide" onClick={e => e.stopPropagation()}>
         <div className="configuracion__modal-header">
           <PiUserBold size={20} className="configuracion__modal-icon--user" />
-          <h3>{editing ? 'Editar miembro' : 'Perfil del miembro'}</h3>
+          <h3>{editing ? t('settings.team.profileModal.editTitle') : t('settings.team.profileModal.viewTitle')}</h3>
           <button className="configuracion__modal-close" onClick={onClose}>
             <PiXBold size={16} />
           </button>
@@ -124,7 +126,7 @@ const MiembroPerfilModal = ({
                 <div className="configuracion__miembro-field">
                   <PiIdentificationBadgeBold size={14} className="configuracion__miembro-field-icon" />
                   <div>
-                    <p className="configuracion__miembro-field-label">Usuario</p>
+                    <p className="configuracion__miembro-field-label">{t('settings.team.profileModal.username')}</p>
                     <p className="configuracion__miembro-field-value">{miembro.username ?? '—'}</p>
                   </div>
                 </div>
@@ -132,7 +134,7 @@ const MiembroPerfilModal = ({
                   <div className="configuracion__miembro-field">
                     <PiPhoneBold size={14} className="configuracion__miembro-field-icon" />
                     <div>
-                      <p className="configuracion__miembro-field-label">Teléfono</p>
+                      <p className="configuracion__miembro-field-label">{t('settings.team.profileModal.phone')}</p>
                       <p className="configuracion__miembro-field-value">{telefonoFormateado}</p>
                     </div>
                   </div>
@@ -141,7 +143,7 @@ const MiembroPerfilModal = ({
                   <div className="configuracion__miembro-field">
                     <PiCalendarBold size={14} className="configuracion__miembro-field-icon" />
                     <div>
-                      <p className="configuracion__miembro-field-label">Fecha de nacimiento</p>
+                      <p className="configuracion__miembro-field-label">{t('settings.team.profileModal.dob')}</p>
                       <p className="configuracion__miembro-field-value">{fechaNacStr}</p>
                     </div>
                   </div>
@@ -152,7 +154,7 @@ const MiembroPerfilModal = ({
             <div className="configuracion__modal-row" style={{ gridTemplateColumns: '1fr' }}>
               <div className="configuracion__modal-row">
                 <div className="configuracion__modal-field">
-                  <label>Nombre</label>
+                  <label>{t('settings.team.createModal.firstName')}</label>
                   <input
                     type="text"
                     className="input"
@@ -162,7 +164,7 @@ const MiembroPerfilModal = ({
                   />
                 </div>
                 <div className="configuracion__modal-field">
-                  <label>Apellido</label>
+                  <label>{t('settings.team.createModal.lastName')}</label>
                   <input
                     type="text"
                     className="input"
@@ -173,7 +175,7 @@ const MiembroPerfilModal = ({
                 </div>
               </div>
               <div className="configuracion__modal-field">
-                <label>Teléfono</label>
+                <label>{t('settings.team.profileModal.phone')}</label>
                 <PhoneInput
                   value={editForm.telefono}
                   codigoPais={editForm.telefonoCodigoPais}
@@ -181,7 +183,7 @@ const MiembroPerfilModal = ({
                 />
               </div>
               <div className="configuracion__modal-field">
-                <label>Fecha de nacimiento</label>
+                <label>{t('settings.team.profileModal.dob')}</label>
                 <input
                   type="date"
                   className="input"
@@ -190,7 +192,7 @@ const MiembroPerfilModal = ({
                 />
               </div>
               <div className="configuracion__modal-field">
-                <label>Nueva contraseña <span className="configuracion__modal-optional">(opcional)</span></label>
+                <label>{t('settings.team.profileModal.newPassword')} <span className="configuracion__modal-optional">{t('common.optional')}</span></label>
                 <div className="configuracion__modal-pwd">
                   <input
                     type={showPwd ? 'text' : 'password'}
@@ -206,7 +208,7 @@ const MiembroPerfilModal = ({
                 </div>
               </div>
               <div className="configuracion__modal-field">
-                <label>Confirmar contraseña</label>
+                <label>{t('settings.team.profileModal.confirmPassword')}</label>
                 <div className="configuracion__modal-pwd">
                   <input
                     type={showConfirmPwd ? 'text' : 'password'}
@@ -228,22 +230,22 @@ const MiembroPerfilModal = ({
           {!editing ? (
             <>
               <button className="btn btn--danger btn--sm" onClick={() => { onRemover(miembro.uid); onClose(); }}>
-                Remover
+                {t('settings.team.profileModal.remove')}
               </button>
               <button className="btn btn--outline btn--sm" onClick={onClose}>
-                Cerrar
+                {t('settings.team.profileModal.close')}
               </button>
               <button className="btn btn--primary btn--sm" onClick={handleStartEdit}>
-                Editar
+                {t('settings.team.profileModal.edit')}
               </button>
             </>
           ) : (
             <>
               <button className="btn btn--outline btn--sm" onClick={() => setEditing(false)} disabled={saving}>
-                Cancelar
+                {t('settings.team.profileModal.cancel')}
               </button>
               <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving}>
-                {saving ? 'Guardando...' : 'Guardar'}
+                {saving ? t('settings.team.profileModal.saving') : t('settings.team.profileModal.save')}
               </button>
             </>
           )}

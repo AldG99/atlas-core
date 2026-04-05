@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { TopProducto } from '../../types/Reporte';
 import './TopProductos.scss';
 
@@ -6,12 +7,13 @@ interface TopProductosProps {
 }
 
 const TopProductos = ({ productos }: TopProductosProps) => {
+  const { t } = useTranslation();
   return (
     <div className="top-productos">
-      <h3 className="top-productos__title">Productos más vendidos</h3>
+      <h3 className="top-productos__title">{t('reports.topProducts.title')}</h3>
 
       {productos.length === 0 ? (
-        <p className="top-productos__empty">No hay ventas en este período</p>
+        <p className="top-productos__empty">{t('reports.topProducts.empty')}</p>
       ) : (
         <ul className="top-productos__list">
           {productos.map((producto, index) => (
@@ -25,7 +27,7 @@ const TopProductos = ({ productos }: TopProductosProps) => {
                   {producto.nombre}
                 </span>
               </div>
-              <span className="top-productos__unidades">{producto.unidades} vendidos</span>
+              <span className="top-productos__unidades">{producto.unidades} {t('reports.topProducts.sold')}</span>
             </li>
           ))}
         </ul>

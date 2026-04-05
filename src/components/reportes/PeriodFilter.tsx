@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { PeriodType } from '../../types/Reporte';
 import './PeriodFilter.scss';
 
@@ -7,13 +8,15 @@ interface PeriodFilterProps {
   onPeriodChange: (period: PeriodType) => void;
 }
 
-const PERIODS: { value: PeriodType; label: string }[] = [
-  { value: 'hoy', label: 'Hoy' },
-  { value: 'semana', label: 'Esta semana' },
-  { value: 'mes', label: 'Este mes' }
-];
-
 const PeriodFilter = ({ period, onPeriodChange }: PeriodFilterProps) => {
+  const { t } = useTranslation();
+
+  const PERIODS: { value: PeriodType; label: string }[] = [
+    { value: 'hoy', label: t('reports.period.today') },
+    { value: 'semana', label: t('reports.period.week') },
+    { value: 'mes', label: t('reports.period.month') },
+  ];
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName.toLowerCase();

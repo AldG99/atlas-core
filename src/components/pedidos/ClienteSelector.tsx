@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiStarFill, PiPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import { useClientes } from '../../hooks/useClientes';
 import { useToast } from '../../hooks/useToast';
@@ -17,6 +18,7 @@ const ClienteSelector = ({
   onSelect,
   selectedCliente,
 }: ClienteSelectorProps) => {
+  const { t } = useTranslation();
   const { clientes, loading, addCliente } = useClientes();
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,14 +90,14 @@ const ClienteSelector = ({
 
   const handleAddNew = async () => {
     if (!nombre.trim() || !telefono.trim()) {
-      showToast('Completa nombre y teléfono', 'warning');
+      showToast(t('orders.quickClientFillRequired'), 'warning');
       return;
     }
 
     const existente = clientes.find(c => c.telefono === telefono.trim());
     if (existente) {
       showToast(
-        `Ya existe un cliente con ese teléfono: ${existente.nombre} ${existente.apellido}`.trim(),
+        t('orders.quickClientPhoneExists', { name: `${existente.nombre} ${existente.apellido}`.trim() }),
         'warning'
       );
       return;
@@ -116,12 +118,12 @@ const ClienteSelector = ({
       if (newCliente) {
         onSelect(newCliente);
       }
-      showToast('Cliente creado correctamente', 'success');
+      showToast(t('orders.quickClientSuccess'), 'success');
       setNombre('');
       setTelefono('');
       setShowForm(false);
     } catch {
-      showToast('Error al crear cliente', 'error');
+      showToast(t('orders.quickClientError'), 'error');
     }
   };
 
@@ -178,7 +180,7 @@ const ClienteSelector = ({
             className="btn btn--outline btn--sm"
             onClick={handleClearSelection}
           >
-            Cambiar
+            {t('orders.changeClient')}
           </button>
         </div>
       </div>
@@ -187,7 +189,7 @@ const ClienteSelector = ({
 
   return (
     <div className="cliente-selector" ref={wrapperRef}>
-      <label className="cliente-selector__label">Cliente</label>
+      <label className="cliente-selector__label">{t('orders.client')}</label>
 
       <div className="cliente-selector__search-row">
         <div className="cliente-selector__search-wrapper">
@@ -197,7 +199,7 @@ const ClienteSelector = ({
           />
           <input
             type="text"
-            placeholder="Buscar por nombre o teléfono..."
+            placeholder={t('orders.searchClientPlaceholder')}
             value={searchTerm}
             onChange={e => handleSearch(e.target.value)}
             onFocus={() => searchTerm && setShowDropdown(true)}
@@ -210,7 +212,7 @@ const ClienteSelector = ({
           type="button"
           className="btn btn--primary cliente-selector__add-btn"
           onClick={() => setShowForm(!showForm)}
-          title="Agregar nuevo cliente"
+          title={t('orders.addClientTitle')}
         >
           <PiPlusBold size={14} />
         </button>
@@ -254,7 +256,7 @@ const ClienteSelector = ({
             ))
           ) : (
             <div className="cliente-selector__dropdown-empty">
-              No se encontraron clientes
+              {t('orders.noClientsFound')}
             </div>
           )}
         </div>
@@ -262,17 +264,17 @@ const ClienteSelector = ({
 
       {showForm && (
         <div className="cliente-selector__form">
-          <div className="cliente-selector__form-title">Nuevo cliente</div>
+          <div className="cliente-selector__form-title">{t('orders.quickClientTitle')}</div>
           <input
             type="text"
-            placeholder="Nombre del cliente"
+            placeholder={t('orders.quickClientName')}
             value={nombre}
             onChange={e => setNombre(e.target.value)}
             className="input"
           />
           <input
             type="text"
-            placeholder="Teléfono"
+            placeholder={t('orders.quickClientPhone')}
             value={telefono}
             onChange={e => setTelefono(e.target.value)}
             className="input"
@@ -283,14 +285,14 @@ const ClienteSelector = ({
               className="btn btn--outline btn--sm"
               onClick={() => setShowForm(false)}
             >
-              Cancelar
+              {t('common.cancel')}
             </button>
             <button
               type="button"
               className="btn btn--primary btn--sm"
               onClick={handleAddNew}
             >
-              Guardar
+              {t('common.save')}
             </button>
           </div>
         </div>

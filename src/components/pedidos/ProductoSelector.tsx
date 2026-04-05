@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import ProductoDetalleModal from '../productos/ProductoDetalleModal';
 import { useProductos } from '../../hooks/useProductos';
@@ -31,6 +32,7 @@ interface NuevoProductoFormProps {
 }
 
 const NuevoProductoForm = ({ onSave, onCancel }: NuevoProductoFormProps) => {
+  const { t } = useTranslation();
   const [nombre, setNombre] = useState('');
   const [clave, setClave] = useState('');
   const [precio, setPrecio] = useState('');
@@ -39,24 +41,24 @@ const NuevoProductoForm = ({ onSave, onCancel }: NuevoProductoFormProps) => {
 
   return (
     <div className="producto-selector__form">
-      <div className="producto-selector__form-title">Nuevo producto</div>
+      <div className="producto-selector__form-title">{t('orders.newProduct')}</div>
       <input
         type="text"
-        placeholder="Nombre del producto"
+        placeholder={t('orders.newProductName')}
         value={nombre}
         onChange={(e) => setNombre(e.target.value)}
         className="input"
       />
       <input
         type="text"
-        placeholder="Clave (opcional)"
+        placeholder={t('orders.newProductCode')}
         value={clave}
         onChange={(e) => setClave(e.target.value)}
         className="input"
       />
       <input
         type="number"
-        placeholder="Precio"
+        placeholder={t('orders.newProductPrice')}
         value={precio}
         onChange={(e) => setPrecio(e.target.value)}
         className="input"
@@ -65,10 +67,10 @@ const NuevoProductoForm = ({ onSave, onCancel }: NuevoProductoFormProps) => {
       />
       <div className="producto-selector__form-actions">
         <button type="button" className="btn btn--outline btn--sm" onClick={onCancel}>
-          Cancelar
+          {t('common.cancel')}
         </button>
         <button type="button" className="btn btn--primary btn--sm" onClick={handleSave}>
-          Guardar
+          {t('common.save')}
         </button>
       </div>
     </div>
@@ -84,6 +86,7 @@ const ProductoSelector = ({
   disabled = false,
   error
 }: ProductoSelectorProps) => {
+  const { t } = useTranslation();
   const { productos, loading, addProducto } = useProductos();
   const { format } = useCurrency();
   const { etiquetas: todasEtiquetas } = useEtiquetas();
@@ -154,7 +157,7 @@ const ProductoSelector = ({
       const itemActual = items.find(i => i.producto.id === producto.id);
       const cantidadActual = itemActual?.cantidad ?? 0;
       if (cantidadActual >= (producto.stock ?? 0)) {
-        showToast('No hay más existencias de este producto', 'warning');
+        showToast(t('orders.noStockWarning'), 'warning');
         setSearchTerm('');
         setShowDropdown(false);
         return;
@@ -167,12 +170,12 @@ const ProductoSelector = ({
 
   const handleAddNew = async (nombre: string, clave: string, precio: string) => {
     if (!nombre.trim() || !precio) {
-      showToast('Completa nombre y precio', 'warning');
+      showToast(t('orders.newProductFillRequired'), 'warning');
       return;
     }
     const precioNum = parseFloat(precio);
     if (isNaN(precioNum) || precioNum < 0) {
-      showToast('El precio debe ser un número válido', 'warning');
+      showToast(t('orders.newProductInvalidPrice'), 'warning');
       return;
     }
     try {
@@ -180,10 +183,10 @@ const ProductoSelector = ({
       if (newProducto) {
         onAddItem(newProducto);
       }
-      showToast('Producto creado correctamente', 'success');
+      showToast(t('orders.newProductSuccess'), 'success');
       setShowForm(false);
     } catch {
-      showToast('Error al crear producto', 'error');
+      showToast(t('orders.newProductError'), 'error');
     }
   };
 
@@ -239,8 +242,8 @@ const ProductoSelector = ({
   return (
     <div className={`producto-selector${disabled ? ' producto-selector--disabled' : ''}`}>
       <label className="producto-selector__label">
-        Productos
-        {disabled && <span className="producto-selector__label-hint">Selecciona un cliente primero</span>}
+        {t('orders.products')}
+        {disabled && <span className="producto-selector__label-hint">{t('orders.selectClientFirst')}</span>}
       </label>
 
       <div className="producto-selector__search-row" ref={wrapperRef}>
@@ -248,7 +251,7 @@ const ProductoSelector = ({
           <PiMagnifyingGlassBold size={16} className="producto-selector__search-icon" />
           <input
             type="text"
-            placeholder="Buscar por nombre o clave..."
+            placeholder={t('orders.searchProductPlaceholder')}
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             onFocus={() => searchTerm && setShowDropdown(true)}
@@ -282,7 +285,7 @@ const ProductoSelector = ({
                     </span>
                     <span className={`producto-selector__dropdown-stock ${!producto.controlStock ? 'producto-selector__dropdown-stock--hidden' : (producto.stock ?? 0) === 0 ? 'producto-selector__dropdown-stock--empty' : ''}`}>
                       {producto.controlStock
-                        ? (producto.stock ?? 0) === 0 ? 'Sin existencias' : `${producto.stock} en almacén`
+                        ? (producto.stock ?? 0) === 0 ? t('products.detail.noStock') : t('orders.stockInWarehouse', { count: producto.stock })
                         : ''}
                     </span>
                     <div className="producto-selector__dropdown-etiquetas">
@@ -317,7 +320,7 @@ const ProductoSelector = ({
                 ))
               ) : (
                 <div className="producto-selector__dropdown-empty">
-                  No se encontraron productos
+                  {t('orders.noProductsFound')}
                 </div>
               )}
             </div>
@@ -327,7 +330,7 @@ const ProductoSelector = ({
           type="button"
           className="btn btn--primary producto-selector__add-btn"
           onClick={() => setShowForm(!showForm)}
-          title="Agregar nuevo producto"
+          title={t('orders.addProductTitle')}
           disabled={disabled}
         >
           <PiPlusBold size={18} />
@@ -363,14 +366,14 @@ const ProductoSelector = ({
               </colgroup>
               <thead>
                 <tr>
-                  <th>Clave</th>
-                  <th>Cant.</th>
-                  <th>Producto</th>
-                  <th>Unidad</th>
-                  <th>Etiquetas</th>
-                  <th>Stock</th>
-                  <th className="producto-selector__col--right">Precio</th>
-                  <th>Subtotal</th>
+                  <th>{t('orders.code')}</th>
+                  <th>{t('orders.quantity')}</th>
+                  <th>{t('orders.product')}</th>
+                  <th>{t('orders.unit')}</th>
+                  <th>{t('orders.labels')}</th>
+                  <th>{t('orders.stock')}</th>
+                  <th className="producto-selector__col--right">{t('orders.price')}</th>
+                  <th>{t('orders.subtotal')}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -394,7 +397,7 @@ const ProductoSelector = ({
                 {items.length === 0 && (
                   <tr>
                     <td colSpan={9} className="producto-selector__empty-row">
-                      No hay productos agregados. Busca y selecciona productos para agregarlos al pedido.
+                      {t('orders.emptyProducts')}
                     </td>
                   </tr>
                 )}
@@ -498,7 +501,7 @@ const ProductoSelector = ({
                         type="button"
                         className="producto-selector__remove-btn"
                         onClick={() => onRemoveItem(item.producto.id)}
-                        title="Eliminar"
+                        title={t('common.delete')}
                       >
                         &times;
                       </button>
@@ -524,7 +527,7 @@ const ProductoSelector = ({
               </colgroup>
               <tfoot className="producto-selector__tfoot">
                 <tr>
-                  <td className="producto-selector__total-label">Total</td>
+                  <td className="producto-selector__total-label">{t('orders.total')}</td>
                   <td></td>
                   <td></td>
                   <td></td>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PiStarFill, PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
 
 const PAGE_SIZE = 20;
@@ -20,6 +21,7 @@ interface PedidosTableProps {
 }
 
 const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { clientes } = useClientes();
@@ -97,14 +99,14 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
           </colgroup>
           <thead>
             <tr>
-              <th>Cliente</th>
-              <th>C.P.</th>
-              <th>Folio</th>
-              <th>Productos</th>
-              <th>Abonado</th>
-              <th>Total</th>
-              <th>Estado</th>
-              <th>Fecha</th>
+              <th>{t('orders.table.client')}</th>
+              <th>{t('clients.table.postal')}</th>
+              <th>{t('orders.table.folio')}</th>
+              <th>{t('orders.table.products')}</th>
+              <th>{t('orders.paid')}</th>
+              <th>{t('orders.table.total')}</th>
+              <th>{t('orders.table.status')}</th>
+              <th>{t('orders.table.date')}</th>
             </tr>
           </thead>
         </table>
@@ -144,7 +146,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
           ) : pedidos.length === 0 ? (
             <tr>
               <td colSpan={8} className="pedidos-table__empty">
-                {searchTerm?.trim() ? `No se encontraron pedidos para "${searchTerm}"` : 'No hay ningún pedido agregado'}
+                {searchTerm?.trim() ? t('orders.table.emptySearch', { term: searchTerm }) : t('orders.table.empty')}
               </td>
             </tr>
           ) : paginatedPedidos.map((pedido, index) => {
@@ -224,7 +226,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                   style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
                   aria-hidden="true"
                 />
-                <span className="sr-only">{PEDIDO_STATUS[pedido.estado]}</span>
+                <span className="sr-only">{t(`orders.status.${pedido.estado}`)}</span>
               </td>
               <td>
                 <span className="pedidos-table__date">{formatShortDate(pedido.fechaCreacion)}</span>
@@ -239,7 +241,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
       {!loading && (
         <div className="pedidos-table__pagination">
           <span className="pedidos-table__page-info pedidos-table__page-info--total">
-            {pedidos.length} {pedidos.length === 1 ? 'pedido' : 'pedidos'}
+            {pedidos.length} {t('nav.orders').toLowerCase()}
           </span>
           {totalPages > 1 && (
             <>

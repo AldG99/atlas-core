@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiUsersThreeBold, PiXBold, PiWarningBold } from 'react-icons/pi';
 import PhoneInput from '../clientes/PhoneInput';
 
@@ -23,6 +24,7 @@ const FORM_INITIAL: MiembroFormData & { confirmarPassword: string } = {
 };
 
 const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
+  const { t } = useTranslation();
   const [form, setForm] = useState(FORM_INITIAL);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,15 +34,15 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
     setError('');
 
     if (form.password !== form.confirmarPassword) {
-      setError('Las contraseñas no coinciden');
+      setError(t('settings.team.createModal.passwordMismatch'));
       return;
     }
     if (!form.fechaNacimiento) {
-      setError('La fecha de nacimiento es requerida');
+      setError(t('settings.team.createModal.dobRequired'));
       return;
     }
     if (!form.telefono || form.telefono.length < 10) {
-      setError('Ingresa un número de teléfono válido');
+      setError(t('settings.team.createModal.phoneInvalid'));
       return;
     }
 
@@ -50,7 +52,7 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
       await onSubmit(data);
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al crear miembro');
+      setError(err instanceof Error ? err.message : t('settings.team.createError'));
       setLoading(false);
     }
   };
@@ -60,7 +62,7 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
       <div className="configuracion__modal configuracion__modal--wide" onClick={e => e.stopPropagation()}>
         <div className="configuracion__modal-header">
           <PiUsersThreeBold size={20} className="configuracion__modal-icon" />
-          <h3>Nuevo miembro</h3>
+          <h3>{t('settings.team.createModal.title')}</h3>
           <button className="configuracion__modal-close" onClick={onClose}>
             <PiXBold size={16} />
           </button>
@@ -69,11 +71,11 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
           <div className="configuracion__modal-body">
             <div className="configuracion__modal-row">
               <div className="configuracion__modal-field">
-                <label>Nombre</label>
+                <label>{t('settings.team.createModal.firstName')}</label>
                 <input
                   type="text"
                   className="input"
-                  placeholder="Juan"
+                  placeholder={t('auth.register.firstNamePlaceholder')}
                   value={form.nombre}
                   onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
                   required
@@ -81,11 +83,11 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
                 />
               </div>
               <div className="configuracion__modal-field">
-                <label>Apellido</label>
+                <label>{t('settings.team.createModal.lastName')}</label>
                 <input
                   type="text"
                   className="input"
-                  placeholder="Pérez"
+                  placeholder={t('auth.register.lastNamePlaceholder')}
                   value={form.apellido}
                   onChange={e => setForm(f => ({ ...f, apellido: e.target.value }))}
                   required
@@ -94,7 +96,7 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
               </div>
             </div>
             <div className="configuracion__modal-field">
-              <label>Fecha de nacimiento</label>
+              <label>{t('settings.team.createModal.dob')}</label>
               <input
                 type="date"
                 className="input"
@@ -105,17 +107,17 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
               />
             </div>
             <div className="configuracion__modal-field">
-              <label>Número de teléfono</label>
+              <label>{t('settings.team.createModal.phone')}</label>
               <PhoneInput
                 value={form.telefono}
                 codigoPais={form.telefonoCodigoPais}
                 onChange={(numero, iso) => setForm(f => ({ ...f, telefono: numero, telefonoCodigoPais: iso }))}
-                placeholder="Número de celular"
+                placeholder={t('auth.register.phonePlaceholder')}
               />
             </div>
             <div className="configuracion__modal-row">
               <div className="configuracion__modal-field">
-                <label>Contraseña</label>
+                <label>{t('settings.team.createModal.password')}</label>
                 <input
                   type="password"
                   className="input"
@@ -127,7 +129,7 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
                 />
               </div>
               <div className="configuracion__modal-field">
-                <label>Confirmar contraseña</label>
+                <label>{t('settings.team.createModal.confirmPassword')}</label>
                 <input
                   type="password"
                   className="input"
@@ -153,10 +155,10 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
               onClick={onClose}
               disabled={loading}
             >
-              Cancelar
+              {t('settings.team.createModal.cancel')}
             </button>
             <button type="submit" className="btn btn--primary btn--sm" disabled={loading}>
-              {loading ? 'Creando...' : 'Crear miembro'}
+              {loading ? t('settings.team.createModal.submitting') : t('settings.team.createModal.submit')}
             </button>
           </div>
         </form>

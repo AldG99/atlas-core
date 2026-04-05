@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold, PiShieldCheckBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotificaciones, type Notificacion } from '../../hooks/useNotificaciones';
 import { ROUTES } from '../../config/routes';
 import Avatar from './Avatar';
+import LanguageSwitcher from './LanguageSwitcher';
 import './Header.scss';
 
 const Header = () => {
+  const { t, i18n } = useTranslation();
   const { user, logout, role } = useAuth();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -24,13 +27,13 @@ const Header = () => {
   };
 
   const getWeekday = () => {
-    return new Intl.DateTimeFormat('es-MX', { weekday: 'long' }).format(new Date());
+    return new Intl.DateTimeFormat(i18n.language, { weekday: 'long' }).format(new Date());
   };
 
   const getDate = () => {
     const date = new Date();
     const day = date.getDate();
-    const month = new Intl.DateTimeFormat('es-MX', { month: 'short' }).format(date);
+    const month = new Intl.DateTimeFormat(i18n.language, { month: 'short' }).format(date);
     const year = date.getFullYear();
     const monthCapitalized = month.charAt(0).toUpperCase() + month.slice(1).replace('.', '');
     return `${day} ${monthCapitalized}, ${year}`;
@@ -62,12 +65,13 @@ const Header = () => {
       </div>
 
       <div className="header__right">
+        <LanguageSwitcher className="header__lang" />
         {/* Notifications */}
         <div className="header__notifications">
           <button
             className="header__icon-btn header__icon-btn--notifications"
             onClick={() => setShowNotifications(!showNotifications)}
-            aria-label={`Notificaciones${notificaciones.length > 0 ? ` (${notificaciones.length} nuevas)` : ''}`}
+            aria-label={`${t('nav.notifications')}${notificaciones.length > 0 ? ` (${notificaciones.length})` : ''}`}
             aria-haspopup="true"
             aria-expanded={showNotifications}
           >
@@ -80,12 +84,12 @@ const Header = () => {
           {showNotifications && (
             <div className="header__dropdown header__dropdown--notifications">
               <div className="header__dropdown-header">
-                <span>Notificaciones</span>
+                <span>{t('nav.notifications')}</span>
               </div>
               <div className="header__dropdown-content">
                 {notificaciones.length === 0 ? (
                   <div className="header__notification-empty">
-                    <p>Sin notificaciones</p>
+                    <p>{t('nav.noNotifications')}</p>
                   </div>
                 ) : (
                   notificaciones.map(n => (
@@ -119,7 +123,7 @@ const Header = () => {
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             aria-haspopup="true"
             aria-expanded={showProfileMenu}
-            aria-label={`Menú de perfil — ${user?.nombreNegocio ?? 'Usuario'}`}
+            aria-label={`${t('nav.profile')} — ${user?.nombreNegocio ?? ''}`}
           >
             <div className="header__avatar">
               <Avatar
@@ -134,7 +138,7 @@ const Header = () => {
                 <span className="header__profile-role">
                   {user?.nombre && user?.apellido
                     ? `${user.nombre} ${user.apellido}`
-                    : 'Administrador'}
+                    : t('auth.login.adminTab')}
                 </span>
                 {role === 'miembro'
                   ? <PiUserBold size={11} color="#2368C4" />
@@ -156,7 +160,7 @@ const Header = () => {
                   }}
                 >
                   <PiUserBold size={18} />
-                  <span>Mi perfil</span>
+                  <span>{t('nav.profile')}</span>
                 </button>
                 <button
                   className="header__dropdown-item"
@@ -166,12 +170,12 @@ const Header = () => {
                   }}
                 >
                   <PiCrownSimpleBold size={18} />
-                  <span>Plan {user?.plan === 'pro' ? 'Pro' : user?.plan === 'enterprise' ? 'Enterprise' : 'Gratuito'}</span>
+                  <span>{t('nav.plan', { plan: user?.plan === 'pro' ? 'Pro' : user?.plan === 'enterprise' ? 'Enterprise' : t('plans.free') })}</span>
                 </button>
                 <div className="header__dropdown-divider"></div>
                 <button className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
                   <PiSignOutBold size={18} />
-                  <span>Cerrar sesión</span>
+                  <span>{t('nav.logout')}</span>
                 </button>
               </div>
             </div>

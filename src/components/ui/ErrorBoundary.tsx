@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import type { ReactNode, ErrorInfo } from 'react';
+import i18n from '../../i18n';
 
 interface Props {
   children: ReactNode;
@@ -39,10 +40,10 @@ class ErrorBoundary extends Component<Props, State> {
           gap: '1rem',
         }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1e293b' }}>
-            Algo salió mal
+            {i18n.t('common.errorTitle')}
           </h2>
           <p style={{ fontSize: '0.875rem', color: '#64748b', maxWidth: '400px' }}>
-            Ocurrió un error inesperado. Recarga la página para continuar.
+            {i18n.t('common.errorDesc')}
           </p>
           {this.state.message && (
             <code style={{
@@ -70,7 +71,7 @@ class ErrorBoundary extends Component<Props, State> {
               fontSize: '0.875rem',
             }}
           >
-            Recargar página
+            {i18n.t('common.reload')}
           </button>
         </div>
       );

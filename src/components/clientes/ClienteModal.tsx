@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiXBold, PiUserBold } from 'react-icons/pi';
 import type { ClienteFormData } from '../../types/Cliente';
 import { uploadClienteImage } from '../../services/clienteService';
@@ -39,6 +40,7 @@ interface ClienteModalProps {
 }
 
 const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: ClienteModalProps) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -78,81 +80,81 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
 
     // Nombre
     if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es requerido';
+      newErrors.nombre = t('clients.modal.errors.firstNameRequired');
     } else if (formData.nombre.trim().length < 2) {
-      newErrors.nombre = 'El nombre debe tener al menos 2 caracteres';
+      newErrors.nombre = t('clients.modal.errors.firstNameShort');
     } else if (!SOLO_LETRAS.test(formData.nombre.trim())) {
-      newErrors.nombre = 'El nombre solo puede contener letras';
+      newErrors.nombre = t('clients.modal.errors.firstNameLetters');
     }
 
     // Apellido
     if (!formData.apellido.trim()) {
-      newErrors.apellido = 'El apellido es requerido';
+      newErrors.apellido = t('clients.modal.errors.lastNameRequired');
     } else if (formData.apellido.trim().length < 2) {
-      newErrors.apellido = 'El apellido debe tener al menos 2 caracteres';
+      newErrors.apellido = t('clients.modal.errors.lastNameShort');
     } else if (!SOLO_LETRAS.test(formData.apellido.trim())) {
-      newErrors.apellido = 'El apellido solo puede contener letras';
+      newErrors.apellido = t('clients.modal.errors.lastNameLetters');
     }
 
     // Teléfono
     if (!formData.telefono.trim()) {
-      newErrors.telefono = 'El teléfono es requerido';
+      newErrors.telefono = t('clients.modal.errors.phoneRequired');
     } else if (esTelefonoFicticio(formData.telefono)) {
-      newErrors.telefono = 'Ingresa un número de teléfono válido';
+      newErrors.telefono = t('clients.modal.errors.phoneInvalid');
     } else if (telefonosExistentes.includes(formData.telefono)) {
-      newErrors.telefono = 'Ya existe un cliente con este número de teléfono';
+      newErrors.telefono = t('clients.modal.errors.phoneDuplicate');
     }
 
     // Correo
     if (formData.correo && formData.correo.trim()) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) {
-        newErrors.correo = 'El correo no es válido';
+        newErrors.correo = t('clients.modal.errors.emailInvalid');
       } else {
         const dominio = formData.correo.split('@')[1]?.toLowerCase();
         if (dominio && DOMINIOS_DESECHABLES.includes(dominio)) {
-          newErrors.correo = 'Ingresa un correo electrónico real';
+          newErrors.correo = t('clients.modal.errors.emailFake');
         }
       }
     }
 
     // Calle
     if (!formData.calle.trim()) {
-      newErrors.calle = 'La calle es requerida';
+      newErrors.calle = t('clients.modal.errors.streetRequired');
     } else if (formData.calle.trim().length < 3) {
-      newErrors.calle = 'Ingresa el nombre completo de la calle';
+      newErrors.calle = t('clients.modal.errors.streetShort');
     }
 
     // Número exterior
     if (!formData.numeroExterior.trim()) {
-      newErrors.numeroExterior = 'El número exterior es requerido';
+      newErrors.numeroExterior = t('clients.modal.errors.exteriorNumberRequired');
     } else if (!/\d/.test(formData.numeroExterior)) {
-      newErrors.numeroExterior = 'Debe contener al menos un número';
+      newErrors.numeroExterior = t('clients.modal.errors.exteriorNumberInvalid');
     }
 
     // Colonia
     if (!formData.colonia.trim()) {
-      newErrors.colonia = 'La colonia es requerida';
+      newErrors.colonia = t('clients.modal.errors.colonyRequired');
     } else if (formData.colonia.trim().length < 3) {
-      newErrors.colonia = 'Ingresa el nombre completo de la colonia';
+      newErrors.colonia = t('clients.modal.errors.colonyShort');
     }
 
     // Ciudad
     if (!formData.ciudad.trim()) {
-      newErrors.ciudad = 'La ciudad es requerida';
+      newErrors.ciudad = t('clients.modal.errors.cityRequired');
     } else if (formData.ciudad.trim().length < 3) {
-      newErrors.ciudad = 'Ingresa el nombre completo de la ciudad';
+      newErrors.ciudad = t('clients.modal.errors.cityShort');
     }
 
     // Código postal
     if (!formData.codigoPostal.trim()) {
-      newErrors.codigoPostal = 'El código postal es requerido';
+      newErrors.codigoPostal = t('clients.modal.errors.postalRequired');
     } else if (!/^\d{5}$/.test(formData.codigoPostal.trim())) {
-      newErrors.codigoPostal = 'El código postal debe tener 5 dígitos';
+      newErrors.codigoPostal = t('clients.modal.errors.postalInvalid');
     }
 
     // Referencia
     if (!formData.referencia?.trim()) {
-      newErrors.referencia = 'La referencia es requerida';
+      newErrors.referencia = t('clients.modal.errors.referenceRequired');
     }
 
     setErrors(newErrors);
@@ -245,7 +247,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
-          <h2>{cliente ? 'Editar Cliente' : 'Nuevo Cliente'}</h2>
+          <h2>{cliente ? t('clients.modal.editTitle') : t('clients.modal.newTitle')}</h2>
           <button className="modal__close" onClick={onClose}>
             <PiXBold size={24} />
           </button>
@@ -254,7 +256,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
         <form onSubmit={handleSubmit} className="modal__body">
           {/* Foto de perfil */}
           <div className="form-section">
-            <h3 className="form-section__title">Foto de perfil</h3>
+            <h3 className="form-section__title">{t('clients.modal.photo')}</h3>
             <div className="form-avatar">
               <div className="form-avatar__preview" onClick={handleImageClick}>
                 {previewImage ? (
@@ -274,11 +276,11 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
               />
               <div className="form-avatar__info">
                 <span className="form-avatar__hint">
-                  {previewImage ? 'Haz clic en la foto para cambiarla' : 'Haz clic para agregar una foto'}
+                  {previewImage ? t('clients.modal.photoHintChange') : t('clients.modal.photoHintAdd')}
                 </span>
                 {previewImage && (
                   <button type="button" className="btn btn--sm btn--danger" onClick={removeImage}>
-                    Eliminar foto
+                    {t('clients.modal.photoRemove')}
                   </button>
                 )}
               </div>
@@ -287,10 +289,10 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
 
           {/* Información personal */}
           <div className="form-section">
-            <h3 className="form-section__title">Información personal</h3>
+            <h3 className="form-section__title">{t('clients.modal.personalInfo')}</h3>
             <div className="form-grid form-grid--2">
               <div className="form-group">
-                <label htmlFor="nombre">Nombre *</label>
+                <label htmlFor="nombre">{t('clients.modal.firstName')}</label>
                 <input
                   type="text"
                   id="nombre"
@@ -298,14 +300,14 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   value={formData.nombre}
                   onChange={handleChange}
                   className={`input ${errors.nombre ? 'input--error' : ''}`}
-                  placeholder="Nombre"
+                  placeholder={t('clients.modal.firstNamePlaceholder')}
                   maxLength={40}
                 />
                 {errors.nombre && <span className="form-error">{errors.nombre}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="apellido">Apellido *</label>
+                <label htmlFor="apellido">{t('clients.modal.lastName')}</label>
                 <input
                   type="text"
                   id="apellido"
@@ -313,14 +315,14 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   value={formData.apellido}
                   onChange={handleChange}
                   className={`input ${errors.apellido ? 'input--error' : ''}`}
-                  placeholder="Apellido"
+                  placeholder={t('clients.modal.lastNamePlaceholder')}
                   maxLength={40}
                 />
                 {errors.apellido && <span className="form-error">{errors.apellido}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="telefono">Teléfono *</label>
+                <label htmlFor="telefono">{t('clients.modal.phone')}</label>
                 <PhoneInput
                   id="telefono"
                   name="telefono"
@@ -328,14 +330,14 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   codigoPais={formData.telefonoCodigoPais ?? 'MX'}
                   onChange={handlePhoneChange('telefono', 'telefonoCodigoPais')}
                   hasError={!!errors.telefono}
-                  placeholder="Número de teléfono"
+                  placeholder={t('auth.register.phonePlaceholder')}
                 />
                 {errors.telefono && <span className="form-error">{errors.telefono}</span>}
               </div>
 
 
               <div className="form-group">
-                <label htmlFor="correo">Correo electrónico</label>
+                <label htmlFor="correo">{t('clients.modal.email')}</label>
                 <input
                   type="email"
                   id="correo"
@@ -353,10 +355,10 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
 
           {/* Dirección */}
           <div className="form-section">
-            <h3 className="form-section__title">Dirección de entrega</h3>
+            <h3 className="form-section__title">{t('clients.modal.deliveryAddress')}</h3>
             <div className="form-grid form-grid--2">
               <div className="form-group">
-                <label htmlFor="pais">País</label>
+                <label htmlFor="pais">{t('clients.modal.country')}</label>
                 <input
                   type="text"
                   id="pais"
@@ -364,13 +366,13 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   value={formData.pais || ''}
                   onChange={handleChange}
                   className="input"
-                  placeholder="Ej: México"
+                  placeholder={t('clients.modal.countryPlaceholder')}
                   maxLength={40}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="ciudad">Ciudad *</label>
+                <label htmlFor="ciudad">{t('clients.modal.city')}</label>
                 <input
                   type="text"
                   id="ciudad"
@@ -378,14 +380,14 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   value={formData.ciudad}
                   onChange={handleChange}
                   className={`input ${errors.ciudad ? 'input--error' : ''}`}
-                  placeholder="Ciudad"
+                  placeholder={t('clients.modal.cityPlaceholder')}
                   maxLength={60}
                 />
                 {errors.ciudad && <span className="form-error">{errors.ciudad}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="colonia">Colonia *</label>
+                <label htmlFor="colonia">{t('clients.modal.colony')}</label>
                 <input
                   type="text"
                   id="colonia"
@@ -393,14 +395,14 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   value={formData.colonia}
                   onChange={handleChange}
                   className={`input ${errors.colonia ? 'input--error' : ''}`}
-                  placeholder="Nombre de la colonia"
+                  placeholder={t('clients.modal.colonyPlaceholder')}
                   maxLength={60}
                 />
                 {errors.colonia && <span className="form-error">{errors.colonia}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="calle">Calle *</label>
+                <label htmlFor="calle">{t('clients.modal.street')}</label>
                 <input
                   type="text"
                   id="calle"
@@ -408,14 +410,14 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   value={formData.calle}
                   onChange={handleChange}
                   className={`input ${errors.calle ? 'input--error' : ''}`}
-                  placeholder="Nombre de la calle"
+                  placeholder={t('clients.modal.streetPlaceholder')}
                   maxLength={80}
                 />
                 {errors.calle && <span className="form-error">{errors.calle}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="numeroExterior">Número exterior *</label>
+                <label htmlFor="numeroExterior">{t('clients.modal.exteriorNumber')}</label>
                 <input
                   type="text"
                   id="numeroExterior"
@@ -423,14 +425,14 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   value={formData.numeroExterior}
                   onChange={handleChange}
                   className={`input ${errors.numeroExterior ? 'input--error' : ''}`}
-                  placeholder="Ej: 123"
+                  placeholder={t('clients.modal.exteriorNumberPlaceholder')}
                   maxLength={10}
                 />
                 {errors.numeroExterior && <span className="form-error">{errors.numeroExterior}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="numeroInterior">Número interior</label>
+                <label htmlFor="numeroInterior">{t('clients.modal.interiorNumber')}</label>
                 <input
                   type="text"
                   id="numeroInterior"
@@ -438,13 +440,13 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   value={formData.numeroInterior || ''}
                   onChange={handleChange}
                   className="input"
-                  placeholder="Ej: Depto 4 (opcional)"
+                  placeholder={t('clients.modal.interiorNumberPlaceholder')}
                   maxLength={20}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="codigoPostal">Código postal *</label>
+                <label htmlFor="codigoPostal">{t('clients.modal.postal')}</label>
                 <input
                   type="text"
                   id="codigoPostal"
@@ -452,21 +454,21 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   value={formData.codigoPostal}
                   onChange={handleChange}
                   className={`input ${errors.codigoPostal ? 'input--error' : ''}`}
-                  placeholder="Ej: 12345"
+                  placeholder={t('clients.modal.postalPlaceholder')}
                   maxLength={5}
                 />
                 {errors.codigoPostal && <span className="form-error">{errors.codigoPostal}</span>}
               </div>
 
               <div className="form-group form-group--full">
-                <label htmlFor="referencia">Referencia del domicilio *</label>
+                <label htmlFor="referencia">{t('clients.modal.reference')}</label>
                 <textarea
                   id="referencia"
                   name="referencia"
                   value={formData.referencia || ''}
                   onChange={handleChange}
                   className={`input ${errors.referencia ? 'input--error' : ''}`}
-                  placeholder="Ej: Casa color azul, entre calle X y calle Y"
+                  placeholder={t('clients.modal.referencePlaceholder')}
                   rows={2}
                   maxLength={80}
                   style={{ resize: 'none' }}
@@ -479,10 +481,10 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
 
           <div className="modal__actions">
             <button type="button" className="btn btn--secondary" onClick={onClose} disabled={isUploading}>
-              Cancelar
+              {t('common.cancel')}
             </button>
             <button type="submit" className="btn btn--primary" disabled={isUploading}>
-              {isUploading ? 'Subiendo imagen...' : cliente ? 'Guardar cambios' : 'Agregar cliente'}
+              {isUploading ? t('clients.modal.uploadingImage') : cliente ? t('clients.modal.submitEdit') : t('clients.modal.submitNew')}
             </button>
           </div>
         </form>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { PiCurrencyDollarBold, PiHashBold, PiTrendUpBold, PiUsersBold, PiArrowUpBold, PiArrowDownBold } from 'react-icons/pi';
 import type { KPIs } from '../../types/Reporte';
 import { useCurrency } from '../../hooks/useCurrency';
@@ -15,6 +16,7 @@ const getDelta = (current: number, previous: number): number | null => {
 };
 
 const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
+  const { t } = useTranslation();
   const { format } = useCurrency();
   const allCards = [
     {
@@ -22,7 +24,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       value: format(kpis.ventasTotales),
       rawValue: kpis.ventasTotales,
       comparisonValue: comparisonKPIs?.ventasTotales,
-      label: 'Ventas totales',
+      label: t('reports.kpi.totalSales'),
       className: 'kpi-card--ventas'
     },
     {
@@ -30,7 +32,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       value: kpis.totalPedidos.toString(),
       rawValue: kpis.totalPedidos,
       comparisonValue: comparisonKPIs?.totalPedidos,
-      label: 'Pedidos',
+      label: t('reports.kpi.orders'),
       className: 'kpi-card--pedidos'
     },
     {
@@ -38,7 +40,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       value: format(kpis.ticketPromedio),
       rawValue: kpis.ticketPromedio,
       comparisonValue: comparisonKPIs?.ticketPromedio,
-      label: 'Ticket promedio',
+      label: t('reports.kpi.avgTicket'),
       className: 'kpi-card--ticket'
     },
     {
@@ -46,7 +48,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       value: kpis.clientesUnicos.toString(),
       rawValue: kpis.clientesUnicos,
       comparisonValue: comparisonKPIs?.clientesUnicos,
-      label: 'Clientes',
+      label: t('reports.kpi.clients'),
       className: 'kpi-card--clientes'
     }
   ];

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { TopCliente } from '../../types/Reporte';
 import { formatTelefono } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
@@ -9,6 +10,7 @@ interface TopClientesProps {
 }
 
 const TopClientes = ({ clientes }: TopClientesProps) => {
+  const { t } = useTranslation();
   const { clientes: clientesData } = useClientes();
 
   const getDialCode = (telefono: string): string => {
@@ -19,10 +21,10 @@ const TopClientes = ({ clientes }: TopClientesProps) => {
 
   return (
     <div className="top-clientes">
-      <h3 className="top-clientes__title">Top Clientes</h3>
+      <h3 className="top-clientes__title">{t('reports.topClients.title')}</h3>
 
       {clientes.length === 0 ? (
-        <p className="top-clientes__empty">No hay clientes en este período</p>
+        <p className="top-clientes__empty">{t('reports.topClients.empty')}</p>
       ) : (
         <ul className="top-clientes__list">
           {clientes.map((cliente, index) => (

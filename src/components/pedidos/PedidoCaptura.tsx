@@ -1,6 +1,7 @@
 import { forwardRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Pedido } from '../../types/Pedido';
-import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
+import { PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatDate, formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
 import { getCodigoPais } from '../../data/codigosPais';
 import { useCurrency } from '../../hooks/useCurrency';
@@ -15,6 +16,7 @@ interface PedidoCapturaProps {
 
 const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
   ({ pedido, cobertura, telefonoCodigoPais, fechaDescarga }, ref) => {
+    const { t, i18n } = useTranslation();
     const { format } = useCurrency();
     const pagado = getTotalPagado(pedido);
     const restante = pedido.total - pagado;
@@ -44,24 +46,24 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
               className="pedido-captura__estado"
               style={{ color: PEDIDO_STATUS_COLORS[pedido.estado] }}
             >
-              {PEDIDO_STATUS[pedido.estado]}
+              {t(`orders.status.${pedido.estado}`)}
             </span>
           </div>
         </div>
 
         {/* Tabla de productos */}
         <div className="pedido-captura__section">
-          <span className="pedido-captura__section-title">Productos</span>
+          <span className="pedido-captura__section-title">{t('orders.capture.products')}</span>
           <table className="pedido-captura__table pedido-captura__products-table">
             <thead>
               <tr>
-                <th>Clave</th>
-                <th>Cant.</th>
-                <th>Producto</th>
-                <th>Precio</th>
-                <th>Abonado</th>
-                <th>Subtotal</th>
-                <th>Estado</th>
+                <th>{t('orders.code')}</th>
+                <th>{t('orders.quantity')}</th>
+                <th>{t('orders.product')}</th>
+                <th>{t('orders.price')}</th>
+                <th>{t('orders.paid')}</th>
+                <th>{t('orders.subtotal')}</th>
+                <th>{t('orders.status_col')}</th>
               </tr>
             </thead>
             <tbody>
@@ -85,10 +87,10 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
                     <td>{format(p.subtotal)}</td>
                     <td className={`pedido-captura__pago-status pedido-captura__pago-status--${status}`}>
                       {status === 'paid'
-                        ? 'Pagado'
+                        ? t('orders.capture.statusPaid')
                         : status === 'partial'
                           ? `${Math.round(porcentaje)}%`
-                          : 'Pendiente'}
+                          : t('orders.capture.statusPending')}
                     </td>
                   </tr>
                 );
@@ -101,7 +103,7 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
         {pedido.notas && (
           <div className="pedido-captura__section">
             <div className="pedido-captura__notes">
-              <span className="pedido-captura__notes-label">Notas:</span> {pedido.notas}
+              <span className="pedido-captura__notes-label">{t('orders.capture.notes')}</span> {pedido.notas}
             </div>
           </div>
         )}
@@ -109,14 +111,14 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
         {/* Tabla de abonos */}
         {abonos.length > 0 && (
           <div className="pedido-captura__section">
-            <span className="pedido-captura__section-title">Pagos registrados</span>
+            <span className="pedido-captura__section-title">{t('orders.capture.payments')}</span>
             <table className="pedido-captura__table pedido-captura__abonos-table">
               <thead>
                 <tr>
-                  <th>Clave</th>
-                  <th>Producto</th>
-                  <th>Monto</th>
-                  <th>Fecha</th>
+                  <th>{t('orders.code')}</th>
+                  <th>{t('orders.product')}</th>
+                  <th>{t('orders.detail.paymentsTable.amount')}</th>
+                  <th>{t('common.date')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -132,7 +134,7 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
                       {typeof abono.productoIndex === 'number' &&
                       pedido.productos[abono.productoIndex]
                         ? pedido.productos[abono.productoIndex].nombre
-                        : 'General'}
+                        : t('orders.capture.general')}
                     </td>
                     <td>{format(abono.monto)}</td>
                     <td>{formatShortDate(abono.fecha)}</td>
@@ -146,27 +148,27 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
         {/* Totales */}
         <div className="pedido-captura__footer">
           <div className="pedido-captura__total-row">
-            <span>Total</span>
+            <span>{t('orders.capture.total')}</span>
             <strong>{format(pedido.total)}</strong>
           </div>
           <div className="pedido-captura__total-row">
-            <span>Pagado</span>
+            <span>{t('orders.capture.paid')}</span>
             <strong className="pedido-captura__total-paid">{format(pagado)}</strong>
           </div>
           <div className="pedido-captura__total-row pedido-captura__total-row--highlight">
-            <span>Restante</span>
+            <span>{t('orders.capture.remaining')}</span>
             <strong className={restante <= 0 ? 'pedido-captura__total-paid' : 'pedido-captura__total-pending'}>
-              {restante <= 0 ? 'Liquidado' : format(restante)}
+              {restante <= 0 ? t('orders.capture.settled') : format(restante)}
             </strong>
           </div>
         </div>
 
         {fechaDescarga && (
           <div className="pedido-captura__descarga">
-            Generado el{' '}
-            {fechaDescarga.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}
-            {' a las '}
-            {fechaDescarga.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
+            {t('orders.capture.generatedOn', {
+              date: fechaDescarga.toLocaleDateString(i18n.language, { day: '2-digit', month: 'long', year: 'numeric' }),
+              time: fechaDescarga.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
+            })}
           </div>
         )}
       </div>

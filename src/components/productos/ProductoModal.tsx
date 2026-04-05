@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiXBold, PiImageBold, PiPlusBold, PiTrashBold, PiWarehouseBold } from 'react-icons/pi';
 import type { ProductoFormData, Etiqueta } from '../../types/Producto';
 import { uploadProductoImage } from '../../services/productoService';
@@ -14,6 +15,7 @@ interface ProductoModalProps {
 }
 
 const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { etiquetas: todasEtiquetas, addEtiqueta, removeEtiqueta } = useEtiquetas();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,13 +55,13 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
     const newErrors: Partial<Record<keyof ProductoFormData, string>> = {};
 
     if (!formData.clave.trim()) {
-      newErrors.clave = 'La clave es requerida';
+      newErrors.clave = t('products.modal.errors.codeRequired');
     }
     if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es requerido';
+      newErrors.nombre = t('products.modal.errors.nameRequired');
     }
     if (formData.precio <= 0) {
-      newErrors.precio = 'El precio debe ser mayor a 0';
+      newErrors.precio = t('products.modal.errors.priceInvalid');
     }
 
     setErrors(newErrors);
@@ -176,7 +178,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal--large" onClick={e => e.stopPropagation()}>
         <div className="modal__header">
-          <h2>{producto ? 'Editar Producto' : 'Nuevo Producto'}</h2>
+          <h2>{producto ? t('products.modal.editTitle') : t('products.modal.newTitle')}</h2>
           <button className="modal__close" onClick={onClose}>
             <PiXBold size={20} />
           </button>
@@ -186,7 +188,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
 
           {/* Imagen */}
           <div className="form-section">
-            <h3 className="form-section__title">Imagen del producto</h3>
+            <h3 className="form-section__title">{t('products.modal.image')}</h3>
             <div className="producto-image-upload">
               <div className="producto-image-preview" onClick={handleImageClick}>
                 {previewImage ? (
@@ -206,11 +208,11 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
               />
               <div className="producto-image-info">
                 <span className="producto-image-hint">
-                  {previewImage ? 'Haz clic en la imagen para cambiarla' : 'Haz clic para agregar una imagen'}
+                  {previewImage ? t('products.modal.imageHintChange') : t('products.modal.imageHintAdd')}
                 </span>
                 {previewImage && (
                   <button type="button" className="btn btn--sm btn--danger" onClick={removeImage}>
-                    Eliminar imagen
+                    {t('products.modal.imageRemove')}
                   </button>
                 )}
               </div>
@@ -219,10 +221,10 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
 
           {/* Información del producto */}
           <div className="form-section">
-            <h3 className="form-section__title">Información del producto</h3>
+            <h3 className="form-section__title">{t('products.modal.info')}</h3>
             <div className="form-grid form-grid--2">
               <div className="form-group">
-                <label htmlFor="clave">Clave *</label>
+                <label htmlFor="clave">{t('products.modal.code')}</label>
                 <input
                   type="text"
                   id="clave"
@@ -230,14 +232,14 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   value={formData.clave}
                   onChange={handleChange}
                   className={`input ${errors.clave ? 'input--error' : ''}`}
-                  placeholder="Ej: PAST-001"
+                  placeholder={t('products.modal.codePlaceholder')}
                   maxLength={8}
                 />
                 {errors.clave && <span className="form-error">{errors.clave}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="nombre">Nombre *</label>
+                <label htmlFor="nombre">{t('products.modal.name')}</label>
                 <input
                   type="text"
                   id="nombre"
@@ -245,14 +247,14 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   value={formData.nombre}
                   onChange={handleChange}
                   className={`input ${errors.nombre ? 'input--error' : ''}`}
-                  placeholder="Ej: Pastel de chocolate"
+                  placeholder={t('products.modal.namePlaceholder')}
                   maxLength={60}
                 />
                 {errors.nombre && <span className="form-error">{errors.nombre}</span>}
               </div>
 
               <div className="form-group form-group--full">
-                <label htmlFor="precio">Precio *</label>
+                <label htmlFor="precio">{t('products.modal.price')}</label>
                 <div className="input-currency">
                   <span className="input-currency__symbol">$</span>
                   <input
@@ -274,16 +276,16 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
 
           {/* Descripción */}
           <div className="form-section">
-            <h3 className="form-section__title">Descripción</h3>
+            <h3 className="form-section__title">{t('products.modal.description')}</h3>
             <div className="form-group">
-              <label htmlFor="descripcion">Descripción del producto</label>
+              <label htmlFor="descripcion">{t('products.modal.description')}</label>
               <textarea
                 id="descripcion"
                 name="descripcion"
                 value={formData.descripcion || ''}
                 onChange={handleChange}
                 className="input"
-                placeholder="Describe el producto..."
+                placeholder={t('products.modal.descriptionPlaceholder')}
                 rows={3}
                 maxLength={240}
                 style={{ resize: 'none' }}
@@ -294,7 +296,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
 
           {/* Etiquetas asignadas */}
           <div className="form-section">
-            <h3 className="form-section__title">Etiquetas</h3>
+            <h3 className="form-section__title">{t('products.modal.labels')}</h3>
             <div className="form-group">
               {etiquetasAsignadas.length > 0 ? (
                 <div className="etiquetas-chips">
@@ -319,16 +321,16 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                       </span>
                       {confirmDeleteId === et.id ? (
                         <div className="etiqueta-chip__confirm">
-                          <span>¿Eliminar?</span>
-                          <button type="button" className="etiqueta-chip__confirm-yes" onClick={() => { handleDeleteEtiqueta(et.id); setConfirmDeleteId(null); }}>Sí</button>
-                          <button type="button" className="etiqueta-chip__confirm-no" onClick={() => setConfirmDeleteId(null)}>No</button>
+                          <span>{t('common.confirmDelete')}</span>
+                          <button type="button" className="etiqueta-chip__confirm-yes" onClick={() => { handleDeleteEtiqueta(et.id); setConfirmDeleteId(null); }}>{t('common.yes')}</button>
+                          <button type="button" className="etiqueta-chip__confirm-no" onClick={() => setConfirmDeleteId(null)}>{t('common.no')}</button>
                         </div>
                       ) : (
                         <button
                           type="button"
                           className="etiqueta-chip__delete"
                           onClick={() => setConfirmDeleteId(et.id)}
-                          title="Eliminar etiqueta"
+                          title={t('products.modal.labelDelete')}
                         >
                           <PiTrashBold size={10} />
                         </button>
@@ -337,17 +339,17 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   ))}
                 </div>
               ) : (
-                <span className="etiquetas-vacio">Sin etiquetas asignadas</span>
+                <span className="etiquetas-vacio">{t('products.modal.labelsNone')}</span>
               )}
               {limiteAlcanzado && (
-                <span className="etiquetas-limite">Máximo {MAX_ETIQUETAS} etiquetas</span>
+                <span className="etiquetas-limite">{t('products.modal.labelsLimit', { max: MAX_ETIQUETAS })}</span>
               )}
             </div>
           </div>
 
           {/* Etiquetas creadas */}
           <div className="form-section">
-            <h3 className="form-section__title">Etiquetas creadas</h3>
+            <h3 className="form-section__title">{t('products.modal.labels')}</h3>
             <div className="form-group">
               {etiquetasDisponibles.length > 0 && (
                 <div className="etiquetas-disponibles">
@@ -360,7 +362,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                           type="button"
                           className="etiqueta-option"
                           onClick={() => !limiteAlcanzado && toggleEtiqueta(et.id)}
-                          title={limiteAlcanzado ? `Máximo ${MAX_ETIQUETAS} etiquetas` : et.nombre}
+                          title={limiteAlcanzado ? t('products.modal.labelsLimit', { max: MAX_ETIQUETAS }) : et.nombre}
                           style={{ opacity: limiteAlcanzado ? 0.5 : 1, cursor: limiteAlcanzado ? 'not-allowed' : 'pointer' }}
                         >
                           <span className="etiqueta-option__icon" style={{ color: et.color }}>
@@ -369,16 +371,16 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                         </button>
                         {confirmDeleteId === et.id ? (
                           <div className="etiqueta-chip__confirm">
-                            <span>¿Eliminar?</span>
-                            <button type="button" className="etiqueta-chip__confirm-yes" onClick={() => { handleDeleteEtiqueta(et.id); setConfirmDeleteId(null); }}>Sí</button>
-                            <button type="button" className="etiqueta-chip__confirm-no" onClick={() => setConfirmDeleteId(null)}>No</button>
+                            <span>{t('common.confirmDelete')}</span>
+                            <button type="button" className="etiqueta-chip__confirm-yes" onClick={() => { handleDeleteEtiqueta(et.id); setConfirmDeleteId(null); }}>{t('common.yes')}</button>
+                            <button type="button" className="etiqueta-chip__confirm-no" onClick={() => setConfirmDeleteId(null)}>{t('common.no')}</button>
                           </div>
                         ) : (
                           <button
                             type="button"
                             className="etiqueta-chip__delete"
                             onClick={() => setConfirmDeleteId(et.id)}
-                            title="Eliminar etiqueta"
+                            title={t('products.modal.labelDelete')}
                           >
                             <PiTrashBold size={10} />
                           </button>
@@ -396,23 +398,23 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   onClick={() => setShowNewEtiqueta(true)}
                 >
                   <PiPlusBold size={14} />
-                  Nueva etiqueta
+                  {t('products.modal.labelNew')}
                 </button>
               ) : (
                 <div className="etiqueta-new-form">
                   <div className="etiqueta-picker-row">
-                    <span className="etiqueta-picker-label">Nombre</span>
+                    <span className="etiqueta-picker-label">{t('products.modal.labelName')}</span>
                     <input
                       type="text"
                       className="input etiqueta-nombre-input"
-                      placeholder="Nombre de la etiqueta..."
+                      placeholder={t('products.modal.labelNamePlaceholder')}
                       value={nuevaEtiquetaNombre}
                       onChange={(e) => setNuevaEtiquetaNombre(e.target.value)}
                     />
                   </div>
 
                   <div className="etiqueta-picker-row">
-                    <span className="etiqueta-picker-label">Icono</span>
+                    <span className="etiqueta-picker-label">{t('products.modal.labelIcon')}</span>
                     <div className="etiqueta-icon-picker">
                       {Object.entries(ETIQUETA_ICONS).map(([key, { icon: Icon, label }]) => (
                         <button
@@ -430,7 +432,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   </div>
 
                   <div className="etiqueta-picker-row">
-                    <span className="etiqueta-picker-label">Color</span>
+                    <span className="etiqueta-picker-label">{t('products.modal.labelColor')}</span>
                     <div className="etiqueta-color-picker">
                       {ETIQUETA_COLORES.map(color => (
                         <button
@@ -452,7 +454,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                         <span
                           className="etiqueta-chip"
                           style={{ backgroundColor: nuevaEtiquetaColor }}
-                          title="Vista previa"
+                          title={t('products.modal.labelPreview')}
                         >
                           {Icon && <Icon size={12} />}
                           <span className="etiqueta-chip__label">{previewName}</span>
@@ -467,14 +469,14 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                       className="btn btn--sm btn--secondary"
                       onClick={() => { setShowNewEtiqueta(false); setNuevaEtiquetaNombre(''); }}
                     >
-                      Cancelar
+                      {t('common.cancel')}
                     </button>
                     <button
                       type="button"
                       className="btn btn--sm btn--primary"
                       onClick={handleCrearEtiqueta}
                     >
-                      Crear
+                      {t('products.modal.labelCreate')}
                     </button>
                   </div>
                 </div>
@@ -484,7 +486,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
 
           {/* Almacén */}
           <div className="form-section">
-            <h3 className="form-section__title">Almacén</h3>
+            <h3 className="form-section__title">{t('products.modal.warehouse')}</h3>
             <div className="form-group">
               <label className="stock-toggle">
                 <input
@@ -499,10 +501,10 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                   }
                 />
                 <PiWarehouseBold size={16} />
-                <span>Gestionar existencias</span>
+                <span>{t('products.modal.warehouseManage')}</span>
               </label>
               <div className="stock-input-row">
-                <label htmlFor="stock">Unidades en almacén</label>
+                <label htmlFor="stock">{t('products.modal.warehouseUnits')}</label>
                 <input
                   type="number"
                   id="stock"
@@ -521,10 +523,10 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
 
           <div className="modal__actions">
             <button type="button" className="btn btn--secondary" onClick={onClose} disabled={isUploading}>
-              Cancelar
+              {t('common.cancel')}
             </button>
             <button type="submit" className="btn btn--primary" disabled={isUploading}>
-              {isUploading ? 'Subiendo imagen...' : producto ? 'Guardar cambios' : 'Agregar producto'}
+              {isUploading ? t('products.modal.uploadingImage') : producto ? t('products.modal.submitEdit') : t('products.modal.submitNew')}
             </button>
           </div>
 

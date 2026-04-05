@@ -1,4 +1,5 @@
 import { Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../config/routes';
 
@@ -8,12 +9,13 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
+  const { t } = useTranslation();
   const { user, loading, role } = useAuth();
 
   if (loading) {
     return (
       <div className="loading-screen">
-        <p>Cargando...</p>
+        <p>{t('common.loading')}</p>
       </div>
     );
   }

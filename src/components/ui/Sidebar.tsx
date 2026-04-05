@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PiListBold, PiXBold, PiClipboardTextBold, PiUsersBold, PiPackageBold, PiChartBarBold, PiArchiveBold, PiGearBold, PiLifebuoyBold } from 'react-icons/pi';
 import { ROUTES } from '../../config/routes';
 import './Sidebar.scss';
@@ -10,12 +11,14 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <button
         className="sidebar-toggle"
         onClick={onToggle}
-        aria-label={isMobileOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-label={isMobileOpen ? t('nav.closeMenu') : t('nav.openMenu')}
         aria-expanded={isMobileOpen}
         aria-controls="sidebar"
       >
@@ -42,7 +45,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiClipboardTextBold size={22} /></span>
-            <span className="sidebar__link-text">Pedidos</span>
+            <span className="sidebar__link-text">{t('nav.orders')}</span>
           </NavLink>
 
           <NavLink
@@ -51,7 +54,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiUsersBold size={22} /></span>
-            <span className="sidebar__link-text">Clientes</span>
+            <span className="sidebar__link-text">{t('nav.clients')}</span>
           </NavLink>
 
           <NavLink
@@ -60,7 +63,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiPackageBold size={22} /></span>
-            <span className="sidebar__link-text">Productos</span>
+            <span className="sidebar__link-text">{t('nav.products')}</span>
           </NavLink>
 
           <NavLink
@@ -69,7 +72,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiChartBarBold size={22} /></span>
-            <span className="sidebar__link-text">Reportes</span>
+            <span className="sidebar__link-text">{t('nav.reports')}</span>
           </NavLink>
 
           <NavLink
@@ -78,7 +81,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiArchiveBold size={22} /></span>
-            <span className="sidebar__link-text">Archivados</span>
+            <span className="sidebar__link-text">{t('nav.archived')}</span>
           </NavLink>
 
         </nav>
@@ -90,7 +93,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiGearBold size={22} /></span>
-            <span className="sidebar__link-text">Configuración</span>
+            <span className="sidebar__link-text">{t('nav.settings')}</span>
           </NavLink>
 
           <NavLink
@@ -99,7 +102,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             onClick={onClose}
           >
             <span className="sidebar__link-icon"><PiLifebuoyBold size={22} /></span>
-            <span className="sidebar__link-text">Soporte</span>
+            <span className="sidebar__link-text">{t('nav.support')}</span>
           </NavLink>
         </div>
       </aside>

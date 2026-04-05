@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { Producto, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
 import './ProductosTable.scss';
@@ -13,20 +14,21 @@ interface ProductosTableProps {
 }
 
 const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: ProductosTableProps) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-MX', {
+    return new Intl.NumberFormat(i18n.language, {
       style: 'currency',
       currency: 'MXN'
     }).format(price);
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-MX', {
+    return new Intl.DateTimeFormat(i18n.language, {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
@@ -96,13 +98,13 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
           {colgroup}
           <thead>
             <tr>
-              <th>Clave</th>
-              <th>Producto</th>
-              <th>Unidad</th>
-              <th>Precio</th>
-              <th>Etiquetas</th>
-              <th>Stock</th>
-              <th className="productos-table__col--right">Registro</th>
+              <th>{t('products.table.code')}</th>
+              <th>{t('products.table.product')}</th>
+              <th>{t('products.table.unit')}</th>
+              <th>{t('products.table.price')}</th>
+              <th>{t('products.table.labels')}</th>
+              <th>{t('products.table.stock')}</th>
+              <th className="productos-table__col--right">{t('products.table.registration')}</th>
             </tr>
           </thead>
         </table>
@@ -114,7 +116,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
           {loading ? (
             <tr>
               <td colSpan={7} className="productos-table__empty">
-                Cargando productos...
+                {t('products.loadingProducts')}
               </td>
             </tr>
           ) : error ? (
@@ -126,7 +128,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
           ) : productos.length === 0 ? (
             <tr>
               <td colSpan={7} className="productos-table__empty">
-                {searchTerm?.trim() ? `No se encontraron productos para "${searchTerm}"` : 'No hay ningún producto registrado'}
+                {searchTerm?.trim() ? t('products.noProductsSearch', { term: searchTerm }) : t('products.noProducts')}
               </td>
             </tr>
           ) : productos.map((producto, index) => {
@@ -185,7 +187,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
                 <td>
                   {producto.controlStock ? (
                     <span className={(producto.stock ?? 0) === 0 ? 'productos-table__stock--empty' : 'productos-table__stock'}>
-                      {(producto.stock ?? 0) === 0 ? 'Sin stock' : producto.stock}
+                      {(producto.stock ?? 0) === 0 ? t('products.stockEmpty') : producto.stock}
                     </span>
                   ) : (
                     <span className="productos-table__no-etiquetas">—</span>
@@ -204,7 +206,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
       {productos.length > 0 && (
         <div className="productos-table__pagination">
           <span className="productos-table__page-info">
-            {productos.length} {productos.length === 1 ? 'producto' : 'productos'}
+            {t('products.count', { count: productos.length })}
           </span>
         </div>
       )}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { PiCheckBold, PiXBold, PiPencilSimpleBold } from 'react-icons/pi';
 import type { Abono, ProductoItem, CreadoPor, PedidoStatus } from '../../types/Pedido';
 import { formatDate } from '../../utils/formatters';
@@ -53,6 +54,7 @@ const PedidoAbonosTable: React.FC<Props> = ({
   onEditCancel,
   onEditValueChange,
 }) => {
+  const { t } = useTranslation();
   const sorted = [...abonos].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
 
   return (
@@ -64,13 +66,13 @@ const PedidoAbonosTable: React.FC<Props> = ({
             <Colgroup />
             <thead>
               <tr>
-                <th>Clave</th>
-                <th>Producto</th>
-                <th>Monto</th>
+                <th>{t('orders.detail.paymentsTable.code')}</th>
+                <th>{t('orders.detail.paymentsTable.product')}</th>
+                <th>{t('orders.detail.paymentsTable.amount')}</th>
                 <th></th>
                 <th></th>
-                <th>Por</th>
-                <th>Fecha</th>
+                <th>{t('orders.detail.paymentsTable.by')}</th>
+                <th>{t('orders.detail.paymentsTable.date')}</th>
               </tr>
             </thead>
           </table>
@@ -84,7 +86,7 @@ const PedidoAbonosTable: React.FC<Props> = ({
               {abonos.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="pedido-detail__abonos-empty">
-                    Sin abonos registrados
+                    {t('orders.detail.noPayments')}
                   </td>
                 </tr>
               ) : (
@@ -105,7 +107,7 @@ const PedidoAbonosTable: React.FC<Props> = ({
                       {typeof abono.productoIndex === 'number' && productos[abono.productoIndex] ? (
                         productos[abono.productoIndex].nombre
                       ) : (
-                        <span className="pedido-detail__general-label">General</span>
+                        <span className="pedido-detail__general-label">{t('orders.detail.generalPayment')}</span>
                       )}
                     </td>
                     <td>
@@ -123,10 +125,10 @@ const PedidoAbonosTable: React.FC<Props> = ({
                               if (e.key === 'Escape') onEditCancel();
                             }}
                           />
-                          <button className="pedido-detail__abono-edit-confirm" onClick={() => onEditConfirm(abono.id)} title="Confirmar">
+                          <button className="pedido-detail__abono-edit-confirm" onClick={() => onEditConfirm(abono.id)} title={t('common.confirm')}>
                             <PiCheckBold size={14} />
                           </button>
-                          <button className="pedido-detail__abono-edit-cancel" onClick={onEditCancel} title="Cancelar">
+                          <button className="pedido-detail__abono-edit-cancel" onClick={onEditCancel} title={t('common.cancel')}>
                             <PiXBold size={14} />
                           </button>
                         </div>
@@ -138,9 +140,9 @@ const PedidoAbonosTable: React.FC<Props> = ({
                       {abono.montoOriginal && (
                         <span
                           className="pedido-detail__abono-editado"
-                          title={`Corregido de ${format(abono.montoOriginal)}${abono.editadoEn ? ` · ${formatDate(abono.editadoEn)}` : ''}`}
+                          title={`${format(abono.montoOriginal)}${abono.editadoEn ? ` · ${formatDate(abono.editadoEn)}` : ''}`}
                         >
-                          Editado
+                          {t('common.edit')}
                         </span>
                       )}
                     </td>
@@ -148,7 +150,7 @@ const PedidoAbonosTable: React.FC<Props> = ({
                       {role === 'admin' && editingAbonoId !== abono.id && (
                         <button
                           className="pedido-detail__abono-edit-btn"
-                          title={estado === 'entregado' || archivado ? 'No se puede editar un pedido entregado' : 'Corregir monto'}
+                          title={t('common.edit')}
                           disabled={estado === 'entregado' || archivado}
                           onClick={() => onEditStart(abono.id, abono.monto)}
                         >
@@ -174,11 +176,11 @@ const PedidoAbonosTable: React.FC<Props> = ({
 
       {creadoPor && (
         <div className="pedido-detail__creado-por-row">
-          Creado por <span>{creadoPor.nombre}</span>
+          {t('orders.detail.createdBy')} <span>{creadoPor.nombre}</span>
         </div>
       )}
       <div className="pedido-detail__creado-por-row">
-        Entregado por <span>{entregadoPor ? entregadoPor.nombre : <em>Aún sin entregar</em>}</span>
+        {t('orders.detail.deliveredBy')} <span>{entregadoPor ? entregadoPor.nombre : <em>{t('orders.detail.notDeliveredYet')}</em>}</span>
       </div>
     </div>
   );

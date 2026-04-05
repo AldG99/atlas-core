@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiWarningBold, PiXBold, PiEyeBold, PiEyeSlashBold } from 'react-icons/pi';
 
 interface DangerModalProps {
@@ -9,6 +10,7 @@ interface DangerModalProps {
 }
 
 const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerModalProps) => {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd] = useState(false);
   const [error, setError] = useState('');
@@ -17,7 +19,7 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
   const handleConfirm = async () => {
     setError('');
     if (!password) {
-      setError('Ingresa tu contraseña para confirmar');
+      setError(t('settings.dangerModal.passwordRequired'));
       return;
     }
     setLoading(true);
@@ -28,7 +30,7 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
         await onDeleteAccount(password);
       }
     } catch {
-      setError('Contraseña incorrecta');
+      setError(t('settings.dangerModal.wrongPassword'));
       setLoading(false);
     }
   };
@@ -39,26 +41,20 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
         <div className="configuracion__modal-header">
           <PiWarningBold size={20} className="configuracion__modal-icon" />
           <h3>
-            {type === 'deleteData' ? 'Eliminar todos los datos' : 'Eliminar cuenta'}
+            {type === 'deleteData' ? t('settings.dangerModal.deleteDataTitle') : t('settings.dangerModal.deleteAccountTitle')}
           </h3>
           <button className="configuracion__modal-close" onClick={onClose}>
             <PiXBold size={16} />
           </button>
         </div>
         <div className="configuracion__modal-body">
-          {type === 'deleteData' ? (
-            <p>
-              Se eliminarán permanentemente todos tus <strong>clientes, productos, pedidos y etiquetas</strong>.
-              Tu cuenta seguirá activa. Esta acción <strong>no se puede deshacer</strong>.
-            </p>
-          ) : (
-            <p>
-              Se eliminará tu cuenta y <strong>todos los datos</strong> de forma permanente.
-              Esta acción <strong>no se puede deshacer</strong>.
-            </p>
-          )}
+          <p>
+            {type === 'deleteData'
+              ? t('settings.dangerModal.deleteDataText')
+              : t('settings.dangerModal.deleteAccountText')}
+          </p>
           <div className="configuracion__modal-field">
-            <label>Confirma tu contraseña</label>
+            <label>{t('settings.dangerModal.confirmPassword')}</label>
             <div className="configuracion__modal-pwd">
               <input
                 type={showPwd ? 'text' : 'password'}
@@ -82,7 +78,7 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
         </div>
         <div className="configuracion__modal-actions">
           <button className="btn btn--outline btn--sm" onClick={onClose} disabled={loading}>
-            Cancelar
+            {t('settings.dangerModal.cancel')}
           </button>
           <button
             className="btn btn--danger btn--sm"
@@ -90,10 +86,10 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
             disabled={loading}
           >
             {loading
-              ? 'Eliminando...'
+              ? t('settings.dangerModal.deleting')
               : type === 'deleteData'
-                ? 'Sí, eliminar datos'
-                : 'Sí, eliminar cuenta'}
+                ? t('settings.dangerModal.confirmDeleteData')
+                : t('settings.dangerModal.confirmDeleteAccount')}
           </button>
         </div>
       </div>

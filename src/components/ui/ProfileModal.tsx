@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiXBold, PiCameraBold, PiTrashBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
 import './ProfileModal.scss';
@@ -8,6 +9,7 @@ interface ProfileModalProps {
 }
 
 const ProfileModal = ({ onClose }: ProfileModalProps) => {
+  const { t } = useTranslation();
   const { user, updateProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -90,7 +92,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
     <div className="profile-modal-overlay" onClick={onClose}>
       <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
         <div className="profile-modal__header">
-          <h2>Mi Perfil</h2>
+          <h2>{t('profile.profileModal')}</h2>
           <button className="profile-modal__close" onClick={onClose}>
             <PiXBold size={20} />
           </button>
@@ -103,7 +105,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
               onClick={handleImageClick}
             >
               {previewImage ? (
-                <img src={previewImage} alt="Foto de perfil" />
+                <img src={previewImage} alt={t('profile.profilePhoto')} />
               ) : (
                 getInitials(user?.nombreNegocio)
               )}
@@ -127,14 +129,14 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
                 onClick={removeImage}
               >
                 <PiTrashBold size={16} />
-                <span>Eliminar foto</span>
+                <span>{t('profile.removePhoto')}</span>
               </button>
             )}
           </div>
 
           <div className="profile-modal__form">
             <div className="profile-modal__field">
-              <label>Nombre del negocio</label>
+              <label>{t('profile.businessName')}</label>
               {isEditing ? (
                 <input
                   type="text"
@@ -149,7 +151,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
             </div>
 
             <div className="profile-modal__field">
-              <label>Correo electrónico</label>
+              <label>{t('profile.email')}</label>
               {isEditing ? (
                 <input
                   type="email"
@@ -164,7 +166,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
             </div>
 
             <div className="profile-modal__field">
-              <label>Teléfono</label>
+              <label>{t('profile.phone')}</label>
               {isEditing ? (
                 <input
                   type="tel"
@@ -179,7 +181,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
             </div>
 
             <div className="profile-modal__field">
-              <label>Dirección</label>
+              <label>{t('profile.address')}</label>
               {isEditing ? (
                 <input
                   type="text"
@@ -203,19 +205,19 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
                 onClick={handleCancel}
                 disabled={isSaving}
               >
-                Cancelar
+                {t('common.cancel')}
               </button>
               <button
                 className="btn btn--primary"
                 onClick={handleSave}
                 disabled={isSaving}
               >
-                {isSaving ? 'Guardando...' : 'Guardar cambios'}
+                {isSaving ? t('common.saving') : t('profile.saveChanges')}
               </button>
             </>
           ) : (
             <button className="btn btn--primary" onClick={() => setIsEditing(true)}>
-              Editar perfil
+              {t('profile.editProfile')}
             </button>
           )}
         </div>

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiEyeBold } from 'react-icons/pi';
 import type { ProductoItem } from '../../types/Pedido';
 import type { Producto, Etiqueta } from '../../types/Producto';
@@ -45,6 +46,7 @@ const PedidoProductosTable: React.FC<Props> = ({
   onRowClick,
   onProductoClick,
 }) => {
+  const { t } = useTranslation();
   const etiquetasPorClave = useMemo(() => {
     const map = new Map<string, Etiqueta[]>();
     for (const cp of catalogoProductos) {
@@ -68,15 +70,15 @@ const PedidoProductosTable: React.FC<Props> = ({
             <Colgroup />
             <thead>
               <tr>
-                <th>Clave</th>
-                <th>Cant.</th>
-                <th>Producto</th>
-                <th>Etiquetas</th>
-                <th>Precio</th>
-                <th>Abonado</th>
-                <th className="pedido-detail__col--right">Subtotal</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th>{t('orders.code')}</th>
+                <th>{t('orders.quantity')}</th>
+                <th>{t('orders.product')}</th>
+                <th>{t('orders.labels')}</th>
+                <th>{t('orders.price')}</th>
+                <th>{t('orders.paid')}</th>
+                <th className="pedido-detail__col--right">{t('orders.subtotal')}</th>
+                <th>{t('orders.status_col')}</th>
+                <th>{t('orders.actions')}</th>
               </tr>
             </thead>
           </table>
@@ -145,13 +147,13 @@ const PedidoProductosTable: React.FC<Props> = ({
                     </td>
                     <td>
                       <span className={`pedido-detail__product-status pedido-detail__product-status--${status}`}>
-                        {status === 'paid' ? 'Pagado' : status === 'partial' ? `${Math.round(porcentaje)}%` : 'Pendiente'}
+                        {status === 'paid' ? t('orders.detail.statusPaid') : status === 'partial' ? `${Math.round(porcentaje)}%` : t('orders.detail.statusPending')}
                       </span>
                     </td>
                     <td>
                       <button
                         className="pedido-detail__product-eye"
-                        title="Ver detalles"
+                        title={t('common.edit')}
                         onClick={() => onProductoClick(p)}
                       >
                         <PiEyeBold size={20} />
@@ -170,7 +172,7 @@ const PedidoProductosTable: React.FC<Props> = ({
             <Colgroup />
             <tfoot className="pedido-detail__products-tfoot">
               <tr className="pedido-detail__product-total-row">
-                <td><strong>Total</strong></td>
+                <td><strong>{t('common.total')}</strong></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -189,7 +191,7 @@ const PedidoProductosTable: React.FC<Props> = ({
                         ? 'pedido-detail__product-status--partial'
                         : 'pedido-detail__product-status--pending'
                   }>
-                    {pagado >= total ? 'Liquidado' : format(total - pagado)}
+                    {pagado >= total ? t('orders.detail.statusLiquidated') : format(total - pagado)}
                   </strong>
                 </td>
                 <td></td>

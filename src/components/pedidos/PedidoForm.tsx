@@ -1,5 +1,6 @@
 import type { FormEvent } from 'react';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { PedidoFormData, ProductoItem } from '../../types/Pedido';
 import type { Producto } from '../../types/Producto';
 import type { Cliente } from '../../types/Cliente';
@@ -20,10 +21,11 @@ const PedidoForm = ({
   onSubmit,
   onCancel,
   loading = false,
-  submitText = 'Crear pedido',
+  submitText,
   defaultCliente,
   defaultProductos
 }: PedidoFormProps) => {
+  const { t } = useTranslation();
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(defaultCliente || null);
   const [items, setItems] = useState<ItemPedido[]>(() => {
     if (defaultProductos && defaultProductos.length > 0) {
@@ -55,11 +57,11 @@ const PedidoForm = ({
     const newErrors: { cliente?: string; productos?: string } = {};
 
     if (!selectedCliente) {
-      newErrors.cliente = 'Selecciona un cliente';
+      newErrors.cliente = t('orders.clientRequired');
     }
 
     if (items.length === 0) {
-      newErrors.productos = 'Agrega al menos un producto';
+      newErrors.productos = t('orders.productsRequired');
     }
 
     setErrors(newErrors);
@@ -191,7 +193,7 @@ const PedidoForm = ({
 
       <div className="pedido-form__fields">
         <div className="form-group">
-          <label htmlFor="notas">Notas (opcional)</label>
+          <label htmlFor="notas">{t('orders.notes')}</label>
           <input
             id="notas"
             name="notas"
@@ -199,7 +201,7 @@ const PedidoForm = ({
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
             className="input"
-            placeholder="Notas adicionales"
+            placeholder={t('orders.notesPlaceholder')}
             maxLength={80}
             disabled={!selectedCliente || items.length === 0}
           />
@@ -213,7 +215,7 @@ const PedidoForm = ({
               onClick={onCancel}
               disabled={loading}
             >
-              Cancelar
+              {t('common.cancel')}
             </button>
           )}
           <button
@@ -221,7 +223,7 @@ const PedidoForm = ({
             className="btn btn--primary btn--full"
             disabled={loading || !selectedCliente || items.length === 0}
           >
-            {loading ? 'Guardando...' : submitText}
+            {loading ? t('orders.saving') : (submitText ?? t('orders.submitButton'))}
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Pedido, PedidoStatus } from '../../types/Pedido';
-import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
+import { PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { buildMensajePedido, openWhatsApp, copyToClipboard } from '../../utils/formatters';
 import { useCurrency } from '../../hooks/useCurrency';
 import { useAuth } from '../../hooks/useAuth';
@@ -17,6 +18,7 @@ interface PedidoCardProps {
 }
 
 const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, isArchived = false }: PedidoCardProps) => {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const statusOptions: PedidoStatus[] = ['pendiente', 'en_preparacion', 'entregado'];
   const { format, simbolo } = useCurrency();
@@ -26,7 +28,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
     buildMensajePedido(pedido, user?.plantillas ?? PLANTILLAS_DEFAULT, simbolo, user?.nombreNegocio ?? '');
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-MX', {
+    return new Intl.DateTimeFormat(undefined, {
       day: '2-digit',
       month: 'short',
       hour: '2-digit',
@@ -57,32 +59,32 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
           className="pedido-card__status"
           style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
         >
-          {PEDIDO_STATUS[pedido.estado]}
+          {t(`orders.status.${pedido.estado}`)}
         </span>
       </div>
 
       <div className="pedido-card__body">
         <div className="pedido-card__products">
-          <strong>Productos:</strong>
+          <strong>{t('orders.products')}:</strong>
           <p>{pedido.productos.map(p => `${p.cantidad}x ${p.nombre}`).join(', ')}</p>
         </div>
 
         {pedido.notas && (
           <div className="pedido-card__notes">
-            <strong>Notas:</strong>
+            <strong>{t('orders.notes')}:</strong>
             <p>{pedido.notas}</p>
           </div>
         )}
 
         <div className="pedido-card__total">
-          <span>Total:</span>
+          <span>{t('common.total')}:</span>
           <strong>{format(pedido.total)}</strong>
         </div>
       </div>
 
       <div className="pedido-card__whatsapp">
         <button onClick={handleCopy} className="btn btn--outline">
-          {copied ? 'Copiado!' : 'Copiar'}
+          {copied ? t('orders.detail.copied') : t('orders.detail.copy')}
         </button>
         <button onClick={handleWhatsApp} className="btn btn--whatsapp">
           WhatsApp
@@ -102,7 +104,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
               >
                 {statusOptions.map((status) => (
                   <option key={status} value={status}>
-                    {PEDIDO_STATUS[status]}
+                    {t(`orders.status.${status}`)}
                   </option>
                 ))}
               </select>
@@ -112,7 +114,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
                   onClick={() => onArchive(pedido.id)}
                   className="btn btn--secondary"
                 >
-                  Archivar
+                  {t('nav.archived')}
                 </button>
               )}
 
@@ -120,7 +122,7 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
                 onClick={() => onDelete(pedido.id)}
                 className="btn btn--danger"
               >
-                Eliminar
+                {t('common.delete')}
               </button>
             </>
           )}
@@ -131,13 +133,13 @@ const PedidoCard = ({ pedido, onChangeStatus, onDelete, onArchive, onRestore, is
                 onClick={() => onRestore(pedido.id)}
                 className="btn btn--primary"
               >
-                Restaurar
+                {t('archive.restore')}
               </button>
               <button
                 onClick={() => onDelete(pedido.id)}
                 className="btn btn--danger"
               >
-                Eliminar
+                {t('common.delete')}
               </button>
             </>
           )}

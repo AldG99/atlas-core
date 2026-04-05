@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PiStarFill } from 'react-icons/pi';
 import type { Cliente } from '../../types/Cliente';
 import { getCodigoPais } from '../../data/codigosPais';
@@ -15,13 +16,14 @@ interface ClientesTableProps {
 }
 
 const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTableProps) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-MX', {
+    return new Intl.DateTimeFormat(i18n.language, {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
@@ -70,12 +72,12 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
           </colgroup>
           <thead>
             <tr>
-              <th>Cliente</th>
-              <th>Teléfono</th>
-              <th>Calle</th>
-              <th>Colonia / Ciudad</th>
-              <th>C.P.</th>
-              <th>Registro</th>
+              <th>{t('clients.table.client')}</th>
+              <th>{t('clients.table.phone')}</th>
+              <th>{t('clients.table.street')}</th>
+              <th>{t('clients.table.colonyCity')}</th>
+              <th>{t('clients.table.postal')}</th>
+              <th>{t('clients.table.registration')}</th>
             </tr>
           </thead>
         </table>
@@ -94,7 +96,7 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
           {loading ? (
             <tr>
               <td colSpan={6} className="clientes-table__empty">
-                Cargando clientes...
+                {t('clients.loadingClients')}
               </td>
             </tr>
           ) : error ? (
@@ -106,7 +108,7 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
           ) : clientes.length === 0 ? (
             <tr>
               <td colSpan={6} className="clientes-table__empty">
-                {searchTerm?.trim() ? `No se encontraron clientes para "${searchTerm}"` : 'No hay ningún cliente registrado'}
+                {searchTerm?.trim() ? t('clients.noClientsSearch', { term: searchTerm }) : t('clients.noClients')}
               </td>
             </tr>
           ) : clientes.map((cliente, index) => (
@@ -165,7 +167,7 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
       {clientes.length > 0 && (
         <div className="clientes-table__pagination">
           <span className="clientes-table__page-info">
-            {clientes.length} {clientes.length === 1 ? 'cliente' : 'clientes'}
+            {t('clients.count', { count: clientes.length })}
           </span>
         </div>
       )}

@@ -1,5 +1,6 @@
+import { useTranslation } from 'react-i18next';
 import type { StatusBreakdownItem } from '../../types/Reporte';
-import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
+import { PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { useCurrency } from '../../hooks/useCurrency';
 import './StatusBreakdown.scss';
 
@@ -14,6 +15,7 @@ const CY = 50;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
+  const { t } = useTranslation();
   const { format } = useCurrency();
   const total = breakdown.reduce((sum, item) => sum + item.cantidad, 0);
 
@@ -29,10 +31,10 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
 
   return (
     <div className="status-breakdown">
-      <h3 className="status-breakdown__title">Por Estado</h3>
+      <h3 className="status-breakdown__title">{t('reports.statusBreakdown.title')}</h3>
 
       {total === 0 ? (
-        <p className="status-breakdown__empty">No hay pedidos en este período</p>
+        <p className="status-breakdown__empty">{t('reports.statusBreakdown.empty')}</p>
       ) : (
         <>
           <div className="status-breakdown__donut">
@@ -69,7 +71,7 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
                 textAnchor="middle"
                 style={{ fontSize: '7px', fill: '#716D66', fontWeight: 500 }}
               >
-                pedidos
+                {t('reports.statusBreakdown.orders')}
               </text>
             </svg>
           </div>
@@ -82,7 +84,7 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
                     className="status-breakdown__dot"
                     style={{ backgroundColor: PEDIDO_STATUS_COLORS[item.estado] }}
                   />
-                  <span className="status-breakdown__name">{PEDIDO_STATUS[item.estado]}</span>
+                  <span className="status-breakdown__name">{t(`orders.status.${item.estado}`)}</span>
                 </div>
                 <div className="status-breakdown__item-data">
                   <span className="status-breakdown__count">{item.cantidad}</span>

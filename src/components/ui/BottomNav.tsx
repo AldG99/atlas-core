@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PiClipboardTextBold,
   PiUsersBold,
@@ -14,6 +15,8 @@ interface BottomNavProps {
 }
 
 const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
+  const { t } = useTranslation();
+
   return (
     <nav className="bottom-nav" aria-label="Navegación principal">
       <NavLink
@@ -23,7 +26,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
         }
       >
         <PiClipboardTextBold size={22} />
-        <span>Pedidos</span>
+        <span>{t('nav.orders')}</span>
       </NavLink>
 
       <NavLink
@@ -33,7 +36,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
         }
       >
         <PiUsersBold size={22} />
-        <span>Clientes</span>
+        <span>{t('nav.clients')}</span>
       </NavLink>
 
       <NavLink
@@ -43,7 +46,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
         }
       >
         <PiPackageBold size={22} />
-        <span>Productos</span>
+        <span>{t('nav.products')}</span>
       </NavLink>
 
       <NavLink
@@ -53,16 +56,16 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
         }
       >
         <PiChartBarBold size={22} />
-        <span>Reportes</span>
+        <span>{t('nav.reports')}</span>
       </NavLink>
 
       <button
         className="bottom-nav__item bottom-nav__item--menu"
         onClick={onOpenMenu}
-        aria-label="Abrir menú"
+        aria-label={t('nav.openMenu')}
       >
         <PiListBold size={22} />
-        <span>Menú</span>
+        <span>{t('nav.menu')}</span>
       </button>
     </nav>
   );

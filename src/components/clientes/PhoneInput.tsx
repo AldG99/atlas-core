@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CODIGOS_PAIS, getCodigoPais } from '../../data/codigosPais';
 
 interface PhoneInputProps {
@@ -12,6 +13,7 @@ interface PhoneInputProps {
 }
 
 const PhoneInput = ({ id, name, value, codigoPais, onChange, hasError, placeholder }: PhoneInputProps) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -78,7 +80,7 @@ const PhoneInput = ({ id, name, value, codigoPais, onChange, hasError, placehold
             </div>
             <ul className="phone-input__list" role="listbox">
               {filtered.length === 0 ? (
-                <li className="phone-input__no-results">Sin resultados</li>
+                <li className="phone-input__no-results">{t('common.noResults')}</li>
               ) : (
                 filtered.map((p) => (
                   <li

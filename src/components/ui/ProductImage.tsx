@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiPackageBold } from 'react-icons/pi';
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 }
 
 const ProductImage = ({ src, alt, placeholderClassName, placeholderSize = 48 }: Props) => {
+  const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -21,7 +23,7 @@ const ProductImage = ({ src, alt, placeholderClassName, placeholderSize = 48 }: 
   return (
     <div className={placeholderClassName}>
       <PiPackageBold size={placeholderSize} />
-      <span>Sin imagen</span>
+      <span>{t('common.noImage')}</span>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiXBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import type { Producto, DescuentoHistorial } from '../../types/Producto';
 import './HistorialDescuentosModal.scss';
@@ -19,15 +20,17 @@ interface FilaHistorial {
   motivo: Motivo;
 }
 
-const MOTIVO_LABEL: Record<Motivo, string> = {
-  activo: 'Activo',
-  cancelado: 'Cancelado',
-  expirado: 'Expirado'
-};
-
 const HistorialDescuentosModal = ({ productos, onClose }: HistorialDescuentosModalProps) => {
+  const { t, i18n } = useTranslation();
+
+  const MOTIVO_LABEL: Record<Motivo, string> = {
+    activo: t('products.discountModal.statusActive'),
+    cancelado: t('products.discountModal.statusCanceled'),
+    expirado: t('products.discountModal.statusExpired')
+  };
+
   const formatDate = (date: Date) =>
-    new Intl.DateTimeFormat('es-MX', {
+    new Intl.DateTimeFormat(i18n.language, {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
@@ -77,7 +80,7 @@ const HistorialDescuentosModal = ({ productos, onClose }: HistorialDescuentosMod
   }, [productos]);
 
   const handleExportCSV = () => {
-    const headers = ['Clave', 'Producto', 'Descuento', 'Fecha fin', 'Fecha cierre', 'Estado'];
+    const headers = [t('orders.code'), t('orders.product'), t('products.discountModal.table.discount'), t('products.discountModal.table.endDate'), t('products.discountModal.table.closeDate'), t('products.discountModal.table.status')];
     const rows = filas.map(f => [
       f.clave,
       f.nombre,
@@ -100,7 +103,7 @@ const HistorialDescuentosModal = ({ productos, onClose }: HistorialDescuentosMod
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal--large historial-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
-          <h2>Registro de descuentos</h2>
+          <h2>{t('products.discountModal.title')}</h2>
           <div className="modal__header-actions">
             <button
               className="btn btn--secondary btn--sm"
@@ -108,7 +111,7 @@ const HistorialDescuentosModal = ({ productos, onClose }: HistorialDescuentosMod
               disabled={filas.length === 0}
             >
               <PiDownloadSimpleBold size={15} />
-              Exportar CSV
+              {t('products.discountModal.export')}
             </button>
             <button className="modal__close" onClick={onClose}>
               <PiXBold size={24} />
@@ -118,17 +121,17 @@ const HistorialDescuentosModal = ({ productos, onClose }: HistorialDescuentosMod
 
         <div className="modal__body">
           {filas.length === 0 ? (
-            <p className="historial-modal__empty">No hay registros de descuentos</p>
+            <p className="historial-modal__empty">{t('products.discountModal.empty')}</p>
           ) : (
             <div className="historial-modal__table-wrapper">
               <table className="historial-modal__table">
                 <thead>
                   <tr>
-                    <th>Producto</th>
-                    <th>Descuento</th>
-                    <th>Fecha fin</th>
-                    <th>Fecha cierre</th>
-                    <th>Estado</th>
+                    <th>{t('products.discountModal.table.product')}</th>
+                    <th>{t('products.discountModal.table.discount')}</th>
+                    <th>{t('products.discountModal.table.endDate')}</th>
+                    <th>{t('products.discountModal.table.closeDate')}</th>
+                    <th>{t('products.discountModal.table.status')}</th>
                   </tr>
                 </thead>
                 <tbody>

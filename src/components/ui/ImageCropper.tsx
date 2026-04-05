@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
 import { PiXBold, PiCheckBold, PiMagnifyingGlassPlusBold, PiMagnifyingGlassMinusBold } from 'react-icons/pi';
@@ -45,6 +46,7 @@ const createCroppedImage = async (imageSrc: string, cropArea: Area): Promise<{ b
 };
 
 const ImageCropper = ({ imageSrc, onConfirm, onCancel }: ImageCropperProps) => {
+  const { t } = useTranslation();
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -69,7 +71,7 @@ const ImageCropper = ({ imageSrc, onConfirm, onCancel }: ImageCropperProps) => {
     <div className="image-cropper-overlay" onClick={onCancel}>
       <div className="image-cropper" onClick={e => e.stopPropagation()}>
         <div className="image-cropper__header">
-          <span>Ajustar foto de perfil</span>
+          <span>{t('profile.cropTitle')}</span>
           <button className="image-cropper__close" onClick={onCancel}>
             <PiXBold size={18} />
           </button>
@@ -117,11 +119,11 @@ const ImageCropper = ({ imageSrc, onConfirm, onCancel }: ImageCropperProps) => {
 
         <div className="image-cropper__footer">
           <button className="btn btn--outline" onClick={onCancel}>
-            Cancelar
+            {t('common.cancel')}
           </button>
           <button className="btn btn--primary" onClick={handleConfirm} disabled={applying}>
             <PiCheckBold size={14} />
-            {applying ? 'Aplicando...' : 'Aplicar'}
+            {applying ? t('profile.cropApplying') : t('profile.cropApply')}
           </button>
         </div>
       </div>

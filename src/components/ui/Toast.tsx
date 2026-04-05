@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiCheckBold, PiXBold, PiWarningBold, PiInfoBold } from 'react-icons/pi';
 import { useToast } from '../../hooks/useToast';
 import './Toast.scss';
@@ -11,6 +12,7 @@ const ICONS = {
 };
 
 const Toast = () => {
+  const { t } = useTranslation();
   const { toasts, removeToast } = useToast();
 
   useEffect(() => {
@@ -40,7 +42,7 @@ const Toast = () => {
           <button
             className="toast__close"
             onClick={() => removeToast(toast.id)}
-            aria-label="Cerrar notificación"
+            aria-label={t('common.closeNotification')}
           >
             <PiXBold size={14} />
           </button>

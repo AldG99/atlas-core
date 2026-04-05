@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { ChartDataPoint } from '../../types/Reporte';
 import { useCurrency } from '../../hooks/useCurrency';
 import './SalesChart.scss';
@@ -9,11 +10,12 @@ interface SalesChartProps {
 }
 
 const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
+  const { t } = useTranslation();
   const { format } = useCurrency();
   if (data.length === 0) {
     return (
       <div className="sales-chart sales-chart--empty">
-        <p>No hay datos para mostrar</p>
+        <p>{t('reports.chart.noData')}</p>
       </div>
     );
   }
@@ -22,7 +24,7 @@ const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
 
   return (
     <div className="sales-chart">
-      <span className="sales-chart__label">Total ventas</span>
+      <span className="sales-chart__label">{t('reports.chart.totalSales')}</span>
       <span className="sales-chart__amount">{format(totalVentas)}</span>
 
       <div className="sales-chart__chart-area">
@@ -59,13 +61,13 @@ const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
       <div className="sales-chart__footer">
         <div className="sales-chart__stat">
           <span className="sales-chart__stat-value">{totalPedidos}</span>
-          <span className="sales-chart__stat-label">Pedidos</span>
+          <span className="sales-chart__stat-label">{t('reports.chart.orders')}</span>
         </div>
         <div className="sales-chart__stat">
           <span className="sales-chart__stat-value">
             {format(totalPedidos > 0 ? totalVentas / totalPedidos : 0)}
           </span>
-          <span className="sales-chart__stat-label">Promedio</span>
+          <span className="sales-chart__stat-label">{t('reports.chart.average')}</span>
         </div>
       </div>
     </div>

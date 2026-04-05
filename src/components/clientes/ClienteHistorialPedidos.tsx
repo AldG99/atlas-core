@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PiArrowRightBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import type { Pedido } from '../../types/Pedido';
 import type { Producto, Etiqueta } from '../../types/Producto';
@@ -26,13 +27,14 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
   format,
 }) => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [busqueda, setBusqueda] = useState('');
   const [filtroFecha, setFiltroFecha] = useState<DateFilter>('todo');
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const tableBodyRef = useRef<HTMLDivElement>(null);
 
   const formatPedidoDate = (date: Date) =>
-    new Intl.DateTimeFormat('es-MX', {
+    new Intl.DateTimeFormat(i18n.language, {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
@@ -140,16 +142,16 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
           <PiMagnifyingGlassBold size={16} />
           <input
             type="text"
-            placeholder="Buscar producto o clave..."
+            placeholder={t('clients.detail.searchPlaceholder')}
             value={busqueda}
             onChange={e => setBusqueda(e.target.value)}
           />
         </div>
         <select value={filtroFecha} onChange={e => setFiltroFecha(e.target.value as DateFilter)}>
-          <option value="todo">Todo el tiempo</option>
-          <option value="semana">Última semana</option>
-          <option value="mes">Último mes</option>
-          <option value="3meses">Últimos 3 meses</option>
+          <option value="todo">{t('clients.detail.allTime')}</option>
+          <option value="semana">{t('clients.detail.lastWeek')}</option>
+          <option value="mes">{t('clients.detail.lastMonth')}</option>
+          <option value="3meses">{t('clients.detail.last3Months')}</option>
         </select>
       </div>
 
@@ -167,12 +169,12 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
             </colgroup>
             <thead>
               <tr>
-                <th>Clave</th>
-                <th>Cant.</th>
-                <th>Producto</th>
-                <th>Etiquetas</th>
-                <th>Importe</th>
-                <th>Acumulado</th>
+                <th>{t('clients.detail.historyTable.code')}</th>
+                <th>{t('clients.detail.historyTable.quantity')}</th>
+                <th>{t('clients.detail.historyTable.product')}</th>
+                <th>{t('clients.detail.historyTable.labels')}</th>
+                <th>{t('clients.detail.historyTable.amount')}</th>
+                <th>{t('clients.detail.historyTable.accumulated')}</th>
               </tr>
             </thead>
           </table>
@@ -190,12 +192,12 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
             <tbody>
               {pedidosLoading ? (
                 <tr>
-                  <td colSpan={6} className="cliente-detail__pedidos-table-empty">Cargando pedidos...</td>
+                  <td colSpan={6} className="cliente-detail__pedidos-table-empty">{t('clients.detail.orderHistoryLoading')}</td>
                 </tr>
               ) : pedidosFiltrados.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="cliente-detail__pedidos-table-empty">
-                    {pedidos.length === 0 ? 'Este cliente no tiene pedidos' : 'No se encontraron pedidos con los filtros aplicados'}
+                    {pedidos.length === 0 ? t('clients.detail.orderHistoryEmpty') : t('clients.detail.orderHistoryNotFound')}
                   </td>
                 </tr>
               ) : (() => {
@@ -228,7 +230,7 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
                             <button
                               className="cliente-detail__pedidos-detail-btn"
                               onClick={() => navigate(ROUTES.DETAIL_PEDIDO.replace(':id', pedido.id), { state: { from: `/cliente/${clienteId}` } })}
-                              title="Ver detalle del pedido"
+                              title={t('clients.detail.viewOrderDetail')}
                             >
                               <PiArrowRightBold size={14} />
                             </button>
@@ -271,7 +273,7 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
                         className={`cliente-detail__pedidos-total-row${focusedRow === totalIdx ? ' cliente-detail__pedidos-total-row--focused' : ''}`}
                         onMouseEnter={() => setFocusedRow(totalIdx)}
                       >
-                        <td colSpan={4} className="cliente-detail__pedidos-total-label">Total</td>
+                        <td colSpan={4} className="cliente-detail__pedidos-total-label">{t('clients.detail.historyTotal')}</td>
                         <td className="cliente-detail__pedidos-total-value">{format(pedido.total)}</td>
                         <td className="cliente-detail__pedidos-acumulado-value">{format(acumuladoMap.get(pedido.id) ?? 0)}</td>
                       </tr>
@@ -294,7 +296,7 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
             </colgroup>
             <tfoot>
               <tr>
-                <td colSpan={5} className="cliente-detail__pedidos-table-total-label">Total acumulado</td>
+                <td colSpan={5} className="cliente-detail__pedidos-table-total-label">{t('clients.detail.historyAccumulated')}</td>
                 <td className="cliente-detail__pedidos-table-total-value">{format(totalAcumulado)}</td>
               </tr>
             </tfoot>
