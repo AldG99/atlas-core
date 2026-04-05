@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type SortOption = 'nombre_asc' | 'nombre_desc' | 'cp_asc' | 'cp_desc' | 'registro_desc' | 'registro_asc';
 
@@ -17,21 +18,22 @@ import ClientesTable from '../components/clientes/ClientesTable';
 import ClienteModal from '../components/clientes/ClienteModal';
 import './Clientes.scss';
 
-const CP_OPTIONS: Partial<Record<SortOption, string>> = {
-  cp_asc: 'C.P. menor a mayor',
-  cp_desc: 'C.P. mayor a menor',
-};
-
-const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
-  nombre_asc: 'Nombre A-Z',
-  nombre_desc: 'Nombre Z-A',
-  registro_desc: 'Más recientes',
-  registro_asc: 'Más antiguos',
-};
-
 const PAGE_SIZE = 50;
 
 const Clientes = () => {
+  const { t } = useTranslation();
+
+  const CP_OPTIONS: Partial<Record<SortOption, string>> = {
+    cp_asc: t('clients.postalAsc'),
+    cp_desc: t('clients.postalDesc'),
+  };
+
+  const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
+    nombre_asc: t('clients.nameAsc'),
+    nombre_desc: t('clients.nameDesc'),
+    registro_desc: t('clients.registrationNewest'),
+    registro_asc: t('clients.registrationOldest'),
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,20 +78,20 @@ const Clientes = () => {
   const handleAdd = async (data: ClienteFormData) => {
     try {
       await addCliente(data);
-      showToast('Cliente agregado correctamente', 'success');
+      showToast(t('clients.addSuccess'), 'success');
       setIsModalOpen(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : 'Error al agregar el cliente', 'error');
+      showToast(err instanceof Error ? err.message : t('clients.addError'), 'error');
     }
   };
 
   const handleExport = () => {
     if (filteredClientes.length === 0) {
-      showToast('No hay clientes para exportar', 'warning');
+      showToast(t('clients.noClientsExport'), 'warning');
       return;
     }
     exportClientesCSV(filteredClientes);
-    showToast('Clientes exportados', 'success');
+    showToast(t('clients.exportSuccess'), 'success');
   };
 
   const cpValue = sortBy in CP_OPTIONS ? sortBy : '';
@@ -100,7 +102,7 @@ const Clientes = () => {
       <div className="clientes">
         <div className="clientes__header">
           <div className="clientes__header-title">
-            <h1>Clientes</h1>
+            <h1>{t('clients.title')}</h1>
           </div>
           <div className="clientes__header-actions">
             <button
@@ -109,7 +111,7 @@ const Clientes = () => {
               disabled={clientes.length === 0}
             >
               <PiDownloadSimpleBold size={18} />
-              Exportar CSV
+              {t('common.exportCsv')}
             </button>
             {role === 'admin' && (
               <button
@@ -117,7 +119,7 @@ const Clientes = () => {
                 className="btn btn--primary"
               >
                 <PiPlusBold size={18} />
-                Nuevo Cliente
+                {t('clients.newClient')}
               </button>
             )}
           </div>
@@ -128,7 +130,7 @@ const Clientes = () => {
             <PiMagnifyingGlassBold size={16} className="clientes__search-icon" />
             <input
               type="text"
-              placeholder="Buscar por nombre o teléfono..."
+              placeholder={t('clients.searchPlaceholder')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="input"
@@ -140,7 +142,7 @@ const Clientes = () => {
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
               className="select"
             >
-              <option value="">Código Postal</option>
+              <option value="">{t('clients.sortByPostal')}</option>
               {(Object.keys(CP_OPTIONS) as SortOption[]).map(opt => (
                 <option key={opt} value={opt}>{CP_OPTIONS[opt]}</option>
               ))}
@@ -150,7 +152,7 @@ const Clientes = () => {
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
               className="select"
             >
-              <option value="">Nombre / Registro</option>
+              <option value="">{t('clients.sortByName')}</option>
               {(Object.keys(NOMBRE_OPTIONS) as SortOption[]).map(opt => (
                 <option key={opt} value={opt}>{NOMBRE_OPTIONS[opt]}</option>
               ))}
@@ -171,7 +173,7 @@ const Clientes = () => {
               className="btn btn--outline btn--sm"
               onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
             >
-              Mostrar más ({filteredClientes.length - displayLimit} restantes)
+              {t('clients.showMore', { count: filteredClientes.length - displayLimit })}
             </button>
           </div>
         )}

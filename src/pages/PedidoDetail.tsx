@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PiArrowRightBold,
   PiStarFill,
@@ -8,7 +9,7 @@ import { toPng } from 'html-to-image';
 import PedidoCaptura from '../components/pedidos/PedidoCaptura';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 import type { Producto } from '../types/Producto';
-import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
+import { PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import {
   formatDate,
   getTotalPagado,
@@ -47,6 +48,7 @@ const PedidoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const backRoute = (location.state as { from?: string })?.from || ROUTES.DASHBOARD;
   const { user, negocioUid, role } = useAuth();
   const { showToast } = useToast();
@@ -84,7 +86,7 @@ const PedidoDetail = () => {
       const data = await getPedidoById(id, negocioUid);
       if (!data) {
         if (!silent) {
-          showToast('Pedido no encontrado', 'error');
+          showToast(t('orders.detail.notFound'), 'error');
           navigate(backRoute);
         }
         return;
@@ -92,7 +94,7 @@ const PedidoDetail = () => {
       setPedido(data);
     } catch {
       if (!silent) {
-        showToast('Error al cargar el pedido', 'error');
+        showToast(t('orders.detail.loadError'), 'error');
         navigate(backRoute);
       }
     } finally {
@@ -165,7 +167,7 @@ const PedidoDetail = () => {
           if (found) {
             setSelectedProducto(found);
           } else {
-            showToast('Producto no disponible en el catálogo', 'warning');
+            showToast(t('orders.detail.productUnavailable'), 'warning');
           }
         }
       } else if (e.key === 'Escape' && selectedProducto) {
@@ -229,7 +231,7 @@ const PedidoDetail = () => {
       link.href = dataUrl;
       link.click();
     } catch {
-      showToast('Error al generar imagen', 'error');
+      showToast(t('orders.detail.imageError'), 'error');
     } finally {
       setDownloading(false);
     }
@@ -261,9 +263,9 @@ const PedidoDetail = () => {
       const entregadoPor = status === 'entregado' && user ? buildCreadoPor(user) : undefined;
       await updatePedidoStatus(pedido.id, status, entregadoPor);
       setPedido({ ...pedido, estado: status, ...(entregadoPor ? { entregadoPor } : {}) });
-      showToast(`Estado cambiado a "${PEDIDO_STATUS[status]}"`, 'success');
+      showToast(t('orders.detail.statusChanged', { status: t(`orders.status.${status}`) }), 'success');
     } catch {
-      showToast('Error al cambiar el estado', 'error');
+      showToast(t('orders.detail.statusChangeError'), 'error');
     } finally {
       setSubmitting(false);
     }
@@ -281,10 +283,10 @@ const PedidoDetail = () => {
     setShowDeleteModal(false);
     try {
       await deletePedido(pedido.id);
-      showToast('Pedido eliminado', 'success');
+      showToast(t('orders.detail.deleted'), 'success');
       navigate(backRoute);
     } catch {
-      showToast('Error al eliminar el pedido', 'error');
+      showToast(t('orders.detail.deleteError'), 'error');
     }
   };
 
@@ -298,14 +300,12 @@ const PedidoDetail = () => {
     const restante = Math.round((pedido.total - totalPagado) * 100) / 100;
 
     if (restante <= 0) {
-      setAbonoError('Este pedido ya está completamente pagado');
+      setAbonoError(t('orders.detail.paymentAlreadyPaid'));
       return;
     }
 
     if (Math.round(monto * 100) / 100 > restante) {
-      setAbonoError(
-        `El monto excede el saldo restante (${format(restante)})`
-      );
+      setAbonoError(t('orders.detail.paymentExceedsRemaining', { remaining: format(restante) }));
       return;
     }
 
@@ -319,9 +319,9 @@ const PedidoDetail = () => {
       setPedido({ ...pedido, abonos: updatedAbonos, estado: nuevoEstado ?? pedido.estado });
       setAbonoInput('');
       setAbonoProducto('general');
-      showToast('Abono registrado', 'success');
+      showToast(t('orders.detail.paymentRecorded'), 'success');
     } catch {
-      showToast('Error al registrar abono', 'error');
+      showToast(t('orders.detail.paymentRecordError'), 'error');
     } finally {
       setSubmitting(false);
     }
@@ -331,22 +331,22 @@ const PedidoDetail = () => {
     if (!pedido) return;
     const nuevoMonto = parseFloat(editingAbonoValue);
     if (isNaN(nuevoMonto) || nuevoMonto <= 0) {
-      showToast('El monto debe ser mayor a cero', 'error');
+      showToast(t('orders.detail.paymentCorrectionFailed'), 'error');
       return;
     }
     const otrosAbonos = (pedido.abonos || []).filter(a => a.id !== abonoId);
     const totalOtros = otrosAbonos.reduce((s, a) => s + a.monto, 0);
     if (Math.round((totalOtros + nuevoMonto) * 100) / 100 > pedido.total) {
-      showToast(`El total de abonos no puede superar ${format(pedido.total)}`, 'error');
+      showToast(t('orders.detail.paymentTotalExceeded', { total: format(pedido.total) }), 'error');
       return;
     }
     try {
       const updatedAbonos = await updateAbono(pedido.id, abonoId, nuevoMonto);
       setPedido({ ...pedido, abonos: updatedAbonos });
       setEditingAbonoId(null);
-      showToast('Abono corregido', 'success');
+      showToast(t('orders.detail.paymentCorrected'), 'success');
     } catch {
-      showToast('Error al corregir el abono', 'error');
+      showToast(t('orders.detail.paymentCorrectionError'), 'error');
     }
   };
 
@@ -359,7 +359,7 @@ const PedidoDetail = () => {
     return (
       <MainLayout>
         <div className="pedido-detail">
-          <p className="pedido-detail__loading">Cargando pedido...</p>
+          <p className="pedido-detail__loading">{t('orders.detail.loading')}</p>
         </div>
       </MainLayout>
     );
@@ -437,7 +437,7 @@ const PedidoDetail = () => {
                     className="pedido-detail__status-dot"
                     style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
                   />
-                  {PEDIDO_STATUS[pedido.estado]}
+                  {t(`orders.status.${pedido.estado}`)}
                 </span>
               </div>
               <div className="pedido-detail__date-status-row">
@@ -470,14 +470,14 @@ const PedidoDetail = () => {
             onProductoClick={(p) => {
               const found = p.clave ? catalogoProductos.find(cp => cp.clave === p.clave) : undefined;
               if (found) setSelectedProducto(found);
-              else showToast('Producto no disponible en el catálogo', 'warning');
+              else showToast(t('orders.detail.productUnavailable'), 'warning');
             }}
           />
 
           <div className="pedido-detail__section pedido-detail__section--notes">
             <div className="pedido-detail__notes">
-              <strong>Notas:</strong>{' '}
-              {pedido.notas ? pedido.notas : <span className="pedido-detail__notes--empty">Sin comentarios</span>}
+              <strong>{t('orders.detail.notes')}</strong>{' '}
+              {pedido.notas ? pedido.notas : <span className="pedido-detail__notes--empty">{t('orders.detail.noNotes')}</span>}
             </div>
           </div>
 

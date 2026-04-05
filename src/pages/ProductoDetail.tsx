@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PiArrowLeftBold,
   PiPencilBold,
@@ -26,6 +27,7 @@ import './ProductoDetail.scss';
 const ProductoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { user, role } = useAuth();
   const { showToast } = useToast();
   const { etiquetas } = useEtiquetas();
@@ -70,13 +72,13 @@ const ProductoDetail = () => {
       setLoading(true);
       const data = await getProductoById(id);
       if (!data) {
-        showToast('Producto no encontrado', 'error');
+        showToast(t('products.detail.notFound'), 'error');
         navigate(ROUTES.PRODUCTOS);
         return;
       }
       setProducto(data);
     } catch {
-      showToast('Error al cargar el producto', 'error');
+      showToast(t('products.detail.loadError'), 'error');
       navigate(ROUTES.PRODUCTOS);
     } finally {
       setLoading(false);
@@ -88,7 +90,7 @@ const ProductoDetail = () => {
   }, [fetchProducto]);
 
   const formatDate = (date: Date) =>
-    new Intl.DateTimeFormat('es-MX', {
+    new Intl.DateTimeFormat(i18n.language, {
       day: '2-digit',
       month: 'long',
       year: 'numeric'
@@ -116,10 +118,10 @@ const ProductoDetail = () => {
     setShowDeleteModal(false);
     try {
       await deleteProducto(producto.id);
-      showToast('Producto eliminado', 'success');
+      showToast(t('products.detail.deleteSuccess'), 'success');
       navigate(ROUTES.PRODUCTOS);
     } catch {
-      showToast('Error al eliminar el producto', 'error');
+      showToast(t('products.detail.deleteError'), 'error');
     }
   };
 
@@ -194,9 +196,9 @@ const ProductoDetail = () => {
       }
       setIsEditing(false);
       setEditData(null);
-      showToast('Producto actualizado correctamente', 'success');
+      showToast(t('products.detail.updateSuccess'), 'success');
     } catch {
-      showToast('Error al actualizar el producto', 'error');
+      showToast(t('products.detail.updateError'), 'error');
     } finally {
       setSaving(false);
     }
@@ -235,7 +237,7 @@ const ProductoDetail = () => {
     return (
       <MainLayout>
         <div className="producto-detail">
-          <p className="producto-detail__loading">Cargando producto...</p>
+          <p className="producto-detail__loading">{t('products.detail.loading')}</p>
         </div>
       </MainLayout>
     );
@@ -254,7 +256,7 @@ const ProductoDetail = () => {
             <button
               className="producto-detail__icon-btn producto-detail__icon-btn--back"
               onClick={() => navigate(ROUTES.PRODUCTOS)}
-              title="Volver"
+              title={t('products.detail.back')}
             >
               <PiArrowLeftBold size={20} />
             </button>
@@ -266,14 +268,14 @@ const ProductoDetail = () => {
                     className="btn btn--outline btn--sm"
                     disabled={saving}
                   >
-                    Cancelar
+                    {t('common.cancel')}
                   </button>
                   <button
                     onClick={handleSave}
                     className="btn btn--primary btn--sm"
                     disabled={saving}
                   >
-                    {saving ? 'Guardando...' : 'Guardar'}
+                    {saving ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               ) : (
@@ -282,14 +284,14 @@ const ProductoDetail = () => {
                   <button
                     onClick={startEditing}
                     className="producto-detail__icon-btn producto-detail__icon-btn--primary"
-                    title="Editar producto"
+                    title={t('products.detail.editProduct')}
                   >
                     <PiPencilBold size={20} />
                   </button>
                   <button
                     onClick={handleDelete}
                     className="producto-detail__icon-btn producto-detail__icon-btn--danger"
-                    title="Eliminar producto"
+                    title={t('products.detail.deleteProduct')}
                   >
                     <PiTrashBold size={20} />
                   </button>
@@ -318,7 +320,7 @@ const ProductoDetail = () => {
                 {isEditing && (
                   <div className="producto-detail__image-overlay">
                     <PiCameraBold size={28} />
-                    <span>Cambiar imagen</span>
+                    <span>{t('products.detail.changeImage')}</span>
                   </div>
                 )}
                 <input
@@ -339,14 +341,14 @@ const ProductoDetail = () => {
                         type="text"
                         value={editData?.clave || ''}
                         onChange={(e) => updateField('clave', e.target.value)}
-                        placeholder="Clave"
+                        placeholder={t('products.detail.codePlaceholder')}
                         className="producto-detail__input producto-detail__input--clave"
                       />
                       <input
                         type="text"
                         value={editData?.nombre || ''}
                         onChange={(e) => updateField('nombre', e.target.value)}
-                        placeholder="Nombre del producto"
+                        placeholder={t('products.detail.namePlaceholder')}
                         className="producto-detail__input producto-detail__input--name"
                       />
                       <div className="producto-detail__unidad-edit">
@@ -359,7 +361,7 @@ const ProductoDetail = () => {
                               setEditData({ ...editData, unidad: e.target.checked ? 'kg' : '' });
                             }}
                           />
-                          <span>Especificar unidad de medida</span>
+                          <span>{t('products.detail.specifyUnit')}</span>
                           <input
                             type="number"
                             value={editData?.unidadCantidad ?? 1}
@@ -447,7 +449,7 @@ const ProductoDetail = () => {
                                 setEditData({ ...editData, descuento: 0, fechaFinDescuento: '' });
                               }}
                             >
-                              Cancelar descuento
+                              {t('products.detail.cancelDiscount')}
                             </button>
                           )}
                         </div>
@@ -472,7 +474,7 @@ const ProductoDetail = () => {
                       </span>
                       {producto.fechaFinDescuento && (
                         <span className="producto-detail__price-expiry">
-                          Hasta {formatDate(producto.fechaFinDescuento)}
+                          {t('products.detail.validUntil', { date: formatDate(producto.fechaFinDescuento) })}
                         </span>
                       )}
                     </div>
@@ -504,7 +506,7 @@ const ProductoDetail = () => {
                           );
                         })}
                         {limiteAlcanzado && (
-                          <span className="producto-detail__etiquetas-limite">Máx. {MAX_ETIQUETAS}</span>
+                          <span className="producto-detail__etiquetas-limite">{t('products.detail.labelsLimit', { max: MAX_ETIQUETAS })}</span>
                         )}
                       </>
                     ) : productoEtiquetas.length > 0 ? (
@@ -523,7 +525,7 @@ const ProductoDetail = () => {
                         );
                       })
                     ) : (
-                      <span className="producto-detail__etiquetas-empty">Sin etiquetas</span>
+                      <span className="producto-detail__etiquetas-empty">{t('products.detail.noLabels')}</span>
                     )}
                   </div>
                 </div>
@@ -545,10 +547,10 @@ const ProductoDetail = () => {
                         }}
                       />
                       <PiPackageBold size={15} />
-                      <span>Gestionar existencias</span>
+                      <span>{t('products.detail.manageStock')}</span>
                     </label>
                     <div className="producto-detail__stock-input-row">
-                      <span className="producto-detail__info-label">En almacén</span>
+                      <span className="producto-detail__info-label">{t('products.detail.inWarehouse')}</span>
                       <input
                         type="number"
                         value={editData?.stock ?? 0}
@@ -568,11 +570,13 @@ const ProductoDetail = () => {
                     <PiPackageBold size={15} className="producto-detail__header-meta-icon" />
                     {producto.controlStock ? (
                       <span className="producto-detail__stock-badge">
-                        {(producto.stock ?? 0) === 0 ? 'Sin existencias' : `${producto.stock} uds`}
+                        {(producto.stock ?? 0) === 0
+                          ? t('products.detail.noStock')
+                          : t('products.detail.stockUnits', { count: producto.stock })}
                       </span>
                     ) : (
                       <span className="producto-detail__stock-untracked">
-                        Sin control de inventario
+                        {t('products.detail.noStockControl')}
                       </span>
                     )}
                   </div>
@@ -584,14 +588,14 @@ const ProductoDetail = () => {
             {/* Description Section */}
             <div className="producto-detail__section producto-detail__section--grow">
               <div className="producto-detail__section-header">
-                <strong>Descripción</strong>
+                <strong>{t('products.detail.description')}</strong>
               </div>
               {isEditing ? (
                 <>
                   <textarea
                     value={editData?.descripcion || ''}
                     onChange={(e) => updateField('descripcion', e.target.value)}
-                    placeholder="Descripción del producto..."
+                    placeholder={t('products.modal.descriptionPlaceholder')}
                     className="producto-detail__textarea"
                     maxLength={240}
                   />
@@ -601,14 +605,14 @@ const ProductoDetail = () => {
                 </>
               ) : (
                 <p className={`producto-detail__description ${!producto.descripcion ? 'producto-detail__description--empty' : ''}`}>
-                  {producto.descripcion || 'Sin descripción'}
+                  {producto.descripcion || t('products.detail.noDescription')}
                 </p>
               )}
             </div>
 
             <div className="producto-detail__footer-meta">
               <PiCalendarBold size={13} className="producto-detail__header-meta-icon" />
-              <span className="producto-detail__info-label">Producto agregado</span>
+              <span className="producto-detail__info-label">{t('products.detail.addedOn')}</span>
               <span className="producto-detail__info-value">{formatDate(producto.fechaCreacion)}</span>
             </div>
           </div>
@@ -619,34 +623,34 @@ const ProductoDetail = () => {
         <div className="producto-detail__modal-overlay" onClick={() => setShowDeleteModal(false)}>
           <div className="producto-detail__modal" onClick={e => e.stopPropagation()}>
             <div className="producto-detail__modal-header">
-              <h3>Eliminar producto</h3>
+              <h3>{t('products.detail.deleteModal.title')}</h3>
               <button className="producto-detail__modal-close" onClick={() => setShowDeleteModal(false)}>
                 <PiXBold size={18} />
               </button>
             </div>
             <div className="producto-detail__modal-body">
-              <p>Esta acción es <strong>permanente</strong> y no se puede deshacer. Se eliminarán todos los datos del producto.</p>
+              <p>{t('products.detail.deleteModal.warning')}</p>
               <p className="producto-detail__delete-label">
-                Escribe el siguiente código para confirmar:
+                {t('products.detail.deleteModal.instruction')}
               </p>
               <code className="producto-detail__delete-code">{deleteCode}</code>
               <input
                 type="text"
                 className="input"
-                placeholder="Escribe el código"
+                placeholder={t('products.detail.deleteModal.placeholder')}
                 value={deleteConfirmText}
                 onChange={e => setDeleteConfirmText(e.target.value.toUpperCase())}
                 autoComplete="off"
               />
             </div>
             <div className="producto-detail__modal-footer">
-              <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+              <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>{t('products.detail.deleteModal.cancel')}</button>
               <button
                 className="btn btn--danger btn--sm"
                 onClick={confirmDelete}
                 disabled={deleteConfirmText !== deleteCode}
               >
-                Eliminar
+                {t('products.detail.deleteModal.delete')}
               </button>
             </div>
           </div>

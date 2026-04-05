@@ -1,18 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type SortOption = 'nombre_asc' | 'nombre_desc' | 'precio_asc' | 'precio_desc' | 'registro_desc' | 'registro_asc';
-
-const PRECIO_OPTIONS: Partial<Record<SortOption, string>> = {
-  precio_asc: 'Precio menor a mayor',
-  precio_desc: 'Precio mayor a menor',
-};
-
-const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
-  nombre_asc: 'Nombre A-Z',
-  nombre_desc: 'Nombre Z-A',
-  registro_desc: 'Más recientes',
-  registro_asc: 'Más antiguos',
-};
 import { useLocation } from 'react-router-dom';
 import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPlusBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import { useProductos } from '../hooks/useProductos';
@@ -30,6 +19,20 @@ import './Productos.scss';
 const PAGE_SIZE = 50;
 
 const Productos = () => {
+  const { t } = useTranslation();
+
+  const PRECIO_OPTIONS: Partial<Record<SortOption, string>> = {
+    precio_asc: t('products.priceAsc'),
+    precio_desc: t('products.priceDesc'),
+  };
+
+  const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
+    nombre_asc: t('products.nameAsc'),
+    nombre_desc: t('products.nameDesc'),
+    registro_desc: t('products.registrationNewest'),
+    registro_asc: t('products.registrationOldest'),
+  };
+
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
   const [filterVenciendo, setFilterVenciendo] = useState(false);
@@ -89,21 +92,21 @@ const Productos = () => {
   const handleAdd = async (data: ProductoFormData) => {
     try {
       await addProducto(data);
-      showToast('Producto agregado correctamente', 'success');
+      showToast(t('products.addSuccess'), 'success');
       setIsModalOpen(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : 'Error al agregar el producto', 'error');
+      showToast(err instanceof Error ? err.message : t('products.addError'), 'error');
     }
   };
 
   const handleExport = () => {
     if (filteredProductos.length === 0) {
-      showToast('No hay productos para exportar', 'warning');
+      showToast(t('products.noProductsExport'), 'warning');
       return;
     }
     const etiquetaMap = new Map(etiquetas.map(e => [e.id, e.nombre]));
     exportProductosCSV(filteredProductos, (ids) => ids.map(id => etiquetaMap.get(id) ?? id).join(' | '));
-    showToast('Productos exportados', 'success');
+    showToast(t('products.exportSuccess'), 'success');
   };
 
   const handleEdit = async (data: ProductoFormData) => {
@@ -111,10 +114,10 @@ const Productos = () => {
 
     try {
       await editProducto(editingProducto.id, data);
-      showToast('Producto actualizado correctamente', 'success');
+      showToast(t('products.updateSuccess'), 'success');
       setEditingProducto(null);
     } catch {
-      showToast('Error al actualizar el producto', 'error');
+      showToast(t('products.updateError'), 'error');
     }
   };
 
@@ -122,7 +125,7 @@ const Productos = () => {
     <MainLayout>
       <div className="productos">
         <div className="productos__header">
-          <h1>Productos</h1>
+          <h1>{t('products.title')}</h1>
           <div className="productos__header-actions">
             <button
               onClick={handleExport}
@@ -130,14 +133,14 @@ const Productos = () => {
               disabled={productos.length === 0}
             >
               <PiDownloadSimpleBold size={18} />
-              Exportar CSV
+              {t('common.exportCsv')}
             </button>
             <button
               onClick={() => setShowHistorial(true)}
               className="btn btn--outline"
             >
               <PiClockCounterClockwiseBold size={18} />
-              Registro de descuentos
+              {t('products.discountHistory')}
             </button>
             {role === 'admin' && (
               <button
@@ -145,7 +148,7 @@ const Productos = () => {
                 className="btn btn--primary"
               >
                 <PiPlusBold size={18} />
-                Nuevo Producto
+                {t('products.newProduct')}
               </button>
             )}
           </div>
@@ -156,7 +159,7 @@ const Productos = () => {
             <PiMagnifyingGlassBold size={16} className="productos__search-icon" />
             <input
               type="text"
-              placeholder="Buscar por clave, nombre o descripción..."
+              placeholder={t('products.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input"
@@ -168,7 +171,7 @@ const Productos = () => {
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
               className="select"
             >
-              <option value="">Precio</option>
+              <option value="">{t('products.sortByPrice')}</option>
               {(Object.keys(PRECIO_OPTIONS) as SortOption[]).map(opt => (
                 <option key={opt} value={opt}>{PRECIO_OPTIONS[opt]}</option>
               ))}
@@ -178,7 +181,7 @@ const Productos = () => {
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
               className="select"
             >
-              <option value="">Nombre / Registro</option>
+              <option value="">{t('products.sortByName')}</option>
               {(Object.keys(NOMBRE_OPTIONS) as SortOption[]).map(opt => (
                 <option key={opt} value={opt}>{NOMBRE_OPTIONS[opt]}</option>
               ))}
@@ -189,8 +192,8 @@ const Productos = () => {
         {filterVenciendo && (
           <div className="productos__filter-banner">
             <PiWarningBold size={16} />
-            <span>Mostrando solo productos con descuento por vencer</span>
-            <button onClick={() => setFilterVenciendo(false)}>✕ Quitar filtro</button>
+            <span>{t('products.filterDiscounting')}</span>
+            <button onClick={() => setFilterVenciendo(false)}>{t('products.removeFilter')}</button>
           </div>
         )}
         <ProductosTable
@@ -207,7 +210,7 @@ const Productos = () => {
               className="btn btn--outline btn--sm"
               onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
             >
-              Mostrar más ({filteredProductos.length - displayLimit} restantes)
+              {t('products.showMore', { count: filteredProductos.length - displayLimit })}
             </button>
           </div>
         )}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PiArrowLeftBold,
   PiWhatsappLogoBold,
@@ -30,6 +31,7 @@ import MainLayout from '../layouts/MainLayout';
 import './ClienteDetail.scss';
 
 const ClienteDetail = () => {
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -76,13 +78,13 @@ const ClienteDetail = () => {
       setLoading(true);
       const data = await getClienteById(id);
       if (!data) {
-        showToast('Cliente no encontrado', 'error');
+        showToast(t('clients.detail.notFound'), 'error');
         navigate(ROUTES.CLIENTES);
         return;
       }
       setCliente(data);
     } catch {
-      showToast('Error al cargar el cliente', 'error');
+      showToast(t('clients.detail.loadError'), 'error');
       navigate(ROUTES.CLIENTES);
     } finally {
       setLoading(false);
@@ -112,7 +114,7 @@ const ClienteDetail = () => {
 
 
   const formatDate = (date: Date) =>
-    new Intl.DateTimeFormat('es-MX', {
+    new Intl.DateTimeFormat(i18n.language, {
       day: '2-digit',
       month: 'long',
       year: 'numeric'
@@ -154,10 +156,10 @@ const ClienteDetail = () => {
     setShowDeleteModal(false);
     try {
       await deleteCliente(cliente.id);
-      showToast('Cliente eliminado', 'success');
+      showToast(t('clients.detail.deleted'), 'success');
       navigate(ROUTES.CLIENTES);
     } catch {
-      showToast('Error al eliminar el cliente', 'error');
+      showToast(t('clients.detail.deleteError'), 'error');
     }
   };
 
@@ -168,7 +170,7 @@ const ClienteDetail = () => {
       await toggleClienteFavorito(cliente.id, nuevoValor);
       setCliente({ ...cliente, favorito: nuevoValor });
     } catch {
-      showToast('Error al actualizar favorito', 'error');
+      showToast(t('clients.detail.favoriteError'), 'error');
     }
   };
 
@@ -216,9 +218,9 @@ const ClienteDetail = () => {
       setCliente({ ...cliente, ...dataToSave });
       setEditData(null);
       setIsEditing(false);
-      showToast('Cliente actualizado correctamente', 'success');
+      showToast(t('clients.detail.updateSuccess'), 'success');
     } catch {
-      showToast('Error al actualizar el cliente', 'error');
+      showToast(t('clients.detail.updateError'), 'error');
     } finally {
       setSaving(false);
     }
@@ -238,7 +240,7 @@ const ClienteDetail = () => {
     return (
       <MainLayout>
         <div className="cliente-detail">
-          <p className="cliente-detail__loading">Cargando cliente...</p>
+          <p className="cliente-detail__loading">{t('clients.detail.loading')}</p>
         </div>
       </MainLayout>
     );
@@ -257,22 +259,22 @@ const ClienteDetail = () => {
             <button
               className="cliente-detail__icon-btn cliente-detail__icon-btn--back"
               onClick={() => navigate(ROUTES.CLIENTES)}
-              title="Volver"
+              title={t('common.back')}
             >
               <PiArrowLeftBold size={20} />
             </button>
             {role === 'admin' && isEditing ? (
               <div className="cliente-detail__top-bar-actions">
                 <button onClick={cancelEditing} className="btn btn--outline btn--sm" disabled={saving}>
-                  Cancelar
+                  {t('common.cancel')}
                 </button>
                 <button onClick={handleSave} className="btn btn--primary btn--sm" disabled={saving}>
-                  {saving ? 'Guardando...' : 'Guardar'}
+                  {saving ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             ) : (
               <>
-                <button onClick={handleWhatsApp} className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp" title="Enviar WhatsApp">
+                <button onClick={handleWhatsApp} className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp" title={t('orders.detail.whatsapp')}>
                   <PiWhatsappLogoBold size={20} />
                 </button>
                 {role === 'admin' && (
@@ -281,7 +283,7 @@ const ClienteDetail = () => {
                     <button
                       onClick={handleToggleFavorito}
                       className={`cliente-detail__icon-btn ${cliente.favorito ? 'cliente-detail__icon-btn--fav-active' : ''}`}
-                      title={cliente.favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                      title={cliente.favorito ? t('clients.detail.removeFavorite') : t('clients.detail.addFavorite')}
                     >
                       {cliente.favorito ? <PiStarFill size={20} /> : <PiStarBold size={20} />}
                     </button>
@@ -289,10 +291,10 @@ const ClienteDetail = () => {
                 )}
                 {role === 'admin' && (
                   <>
-                    <button onClick={startEditing} className="cliente-detail__icon-btn cliente-detail__icon-btn--primary" title="Editar cliente">
+                    <button onClick={startEditing} className="cliente-detail__icon-btn cliente-detail__icon-btn--primary" title={t('common.edit')}>
                       <PiPencilBold size={20} />
                     </button>
-                    <button onClick={handleDelete} className="cliente-detail__icon-btn cliente-detail__icon-btn--danger" title="Eliminar cliente">
+                    <button onClick={handleDelete} className="cliente-detail__icon-btn cliente-detail__icon-btn--danger" title={t('common.delete')}>
                       <PiTrashBold size={20} />
                     </button>
                   </>
@@ -335,7 +337,7 @@ const ClienteDetail = () => {
                       ) : (
                         <h1 className="cliente-detail__name">{cliente.nombre} {cliente.apellido}</h1>
                       )}
-                      <span className="cliente-detail__date">Cliente desde {formatDate(cliente.fechaCreacion)}</span>
+                      <span className="cliente-detail__date">{t('clients.detail.clientSince')} {formatDate(cliente.fechaCreacion)}</span>
                     </div>
                   </div>
 
@@ -344,7 +346,7 @@ const ClienteDetail = () => {
 
               <div className="cliente-detail__header-fields">
                 <div className="cliente-detail__header-field">
-                  <span className="cliente-detail__info-label">{isEditing ? 'Dirección *' : 'Dirección'}</span>
+                  <span className="cliente-detail__info-label">{t('clients.detail.address')}</span>
                   {isEditing ? (
                     <>
                       <div className="cliente-detail__address-row">
@@ -370,7 +372,7 @@ const ClienteDetail = () => {
                 </div>
                 <div className="cliente-detail__header-contact">
                   <div className="cliente-detail__header-field">
-                    <span className="cliente-detail__info-label">{isEditing ? 'Teléfono *' : 'Teléfono'}</span>
+                    <span className="cliente-detail__info-label">{t('clients.detail.phone')}</span>
                     {isEditing ? (
                       <PhoneInput
                         value={editData?.telefono || ''}
@@ -387,17 +389,17 @@ const ClienteDetail = () => {
                     )}
                   </div>
                   <div className="cliente-detail__header-field">
-                    <span className="cliente-detail__info-label">Correo electrónico</span>
+                    <span className="cliente-detail__info-label">{t('clients.detail.email')}</span>
                     {isEditing ? (
                       <input type="email" value={editData?.correo || ''} onChange={(e) => updateField('correo', e.target.value)} placeholder="Correo electrónico" className="cliente-detail__input" />
                     ) : (
                       <span className={`cliente-detail__info-value ${!cliente.correo ? 'cliente-detail__info-value--empty' : ''}`}>
-                        {cliente.correo || 'Sin correo registrado'}
+                        {cliente.correo || t('clients.detail.noEmail')}
                       </span>
                     )}
                   </div>
                   <div className="cliente-detail__header-field cliente-detail__header-field--full">
-                    <span className="cliente-detail__info-label">{isEditing ? 'Referencia *' : 'Referencia'}</span>
+                    <span className="cliente-detail__info-label">{t('clients.detail.reference')}</span>
                     {isEditing ? (
                       <>
                         <textarea value={editData?.referencia || ''} onChange={(e) => updateField('referencia', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} maxLength={80} style={{ resize: 'none' }} />
@@ -405,7 +407,7 @@ const ClienteDetail = () => {
                       </>
                     ) : (
                       <span className={`cliente-detail__info-value ${!cliente.referencia ? 'cliente-detail__info-value--empty' : ''}`}>
-                        {cliente.referencia || 'Sin referencia'}
+                        {cliente.referencia || t('clients.detail.noReference')}
                       </span>
                     )}
                   </div>
@@ -431,34 +433,34 @@ const ClienteDetail = () => {
         <div className="cliente-detail__modal-overlay" onClick={() => setShowDeleteModal(false)}>
           <div className="cliente-detail__modal" onClick={e => e.stopPropagation()}>
             <div className="cliente-detail__modal-header">
-              <h3>Eliminar cliente</h3>
+              <h3>{t('clients.detail.deleteModal.title')}</h3>
               <button className="cliente-detail__modal-close" onClick={() => setShowDeleteModal(false)}>
                 <PiXBold size={18} />
               </button>
             </div>
             <div className="cliente-detail__modal-body">
-              <p>Esta acción es <strong>permanente</strong> y no se puede deshacer. Se eliminarán todos los datos del cliente.</p>
+              <p>{t('clients.detail.deleteModal.warning')}</p>
               <p className="cliente-detail__delete-label">
-                Escribe el siguiente código para confirmar:
+                {t('clients.detail.deleteModal.instruction')}
               </p>
               <code className="cliente-detail__delete-code">{deleteCode}</code>
               <input
                 type="text"
                 className="input"
-                placeholder="Escribe el código"
+                placeholder={t('clients.detail.deleteModal.placeholder')}
                 value={deleteConfirmText}
                 onChange={e => setDeleteConfirmText(e.target.value.toUpperCase())}
                 autoComplete="off"
               />
             </div>
             <div className="cliente-detail__modal-footer">
-              <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+              <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>{t('clients.detail.deleteModal.cancel')}</button>
               <button
                 className="btn btn--danger btn--sm"
                 onClick={confirmDelete}
                 disabled={deleteConfirmText !== deleteCode}
               >
-                Eliminar
+                {t('clients.detail.deleteModal.delete')}
               </button>
             </div>
           </div>

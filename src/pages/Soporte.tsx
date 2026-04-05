@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiCaretDownBold, PiPaperPlaneRightBold, PiBookOpenBold } from 'react-icons/pi';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../hooks/useAuth';
@@ -84,6 +85,7 @@ const FAQ_DATA = [
 ];
 
 const Soporte = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { showToast } = useToast();
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
@@ -126,12 +128,12 @@ const Soporte = () => {
     e.preventDefault();
 
     if (!formData.asunto.trim() || !formData.mensaje.trim()) {
-      showToast('Completa todos los campos', 'warning');
+      showToast(t('support.formIncomplete'), 'warning');
       return;
     }
 
     if (!mensajeValido) {
-      showToast(`El mensaje debe tener al menos ${MIN_MENSAJE_LENGTH} caracteres`, 'warning');
+      showToast(t('support.errors.minLength', { min: MIN_MENSAJE_LENGTH }), 'warning');
       return;
     }
 
@@ -142,7 +144,7 @@ const Soporte = () => {
     }
 
     if (limitado) {
-      showToast(`Límite diario de ${LIMITE_DIARIO} mensajes alcanzado`, 'warning');
+      showToast(t('support.errors.dailyLimit', { limit: LIMITE_DIARIO }), 'warning');
       return;
     }
 
@@ -151,19 +153,19 @@ const Soporte = () => {
     setSending(true);
     try {
       await sendSupportMessage(user!.uid, formData.asunto, formData.mensaje);
-      showToast('Mensaje enviado correctamente', 'success');
+      showToast(t('support.sentSuccess'), 'success');
       setFormData({ asunto: '', mensaje: '' });
       setMensajesHoy(c => c + 1);
       setCooldownRestante(COOLDOWN_SEGUNDOS);
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
       if (msg === 'DAILY_LIMIT') {
-        showToast(`Límite diario de ${LIMITE_DIARIO} mensajes alcanzado`, 'warning');
+        showToast(t('support.errors.dailyLimit', { limit: LIMITE_DIARIO }), 'warning');
         setMensajesHoy(LIMITE_DIARIO);
       } else if (msg === 'COOLDOWN') {
-        showToast('Debes esperar antes de enviar otro mensaje', 'warning');
+        showToast(t('support.errors.cooldown'), 'warning');
       } else {
-        showToast('Error al enviar el mensaje', 'error');
+        showToast(t('support.sendError'), 'error');
       }
     } finally {
       setSending(false);
@@ -180,14 +182,14 @@ const Soporte = () => {
     <MainLayout>
       <div className="soporte">
         <div className="soporte__header">
-          <h1>Centro de Soporte</h1>
-          <p>Encuentra respuestas, guías y ayuda para usar Orderly</p>
+          <h1>{t('support.title')}</h1>
+          <p>{t('support.subtitle')}</p>
         </div>
 
         <div className="soporte__body">
           {/* FAQ */}
           <section className="soporte__section">
-            <h2 className="soporte__section-title">Preguntas Frecuentes</h2>
+            <h2 className="soporte__section-title">{t('support.faqTitle')}</h2>
             <div className="soporte__faq">
               {FAQ_DATA.map((item, index) => (
                 <div
@@ -213,29 +215,29 @@ const Soporte = () => {
 
           {/* Formulario de Contacto */}
           <section className="soporte__section">
-            <h2 className="soporte__section-title">Contactar Soporte</h2>
+            <h2 className="soporte__section-title">{t('support.contactTitle')}</h2>
             <div className="soporte__contact-card">
               <div className="soporte__contact-info">
                 <PiBookOpenBold size={24} />
                 <div>
-                  <h3>¿Necesitas más ayuda?</h3>
-                  <p>Envíanos un mensaje y te responderemos lo antes posible.</p>
+                  <h3>{t('support.contactInfo')}</h3>
+                  <p>{t('support.contactSubtitle')}</p>
                 </div>
               </div>
 
               {limitado ? (
                 <p className="soporte__limite-msg">
-                  Alcanzaste el límite de {LIMITE_DIARIO} mensajes por día. Intenta mañana.
+                  {t('support.errors.dailyLimit', { limit: LIMITE_DIARIO })}
                 </p>
               ) : (
                 <form className="soporte__form" onSubmit={handleSubmit}>
                   <div className="soporte__form-group">
-                    <label htmlFor="asunto">Asunto</label>
+                    <label htmlFor="asunto">{t('support.subject')}</label>
                     <input
                       type="text"
                       id="asunto"
                       className="input"
-                      placeholder="¿En qué podemos ayudarte?"
+                      placeholder={t('support.subjectPlaceholder')}
                       value={formData.asunto}
                       maxLength={MAX_ASUNTO_LENGTH}
                       onChange={(e) => setFormData({ ...formData, asunto: e.target.value })}
@@ -244,7 +246,7 @@ const Soporte = () => {
                   </div>
                   <div className="soporte__form-group soporte__form-group--grow">
                     <label htmlFor="mensaje">
-                      Mensaje
+                      {t('support.message')}
                       <span className={`soporte__char-count ${mensajeValido ? 'soporte__char-count--ok' : ''} ${formData.mensaje.length >= MAX_MENSAJE_LENGTH ? 'soporte__char-count--max' : ''}`}>
                         {formData.mensaje.length}/{MAX_MENSAJE_LENGTH}
                       </span>
@@ -252,7 +254,7 @@ const Soporte = () => {
                     <textarea
                       id="mensaje"
                       className="input soporte__textarea"
-                      placeholder="Describe tu problema o pregunta..."
+                      placeholder={t('support.messagePlaceholder')}
                       value={formData.mensaje}
                       maxLength={MAX_MENSAJE_LENGTH}
                       onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
@@ -264,12 +266,12 @@ const Soporte = () => {
                     className="btn btn--primary"
                     disabled={sending || bloqueado || !mensajeValido}
                   >
-                    {sending ? 'Enviando...' : cooldownRestante > 0 ? (
-                      `Espera ${formatCooldown(cooldownRestante)}`
+                    {sending ? t('support.sending') : cooldownRestante > 0 ? (
+                      t('support.waitButton', { time: formatCooldown(cooldownRestante) })
                     ) : (
                       <>
                         <PiPaperPlaneRightBold size={18} />
-                        Enviar mensaje
+                        {t('support.send')}
                       </>
                     )}
                   </button>

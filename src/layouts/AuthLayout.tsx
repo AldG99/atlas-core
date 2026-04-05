@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import './AuthLayout.scss';
 
 interface AuthLayoutProps {
@@ -7,6 +8,7 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout = ({ children, showSubtitle = true }: AuthLayoutProps) => {
+  const { t } = useTranslation();
   return (
     <div className="auth-layout">
       <div className="auth-layout__container">
@@ -18,11 +20,10 @@ const AuthLayout = ({ children, showSubtitle = true }: AuthLayoutProps) => {
           />
           {showSubtitle && (
             <p className="auth-layout__subtitle">
-              Diseñado para gestionar tus pedidos. Construido para escalar tu
-              negocio.
+              {t('auth.tagline')}
             </p>
           )}
-          <span className="auth-layout__beta">Versión Beta</span>
+          <span className="auth-layout__beta">{t('auth.beta')}</span>
         </div>
         <div className="auth-layout__content">{children}</div>
       </div>

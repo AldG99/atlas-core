@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useReportes } from '../hooks/useReportes';
 import { useToast } from '../hooks/useToast';
 import { useClientes } from '../hooks/useClientes';
@@ -15,6 +16,7 @@ import InventarioStatus from '../components/reportes/InventarioStatus';
 import './Reportes.scss';
 
 const Reportes = () => {
+  const { t } = useTranslation();
   const {
     reporteData,
     filteredPedidos,
@@ -28,7 +30,7 @@ const Reportes = () => {
 
   const handleExport = () => {
     if (filteredPedidos.length === 0) {
-      showToast('No hay pedidos para exportar', 'warning');
+      showToast(t('reports.noDataExport'), 'warning');
       return;
     }
     const pedidosConCodigo = filteredPedidos.map(p => ({
@@ -36,21 +38,21 @@ const Reportes = () => {
       clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
     }));
     exportToCSV(pedidosConCodigo, `reporte_${period}`);
-    showToast('Reporte exportado', 'success');
+    showToast(t('reports.export'), 'success');
   };
 
   return (
     <MainLayout>
       <div className="reportes">
         <div className="reportes__header">
-          <h1>Reportes</h1>
+          <h1>{t('reports.title')}</h1>
           <button
             onClick={handleExport}
             className="btn btn--secondary"
             disabled={filteredPedidos.length === 0}
           >
             <PiDownloadSimpleBold size={18} />
-            Exportar CSV
+            {t('reports.export')}
           </button>
         </div>
 

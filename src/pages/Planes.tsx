@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PiCheckBold,
   PiXBold,
@@ -68,6 +69,7 @@ const PLANES = [
 ];
 
 const Planes = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const planActual = user?.plan ?? 'gratuito';
@@ -129,8 +131,8 @@ const Planes = () => {
         </div>
 
         <div className="planes__header">
-          <h1>Planes</h1>
-          <p>Elige el plan que mejor se adapte a tu negocio.</p>
+          <h1>{t('plans.title')}</h1>
+          <p>{t('plans.subtitle')}</p>
         </div>
 
         <div className="planes__grid">
@@ -143,7 +145,7 @@ const Planes = () => {
               >
                 {esActual && (
                   <div className="planes__badge planes__badge--actual">
-                    Plan actual
+                    {t('plans.currentPlan')}
                   </div>
                 )}
 
@@ -154,8 +156,8 @@ const Planes = () => {
                     className="planes__card-precio"
                     aria-label={
                       plan.precio
-                        ? `${plan.precio} dólares USD por ${plan.periodo}`
-                        : 'Gratis'
+                        ? `${plan.precio} USD / ${plan.periodo}`
+                        : t('plans.free')
                     }
                   >
                     {plan.precio ? (
@@ -170,12 +172,12 @@ const Planes = () => {
                           className="planes__precio-periodo"
                           aria-hidden="true"
                         >
-                          USD / {plan.periodo}
+                          USD / {t('plans.perMonth')}
                         </span>
                       </>
                     ) : (
                       <span className="planes__precio-monto" aria-hidden="true">
-                        Gratis
+                        {t('plans.free')}
                       </span>
                     )}
                   </div>
@@ -211,7 +213,7 @@ const Planes = () => {
                       className="btn btn--outline btn--sm planes__btn"
                       disabled
                     >
-                      Plan actual
+                      {t('plans.currentPlan')}
                     </button>
                   ) : (
                     <button
@@ -253,20 +255,14 @@ const Planes = () => {
             <button
               className="planes__modal-close"
               onClick={closeModal}
-              aria-label="Cerrar"
+              aria-label={t('common.close')}
             >
               <PiXBold size={16} aria-hidden="true" />
             </button>
             <h3 id="planes-modal-title" className="planes__modal-title">
-              {modalPlan.id === 'gratuito'
-                ? 'Cambiar a Gratuito'
-                : `Contratar plan ${modalPlan.nombre}`}
+              {modalPlan.nombre}
             </h3>
-            <p className="planes__modal-body">
-              Durante la <strong>versión Beta</strong> los cambios de plan se
-              gestionan manualmente. Contáctanos y te ayudamos a actualizar tu
-              cuenta.
-            </p>
+            <p className="planes__modal-body">{t('plans.betaNotice')}</p>
             {modalPlan.precio && (
               <p
                 className="planes__modal-price"
@@ -286,14 +282,14 @@ const Planes = () => {
                 }}
               >
                 <PiHeadsetBold size={15} aria-hidden="true" />
-                Ir a Soporte
+                {t('plans.goToSupport')}
               </button>
               <a
                 className="btn btn--outline btn--sm"
                 href="mailto:orderly.vault@gmail.com"
               >
                 <PiEnvelopeBold size={15} aria-hidden="true" />
-                Enviar correo
+                {t('plans.sendEmail')}
               </a>
             </div>
           </div>

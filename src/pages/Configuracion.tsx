@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   PiDownloadSimpleBold,
   PiUploadSimpleBold,
@@ -49,21 +50,22 @@ const SIMBOLOS_MONEDA = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
 type NavItem = { id: Section; icon: React.ReactNode; title: string; color: string };
 type NavGroup = { label: string; items: NavItem[] };
 
-const getSectionTitle = (section: Section): string => {
-  switch (section) {
-    case 'moneda':        return 'Moneda';
-    case 'notificaciones': return 'Notificaciones';
-    case 'instalar':      return 'Instalar aplicación';
-    case 'plantillas':    return 'Plantillas de mensajes';
-    case 'equipo':        return 'Equipo';
-    case 'respaldo':      return 'Respaldo';
-    case 'gestion':       return 'Gestionar cuenta';
-    case 'membresia':     return 'Equipo';
-  }
-};
-
 const Configuracion = () => {
+  const { t } = useTranslation();
   const { user, updateProfile, deleteAllData, deleteAccount, role } = useAuth();
+
+  const getSectionTitle = (section: Section): string => {
+    switch (section) {
+      case 'moneda':        return t('settings.sections.currency');
+      case 'notificaciones': return t('settings.sections.notifications');
+      case 'instalar':      return t('settings.sections.install');
+      case 'plantillas':    return t('settings.sections.templates');
+      case 'equipo':        return t('settings.sections.team');
+      case 'respaldo':      return t('settings.sections.backup');
+      case 'gestion':       return t('settings.sections.manage');
+      case 'membresia':     return t('settings.sections.membership');
+    }
+  };
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -89,7 +91,7 @@ const Configuracion = () => {
   const { canInstall, promptInstall, notifPermission, requestNotifPermission, sendNotification } = usePWA();
 
   const handleTestNotif = () => {
-    sendNotification('Orderly', { body: '¡Las notificaciones están activadas correctamente!' });
+    sendNotification(t('settings.notifications.testTitle'), { body: t('settings.notifications.testBody') });
   };
 
   // Plantillas
@@ -98,12 +100,12 @@ const Configuracion = () => {
   const [plantillaTab, setPlantillaTab] = useState<PlantillaKey>('confirmacion');
 
   const PLANTILLA_TABS: { key: PlantillaKey; label: string }[] = [
-    { key: 'confirmacion', label: 'Confirmación' },
-    { key: 'preparacion',  label: 'Preparación' },
-    { key: 'entrega',      label: 'Entrega' },
+    { key: 'confirmacion', label: t('settings.templates.tabConfirmation') },
+    { key: 'preparacion',  label: t('settings.templates.tabPreparation') },
+    { key: 'entrega',      label: t('settings.templates.tabDelivery') },
   ];
 
-  const VARIABLES_INFO = '{{nombre}} · {{folio}} · {{total}} · {{pagado}} · {{restante}} · {{productos}} · {{notas}} · {{negocio}}';
+  const VARIABLES_INFO = t('settings.templates.variables');
 
   // Zona de peligro
   const [dangerModal, setDangerModal] = useState<'deleteData' | 'deleteAccount' | null>(null);
@@ -134,9 +136,9 @@ const Configuracion = () => {
     setExporting(true);
     try {
       await exportBackup(user.uid);
-      showToast('Respaldo descargado correctamente', 'success');
+      showToast(t('settings.backup.exportSuccess'), 'success');
     } catch {
-      showToast('Error al generar el respaldo', 'error');
+      showToast(t('settings.backup.exportError'), 'error');
     } finally {
       setExporting(false);
     }
@@ -151,7 +153,7 @@ const Configuracion = () => {
       setBackupData(data);
       setImportStep('preview');
     } catch (err) {
-      setFileError(err instanceof Error ? err.message : 'Error al leer el archivo');
+      setFileError(err instanceof Error ? err.message : t('settings.backup.importError'));
     }
     e.target.value = '';
   };
@@ -164,7 +166,7 @@ const Configuracion = () => {
       setImportResult(result);
       setImportStep('done');
     } catch {
-      showToast('Error al importar los datos', 'error');
+      showToast(t('settings.backup.importError'), 'error');
       setImportStep('preview');
     }
   };
@@ -181,9 +183,9 @@ const Configuracion = () => {
     setSavingMoneda(true);
     try {
       await updateProfile({ moneda });
-      showToast('Moneda actualizada correctamente', 'success');
+      showToast(t('settings.currency.saveSuccess'), 'success');
     } catch {
-      showToast('Error al guardar la moneda', 'error');
+      showToast(t('settings.currency.saveError'), 'error');
     } finally {
       setSavingMoneda(false);
     }
@@ -192,7 +194,7 @@ const Configuracion = () => {
   // ── Equipo ──────────────────────────────────────────
   const handleCrearMiembro = async (form: { nombre: string; apellido: string; fechaNacimiento: string; telefono: string; telefonoCodigoPais: string; password: string }) => {
     await crearMiembro(form);
-    showToast('Miembro creado correctamente', 'success');
+    showToast(t('settings.team.created'), 'success');
   };
 
   // ── Membresía ────────────────────────────────────────
@@ -203,7 +205,7 @@ const Configuracion = () => {
       await salirDelNegocio(user.uid);
       window.location.reload();
     } catch {
-      showToast('Error al salir del negocio', 'error');
+      showToast(t('settings.membership.leaveError'), 'error');
       setSalirLoading(false);
     }
   };
@@ -211,7 +213,7 @@ const Configuracion = () => {
   // ── Zona de peligro ─────────────────────────────────
   const handleDeleteData = async (password: string) => {
     await deleteAllData(password);
-    showToast('Todos los datos han sido eliminados', 'success');
+    showToast(t('settings.dangerModal.deleteDataSuccess'), 'success');
     setDangerModal(null);
   };
 
@@ -221,28 +223,28 @@ const Configuracion = () => {
 
   // ── Nav groups ───────────────────────────────────────
   const preferenciasItems: NavItem[] = [
-    ...(role !== 'miembro' ? [{ id: 'moneda' as Section, icon: <PiCurrencyDollarBold size={16} />, title: 'Moneda', color: 'yellow' }] : []),
-    { id: 'notificaciones', icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: 'Notificaciones', color: notifPermission === 'granted' ? 'green' : 'gray' },
-    ...(canInstall ? [{ id: 'instalar' as Section, icon: <PiDownloadBold size={16} />, title: 'Instalar app', color: 'teal' }] : []),
+    ...(role !== 'miembro' ? [{ id: 'moneda' as Section, icon: <PiCurrencyDollarBold size={16} />, title: t('settings.sections.currency'), color: 'yellow' }] : []),
+    { id: 'notificaciones', icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: t('settings.sections.notifications'), color: notifPermission === 'granted' ? 'green' : 'gray' },
+    ...(canInstall ? [{ id: 'instalar' as Section, icon: <PiDownloadBold size={16} />, title: t('settings.sections.install'), color: 'teal' }] : []),
   ];
 
   const navGroups: NavGroup[] = role === 'miembro'
     ? [
-        { label: 'Preferencias', items: preferenciasItems },
-        { label: 'Negocio', items: [{ id: 'plantillas', icon: <PiChatTextBold size={16} />, title: 'Plantillas', color: 'purple' }] },
-        { label: 'Cuenta', items: [{ id: 'membresia', icon: <PiUsersThreeBold size={16} />, title: 'Equipo', color: 'blue' }] },
+        { label: t('settings.groups.preferences'), items: preferenciasItems },
+        { label: t('settings.groups.business'), items: [{ id: 'plantillas', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' }] },
+        { label: t('settings.groups.account'), items: [{ id: 'membresia', icon: <PiUsersThreeBold size={16} />, title: t('settings.sections.membership'), color: 'blue' }] },
       ]
     : [
-        { label: 'Preferencias', items: preferenciasItems },
+        { label: t('settings.groups.preferences'), items: preferenciasItems },
         {
-          label: 'Negocio',
+          label: t('settings.groups.business'),
           items: [
-            { id: 'plantillas', icon: <PiChatTextBold size={16} />, title: 'Plantillas', color: 'purple' },
-            { id: 'equipo', icon: <PiUsersThreeBold size={16} />, title: 'Equipo', color: 'blue' },
+            { id: 'plantillas', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' },
+            { id: 'equipo', icon: <PiUsersThreeBold size={16} />, title: t('settings.sections.team'), color: 'blue' },
           ],
         },
-        { label: 'Datos', items: [{ id: 'respaldo', icon: <PiDownloadSimpleBold size={16} />, title: 'Respaldo', color: 'teal' }] },
-        { label: 'Cuenta', items: [{ id: 'gestion', icon: <PiWarningBold size={16} />, title: 'Gestionar cuenta', color: 'gray' }] },
+        { label: t('settings.groups.data'), items: [{ id: 'respaldo', icon: <PiDownloadSimpleBold size={16} />, title: t('settings.sections.backup'), color: 'teal' }] },
+        { label: t('settings.groups.account'), items: [{ id: 'gestion', icon: <PiWarningBold size={16} />, title: t('settings.sections.manage'), color: 'gray' }] },
       ];
 
   // ── Panel renderer ───────────────────────────────────
@@ -250,12 +252,12 @@ const Configuracion = () => {
     switch (activeSection) {
       case 'moneda':
         if (role === 'miembro') return (
-          <p className="configuracion__desc">Solo el administrador puede cambiar la moneda.</p>
+          <p className="configuracion__desc">{t('settings.currency.adminOnly')}</p>
         );
         return (
           <>
             <p className="configuracion__desc">
-              Elige el símbolo de moneda a mostrar en precios y reportes.
+              {t('settings.currency.desc')}
             </p>
             <div className="configuracion__field-row">
               <select
@@ -272,7 +274,7 @@ const Configuracion = () => {
                 onClick={handleSaveMoneda}
                 disabled={savingMoneda || moneda === (LEGACY_MAP[rawMoneda] ?? rawMoneda)}
               >
-                {savingMoneda ? 'Guardando...' : 'Guardar'}
+                {savingMoneda ? t('common.saving') : t('common.save')}
               </button>
             </div>
           </>
@@ -282,28 +284,28 @@ const Configuracion = () => {
         return (
           <>
             <p className="configuracion__desc">
-              Recibe alertas del sistema cuando haya pedidos pendientes, stock bajo o descuentos por vencer.
+              {t('settings.notifications.desc')}
             </p>
             {!('Notification' in window) ? (
-              <p className="configuracion__note">Tu navegador no soporta notificaciones.</p>
+              <p className="configuracion__note">{t('settings.notifications.unsupported')}</p>
             ) : notifPermission === 'denied' ? (
               <p className="configuracion__notif-denied">
-                Notificaciones bloqueadas. Actívalas desde la configuración de tu navegador.
+                {t('settings.notifications.blocked')}
               </p>
             ) : notifPermission === 'granted' ? (
               <div className="configuracion__actions">
                 <span className="configuracion__notif-status configuracion__notif-status--on">
-                  <PiBellBold size={13} /> Activadas
+                  <PiBellBold size={13} /> {t('settings.notifications.active')}
                 </span>
                 <button className="btn btn--outline btn--sm" onClick={handleTestNotif}>
-                  Probar
+                  {t('settings.notifications.test')}
                 </button>
               </div>
             ) : (
               <div className="configuracion__actions">
                 <button className="btn btn--primary btn--sm" onClick={requestNotifPermission}>
                   <PiBellBold size={15} />
-                  Activar notificaciones
+                  {t('settings.notifications.activate')}
                 </button>
               </div>
             )}
@@ -314,12 +316,12 @@ const Configuracion = () => {
         return (
           <>
             <p className="configuracion__desc">
-              Instala Orderly en tu dispositivo para acceder más rápido y usarla sin conexión.
+              {t('settings.install.desc')}
             </p>
             <div className="configuracion__actions">
               <button className="btn btn--primary btn--sm" onClick={promptInstall}>
                 <PiDownloadBold size={15} />
-                Instalar Orderly
+                {t('settings.install.button')}
               </button>
             </div>
           </>
@@ -329,7 +331,7 @@ const Configuracion = () => {
         return (
           <div className="configuracion__plantillas-panel">
             <p className="configuracion__desc">
-              Personaliza el mensaje que se envía por WhatsApp según el estado del pedido.
+              {t('settings.templates.desc')}
             </p>
             <p className="configuracion__note">{VARIABLES_INFO}</p>
             <div className="configuracion__tabs">
@@ -347,30 +349,30 @@ const Configuracion = () => {
               className="configuracion__textarea configuracion__textarea--grow"
               value={plantillas[plantillaTab]}
               onChange={e => setPlantillas(prev => ({ ...prev, [plantillaTab]: e.target.value }))}
-              placeholder="Escribe tu plantilla..."
+              placeholder={t('settings.templates.placeholder')}
             />
             <div className="configuracion__actions">
               <button
                 className="btn btn--outline btn--sm"
                 onClick={resetToDefaults}
-                title="Restaurar valores por defecto"
+                title={t('settings.templates.restore')}
               >
                 <PiArrowCounterClockwiseBold size={14} />
-                Restaurar
+                {t('settings.templates.restore')}
               </button>
               <button
                 className="btn btn--outline btn--sm"
                 onClick={resetPlantillas}
                 disabled={!plantillasDirty}
               >
-                Cancelar
+                {t('settings.templates.cancel')}
               </button>
               <button
                 className="btn btn--primary btn--sm"
                 onClick={savePlantillas}
                 disabled={savingPlantillas || !plantillasDirty}
               >
-                {savingPlantillas ? 'Guardando...' : 'Guardar'}
+                {savingPlantillas ? t('settings.templates.saving') : t('settings.templates.save')}
               </button>
             </div>
           </div>
@@ -380,14 +382,14 @@ const Configuracion = () => {
         return (
           <>
             <p className="configuracion__desc">
-              Crea cuentas para los miembros de tu equipo. Entran con su usuario o correo y contraseña.
+              {t('settings.team.desc')}
             </p>
 
             {/* Member list */}
             {equipoLoading ? (
-              <p className="configuracion__desc">Cargando...</p>
+              <p className="configuracion__desc">{t('settings.team.loading')}</p>
             ) : miembros.length === 0 ? (
-              <p className="configuracion__empty-list">No hay miembros todavía.</p>
+              <p className="configuracion__empty-list">{t('settings.team.empty')}</p>
             ) : (
               <div className="configuracion__equipo-list">
                 {miembros.map(m => (
@@ -416,7 +418,7 @@ const Configuracion = () => {
             )}
 
             <button className="btn btn--primary btn--sm" onClick={() => setShowCrearMiembro(true)}>
-              + Nuevo miembro
+              {t('settings.team.newMember')}
             </button>
           </>
         );
@@ -426,12 +428,12 @@ const Configuracion = () => {
           <div className="configuracion__backup-blocks">
             {/* Exportar */}
             <div className="configuracion__backup-block">
-              <p className="configuracion__backup-title">Exportar</p>
+              <p className="configuracion__backup-title">{t('settings.backup.exportTitle')}</p>
               <p className="configuracion__desc">
-                Descarga un archivo con todos tus clientes, productos, pedidos y etiquetas. Úsalo como respaldo o para migrar a otra cuenta.
+                {t('settings.backup.exportDesc')}
               </p>
               <p className="configuracion__note">
-                Las fotos de clientes y productos no se incluyen en el respaldo.
+                {t('settings.backup.exportNote')}
               </p>
               <div className="configuracion__actions">
                 <button
@@ -440,19 +442,19 @@ const Configuracion = () => {
                   disabled={exporting}
                 >
                   <PiDownloadSimpleBold size={15} />
-                  {exporting ? 'Generando...' : 'Descargar respaldo'}
+                  {exporting ? t('settings.backup.exporting') : t('settings.backup.exportButton')}
                 </button>
               </div>
             </div>
 
             {/* Importar */}
             <div className="configuracion__backup-block">
-              <p className="configuracion__backup-title">Importar</p>
+              <p className="configuracion__backup-title">{t('settings.backup.importTitle')}</p>
               <p className="configuracion__desc">
-                Carga un archivo de respaldo para restaurar tus datos en esta cuenta. Los datos existentes no se eliminan.
+                {t('settings.backup.importDesc')}
               </p>
               <p className="configuracion__note">
-                Solo se aceptan archivos generados por Orderly (.json).
+                {t('settings.backup.importNote')}
               </p>
 
               <input
@@ -470,7 +472,7 @@ const Configuracion = () => {
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <PiFileBold size={15} />
-                    Seleccionar archivo
+                    {t('settings.backup.selectFile')}
                   </button>
                   {fileError && (
                     <div className="configuracion__file-error">
@@ -484,34 +486,34 @@ const Configuracion = () => {
               {importStep === 'preview' && backupData && (
                 <div className="configuracion__preview">
                   <p className="configuracion__preview-date">
-                    Respaldo del {new Date(backupData.exportadoEn).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}
+                    {new Date(backupData.exportadoEn).toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })}
                   </p>
                   <div className="configuracion__preview-summary">
                     <div className="configuracion__preview-item">
                       <span className="configuracion__preview-count">{backupData.clientes.length}</span>
-                      <span>Clientes</span>
+                      <span>{t('nav.clients')}</span>
                     </div>
                     <div className="configuracion__preview-item">
                       <span className="configuracion__preview-count">{backupData.productos.length}</span>
-                      <span>Productos</span>
+                      <span>{t('nav.products')}</span>
                     </div>
                     <div className="configuracion__preview-item">
                       <span className="configuracion__preview-count">{backupData.pedidos.length}</span>
-                      <span>Pedidos</span>
+                      <span>{t('nav.orders')}</span>
                     </div>
                     <div className="configuracion__preview-item">
                       <span className="configuracion__preview-count">{backupData.etiquetas?.length ?? 0}</span>
-                      <span>Etiquetas</span>
+                      <span>{t('settings.backup.labels')}</span>
                     </div>
                   </div>
                   <div className="configuracion__actions">
                     <button className="btn btn--ghost btn--sm" onClick={handleReset}>
                       <PiXBold size={13} />
-                      Cancelar
+                      {t('settings.backup.cancel')}
                     </button>
                     <button className="btn btn--primary btn--sm" onClick={handleImport}>
                       <PiUploadSimpleBold size={13} />
-                      Confirmar importación
+                      {t('settings.backup.confirm')}
                     </button>
                   </div>
                 </div>
@@ -520,21 +522,19 @@ const Configuracion = () => {
               {importStep === 'importing' && (
                 <div className="configuracion__importing">
                   <div className="configuracion__spinner" />
-                  <span>Importando datos...</span>
+                  <span>{t('settings.backup.importing')}</span>
                 </div>
               )}
 
               {importStep === 'done' && importResult && (
                 <div className="configuracion__done">
                   <PiCheckCircleBold size={28} className="configuracion__done-icon" />
-                  <p className="configuracion__done-title">¡Importación completada!</p>
+                  <p className="configuracion__done-title">{t('settings.backup.doneTitle')}</p>
                   <p className="configuracion__done-desc">
-                    Se importaron {importResult.clientes} clientes, {importResult.productos} productos, {importResult.pedidos} pedidos y {importResult.etiquetas} etiquetas.
-                    {importResult.omitidos > 0 && (
-                      <> {importResult.omitidos} {importResult.omitidos === 1 ? 'registro omitido por' : 'registros omitidos por'} duplicado.</>
-                    )}
+                    {t('settings.backup.doneDesc', { clients: importResult.clientes, products: importResult.productos, orders: importResult.pedidos, labels: importResult.etiquetas })}
+                    {importResult.omitidos > 0 && t('settings.backup.doneOmitted', { count: importResult.omitidos })}
                   </p>
-                  <button className="btn btn--outline btn--sm" onClick={handleReset}>Aceptar</button>
+                  <button className="btn btn--outline btn--sm" onClick={handleReset}>{t('settings.backup.accept')}</button>
                 </div>
               )}
             </div>
@@ -545,26 +545,26 @@ const Configuracion = () => {
         return (
           <div className="configuracion__backup-blocks">
             <div className="configuracion__backup-block">
-              <p className="configuracion__backup-title">Eliminar todos los datos</p>
+              <p className="configuracion__backup-title">{t('settings.manage.deleteDataTitle')}</p>
               <p className="configuracion__desc">
-                Borra permanentemente todos tus clientes, productos, pedidos y etiquetas. Tu cuenta permanece activa.
+                {t('settings.manage.deleteDataDesc')}
               </p>
               <div className="configuracion__actions">
                 <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteData')}>
                   <PiTrashBold size={14} />
-                  Eliminar datos
+                  {t('settings.manage.deleteDataButton')}
                 </button>
               </div>
             </div>
             <div className="configuracion__backup-block">
-              <p className="configuracion__backup-title">Eliminar cuenta</p>
+              <p className="configuracion__backup-title">{t('settings.manage.deleteAccountTitle')}</p>
               <p className="configuracion__desc">
-                Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.
+                {t('settings.manage.deleteAccountDesc')}
               </p>
               <div className="configuracion__actions">
                 <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteAccount')}>
                   <PiUserMinusBold size={14} />
-                  Eliminar cuenta
+                  {t('settings.manage.deleteAccountButton')}
                 </button>
               </div>
             </div>
@@ -575,12 +575,12 @@ const Configuracion = () => {
         return (
           <>
             <p className="configuracion__desc">
-              Eres miembro de este negocio. Contacta con el administrador para cambios en la cuenta.
+              {t('settings.membership.desc')}
             </p>
 
             {adminNegocio && (
               <div className="configuracion__membresia-section">
-                <p className="configuracion__membresia-label">Administrador</p>
+                <p className="configuracion__membresia-label">{t('settings.membership.admin')}</p>
                 <div className="configuracion__equipo-item">
                   <div className="configuracion__equipo-avatar">
                     <Avatar
@@ -602,7 +602,7 @@ const Configuracion = () => {
 
             {companeros.length > 0 && (
               <div className="configuracion__membresia-section">
-                <p className="configuracion__membresia-label">Compañeros</p>
+                <p className="configuracion__membresia-label">{t('settings.membership.teammates')}</p>
                 <div className="configuracion__equipo-list">
                   {companeros.map(m => (
                     <div key={m.uid} className="configuracion__equipo-item">
@@ -633,7 +633,7 @@ const Configuracion = () => {
                 disabled={salirLoading}
               >
                 <PiUserMinusBold size={15} />
-                {salirLoading ? 'Saliendo...' : 'Salir del negocio'}
+                {salirLoading ? t('settings.membership.leaving') : t('settings.membership.leave')}
               </button>
             </div>
           </>
@@ -649,7 +649,7 @@ const Configuracion = () => {
       <div className="configuracion">
         {/* Nav */}
         <nav className={`configuracion__nav${activeSection ? ' configuracion__nav--hidden' : ''}`}>
-          <p className="configuracion__nav-title">Configuración</p>
+          <p className="configuracion__nav-title">{t('settings.title')}</p>
           {navGroups.map(group => (
             <div key={group.label} className="configuracion__group">
               <p className="configuracion__group-label">{group.label}</p>
@@ -674,7 +674,7 @@ const Configuracion = () => {
         <div className={`configuracion__detail${!activeSection ? ' configuracion__detail--hidden' : ''}`}>
           <button className="configuracion__back" onClick={() => setActiveSection(null)}>
             <PiArrowLeftBold size={14} />
-            Configuración
+            {t('settings.back')}
           </button>
           {activeSection ? (
             <div className="configuracion__detail-inner">
@@ -686,8 +686,8 @@ const Configuracion = () => {
               <div className="configuracion__placeholder-icon">
                 <PiGearSixBold size={56} />
               </div>
-              <p className="configuracion__placeholder-title">Configuración</p>
-              <p className="configuracion__placeholder-desc">Selecciona una opción del menú para comenzar</p>
+              <p className="configuracion__placeholder-title">{t('settings.title')}</p>
+              <p className="configuracion__placeholder-desc">{t('settings.selectOption')}</p>
             </div>
           )}
         </div>

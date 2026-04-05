@@ -1,6 +1,7 @@
 import type { FormEvent } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { ROUTES } from '../config/routes';
 import AuthLayout from '../layouts/AuthLayout';
@@ -9,6 +10,7 @@ import './Login.scss';
 type LoginMode = 'admin' | 'miembro';
 
 const Login = () => {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<LoginMode>('admin');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -57,7 +59,7 @@ const Login = () => {
       await sendPasswordReset(resetEmail);
       setResetSent(true);
     } catch {
-      setResetError('No se pudo enviar el correo. Verifica que el correo sea correcto.');
+      setResetError(t('auth.login.resetSentError'));
     } finally {
       setResetLoading(false);
     }
@@ -67,7 +69,7 @@ const Login = () => {
     e.preventDefault();
 
     if (lockedUntil && Date.now() < lockedUntil.getTime()) {
-      setError(`Demasiados intentos fallidos. Espera ${lockCountdown} segundos.`);
+      setError(t('auth.login.tooManyAttempts', { seconds: lockCountdown }));
       return;
     }
 
@@ -88,13 +90,13 @@ const Login = () => {
       if (newAttempts >= 5) {
         const until = new Date(Date.now() + 5 * 60 * 1000);
         setLockedUntil(until);
-        setError('Demasiados intentos fallidos. Espera 5 minutos.');
+        setError(t('auth.login.tooManyAttemptsLong'));
       } else if (newAttempts >= 3) {
         const until = new Date(Date.now() + 30 * 1000);
         setLockedUntil(until);
-        setError('Demasiados intentos fallidos. Espera 30 segundos.');
+        setError(t('auth.login.tooManyAttempts', { seconds: 30 }));
       } else {
-        setError(err instanceof Error ? err.message : 'Credenciales inválidas');
+        setError(err instanceof Error ? err.message : t('auth.login.invalidCredentials'));
       }
     } finally {
       setLoading(false);
@@ -105,39 +107,39 @@ const Login = () => {
     return (
       <AuthLayout>
         <form onSubmit={handleReset} className="login-form">
-          <h2>Recuperar contraseña</h2>
+          <h2>{t('auth.login.forgotPasswordTitle')}</h2>
           <p className="login-form__subtitle">
-            Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
+            {t('auth.login.forgotPasswordSubtitle')}
           </p>
 
           {resetSent ? (
             <div className="login-form__success">
-              Correo enviado. Revisa tu bandeja de entrada.
+              {t('auth.login.resetSentSuccess')}
             </div>
           ) : (
             <>
               {resetError && <div className="login-form__error">{resetError}</div>}
               <div className="form-group">
-                <label htmlFor="resetEmail">Correo electrónico</label>
+                <label htmlFor="resetEmail">{t('auth.login.email')}</label>
                 <input
                   type="email"
                   id="resetEmail"
                   value={resetEmail}
                   onChange={e => setResetEmail(e.target.value)}
                   className="input"
-                  placeholder="tu@correo.com"
+                  placeholder={t('auth.login.emailPlaceholder')}
                   required
                 />
               </div>
               <button type="submit" className="btn btn--primary btn--full" disabled={resetLoading}>
-                {resetLoading ? 'Enviando...' : 'Enviar enlace'}
+                {resetLoading ? t('auth.login.sending') : t('auth.login.sendLink')}
               </button>
             </>
           )}
 
           <p className="login-form__link">
             <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(false); setResetSent(false); setResetError(''); }}>
-              Volver al inicio de sesión
+              {t('auth.login.backToLogin')}
             </button>
           </p>
         </form>
@@ -148,7 +150,7 @@ const Login = () => {
   return (
     <AuthLayout>
       <form onSubmit={handleSubmit} className="login-form">
-        <h2>Iniciar sesión</h2>
+        <h2>{t('auth.login.title')}</h2>
 
         {/* Mode toggle */}
         <div className="login-form__tabs">
@@ -157,14 +159,14 @@ const Login = () => {
             className={`login-form__tab${mode === 'admin' ? ' login-form__tab--active' : ''}`}
             onClick={() => { setMode('admin'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
           >
-            Administrador
+            {t('auth.login.adminTab')}
           </button>
           <button
             type="button"
             className={`login-form__tab${mode === 'miembro' ? ' login-form__tab--active' : ''}`}
             onClick={() => { setMode('miembro'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
           >
-            Miembro
+            {t('auth.login.memberTab')}
           </button>
         </div>
 
@@ -172,20 +174,20 @@ const Login = () => {
 
         {mode === 'admin' ? (
           <div className="form-group">
-            <label htmlFor="email">Correo electrónico</label>
+            <label htmlFor="email">{t('auth.login.email')}</label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               className="input"
-              placeholder="tu@correo.com"
+              placeholder={t('auth.login.emailPlaceholder')}
               required
             />
           </div>
         ) : (
           <div className="form-group">
-            <label htmlFor="username">Usuario</label>
+            <label htmlFor="username">{t('auth.login.username')}</label>
             <input
               type="text"
               id="username"
@@ -199,30 +201,30 @@ const Login = () => {
         )}
 
         <div className="form-group">
-          <label htmlFor="password">Contraseña</label>
+          <label htmlFor="password">{t('auth.login.password')}</label>
           <input
             type="password"
             id="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             className="input"
-            placeholder="••••••••"
+            placeholder={t('auth.login.passwordPlaceholder')}
             required
           />
         </div>
 
         <button type="submit" className="btn btn--primary btn--full" disabled={loading || (lockedUntil !== null && Date.now() < lockedUntil.getTime())}>
-          {loading ? 'Entrando...' : 'Entrar'}
+          {loading ? t('auth.login.submitting') : t('auth.login.submit')}
         </button>
 
         {mode === 'admin' && (
           <>
             <p className="login-form__link">
-              ¿No tienes cuenta? <Link to={ROUTES.REGISTER}>Regístrate</Link>
+              {t('auth.login.noAccount')} <Link to={ROUTES.REGISTER}>{t('auth.login.register')}</Link>
             </p>
             <p className="login-form__link">
               <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(true); setResetEmail(email); }}>
-                ¿Olvidaste tu contraseña?
+                {t('auth.login.forgotPassword')}
               </button>
             </p>
           </>

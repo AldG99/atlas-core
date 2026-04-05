@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PiArrowLeftBold,
   PiPencilBold,
@@ -56,6 +57,7 @@ interface FormErrors {
 }
 
 const Perfil = () => {
+  const { t, i18n } = useTranslation();
   const { user, updateProfile, changePassword, role } = useAuth();
   const isMiembro = role === 'miembro';
   const { showToast } = useToast();
@@ -136,38 +138,38 @@ const Perfil = () => {
     const newErrors: FormErrors = {};
 
     if (!formData.nombreNegocio.trim()) {
-      newErrors.nombreNegocio = 'El nombre del negocio es requerido';
+      newErrors.nombreNegocio = t('profile.errors.firstNameShort');
     } else if (formData.nombreNegocio.trim().length < 2) {
-      newErrors.nombreNegocio = 'Debe tener al menos 2 caracteres';
+      newErrors.nombreNegocio = t('profile.errors.firstNameShort');
     }
 
     if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es requerido';
+      newErrors.nombre = t('profile.errors.firstNameShort');
     } else if (formData.nombre.trim().length < 2) {
-      newErrors.nombre = 'Debe tener al menos 2 caracteres';
+      newErrors.nombre = t('profile.errors.firstNameShort');
     } else if (!SOLO_LETRAS.test(formData.nombre.trim())) {
-      newErrors.nombre = 'Solo puede contener letras';
+      newErrors.nombre = t('profile.errors.firstNameLetters');
     }
 
     if (!formData.apellido.trim()) {
-      newErrors.apellido = 'El apellido es requerido';
+      newErrors.apellido = t('profile.errors.lastNameShort');
     } else if (formData.apellido.trim().length < 2) {
-      newErrors.apellido = 'Debe tener al menos 2 caracteres';
+      newErrors.apellido = t('profile.errors.lastNameShort');
     } else if (!SOLO_LETRAS.test(formData.apellido.trim())) {
-      newErrors.apellido = 'Solo puede contener letras';
+      newErrors.apellido = t('profile.errors.lastNameLetters');
     }
 
     if (formData.fechaNacimiento) {
       const edad = getEdad(formData.fechaNacimiento);
-      if (edad < 18) newErrors.fechaNacimiento = 'Debes tener al menos 18 años';
-      else if (edad > 100) newErrors.fechaNacimiento = 'Ingresa una fecha válida';
+      if (edad < 18) newErrors.fechaNacimiento = t('profile.errors.dobAgeMin');
+      else if (edad > 100) newErrors.fechaNacimiento = t('profile.errors.dobAgeMax');
     }
 
     if (formData.telefono) {
       if (formData.telefono.length < 10) {
-        newErrors.telefono = 'Debe tener 10 dígitos';
+        newErrors.telefono = t('profile.errors.phoneShort');
       } else if (esTelefonoFicticio(formData.telefono)) {
-        newErrors.telefono = 'Ingresa un número válido';
+        newErrors.telefono = t('profile.errors.phoneInvalid');
       }
     }
 
@@ -196,9 +198,9 @@ const Perfil = () => {
       setIsEditing(false);
       setImageFile(null);
       setPhotoRemoved(false);
-      showToast('Perfil actualizado correctamente', 'success');
+      showToast(t('profile.updateSuccess'), 'success');
     } catch {
-      showToast('Error al guardar el perfil', 'error');
+      showToast(t('profile.updateError'), 'error');
     } finally {
       setSaving(false);
     }
@@ -222,17 +224,17 @@ const Perfil = () => {
 
   const handleChangePassword = async () => {
     setPasswordError('');
-    if (!passwordData.current) return setPasswordError('Ingresa tu contraseña actual');
-    if (passwordData.new.length < 8) return setPasswordError('La nueva contraseña debe tener al menos 8 caracteres');
-    if (passwordData.new !== passwordData.confirm) return setPasswordError('Las contraseñas no coinciden');
+    if (!passwordData.current) return setPasswordError(t('profile.errors.passwordCurrentRequired'));
+    if (passwordData.new.length < 8) return setPasswordError(t('profile.errors.passwordNewMinLength'));
+    if (passwordData.new !== passwordData.confirm) return setPasswordError(t('profile.errors.passwordMismatch'));
     setSavingPassword(true);
     try {
       await changePassword(passwordData.current, passwordData.new);
-      showToast('Contraseña actualizada correctamente', 'success');
+      showToast(t('profile.passwordUpdateSuccess'), 'success');
       setShowPasswordForm(false);
       setPasswordData({ current: '', new: '', confirm: '' });
     } catch {
-      setPasswordError('Contraseña actual incorrecta');
+      setPasswordError(t('profile.errors.passwordWrongCurrent'));
     } finally {
       setSavingPassword(false);
     }
@@ -251,7 +253,7 @@ const Perfil = () => {
           <button className="perfil__back-btn" onClick={() => navigate(-1)}>
             <PiArrowLeftBold size={20} />
           </button>
-          <h1 className="perfil__title">Mi perfil</h1>
+          <h1 className="perfil__title">{t('profile.title')}</h1>
         </div>
 
         <div className="perfil__body">
@@ -281,7 +283,7 @@ const Perfil = () => {
               {isEditing && previewImage && (
                 <button type="button" className="perfil__remove-photo" onClick={removeImage}>
                   <PiTrashBold size={14} />
-                  Eliminar foto
+                  {t('profile.removePhoto')}
                 </button>
               )}
               {!isEditing && (
@@ -294,20 +296,20 @@ const Perfil = () => {
 
             <div className="perfil__card-header">
               <PiUserBold size={16} />
-              <span>{isMiembro ? 'Información del miembro' : 'Información del administrador'}</span>
+              <span>{isMiembro ? t('profile.memberInfo') : t('profile.adminInfo')}</span>
               {!isMiembro && (
                 <div className="perfil__card-header-actions">
                   {isEditing ? (
                     <>
                       <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving}>
-                        Cancelar
+                        {t('common.cancel')}
                       </button>
                       <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving}>
-                        {saving ? 'Guardando...' : 'Guardar cambios'}
+                        {saving ? t('common.saving') : t('profile.saveButton')}
                       </button>
                     </>
                   ) : (
-                    <button className="perfil__action-btn perfil__action-btn--primary" onClick={() => setIsEditing(true)} title="Editar perfil">
+                    <button className="perfil__action-btn perfil__action-btn--primary" onClick={() => setIsEditing(true)} title={t('profile.editButton')}>
                       <PiPencilBold size={20} />
                     </button>
                   )}
@@ -318,7 +320,7 @@ const Perfil = () => {
             <div className="perfil__fields">
               {/* Nombre del negocio */}
               <div className="perfil__field perfil__field--full">
-                <label>Nombre del negocio</label>
+                <label>{t('profile.businessName')}</label>
                 {isEditing && !isMiembro ? (
                   <>
                     <input
@@ -327,7 +329,7 @@ const Perfil = () => {
                       value={formData.nombreNegocio}
                       onChange={handleChange}
                       className={`input${errors.nombreNegocio ? ' input--error' : ''}`}
-                      placeholder="Mi Negocio"
+                      placeholder={t('profile.businessNamePlaceholder')}
                       maxLength={60}
                     />
                     {errors.nombreNegocio && <span className="perfil__field-error">{errors.nombreNegocio}</span>}
@@ -339,7 +341,7 @@ const Perfil = () => {
 
               {/* Nombre y Apellido */}
               <div className="perfil__field">
-                <label>Nombre</label>
+                <label>{t('profile.firstName')}</label>
                 {isEditing && !isMiembro ? (
                   <>
                     <input
@@ -348,7 +350,7 @@ const Perfil = () => {
                       value={formData.nombre}
                       onChange={handleChange}
                       className={`input${errors.nombre ? ' input--error' : ''}`}
-                      placeholder="Nombre"
+                      placeholder={t('profile.firstName')}
                       maxLength={40}
                     />
                     {errors.nombre && <span className="perfil__field-error">{errors.nombre}</span>}
@@ -359,7 +361,7 @@ const Perfil = () => {
               </div>
 
               <div className="perfil__field">
-                <label>Apellido</label>
+                <label>{t('profile.lastName')}</label>
                 {isEditing && !isMiembro ? (
                   <>
                     <input
@@ -368,7 +370,7 @@ const Perfil = () => {
                       value={formData.apellido}
                       onChange={handleChange}
                       className={`input${errors.apellido ? ' input--error' : ''}`}
-                      placeholder="Apellido"
+                      placeholder={t('profile.lastName')}
                       maxLength={40}
                     />
                     {errors.apellido && <span className="perfil__field-error">{errors.apellido}</span>}
@@ -380,7 +382,7 @@ const Perfil = () => {
 
               {/* Fecha de nacimiento */}
               <div className="perfil__field">
-                <label>Fecha de nacimiento</label>
+                <label>{t('profile.dob')}</label>
                 {isEditing && !isMiembro ? (
                   <>
                     <input
@@ -397,7 +399,7 @@ const Perfil = () => {
                 ) : (
                   <p>
                     {user?.fechaNacimiento
-                      ? new Date(user.fechaNacimiento + 'T00:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })
+                      ? new Date(user.fechaNacimiento + 'T00:00:00').toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })
                       : '—'}
                   </p>
                 )}
@@ -405,7 +407,7 @@ const Perfil = () => {
 
               {/* Teléfono */}
               <div className="perfil__field">
-                <label>Número de celular</label>
+                <label>{t('profile.phone')}</label>
                 {isEditing && !isMiembro ? (
                   <>
                     <PhoneInput
@@ -413,7 +415,7 @@ const Perfil = () => {
                       codigoPais={formData.telefonoCodigoPais}
                       onChange={(numero, iso) => setFormData(prev => ({ ...prev, telefono: numero, telefonoCodigoPais: iso }))}
                       hasError={!!errors.telefono}
-                      placeholder="Número de celular"
+                      placeholder={t('profile.phonePlaceholder')}
                     />
                     {errors.telefono && <span className="perfil__field-error">{errors.telefono}</span>}
                   </>
@@ -428,16 +430,16 @@ const Perfil = () => {
 
               {/* Email — solo lectura */}
               <div className="perfil__field perfil__field--full">
-                <label>{isMiembro ? 'Usuario' : 'Correo electrónico'} <span className="perfil__readonly-badge">Solo lectura</span></label>
+                <label>{isMiembro ? t('profile.username') : t('profile.email')} <span className="perfil__readonly-badge">{t('common.readOnly')}</span></label>
                 <p className="perfil__readonly">{isMiembro ? user?.username : user?.email || '—'}</p>
               </div>
 
               {/* Fecha de registro — solo lectura */}
               <div className="perfil__field perfil__field--full">
-                <label>Miembro desde <span className="perfil__readonly-badge">Solo lectura</span></label>
+                <label>{t('profile.memberSince')} <span className="perfil__readonly-badge">{t('common.readOnly')}</span></label>
                 <p className="perfil__readonly">
                   {user?.fechaRegistro
-                    ? new Date(user.fechaRegistro).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })
+                    ? new Date(user.fechaRegistro).toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })
                     : '—'}
                 </p>
               </div>
@@ -448,19 +450,19 @@ const Perfil = () => {
           {!isMiembro && <div className="perfil__card">
             <div className="perfil__card-header">
               <PiLockKeyBold size={16} />
-              <span>Seguridad</span>
+              <span>{t('profile.security')}</span>
             </div>
             {!showPasswordForm ? (
               <div className="perfil__password-trigger">
-                <span>Contraseña</span>
+                <span>{t('profile.password')}</span>
                 <button className="btn btn--outline btn--sm" onClick={() => setShowPasswordForm(true)}>
-                  Cambiar contraseña
+                  {t('profile.changePassword')}
                 </button>
               </div>
             ) : (
               <div className="perfil__password-form">
                 <div className="perfil__password-field">
-                  <label>Contraseña actual</label>
+                  <label>{t('profile.currentPassword')}</label>
                   <div className="perfil__password-input">
                     <input
                       type={showCurrentPwd ? 'text' : 'password'}
@@ -476,7 +478,7 @@ const Perfil = () => {
                   </div>
                 </div>
                 <div className="perfil__password-field">
-                  <label>Nueva contraseña</label>
+                  <label>{t('profile.newPassword')}</label>
                   <div className="perfil__password-input">
                     <input
                       type={showNewPwd ? 'text' : 'password'}
@@ -492,7 +494,7 @@ const Perfil = () => {
                   </div>
                 </div>
                 <div className="perfil__password-field">
-                  <label>Confirmar nueva contraseña</label>
+                  <label>{t('profile.confirmNewPassword')}</label>
                   <div className="perfil__password-input">
                     <input
                       type="password"
@@ -507,10 +509,10 @@ const Perfil = () => {
                 {passwordError && <span className="perfil__field-error">{passwordError}</span>}
                 <div className="perfil__password-actions">
                   <button className="btn btn--outline btn--sm" onClick={() => { setShowPasswordForm(false); setPasswordData({ current: '', new: '', confirm: '' }); setPasswordError(''); }}>
-                    Cancelar
+                    {t('common.cancel')}
                   </button>
                   <button className="btn btn--primary btn--sm" onClick={handleChangePassword} disabled={savingPassword}>
-                    {savingPassword ? 'Guardando...' : 'Guardar'}
+                    {savingPassword ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               </div>
@@ -525,7 +527,7 @@ const Perfil = () => {
               </div>
               <div className="perfil__stat-info">
                 <span className="perfil__stat-value">{pedidos.length}</span>
-                <span className="perfil__stat-label">Pedidos</span>
+                <span className="perfil__stat-label">{t('profile.statsOrders')}</span>
               </div>
             </div>
             <div className="perfil__stat">
@@ -534,7 +536,7 @@ const Perfil = () => {
               </div>
               <div className="perfil__stat-info">
                 <span className="perfil__stat-value">{clientes.length}</span>
-                <span className="perfil__stat-label">Clientes</span>
+                <span className="perfil__stat-label">{t('profile.statsClients')}</span>
               </div>
             </div>
             <div className="perfil__stat">
@@ -543,7 +545,7 @@ const Perfil = () => {
               </div>
               <div className="perfil__stat-info">
                 <span className="perfil__stat-value">{productos.length}</span>
-                <span className="perfil__stat-label">Productos</span>
+                <span className="perfil__stat-label">{t('profile.statsProducts')}</span>
               </div>
             </div>
           </div>

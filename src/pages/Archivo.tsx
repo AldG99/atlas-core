@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PiMagnifyingGlassBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import type { Pedido } from '../types/Pedido';
 import { useAuth } from '../hooks/useAuth';
@@ -14,22 +15,8 @@ import './Archivo.scss';
 type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc';
 type DateFilter = 'todos' | 'semana' | 'mes' | 'trimestre';
 
-const SORT_OPTIONS: Record<SortOption, string> = {
-  fecha_desc: 'Más recientes',
-  fecha_asc: 'Más antiguos',
-  total_desc: 'Mayor total',
-  total_asc: 'Menor total',
-  nombre_asc: 'Nombre A-Z'
-};
-
-const DATE_FILTERS: Record<DateFilter, string> = {
-  todos: 'Todo el tiempo',
-  semana: 'Última semana',
-  mes: 'Último mes',
-  trimestre: 'Últimos 3 meses'
-};
-
 const Archivo = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { showToast } = useToast();
   const { clientes } = useClientes();
@@ -39,6 +26,21 @@ const Archivo = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
   const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
+
+  const SORT_OPTIONS: Record<SortOption, string> = {
+    fecha_desc: t('archive.sortNewest'),
+    fecha_asc: t('archive.sortOldest'),
+    total_desc: t('archive.sortTotalDesc'),
+    total_asc: t('archive.sortTotalAsc'),
+    nombre_asc: t('archive.sortName'),
+  };
+
+  const DATE_FILTERS: Record<DateFilter, string> = {
+    todos: t('archive.allTime'),
+    semana: t('archive.lastWeek'),
+    mes: t('archive.lastMonth'),
+    trimestre: t('archive.lastQuarter'),
+  };
 
   const fetchArchived = useCallback(async () => {
     if (!user) return;
@@ -123,7 +125,7 @@ const Archivo = () => {
 
   const handleExport = () => {
     if (filteredAndSortedPedidos.length === 0) {
-      showToast('No hay pedidos para exportar', 'warning');
+      showToast(t('archive.noExport'), 'warning');
       return;
     }
     const pedidosConCodigo = filteredAndSortedPedidos.map(p => ({
@@ -131,14 +133,14 @@ const Archivo = () => {
       clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
     }));
     exportToCSV(pedidosConCodigo, 'pedidos_archivados');
-    showToast('Archivo exportado correctamente', 'success');
+    showToast(t('archive.exportSuccess'), 'success');
   };
 
   return (
     <MainLayout>
       <div className="archivo">
         <div className="archivo__header">
-          <h1>Archivados</h1>
+          <h1>{t('archive.title')}</h1>
           <div className="archivo__header-actions">
             <button
               onClick={handleExport}
@@ -146,7 +148,7 @@ const Archivo = () => {
               disabled={pedidos.length === 0}
             >
               <PiDownloadSimpleBold size={18} />
-              Exportar CSV
+              {t('common.exportCsv')}
             </button>
           </div>
         </div>
@@ -156,7 +158,7 @@ const Archivo = () => {
             <PiMagnifyingGlassBold size={16} className="archivo__search-icon" />
             <input
               type="text"
-              placeholder="Buscar por nombre, teléfono o folio..."
+              placeholder={t('archive.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input"

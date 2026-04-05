@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePedidos } from '../hooks/usePedidos';
 import { useToast } from '../hooks/useToast';
 import type { PedidoFormData, ProductoItem } from '../types/Pedido';
@@ -18,6 +19,7 @@ interface LocationState {
 const NewPedido = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation();
   const { addPedido } = usePedidos();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ const NewPedido = () => {
 
     try {
       await addPedido(data);
-      showToast('Pedido creado correctamente', 'success');
+      showToast(t('orders.createSuccess'), 'success');
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
       const msg = err instanceof Error ? err.message : PEDIDO_MESSAGES.CREATE_ERROR;
@@ -49,7 +51,7 @@ const NewPedido = () => {
       <div className="new-pedido">
         <div className="new-pedido__card">
           <div className="new-pedido__header">
-            <h1>Nuevo Pedido</h1>
+            <h1>{t('orders.newOrder')}</h1>
           </div>
 
           {error && <div className="new-pedido__error">{error}</div>}

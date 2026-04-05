@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold, PiDownloadSimpleBold, PiPlusBold } from 'react-icons/pi';
 import { usePedidos } from '../hooks/usePedidos';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useClientes } from '../hooks/useClientes';
-import { useDashboardFilters, SORT_OPTIONS, DATE_FILTERS, type StatusFilter } from '../hooks/useDashboardFilters';
+import { useDashboardFilters, type StatusFilter } from '../hooks/useDashboardFilters';
 import { getCodigoPais } from '../data/codigosPais';
 import type { PedidoStatus } from '../types/Pedido';
-import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
+import { PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
 import { ROUTES } from '../config/routes';
 import { archiveAllDelivered } from '../services/pedidoService';
 import { exportToCSV, generateCSVContent } from '../utils/formatters';
@@ -17,9 +18,11 @@ import MainLayout from '../layouts/MainLayout';
 import PedidosTable from '../components/pedidos/PedidosTable';
 import './Dashboard.scss';
 
-const FILTER_ORDER: StatusFilter[] = ['todos', ...Object.keys(PEDIDO_STATUS) as PedidoStatus[]];
+const PEDIDO_STATUS_KEYS: PedidoStatus[] = ['pendiente', 'en_preparacion', 'entregado'];
+const FILTER_ORDER: StatusFilter[] = ['todos', ...PEDIDO_STATUS_KEYS];
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const {
     pedidos,
     allPedidos,
@@ -48,6 +51,8 @@ const Dashboard = () => {
     todaySummary,
     filteredAndSortedPedidos,
     handleFilterChange,
+    SORT_OPTIONS,
+    DATE_FILTERS,
   } = useDashboardFilters({ pedidos, allPedidos, fetchPedidos, fetchByStatus });
 
   // Apply filter from notification navigation
@@ -68,7 +73,7 @@ const Dashboard = () => {
     hasArchivedRef.current = true;
     archiveAllDelivered(user.uid).then((count) => {
       if (count > 0) {
-        showToast(`${count} pedido${count > 1 ? 's' : ''} archivado${count > 1 ? 's' : ''} automáticamente`, 'success');
+        showToast(t('dashboard.autoArchived', { count }), 'success');
         fetchPedidos();
       }
     }).catch(() => {});
@@ -94,7 +99,7 @@ const Dashboard = () => {
 
   const handleGoogleDrive = async () => {
     if (filteredAndSortedPedidos.length === 0) {
-      showToast('No hay pedidos para exportar', 'warning');
+      showToast(t('dashboard.noOrdersExport'), 'warning');
       return;
     }
     setUploadingDrive(true);
@@ -106,12 +111,12 @@ const Dashboard = () => {
       const csvContent = generateCSVContent(pedidosConCodigo);
       const fileName = `pedidos_${new Date().toISOString().split('T')[0]}.csv`;
       const link = await uploadCSVToDrive(csvContent, fileName);
-      showToast('Archivo subido a Google Drive', 'success');
+      showToast(t('dashboard.driveSuccess'), 'success');
       window.open(link, '_blank');
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
       if (msg !== 'popup_closed_by_user') {
-        showToast('Error al subir a Google Drive', 'error');
+        showToast(t('dashboard.driveError'), 'error');
       }
     } finally {
       setUploadingDrive(false);
@@ -120,7 +125,7 @@ const Dashboard = () => {
 
   const handleExport = () => {
     if (filteredAndSortedPedidos.length === 0) {
-      showToast('No hay pedidos para exportar', 'warning');
+      showToast(t('dashboard.noOrdersExport'), 'warning');
       return;
     }
     const pedidosConCodigo = filteredAndSortedPedidos.map(p => ({
@@ -128,14 +133,14 @@ const Dashboard = () => {
       clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
     }));
     exportToCSV(pedidosConCodigo);
-    showToast('Pedidos exportados', 'success');
+    showToast(t('dashboard.exportSuccess'), 'success');
   };
 
   return (
     <MainLayout>
       <div className="dashboard">
         <div className="dashboard__header">
-          <h1>Mis Pedidos</h1>
+          <h1>{t('dashboard.title')}</h1>
           <div className="dashboard__header-actions">
             <button
               onClick={handleExport}
@@ -143,20 +148,20 @@ const Dashboard = () => {
               disabled={pedidos.length === 0}
             >
               <PiDownloadSimpleBold size={18} />
-              Exportar CSV
+              {t('dashboard.exportCsv')}
             </button>
             <button
               onClick={handleGoogleDrive}
               className="btn btn--outline"
-              title="Exportar a Google Drive"
+              title={t('dashboard.googleDrive')}
               disabled={uploadingDrive}
             >
               <PiCloudArrowUpBold size={18} />
-              {uploadingDrive ? 'Subiendo...' : 'Google Drive'}
+              {uploadingDrive ? t('dashboard.uploading') : t('dashboard.googleDrive')}
             </button>
             <Link to={ROUTES.NEW_PEDIDO} className="btn btn--primary">
               <PiPlusBold size={18} />
-              Nuevo pedido
+              {t('dashboard.newOrder')}
             </Link>
           </div>
         </div>
@@ -167,7 +172,7 @@ const Dashboard = () => {
                 <PiShoppingBagBold size={20} />
               </div>
               <div className="dashboard__summary-content">
-                <span className="dashboard__summary-label">Pedidos hoy</span>
+                <span className="dashboard__summary-label">{t('dashboard.ordersToday')}</span>
                 <span className="dashboard__summary-value">{todaySummary.cantidadPedidos}</span>
               </div>
             </div>
@@ -176,7 +181,7 @@ const Dashboard = () => {
                 <PiCurrencyDollarBold size={20} />
               </div>
               <div className="dashboard__summary-content">
-                <span className="dashboard__summary-label">Ventas del día</span>
+                <span className="dashboard__summary-label">{t('dashboard.salesToday')}</span>
                 <span className="dashboard__summary-value">
                   ${todaySummary.totalVentas.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                 </span>
@@ -187,7 +192,7 @@ const Dashboard = () => {
                 <PiCheckCircleBold size={20} />
               </div>
               <div className="dashboard__summary-content">
-                <span className="dashboard__summary-label">Entregados</span>
+                <span className="dashboard__summary-label">{t('dashboard.delivered')}</span>
                 <span className="dashboard__summary-value">
                   ${todaySummary.ventasEntregadas.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                 </span>
@@ -200,7 +205,7 @@ const Dashboard = () => {
             <PiMagnifyingGlassBold size={16} className="dashboard__search-icon" />
             <input
               type="text"
-              placeholder="Buscar por nombre o teléfono..."
+              placeholder={t('dashboard.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input"
@@ -239,10 +244,10 @@ const Dashboard = () => {
             className={`dashboard__filter ${filterStatus === 'todos' ? 'dashboard__filter--active' : ''}`}
             onClick={() => handleFilterChange('todos')}
           >
-            Todos
+            {t('dashboard.allOrders')}
             <span className="dashboard__filter-count">{allPedidos.length}</span>
           </button>
-          {(Object.keys(PEDIDO_STATUS) as PedidoStatus[]).map((status) => (
+          {PEDIDO_STATUS_KEYS.map((status) => (
             <button
               key={status}
               className={`dashboard__filter ${filterStatus === status ? 'dashboard__filter--active' : ''}`}
@@ -252,7 +257,7 @@ const Dashboard = () => {
                 className="dashboard__filter-dot"
                 style={{ backgroundColor: PEDIDO_STATUS_COLORS[status] }}
               />
-              {PEDIDO_STATUS[status]}
+              {t(`orders.status.${status}`)}
               <span className="dashboard__filter-count">{statusCounts[status]}</span>
             </button>
           ))}
@@ -271,7 +276,7 @@ const Dashboard = () => {
               onClick={loadMore}
               disabled={loading}
             >
-              {loading ? 'Cargando...' : 'Cargar más pedidos'}
+              {loading ? t('dashboard.loadingMore') : t('dashboard.loadMore')}
             </button>
           </div>
         )}

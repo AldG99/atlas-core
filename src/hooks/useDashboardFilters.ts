@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Pedido, PedidoStatus } from '../types/Pedido';
 
 export type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc' | 'nombre_desc';
@@ -9,22 +10,6 @@ const DIAS_ABONO_SIN_MOVIMIENTO = 3;
 
 const diffDiasAbono = (fecha: Date): number =>
   Math.floor((Date.now() - new Date(fecha).getTime()) / (1000 * 60 * 60 * 24));
-
-export const SORT_OPTIONS: Record<SortOption, string> = {
-  fecha_desc: 'Más recientes',
-  fecha_asc: 'Más antiguos',
-  total_desc: 'Mayor total',
-  total_asc: 'Menor total',
-  nombre_asc: 'Nombre A-Z',
-  nombre_desc: 'Nombre Z-A'
-};
-
-export const DATE_FILTERS: Record<DateFilter, string> = {
-  todos: 'Todas las fechas',
-  hoy: 'Hoy',
-  semana: 'Esta semana',
-  mes: 'Este mes'
-};
 
 interface UseDashboardFiltersOptions {
   pedidos: Pedido[];
@@ -39,10 +24,27 @@ export const useDashboardFilters = ({
   fetchPedidos,
   fetchByStatus,
 }: UseDashboardFiltersOptions) => {
+  const { t } = useTranslation();
   const [filterStatus, setFilterStatus] = useState<StatusFilter>('todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
   const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
+
+  const SORT_OPTIONS: Record<SortOption, string> = {
+    fecha_desc: t('dashboard.sortOptions.fecha_desc'),
+    fecha_asc: t('dashboard.sortOptions.fecha_asc'),
+    total_desc: t('dashboard.sortOptions.total_desc'),
+    total_asc: t('dashboard.sortOptions.total_asc'),
+    nombre_asc: t('dashboard.sortOptions.nombre_asc'),
+    nombre_desc: t('dashboard.sortOptions.nombre_desc'),
+  };
+
+  const DATE_FILTERS: Record<DateFilter, string> = {
+    todos: t('dashboard.allDates'),
+    hoy: t('dashboard.today'),
+    semana: t('dashboard.thisWeek'),
+    mes: t('dashboard.thisMonth'),
+  };
 
   const statusCounts = useMemo(() => ({
     pendiente: allPedidos.filter((p) => p.estado === 'pendiente').length,
@@ -160,5 +162,7 @@ export const useDashboardFilters = ({
     todaySummary,
     filteredAndSortedPedidos,
     handleFilterChange,
+    SORT_OPTIONS,
+    DATE_FILTERS,
   };
 };
