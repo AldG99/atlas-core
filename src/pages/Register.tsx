@@ -192,7 +192,7 @@ const Register = () => {
   const minFechaStr = minFecha.toISOString().split('T')[0];
 
   return (
-    <AuthLayout showSubtitle={false}>
+    <AuthLayout showSubtitle={false} fullWidth>
       <div className="register-form">
         {/* Indicador de pasos */}
         <div className="register-form__steps">

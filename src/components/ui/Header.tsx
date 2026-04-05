@@ -6,7 +6,6 @@ import { useAuth } from '../../hooks/useAuth';
 import { useNotificaciones, type Notificacion } from '../../hooks/useNotificaciones';
 import { ROUTES } from '../../config/routes';
 import Avatar from './Avatar';
-import LanguageSwitcher from './LanguageSwitcher';
 import './Header.scss';
 
 const Header = () => {
@@ -65,7 +64,6 @@ const Header = () => {
       </div>
 
       <div className="header__right">
-        <LanguageSwitcher className="header__lang" />
         {/* Notifications */}
         <div className="header__notifications">
           <button

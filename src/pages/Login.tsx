@@ -107,7 +107,10 @@ const Login = () => {
     return (
       <AuthLayout>
         <form onSubmit={handleReset} className="login-form">
-          <h2>{t('auth.login.forgotPasswordTitle')}</h2>
+          <div className="login-form__heading">
+            <h2>{t('auth.login.forgotPasswordTitle')}</h2>
+          </div>
+
           <p className="login-form__subtitle">
             {t('auth.login.forgotPasswordSubtitle')}
           </p>
@@ -119,17 +122,19 @@ const Login = () => {
           ) : (
             <>
               {resetError && <div className="login-form__error">{resetError}</div>}
-              <div className="form-group">
-                <label htmlFor="resetEmail">{t('auth.login.email')}</label>
-                <input
-                  type="email"
-                  id="resetEmail"
-                  value={resetEmail}
-                  onChange={e => setResetEmail(e.target.value)}
-                  className="input"
-                  placeholder={t('auth.login.emailPlaceholder')}
-                  required
-                />
+              <div className="login-form__fields">
+                <div className="form-group">
+                  <label htmlFor="resetEmail">{t('auth.login.email')}</label>
+                  <input
+                    type="email"
+                    id="resetEmail"
+                    value={resetEmail}
+                    onChange={e => setResetEmail(e.target.value)}
+                    className="input"
+                    placeholder={t('auth.login.emailPlaceholder')}
+                    required
+                  />
+                </div>
               </div>
               <button type="submit" className="btn btn--primary btn--full" disabled={resetLoading}>
                 {resetLoading ? t('auth.login.sending') : t('auth.login.sendLink')}
@@ -137,11 +142,13 @@ const Login = () => {
             </>
           )}
 
-          <p className="login-form__link">
-            <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(false); setResetSent(false); setResetError(''); }}>
-              {t('auth.login.backToLogin')}
-            </button>
-          </p>
+          <div className="login-form__footer">
+            <p className="login-form__link">
+              <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(false); setResetSent(false); setResetError(''); }}>
+                {t('auth.login.backToLogin')}
+              </button>
+            </p>
+          </div>
         </form>
       </AuthLayout>
     );
@@ -150,9 +157,10 @@ const Login = () => {
   return (
     <AuthLayout>
       <form onSubmit={handleSubmit} className="login-form">
-        <h2>{t('auth.login.title')}</h2>
+        <div className="login-form__heading">
+          <h2>{t('auth.login.title')}</h2>
+        </div>
 
-        {/* Mode toggle */}
         <div className="login-form__tabs">
           <button
             type="button"
@@ -172,45 +180,47 @@ const Login = () => {
 
         {error && <div className="login-form__error">{error}</div>}
 
-        {mode === 'admin' ? (
-          <div className="form-group">
-            <label htmlFor="email">{t('auth.login.email')}</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="input"
-              placeholder={t('auth.login.emailPlaceholder')}
-              required
-            />
-          </div>
-        ) : (
-          <div className="form-group">
-            <label htmlFor="username">{t('auth.login.username')}</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              className="input"
-              placeholder="AL0898-0126-4723"
-              required
-            />
-          </div>
-        )}
+        <div className="login-form__fields">
+          {mode === 'admin' ? (
+            <div className="form-group">
+              <label htmlFor="email">{t('auth.login.email')}</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="input"
+                placeholder={t('auth.login.emailPlaceholder')}
+                required
+              />
+            </div>
+          ) : (
+            <div className="form-group">
+              <label htmlFor="username">{t('auth.login.username')}</label>
+              <input
+                type="text"
+                id="username"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                className="input"
+                placeholder="AL0898-0126-4723"
+                required
+              />
+            </div>
+          )}
 
-        <div className="form-group">
-          <label htmlFor="password">{t('auth.login.password')}</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="input"
-            placeholder={t('auth.login.passwordPlaceholder')}
-            required
-          />
+          <div className="form-group">
+            <label htmlFor="password">{t('auth.login.password')}</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="input"
+              placeholder={t('auth.login.passwordPlaceholder')}
+              required
+            />
+          </div>
         </div>
 
         <button type="submit" className="btn btn--primary btn--full" disabled={loading || (lockedUntil !== null && Date.now() < lockedUntil.getTime())}>
@@ -218,7 +228,7 @@ const Login = () => {
         </button>
 
         {mode === 'admin' && (
-          <>
+          <div className="login-form__footer">
             <p className="login-form__link">
               {t('auth.login.noAccount')} <Link to={ROUTES.REGISTER}>{t('auth.login.register')}</Link>
             </p>
@@ -227,7 +237,7 @@ const Login = () => {
                 {t('auth.login.forgotPassword')}
               </button>
             </p>
-          </>
+          </div>
         )}
       </form>
     </AuthLayout>

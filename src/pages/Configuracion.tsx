@@ -21,6 +21,7 @@ import {
   PiUserBold,
   PiShieldCheckBold,
   PiGearSixBold,
+  PiTranslateBold,
 } from 'react-icons/pi';
 import type { User } from '../types/User';
 import { usePWA } from '../hooks/usePWA';
@@ -37,13 +38,14 @@ import {
 } from '../services/backupService';
 import { salirDelNegocio, getAdminPorUid, getMiembros } from '../services/equipoService';
 import Avatar from '../components/ui/Avatar';
+import LanguageSwitcher from '../components/ui/LanguageSwitcher';
 import DangerModal from '../components/configuracion/DangerModal';
 import CrearMiembroModal from '../components/configuracion/CrearMiembroModal';
 import MiembroPerfilModal from '../components/configuracion/MiembroPerfilModal';
 import './Configuracion.scss';
 
 type ImportStep = 'idle' | 'preview' | 'importing' | 'done';
-type Section = 'moneda' | 'notificaciones' | 'instalar' | 'plantillas' | 'equipo' | 'respaldo' | 'gestion' | 'membresia';
+type Section = 'moneda' | 'notificaciones' | 'instalar' | 'plantillas' | 'equipo' | 'respaldo' | 'gestion' | 'membresia' | 'idioma';
 
 const SIMBOLOS_MONEDA = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
 
@@ -64,6 +66,7 @@ const Configuracion = () => {
       case 'respaldo':      return t('settings.sections.backup');
       case 'gestion':       return t('settings.sections.manage');
       case 'membresia':     return t('settings.sections.membership');
+      case 'idioma':        return t('settings.sections.language');
     }
   };
   const { showToast } = useToast();
@@ -224,7 +227,8 @@ const Configuracion = () => {
   // ── Nav groups ───────────────────────────────────────
   const preferenciasItems: NavItem[] = [
     ...(role !== 'miembro' ? [{ id: 'moneda' as Section, icon: <PiCurrencyDollarBold size={16} />, title: t('settings.sections.currency'), color: 'yellow' }] : []),
-    { id: 'notificaciones', icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: t('settings.sections.notifications'), color: notifPermission === 'granted' ? 'green' : 'gray' },
+    { id: 'notificaciones' as Section, icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: t('settings.sections.notifications'), color: notifPermission === 'granted' ? 'green' : 'gray' },
+    { id: 'idioma' as Section, icon: <PiTranslateBold size={16} />, title: t('settings.sections.language'), color: 'blue' },
     ...(canInstall ? [{ id: 'instalar' as Section, icon: <PiDownloadBold size={16} />, title: t('settings.sections.install'), color: 'teal' }] : []),
   ];
 
@@ -636,6 +640,16 @@ const Configuracion = () => {
                 {salirLoading ? t('settings.membership.leaving') : t('settings.membership.leave')}
               </button>
             </div>
+          </>
+        );
+
+      case 'idioma':
+        return (
+          <>
+            <p className="configuracion__desc">
+              {t('settings.language.desc')}
+            </p>
+            <LanguageSwitcher />
           </>
         );
 

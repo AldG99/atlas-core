@@ -37,55 +37,10 @@ const validarMensaje = (texto: string): string | null => {
   return null;
 };
 
-const FAQ_DATA = [
-  {
-    question: '¿Cómo creo un nuevo pedido?',
-    answer: 'Ve a "Mis Pedidos" y haz clic en "Nuevo Pedido". Selecciona un cliente, agrega los productos con su cantidad y confirma. El pedido recibirá un folio automático.'
-  },
-  {
-    question: '¿Cómo registro un abono a un pedido?',
-    answer: 'Abre el detalle del pedido. En la barra superior encontrarás el campo para ingresar el monto del abono. Puedes aplicarlo al pedido en general o a un producto específico. El pedido se marca como "Entregado" automáticamente al completar el pago total.'
-  },
-  {
-    question: '¿Cómo cambio el estado de un pedido?',
-    answer: 'Abre el detalle del pedido. En la barra inferior encontrarás el botón "Entregado", disponible cuando el pedido está en estado "En preparación". El estado también cambia automáticamente a "Entregado" cuando se liquida el total de los abonos.'
-  },
-  {
-    question: '¿Qué es la sección Archivo?',
-    answer: 'Los pedidos entregados se archivan automáticamente después de 48 horas. En la sección "Archivo" puedes consultarlos, exportarlos a CSV o restaurarlos a la lista principal si lo necesitas.'
-  },
-  {
-    question: '¿Cómo envío un pedido por WhatsApp?',
-    answer: 'Abre el detalle del pedido y usa el botón de WhatsApp en la barra superior. Se abrirá WhatsApp con un mensaje pre-formateado que incluye el resumen completo del pedido.'
-  },
-  {
-    question: '¿Cómo aplico un descuento a un producto?',
-    answer: 'En la sección "Productos", edita el producto y configura el porcentaje de descuento junto con una fecha de vencimiento. El descuento se aplica automáticamente en los pedidos mientras esté vigente y se muestra en el detalle del pedido.'
-  },
-  {
-    question: '¿Cómo busco y filtro mis pedidos?',
-    answer: 'En "Mis Pedidos" encontrarás una barra de búsqueda por nombre de cliente o folio, filtros por estado (Pendiente, En preparación, Entregado), filtros por fecha (hoy, esta semana, este mes) y opciones de ordenamiento. Todos los filtros se pueden combinar.'
-  },
-  {
-    question: '¿Puedo descargar una imagen del pedido?',
-    answer: 'Sí. Abre el detalle del pedido y usa el botón de descarga en la barra superior. Se generará una imagen PNG con el resumen completo del pedido, lista para compartir.'
-  },
-  {
-    question: '¿Qué son las etiquetas y para qué sirven?',
-    answer: 'Las etiquetas son categorías visuales que puedes asignar a tus productos desde la sección "Productos". Aparecen en el detalle de cada pedido junto a los productos, facilitando la identificación rápida por categoría, tipo o cualquier criterio que definas.'
-  },
-  {
-    question: '¿Dónde veo el historial de pedidos de un cliente?',
-    answer: 'Entra al detalle del cliente desde la sección "Clientes". Ahí encontrarás todos los pedidos asociados a ese cliente, ordenados por fecha, con su estado y totales.'
-  },
-  {
-    question: '¿Cómo hago un respaldo de mis datos?',
-    answer: 'En la sección "Configuración" puedes exportar un respaldo completo de todos tus datos (clientes, productos, pedidos y etiquetas) en formato JSON. También puedes importar un respaldo previamente guardado para restaurar tu información.'
-  }
-];
 
 const Soporte = () => {
   const { t } = useTranslation();
+  const faqData = t('support.faq', { returnObjects: true }) as { question: string; answer: string }[];
   const { user } = useAuth();
   const { showToast } = useToast();
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
@@ -191,7 +146,7 @@ const Soporte = () => {
           <section className="soporte__section">
             <h2 className="soporte__section-title">{t('support.faqTitle')}</h2>
             <div className="soporte__faq">
-              {FAQ_DATA.map((item, index) => (
+              {faqData.map((item, index) => (
                 <div
                   key={index}
                   className={`soporte__faq-item ${openFAQ === index ? 'soporte__faq-item--open' : ''}`}
