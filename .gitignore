@@ -22,6 +22,7 @@ src/types
 fase-1-gestor-pedidos.md
 fase-2-escalabilidad-saas.md
 fase-3-produccion.md
+fase-4-configuracion-firebase-stripe.md
 
 firestore.rules
 storage.rules
@@ -31,6 +32,9 @@ cors.json
 
 # i18n
 src/i18n
+
+# functions
+functions
 
 # Tests
 src/__tests__

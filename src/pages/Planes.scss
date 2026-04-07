@@ -1,6 +1,14 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
 .planes-page {
   position: fixed;
   inset: 0;
@@ -53,6 +61,12 @@
       font-size: $font-size-sm;
       color: $color-gray-500;
     }
+  }
+
+  &__manage-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: $spacing-md;
   }
 
   &__grid {

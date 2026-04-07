@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   PiCheckBold,
@@ -8,10 +8,13 @@ import {
   PiDiamondsFourBold,
   PiStorefrontBold,
   PiArrowLeftBold,
-  PiEnvelopeBold,
-  PiHeadsetBold,
+  PiGearBold,
+  PiSpinnerBold,
 } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
+import { useSubscripcion } from '../hooks/useSubscripcion';
+import { useToast } from '../hooks/useToast';
+import { STRIPE_PRICES } from '../services/stripeService';
 import './Planes.scss';
 
 const PLANES = [
@@ -19,6 +22,7 @@ const PLANES = [
     id: 'gratuito',
     nombre: 'Gratuito',
     precio: null,
+    stripePrice: null,
     descripcion: 'Para empezar a gestionar tu negocio sin costo.',
     icono: <PiStorefrontBold size={22} />,
     caracteristicas: [
@@ -36,6 +40,7 @@ const PLANES = [
     nombre: 'Pro',
     precio: '$4',
     periodo: 'mes',
+    stripePrice: STRIPE_PRICES.pro,
     descripcion: 'Para negocios en crecimiento que necesitan más capacidad.',
     icono: <PiDiamondBold size={22} />,
     destacado: true,
@@ -54,6 +59,7 @@ const PLANES = [
     nombre: 'Business',
     precio: '$6',
     periodo: 'mes',
+    stripePrice: STRIPE_PRICES.enterprise,
     descripcion: 'Para equipos y negocios con operaciones de alto volumen.',
     icono: <PiDiamondsFourBold size={22} />,
     caracteristicas: [
@@ -72,50 +78,36 @@ const Planes = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { subscribe, manage, loading } = useSubscripcion();
+  const { showToast } = useToast();
+
   const planActual = user?.plan ?? 'gratuito';
-  const [modalPlan, setModalPlan] = useState<(typeof PLANES)[number] | null>(
-    null
-  );
-  const modalRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const tienePlanPago = planActual !== 'gratuito';
 
-  const closeModal = useCallback(() => {
-    setModalPlan(null);
-    triggerRef.current?.focus();
-  }, []);
-
-  // Cerrar con Escape + trampa de foco
+  // Resultado de vuelta desde Stripe Checkout
   useEffect(() => {
-    if (!modalPlan) return;
+    const checkout = searchParams.get('checkout');
+    if (!checkout) return;
 
-    const focusables = modalRef.current?.querySelectorAll<HTMLElement>(
-      'button, a, [tabindex]:not([tabindex="-1"])'
-    );
-    focusables?.[0]?.focus();
+    if (checkout === 'success') {
+      showToast(t('plans.checkoutSuccess'), 'success');
+    } else if (checkout === 'canceled') {
+      showToast(t('plans.checkoutCanceled'), 'warning');
+    }
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        closeModal();
-        return;
-      }
-      if (e.key !== 'Tab' || !focusables?.length) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [modalPlan, closeModal]);
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams, showToast, t]);
+
+  const handlePlanAction = (plan: (typeof PLANES)[number]) => {
+    if (plan.id === 'gratuito' || !plan.stripePrice) return;
+    // Si ya tiene suscripción de pago, el cambio se hace desde el portal de Stripe
+    if (tienePlanPago) {
+      manage();
+    } else {
+      subscribe(plan.stripePrice);
+    }
+  };
 
   return (
     <div className="planes-page">
@@ -134,6 +126,23 @@ const Planes = () => {
           <h1>{t('plans.title')}</h1>
           <p>{t('plans.subtitle')}</p>
         </div>
+
+        {tienePlanPago && (
+          <div className="planes__manage-bar">
+            <button
+              className="btn btn--outline btn--sm"
+              onClick={manage}
+              disabled={loading}
+            >
+              {loading ? (
+                <PiSpinnerBold size={15} className="spin" aria-hidden="true" />
+              ) : (
+                <PiGearBold size={15} aria-hidden="true" />
+              )}
+              {t('plans.manage')}
+            </button>
+          </div>
+        )}
 
         <div className="planes__grid">
           {PLANES.map(plan => {
@@ -162,16 +171,10 @@ const Planes = () => {
                   >
                     {plan.precio ? (
                       <>
-                        <span
-                          className="planes__precio-monto"
-                          aria-hidden="true"
-                        >
+                        <span className="planes__precio-monto" aria-hidden="true">
                           {plan.precio}
                         </span>
-                        <span
-                          className="planes__precio-periodo"
-                          aria-hidden="true"
-                        >
+                        <span className="planes__precio-periodo" aria-hidden="true">
                           USD / {t('plans.perMonth')}
                         </span>
                       </>
@@ -215,17 +218,30 @@ const Planes = () => {
                     >
                       {t('plans.currentPlan')}
                     </button>
+                  ) : plan.id === 'gratuito' ? (
+                    // Gratuito: solo mostrar info, sin acción (se gestiona desde el portal)
+                    <button
+                      className="btn btn--outline btn--sm planes__btn"
+                      onClick={manage}
+                      disabled={loading || !tienePlanPago}
+                    >
+                      {loading ? (
+                        <PiSpinnerBold size={14} className="spin" aria-hidden="true" />
+                      ) : null}
+                      {tienePlanPago ? t('plans.changeTo') + ' Gratuito' : t('plans.free')}
+                    </button>
                   ) : (
                     <button
                       className="btn btn--primary btn--sm planes__btn"
-                      onClick={e => {
-                        triggerRef.current = e.currentTarget;
-                        setModalPlan(plan);
-                      }}
+                      onClick={() => handlePlanAction(plan)}
+                      disabled={loading}
                     >
-                      {plan.id === 'gratuito'
-                        ? 'Cambiar a Gratuito'
-                        : `Contratar ${plan.nombre}`}
+                      {loading ? (
+                        <PiSpinnerBold size={14} className="spin" aria-hidden="true" />
+                      ) : null}
+                      {tienePlanPago
+                        ? `${t('plans.changeTo')} ${plan.nombre}`
+                        : `${t('plans.subscribe')} ${plan.nombre}`}
                     </button>
                   )}
                 </div>
@@ -234,67 +250,6 @@ const Planes = () => {
           })}
         </div>
       </div>
-
-      {/* Modal de contratación */}
-      {modalPlan && (
-        <div
-          className="planes__modal-overlay"
-          onClick={closeModal}
-          aria-hidden="true"
-        />
-      )}
-      {modalPlan && (
-        <div
-          ref={modalRef}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="planes-modal-title"
-          className="planes__modal-wrapper"
-        >
-          <div className="planes__modal">
-            <button
-              className="planes__modal-close"
-              onClick={closeModal}
-              aria-label={t('common.close')}
-            >
-              <PiXBold size={16} aria-hidden="true" />
-            </button>
-            <h3 id="planes-modal-title" className="planes__modal-title">
-              {modalPlan.nombre}
-            </h3>
-            <p className="planes__modal-body">{t('plans.betaNotice')}</p>
-            {modalPlan.precio && (
-              <p
-                className="planes__modal-price"
-                aria-label={`${modalPlan.precio} dólares USD por ${modalPlan.periodo}`}
-              >
-                <span aria-hidden="true">
-                  {modalPlan.precio} USD / {modalPlan.periodo}
-                </span>
-              </p>
-            )}
-            <div className="planes__modal-actions">
-              <button
-                className="btn btn--primary btn--sm"
-                onClick={() => {
-                  closeModal();
-                  navigate('/soporte');
-                }}
-              >
-                <PiHeadsetBold size={15} aria-hidden="true" />
-                {t('plans.goToSupport')}
-              </button>
-              <a
-                className="btn btn--outline btn--sm"
-                href="mailto:orderly.vault@gmail.com"
-              >
-                <PiEnvelopeBold size={15} aria-hidden="true" />
-                {t('plans.sendEmail')}
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
