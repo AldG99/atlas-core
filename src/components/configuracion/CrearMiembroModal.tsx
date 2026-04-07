@@ -48,7 +48,14 @@ const CrearMiembroModal = ({ onClose, onSubmit }: CrearMiembroModalProps) => {
 
     setLoading(true);
     try {
-      const { confirmarPassword: _, ...data } = form;
+      const data: MiembroFormData = {
+        nombre: form.nombre,
+        apellido: form.apellido,
+        fechaNacimiento: form.fechaNacimiento,
+        telefono: form.telefono,
+        telefonoCodigoPais: form.telefonoCodigoPais,
+        password: form.password,
+      };
       await onSubmit(data);
       onClose();
     } catch (err) {

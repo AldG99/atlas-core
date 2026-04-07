@@ -19,15 +19,14 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
   const { format } = useCurrency();
   const total = breakdown.reduce((sum, item) => sum + item.cantidad, 0);
 
-  let cumulativeOffset = 0;
+  type Segment = StatusBreakdownItem & { length: number; offset: number };
   const segments = breakdown
     .filter((item) => item.porcentaje > 0)
-    .map((item) => {
+    .reduce<Segment[]>((acc, item) => {
       const length = (item.porcentaje / 100) * CIRCUMFERENCE;
-      const seg = { ...item, length, offset: cumulativeOffset };
-      cumulativeOffset += length;
-      return seg;
-    });
+      const offset = acc.reduce((sum, s) => sum + s.length, 0);
+      return [...acc, { ...item, length, offset }];
+    }, []);
 
   return (
     <div className="status-breakdown">

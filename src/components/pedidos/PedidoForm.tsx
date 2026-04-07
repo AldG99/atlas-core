@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PedidoFormData, ProductoItem } from '../../types/Pedido';
 import type { Producto } from '../../types/Producto';
@@ -44,14 +44,9 @@ const PedidoForm = ({
     }
     return [];
   });
-  const [total, setTotal] = useState(0);
+  const total = items.reduce((sum, item) => sum + item.subtotal, 0);
   const [notas, setNotas] = useState('');
   const [errors, setErrors] = useState<{ cliente?: string; productos?: string }>({});
-
-  useEffect(() => {
-    const newTotal = items.reduce((sum, item) => sum + item.subtotal, 0);
-    setTotal(newTotal);
-  }, [items]);
 
   const validate = (): boolean => {
     const newErrors: { cliente?: string; productos?: string } = {};
@@ -108,7 +103,6 @@ const PedidoForm = ({
 
     setSelectedCliente(null);
     setItems([]);
-    setTotal(0);
     setNotas('');
   };
 

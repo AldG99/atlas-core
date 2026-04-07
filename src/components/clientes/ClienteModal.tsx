@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PiXBold, PiUserBold } from 'react-icons/pi';
 import type { ClienteFormData } from '../../types/Cliente';
@@ -14,7 +14,7 @@ const DOMINIOS_DESECHABLES = [
   'getairmail.com', 'discard.email', 'mailnull.com',
 ];
 
-const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s\-]+$/;
+const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s-]+$/;
 
 const esTelefonoFicticio = (tel: string): boolean => {
   // Todos los dígitos iguales: 0000000000, 5555555555
@@ -43,37 +43,30 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
   const { t } = useTranslation();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(cliente?.fotoPerfil ?? null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const [formData, setFormData] = useState<ClienteFormData>({
-    fotoPerfil: '',
-    nombre: '',
-    apellido: '',
-    telefono: '',
-    telefonoCodigoPais: 'MX',
-    correo: '',
-    calle: '',
-    numeroExterior: '',
-    numeroInterior: '',
-    colonia: '',
-    ciudad: '',
-    codigoPostal: '',
-    pais: '',
-    referencia: ''
-  });
+  const [formData, setFormData] = useState<ClienteFormData>(
+    cliente ?? {
+      fotoPerfil: '',
+      nombre: '',
+      apellido: '',
+      telefono: '',
+      telefonoCodigoPais: 'MX',
+      correo: '',
+      calle: '',
+      numeroExterior: '',
+      numeroInterior: '',
+      colonia: '',
+      ciudad: '',
+      codigoPostal: '',
+      pais: '',
+      referencia: ''
+    }
+  );
 
   const [errors, setErrors] = useState<Partial<Record<keyof ClienteFormData, string>>>({});
-
-  useEffect(() => {
-    if (cliente) {
-      setFormData(cliente);
-      if (cliente.fotoPerfil) {
-        setPreviewImage(cliente.fotoPerfil);
-      }
-    }
-  }, [cliente]);
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof ClienteFormData, string>> = {};

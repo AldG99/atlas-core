@@ -88,7 +88,14 @@ const MiembroPerfilModal = ({
     }
     setSaving(true);
     try {
-      const { password, confirmarPassword: _, ...profileData } = editForm;
+      const profileData: ProfileData = {
+        nombre: editForm.nombre,
+        apellido: editForm.apellido,
+        telefono: editForm.telefono,
+        telefonoCodigoPais: editForm.telefonoCodigoPais,
+        fechaNacimiento: editForm.fechaNacimiento,
+      };
+      const { password } = editForm;
       await onActualizar(miembro.uid, profileData);
       if (password) await onActualizarContrasena(miembro.uid, password);
       setEditing(false);

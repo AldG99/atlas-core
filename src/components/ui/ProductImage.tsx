@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PiPackageBold } from 'react-icons/pi';
 
@@ -12,10 +12,12 @@ interface Props {
 const ProductImage = ({ src, alt, placeholderClassName, placeholderSize = 48 }: Props) => {
   const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
+  const [prevSrc, setPrevSrc] = useState(src);
 
-  useEffect(() => {
+  if (prevSrc !== src) {
+    setPrevSrc(src);
     setFailed(false);
-  }, [src]);
+  }
 
   if (src && !failed) {
     return <img src={src} alt={alt} onError={() => setFailed(true)} />;

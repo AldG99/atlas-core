@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PiXBold, PiImageBold, PiPlusBold, PiTrashBold, PiWarehouseBold } from 'react-icons/pi';
 import type { ProductoFormData, Etiqueta } from '../../types/Producto';
@@ -19,20 +19,22 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
   const { user } = useAuth();
   const { etiquetas: todasEtiquetas, addEtiqueta, removeEtiqueta } = useEtiquetas();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(producto?.imagen ?? null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const [formData, setFormData] = useState<ProductoFormData>({
-    clave: '',
-    nombre: '',
-    precio: 0,
-    descripcion: '',
-    imagen: '',
-    etiquetas: [],
-    controlStock: false,
-    stock: 0,
-  });
+  const [formData, setFormData] = useState<ProductoFormData>(
+    producto ?? {
+      clave: '',
+      nombre: '',
+      precio: 0,
+      descripcion: '',
+      imagen: '',
+      etiquetas: [],
+      controlStock: false,
+      stock: 0,
+    }
+  );
 
   const [errors, setErrors] = useState<Partial<Record<keyof ProductoFormData, string>>>({});
 
@@ -41,15 +43,6 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
   const [nuevaEtiquetaColor, setNuevaEtiquetaColor] = useState(ETIQUETA_COLORES[0]);
   const [nuevaEtiquetaIcono, setNuevaEtiquetaIcono] = useState('star');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (producto) {
-      setFormData(producto);
-      if (producto.imagen) {
-        setPreviewImage(producto.imagen);
-      }
-    }
-  }, [producto]);
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof ProductoFormData, string>> = {};

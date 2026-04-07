@@ -8,13 +8,15 @@ interface PeriodFilterProps {
   onPeriodChange: (period: PeriodType) => void;
 }
 
+const PERIOD_VALUES: PeriodType[] = ['hoy', 'semana', 'mes'];
+
 const PeriodFilter = ({ period, onPeriodChange }: PeriodFilterProps) => {
   const { t } = useTranslation();
 
   const PERIODS: { value: PeriodType; label: string }[] = [
-    { value: 'hoy', label: t('reports.period.today') },
+    { value: 'hoy',    label: t('reports.period.today') },
     { value: 'semana', label: t('reports.period.week') },
-    { value: 'mes', label: t('reports.period.month') },
+    { value: 'mes',    label: t('reports.period.month') },
   ];
 
   useEffect(() => {
@@ -23,11 +25,11 @@ const PeriodFilter = ({ period, onPeriodChange }: PeriodFilterProps) => {
       if (['input', 'select', 'textarea'].includes(tag)) return;
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
       e.preventDefault();
-      const currentIndex = PERIODS.findIndex(p => p.value === period);
+      const currentIndex = PERIOD_VALUES.indexOf(period);
       const nextIndex = e.key === 'ArrowRight'
-        ? Math.min(currentIndex + 1, PERIODS.length - 1)
+        ? Math.min(currentIndex + 1, PERIOD_VALUES.length - 1)
         : Math.max(currentIndex - 1, 0);
-      if (nextIndex !== currentIndex) onPeriodChange(PERIODS[nextIndex].value);
+      if (nextIndex !== currentIndex) onPeriodChange(PERIOD_VALUES[nextIndex]);
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);

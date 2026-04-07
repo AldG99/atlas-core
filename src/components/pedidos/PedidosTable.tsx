@@ -6,7 +6,7 @@ import { PiStarFill, PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
 const PAGE_SIZE = 20;
 import type { Pedido } from '../../types/Pedido';
 import type { Cliente } from '../../types/Cliente';
-import { PEDIDO_STATUS, PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
+import { PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
 import { formatShortDate, getTotalPagado } from '../../utils/formatters';
 import { useClientes } from '../../hooks/useClientes';
 import { useCurrency } from '../../hooks/useCurrency';
@@ -29,14 +29,16 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [prevPedidos, setPrevPedidos] = useState(pedidos);
+
+  if (prevPedidos !== pedidos) {
+    setPrevPedidos(pedidos);
+    if (page !== 0) setPage(0);
+    if (focusedRow !== null) setFocusedRow(null);
+  }
 
   const totalPages = Math.ceil(pedidos.length / PAGE_SIZE);
   const paginatedPedidos = pedidos.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
-
-  useEffect(() => {
-    setPage(0);
-    setFocusedRow(null);
-  }, [pedidos]);
 
   const clienteMap = useMemo(() => {
     const map = new Map<string, Cliente>();

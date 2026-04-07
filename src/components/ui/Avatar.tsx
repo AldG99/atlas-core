@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface Props {
   src?: string | null;
@@ -8,10 +8,12 @@ interface Props {
 
 const Avatar = ({ src, initials, alt = '' }: Props) => {
   const [failed, setFailed] = useState(false);
+  const [prevSrc, setPrevSrc] = useState(src);
 
-  useEffect(() => {
+  if (prevSrc !== src) {
+    setPrevSrc(src);
     setFailed(false);
-  }, [src]);
+  }
 
   if (src && !failed) {
     return <img src={src} alt={alt} onError={() => setFailed(true)} />;
