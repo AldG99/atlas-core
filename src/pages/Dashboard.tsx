@@ -64,7 +64,7 @@ const Dashboard = () => {
     if (status !== 'todos' && status !== 'abono_pendiente') {
       fetchByStatus(status as PedidoStatus);
     }
-  }, []);
+  }, [location.state, setFilterStatus, fetchByStatus]);
 
   // Auto-archivar pedidos entregados hace más de 48 horas (solo una vez por sesión)
   const hasArchivedRef = useRef(false);
@@ -77,7 +77,7 @@ const Dashboard = () => {
         fetchPedidos();
       }
     }).catch(() => {});
-  }, [user, loading, showToast, fetchPedidos]);
+  }, [user, loading, showToast, fetchPedidos, t]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

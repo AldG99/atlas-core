@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -52,7 +52,7 @@ const PLANES = [
   {
     id: 'enterprise',
     nombre: 'Business',
-    precio: '$7',
+    precio: '$6',
     periodo: 'mes',
     descripcion: 'Para equipos y negocios con operaciones de alto volumen.',
     icono: <PiDiamondsFourBold size={22} />,
@@ -78,6 +78,11 @@ const Planes = () => {
   );
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+
+  const closeModal = useCallback(() => {
+    setModalPlan(null);
+    triggerRef.current?.focus();
+  }, []);
 
   // Cerrar con Escape + trampa de foco
   useEffect(() => {
@@ -110,12 +115,7 @@ const Planes = () => {
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [modalPlan]);
-
-  const closeModal = () => {
-    setModalPlan(null);
-    triggerRef.current?.focus();
-  };
+  }, [modalPlan, closeModal]);
 
   return (
     <div className="planes-page">

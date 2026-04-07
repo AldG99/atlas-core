@@ -1,7 +1,7 @@
 export const PLAN_LIMITS = {
-  gratuito:   { pedidosMes: 180, clientes: 60,       productos: 40,  etiquetas: 6,  miembros: 0 },
-  pro:        { pedidosMes: 450, clientes: 160,       productos: 120, etiquetas: 10, miembros: 2 },
-  enterprise: { pedidosMes: Infinity, clientes: Infinity, productos: 420, etiquetas: 16, miembros: 6 },
+  gratuito:   { pedidosMes: 360, clientes: 120,      productos: 80,  etiquetas: 6,  miembros: 0 },
+  pro:        { pedidosMes: 720, clientes: 240,       productos: 160, etiquetas: 10, miembros: 2 },
+  enterprise: { pedidosMes: Infinity, clientes: Infinity, productos: 640, etiquetas: 16, miembros: 6 },
 } as const;
 
 export type PlanKey = keyof typeof PLAN_LIMITS;

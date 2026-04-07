@@ -14,6 +14,7 @@ interface ToastContextType {
   removeToast: (id: string) => void;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const ToastContext = createContext<ToastContextType | null>(null);
 
 interface ToastProviderProps {
@@ -23,21 +24,18 @@ interface ToastProviderProps {
 export const ToastProvider = ({ children }: ToastProviderProps) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType = 'info') => {
-    const id = Date.now().toString();
-    const newToast: Toast = { id, message, type };
-
-    setToasts((prev) => [...prev, newToast]);
-
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-      removeToast(id);
-    }, 3000);
-  }, []);
-
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
+
+  const showToast = useCallback((message: string, type: ToastType = 'info') => {
+    const id = Date.now().toString();
+    const newToast: Toast = { id, message, type };
+    setToasts((prev) => [...prev, newToast]);
+    setTimeout(() => {
+      removeToast(id);
+    }, 3000);
+  }, [removeToast]);
 
   return (
     <ToastContext.Provider value={{ toasts, showToast, removeToast }}>

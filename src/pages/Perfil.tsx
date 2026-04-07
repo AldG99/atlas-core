@@ -26,7 +26,7 @@ import ImageCropper from '../components/ui/ImageCropper';
 import Avatar from '../components/ui/Avatar';
 import './Perfil.scss';
 
-const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s\-]+$/;
+const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s-]+$/;
 
 const esTelefonoFicticio = (tel: string): boolean => {
   if (/^(\d)\1+$/.test(tel)) return true;
@@ -57,7 +57,7 @@ interface FormErrors {
 }
 
 const Perfil = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user, updateProfile, changePassword, role } = useAuth();
   const isMiembro = role === 'miembro';
   const { showToast } = useToast();
@@ -85,7 +85,7 @@ const Perfil = () => {
     if (!isEditing) {
       setPreviewImage(user?.fotoPerfil ?? null);
     }
-  }, [user?.fotoPerfil]);
+  }, [user?.fotoPerfil, isEditing]);
 
   const [formData, setFormData] = useState({
     nombreNegocio: user?.nombreNegocio ?? '',

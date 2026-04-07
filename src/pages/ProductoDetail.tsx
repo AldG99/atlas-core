@@ -8,10 +8,9 @@ import {
   PiPackageBold,
   PiCalendarBold,
   PiCameraBold,
-  PiXBold,
 } from 'react-icons/pi';
 import type { Producto, ProductoFormData } from '../types/Producto';
-import { getProductoById, deleteProducto, updateProducto, uploadProductoImage } from '../services/productoService';
+import { getProductoById, updateProducto, uploadProductoImage } from '../services/productoService';
 import type { CancelDescuentoInfo } from '../services/productoService';
 import { useEtiquetas } from '../hooks/useEtiquetas';
 import { useAuth } from '../hooks/useAuth';
@@ -21,6 +20,7 @@ import { ROUTES } from '../config/routes';
 import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
 import { compressImage } from '../utils/imageUtils';
 import ProductImage from '../components/ui/ProductImage';
+import ProductoDeleteModal from '../components/pedidos/ProductoDeleteModal';
 import MainLayout from '../layouts/MainLayout';
 import './ProductoDetail.scss';
 
@@ -36,8 +36,6 @@ const ProductoDetail = () => {
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteConfirmText, setDeleteConfirmText] = useState('');
-  const [deleteCode, setDeleteCode] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ProductoFormData | null>(null);
   const [saving, setSaving] = useState(false);
@@ -83,7 +81,7 @@ const ProductoDetail = () => {
     } finally {
       setLoading(false);
     }
-  }, [id, navigate, showToast]);
+  }, [id, navigate, showToast, t]);
 
   useEffect(() => {
     fetchProducto();
@@ -102,27 +100,9 @@ const ProductoDetail = () => {
       .filter((e): e is NonNullable<typeof e> => !!e);
   };
 
-  const generateDeleteCode = () =>
-    Array.from({ length: 10 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
-
   const handleDelete = () => {
     if (!producto) return;
-    setDeleteConfirmText('');
-    setDeleteCode(generateDeleteCode());
     setShowDeleteModal(true);
-  };
-
-  const confirmDelete = async () => {
-    if (!producto) return;
-    if (deleteConfirmText !== deleteCode) return;
-    setShowDeleteModal(false);
-    try {
-      await deleteProducto(producto.id);
-      showToast(t('products.detail.deleteSuccess'), 'success');
-      navigate(ROUTES.PRODUCTOS);
-    } catch {
-      showToast(t('products.detail.deleteError'), 'error');
-    }
   };
 
   const startEditing = () => {
@@ -619,42 +599,12 @@ const ProductoDetail = () => {
         </div>
       </div>
 
-      {showDeleteModal && (
-        <div className="producto-detail__modal-overlay" onClick={() => setShowDeleteModal(false)}>
-          <div className="producto-detail__modal" onClick={e => e.stopPropagation()}>
-            <div className="producto-detail__modal-header">
-              <h3>{t('products.detail.deleteModal.title')}</h3>
-              <button className="producto-detail__modal-close" onClick={() => setShowDeleteModal(false)}>
-                <PiXBold size={18} />
-              </button>
-            </div>
-            <div className="producto-detail__modal-body">
-              <p>{t('products.detail.deleteModal.warning')}</p>
-              <p className="producto-detail__delete-label">
-                {t('products.detail.deleteModal.instruction')}
-              </p>
-              <code className="producto-detail__delete-code">{deleteCode}</code>
-              <input
-                type="text"
-                className="input"
-                placeholder={t('products.detail.deleteModal.placeholder')}
-                value={deleteConfirmText}
-                onChange={e => setDeleteConfirmText(e.target.value.toUpperCase())}
-                autoComplete="off"
-              />
-            </div>
-            <div className="producto-detail__modal-footer">
-              <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>{t('products.detail.deleteModal.cancel')}</button>
-              <button
-                className="btn btn--danger btn--sm"
-                onClick={confirmDelete}
-                disabled={deleteConfirmText !== deleteCode}
-              >
-                {t('products.detail.deleteModal.delete')}
-              </button>
-            </div>
-          </div>
-        </div>
+      {showDeleteModal && producto && (
+        <ProductoDeleteModal
+          producto={producto}
+          onClose={() => setShowDeleteModal(false)}
+          onDeleted={() => navigate(ROUTES.PRODUCTOS)}
+        />
       )}
     </MainLayout>
   );

@@ -18,8 +18,12 @@ export const useTemplates = () => {
   const [saving, setSaving] = useState(false);
 
   const reset = useCallback(() => {
-    setDraft(current);
-  }, [current.confirmacion, current.preparacion, current.entrega]);
+    setDraft({
+      confirmacion: user?.plantillas?.confirmacion ?? PLANTILLAS_DEFAULT.confirmacion,
+      preparacion:  user?.plantillas?.preparacion  ?? PLANTILLAS_DEFAULT.preparacion,
+      entrega:      user?.plantillas?.entrega      ?? PLANTILLAS_DEFAULT.entrega,
+    });
+  }, [user?.plantillas?.confirmacion, user?.plantillas?.preparacion, user?.plantillas?.entrega]);
 
   const resetToDefaults = useCallback(() => {
     setDraft(PLANTILLAS_DEFAULT);

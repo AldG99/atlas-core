@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react'; // useEffect needed for beforeinstallprompt listener
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -8,17 +8,17 @@ interface BeforeInstallPromptEvent extends Event {
 
 export const usePWA = () => {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstalled, setIsInstalled] = useState(false);
-  const [notifPermission, setNotifPermission] = useState<NotificationPermission>('default');
+  const [isInstalled, setIsInstalled] = useState(
+    () => window.matchMedia('(display-mode: standalone)').matches
+  );
+  const [notifPermission, setNotifPermission] = useState<NotificationPermission>(
+    () => ('Notification' in window ? Notification.permission : 'default')
+  );
 
   useRegisterSW();
 
-  // Detectar si ya está instalada o si hay prompt disponible
+  // Detectar si hay prompt de instalación disponible
   useEffect(() => {
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true);
-    }
-
     const handler = (e: Event) => {
       e.preventDefault();
       setInstallPrompt(e as BeforeInstallPromptEvent);
@@ -31,13 +31,6 @@ export const usePWA = () => {
     });
 
     return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  // Leer permiso de notificaciones actual
-  useEffect(() => {
-    if ('Notification' in window) {
-      setNotifPermission(Notification.permission);
-    }
   }, []);
 
   const promptInstall = useCallback(async () => {

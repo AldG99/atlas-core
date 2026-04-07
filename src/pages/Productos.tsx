@@ -43,7 +43,7 @@ const Productos = () => {
   useEffect(() => {
     const state = location.state as Record<string, unknown> | null;
     if (state?.filterDescuento) setFilterVenciendo(true);
-  }, []);
+  }, [location.state]);
   const [showHistorial, setShowHistorial] = useState(false);
   const [editingProducto, setEditingProducto] = useState<{ id: string; data: ProductoFormData } | null>(null);
 
@@ -62,6 +62,7 @@ const Productos = () => {
       : [...productos];
 
     if (filterVenciendo) {
+      // eslint-disable-next-line react-hooks/purity
       const ahora = Date.now();
       resultado = resultado.filter(p => {
         if (!p.descuento || !p.fechaFinDescuento) return false;

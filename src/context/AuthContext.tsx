@@ -20,6 +20,7 @@ interface AuthContextType extends AuthState {
   role: 'admin' | 'miembro';
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
@@ -107,7 +108,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     try {
       setError(null);
-      let profileData = { ...data };
+      const profileData = { ...data };
 
       if (imageFile) {
         const imageUrl = await uploadProfileImage(imageFile, user.uid);

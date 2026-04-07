@@ -10,7 +10,7 @@ import AuthLayout from '../layouts/AuthLayout';
 import PhoneInput from '../components/clientes/PhoneInput';
 import './Register.scss';
 
-const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s\-]+$/;
+const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s-]+$/;
 
 const esTelefonoFicticio = (tel: string): boolean => {
   if (/^(\d)\1+$/.test(tel)) return true;

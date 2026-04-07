@@ -18,6 +18,7 @@ export const useEquipo = () => {
 
   useEffect(() => {
     if (!user || role !== 'admin' || !negocioUid) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     const unsub = suscribirMiembros(negocioUid, (data) => {
       setMiembros(data);

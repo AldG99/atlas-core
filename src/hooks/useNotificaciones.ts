@@ -26,6 +26,7 @@ export const useNotificaciones = () => {
 
   const notificaciones: Notificacion[] = useMemo(() => {
     const result: Notificacion[] = [];
+    // eslint-disable-next-line react-hooks/purity
     const ahora = Date.now();
 
     // 1. Pedidos en "Pendiente" hace más de 2 días

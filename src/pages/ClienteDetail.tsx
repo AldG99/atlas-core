@@ -89,7 +89,7 @@ const ClienteDetail = () => {
     } finally {
       setLoading(false);
     }
-  }, [id, navigate, showToast]);
+  }, [id, navigate, showToast, t]);
 
   useEffect(() => {
     fetchCliente();

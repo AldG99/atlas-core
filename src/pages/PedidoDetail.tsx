@@ -100,7 +100,7 @@ const PedidoDetail = () => {
     } finally {
       if (!silent) setLoading(false);
     }
-  }, [id, user, negocioUid, navigate, showToast, backRoute]);
+  }, [id, user, negocioUid, navigate, showToast, backRoute, t]);
 
   useEffect(() => {
     fetchPedido();
@@ -176,7 +176,7 @@ const PedidoDetail = () => {
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [pedido, focusedRow, focusedAbonoRow, selectedProducto, catalogoProductos, showToast]);
+  }, [pedido, focusedRow, focusedAbonoRow, selectedProducto, catalogoProductos, showToast, t]);
 
   useEffect(() => {
     if (focusedRow === null || !tableScrollRef.current) return;
