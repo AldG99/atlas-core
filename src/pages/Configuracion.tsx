@@ -32,6 +32,7 @@ import CrearMiembroModal from '../components/configuracion/CrearMiembroModal';
 import MiembroPerfilModal from '../components/configuracion/MiembroPerfilModal';
 import RespaldoPanel from '../components/configuracion/RespaldoPanel';
 import PlantillasPanel from '../components/configuracion/PlantillasPanel';
+import { getPlanLimits } from '../constants/planLimits';
 import './Configuracion.scss';
 
 type Section = 'moneda' | 'notificaciones' | 'instalar' | 'plantillas' | 'equipo' | 'respaldo' | 'gestion' | 'membresia' | 'idioma';
@@ -84,6 +85,7 @@ const Configuracion = () => {
   // Equipo
   const { miembros, loading: equipoLoading, crearMiembro, remover, actualizar, actualizarContrasena } = useEquipo();
   const [showCrearMiembro, setShowCrearMiembro] = useState(false);
+  const planPermiteMiembros = getPlanLimits(user?.plan).miembros > 0;
 
   // Perfil de miembro
   const [selectedMiembro, setSelectedMiembro] = useState<User | null>(null);
@@ -293,7 +295,12 @@ const Configuracion = () => {
               </div>
             )}
 
-            <button className="btn btn--primary btn--sm" onClick={() => setShowCrearMiembro(true)}>
+            <button
+              className="btn btn--primary btn--sm"
+              onClick={() => setShowCrearMiembro(true)}
+              disabled={!planPermiteMiembros}
+              title={!planPermiteMiembros ? t('settings.team.upgradePlanToAdd') : undefined}
+            >
               {t('settings.team.newMember')}
             </button>
           </>

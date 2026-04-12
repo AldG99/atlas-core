@@ -18,6 +18,8 @@ src/config
 src/types
 .env*
 
+.firebaserc
+
 # Docs
 fase-1-gestor-pedidos.md
 fase-2-escalabilidad-saas.md

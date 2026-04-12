@@ -23,6 +23,7 @@ const RespaldoPanel = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const planPermiteRespaldo = user?.plan === 'pro' || user?.plan === 'enterprise';
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [exporting, setExporting] = useState(false);
   const [importStep, setImportStep] = useState<ImportStep>('idle');
@@ -90,7 +91,8 @@ const RespaldoPanel = () => {
           <button
             className="btn btn--primary btn--sm"
             onClick={handleExport}
-            disabled={exporting}
+            disabled={exporting || !planPermiteRespaldo}
+            title={!planPermiteRespaldo ? t('settings.backup.upgradePlanToUse') : undefined}
           >
             <PiDownloadSimpleBold size={15} />
             {exporting ? t('settings.backup.exporting') : t('settings.backup.exportButton')}
@@ -117,6 +119,8 @@ const RespaldoPanel = () => {
             <button
               className="btn btn--outline btn--sm"
               onClick={() => fileInputRef.current?.click()}
+              disabled={!planPermiteRespaldo}
+              title={!planPermiteRespaldo ? t('settings.backup.upgradePlanToUse') : undefined}
             >
               <PiFileBold size={15} />
               {t('settings.backup.selectFile')}

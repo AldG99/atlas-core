@@ -3,14 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { PiUsersThreeBold, PiWarningBold } from 'react-icons/pi';
 import { useEquipo } from '../../hooks/useEquipo';
 import { useToast } from '../../hooks/useToast';
+import { useAuth } from '../../hooks/useAuth';
+import { getPlanLimits } from '../../constants/planLimits';
 import PhoneInput from '../clientes/PhoneInput';
 import Avatar from '../ui/Avatar';
 import './EquipoCard.scss';
 
 const EquipoCard = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const { miembros, loading, crearMiembro, remover } = useEquipo();
   const { showToast } = useToast();
+  const planLimits = getPlanLimits(user?.plan);
+  const planPermiteMiembros = planLimits.miembros > 0;
 
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
@@ -120,7 +125,12 @@ const EquipoCard = () => {
       )}
 
       {!showForm ? (
-        <button className="btn btn--primary btn--sm equipo-card__add-btn" onClick={() => setShowForm(true)}>
+        <button
+          className="btn btn--primary btn--sm equipo-card__add-btn"
+          onClick={() => setShowForm(true)}
+          disabled={!planPermiteMiembros}
+          title={!planPermiteMiembros ? t('settings.team.upgradePlanToAdd') : undefined}
+        >
           {t('settings.team.newMember')}
         </button>
       ) : (
