@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { PiPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import ProductoDetalleModal from '../productos/ProductoDetalleModal';
+import ProductoModal from '../productos/ProductoModal';
 import { useProductos } from '../../hooks/useProductos';
 import { useEtiquetas } from '../../hooks/useEtiquetas';
 import { useToast } from '../../hooks/useToast';
 import { useCurrency } from '../../hooks/useCurrency';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
-import type { Producto } from '../../types/Producto';
+import type { Producto, ProductoFormData } from '../../types/Producto';
 import './ProductoSelector.scss';
 
 export interface ItemPedido {
@@ -26,56 +28,6 @@ interface ProductoSelectorProps {
   error?: string;
 }
 
-interface NuevoProductoFormProps {
-  onSave: (nombre: string, clave: string, precio: string) => Promise<void>;
-  onCancel: () => void;
-}
-
-const NuevoProductoForm = ({ onSave, onCancel }: NuevoProductoFormProps) => {
-  const { t } = useTranslation();
-  const [nombre, setNombre] = useState('');
-  const [clave, setClave] = useState('');
-  const [precio, setPrecio] = useState('');
-
-  const handleSave = () => onSave(nombre, clave, precio);
-
-  return (
-    <div className="producto-selector__form">
-      <div className="producto-selector__form-title">{t('orders.newProduct')}</div>
-      <input
-        type="text"
-        placeholder={t('orders.newProductName')}
-        value={nombre}
-        onChange={(e) => setNombre(e.target.value)}
-        className="input"
-      />
-      <input
-        type="text"
-        placeholder={t('orders.newProductCode')}
-        value={clave}
-        onChange={(e) => setClave(e.target.value)}
-        className="input"
-      />
-      <input
-        type="number"
-        placeholder={t('orders.newProductPrice')}
-        value={precio}
-        onChange={(e) => setPrecio(e.target.value)}
-        className="input"
-        min="0"
-        step="0.01"
-      />
-      <div className="producto-selector__form-actions">
-        <button type="button" className="btn btn--outline btn--sm" onClick={onCancel}>
-          {t('common.cancel')}
-        </button>
-        <button type="button" className="btn btn--primary btn--sm" onClick={handleSave}>
-          {t('common.save')}
-        </button>
-      </div>
-    </div>
-  );
-};
 
 const ProductoSelector = ({
   items,
@@ -93,7 +45,7 @@ const ProductoSelector = ({
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
@@ -168,25 +120,14 @@ const ProductoSelector = ({
     setShowDropdown(false);
   };
 
-  const handleAddNew = async (nombre: string, clave: string, precio: string) => {
-    if (!nombre.trim() || !precio) {
-      showToast(t('orders.newProductFillRequired'), 'warning');
-      return;
-    }
-    const precioNum = parseFloat(precio);
-    if (isNaN(precioNum) || precioNum < 0) {
-      showToast(t('orders.newProductInvalidPrice'), 'warning');
-      return;
-    }
+  const handleSaveProducto = async (data: ProductoFormData) => {
     try {
-      const newProducto = await addProducto({ nombre: nombre.trim(), clave: clave.trim(), precio: precioNum });
-      if (newProducto) {
-        onAddItem(newProducto);
-      }
-      showToast(t('orders.newProductSuccess'), 'success');
-      setShowForm(false);
-    } catch {
-      showToast(t('orders.newProductError'), 'error');
+      const newProducto = await addProducto(data);
+      if (newProducto) onAddItem(newProducto);
+      showToast(t('products.addSuccess'), 'success');
+      setShowModal(false);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : t('products.addError'), 'error');
     }
   };
 
@@ -329,7 +270,7 @@ const ProductoSelector = ({
         <button
           type="button"
           className="btn btn--primary producto-selector__add-btn"
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => setShowModal(true)}
           title={t('orders.addProductTitle')}
           disabled={disabled}
         >
@@ -337,11 +278,12 @@ const ProductoSelector = ({
         </button>
       </div>
 
-      {showForm && (
-        <NuevoProductoForm
-          onSave={handleAddNew}
-          onCancel={() => setShowForm(false)}
-        />
+      {showModal && createPortal(
+        <ProductoModal
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveProducto}
+        />,
+        document.body
       )}
 
       {error && (

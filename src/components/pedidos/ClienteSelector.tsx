@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { PiStarFill, PiPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import { useClientes } from '../../hooks/useClientes';
 import { useToast } from '../../hooks/useToast';
 import { formatTelefono } from '../../utils/formatters';
 import { getCodigoPais } from '../../data/codigosPais';
-import type { Cliente } from '../../types/Cliente';
+import type { Cliente, ClienteFormData } from '../../types/Cliente';
 import Avatar from '../ui/Avatar';
+import ClienteModal from '../clientes/ClienteModal';
 import './ClienteSelector.scss';
 
 interface ClienteSelectorProps {
@@ -23,9 +25,7 @@ const ClienteSelector = ({
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [nombre, setNombre] = useState('');
-  const [telefono, setTelefono] = useState('');
+  const [showModal, setShowModal] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -88,42 +88,14 @@ const ClienteSelector = ({
     items?.[index]?.scrollIntoView({ block: 'nearest' });
   };
 
-  const handleAddNew = async () => {
-    if (!nombre.trim() || !telefono.trim()) {
-      showToast(t('orders.quickClientFillRequired'), 'warning');
-      return;
-    }
-
-    const existente = clientes.find(c => c.telefono === telefono.trim());
-    if (existente) {
-      showToast(
-        t('orders.quickClientPhoneExists', { name: `${existente.nombre} ${existente.apellido}`.trim() }),
-        'warning'
-      );
-      return;
-    }
-
+  const handleSaveCliente = async (data: ClienteFormData) => {
     try {
-      const newCliente = await addCliente({
-        nombre: nombre.trim(),
-        apellido: '',
-        telefono: telefono.trim(),
-        telefonoCodigoPais: '',
-        calle: '',
-        numeroExterior: '',
-        colonia: '',
-        ciudad: '',
-        codigoPostal: '',
-      });
-      if (newCliente) {
-        onSelect(newCliente);
-      }
-      showToast(t('orders.quickClientSuccess'), 'success');
-      setNombre('');
-      setTelefono('');
-      setShowForm(false);
-    } catch {
-      showToast(t('orders.quickClientError'), 'error');
+      const newCliente = await addCliente(data);
+      if (newCliente) onSelect(newCliente);
+      showToast(t('clients.addSuccess'), 'success');
+      setShowModal(false);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : t('clients.addError'), 'error');
     }
   };
 
@@ -211,7 +183,7 @@ const ClienteSelector = ({
         <button
           type="button"
           className="btn btn--primary cliente-selector__add-btn"
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => setShowModal(true)}
           title={t('orders.addClientTitle')}
         >
           <PiPlusBold size={14} />
@@ -262,40 +234,13 @@ const ClienteSelector = ({
         </div>
       )}
 
-      {showForm && (
-        <div className="cliente-selector__form">
-          <div className="cliente-selector__form-title">{t('orders.quickClientTitle')}</div>
-          <input
-            type="text"
-            placeholder={t('orders.quickClientName')}
-            value={nombre}
-            onChange={e => setNombre(e.target.value)}
-            className="input"
-          />
-          <input
-            type="text"
-            placeholder={t('orders.quickClientPhone')}
-            value={telefono}
-            onChange={e => setTelefono(e.target.value)}
-            className="input"
-          />
-          <div className="cliente-selector__form-actions">
-            <button
-              type="button"
-              className="btn btn--outline btn--sm"
-              onClick={() => setShowForm(false)}
-            >
-              {t('common.cancel')}
-            </button>
-            <button
-              type="button"
-              className="btn btn--primary btn--sm"
-              onClick={handleAddNew}
-            >
-              {t('common.save')}
-            </button>
-          </div>
-        </div>
+      {showModal && createPortal(
+        <ClienteModal
+          onClose={() => setShowModal(false)}
+          onSave={handleSaveCliente}
+          telefonosExistentes={clientes.map(c => c.telefono)}
+        />,
+        document.body
       )}
     </div>
   );
