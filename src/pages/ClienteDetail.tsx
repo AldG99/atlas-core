@@ -14,13 +14,13 @@ import {
 import type { Cliente, ClienteFormData } from '../types/Cliente';
 import type { Pedido } from '../types/Pedido';
 import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito } from '../services/clienteService';
+import ImageCropper from '../components/ui/ImageCropper';
 import Avatar from '../components/ui/Avatar';
 import PhoneInput from '../components/clientes/PhoneInput';
 import ClienteHistorialPedidos from '../components/clientes/ClienteHistorialPedidos';
 import { getPedidosByClientPhone } from '../services/pedidoService';
 import { getCodigoPais } from '../data/codigosPais';
 import { formatTelefono } from '../utils/formatters';
-import { compressImage } from '../utils/imageUtils';
 import { useCurrency } from '../hooks/useCurrency';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -51,25 +51,25 @@ const ClienteDetail = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [pedidosLoading, setPedidosLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
 
-  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && editData) {
-      try {
-        const compressed = await compressImage(file, 400, 0.8);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setEditData({ ...editData, fotoPerfil: reader.result as string });
-        };
-        reader.readAsDataURL(compressed);
-      } catch {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setEditData({ ...editData, fotoPerfil: reader.result as string });
-        };
-        reader.readAsDataURL(file);
-      }
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setCropSrc(reader.result as string);
+      reader.readAsDataURL(file);
     }
+    e.target.value = '';
+  };
+
+  const handleCropConfirm = (blob: Blob) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setEditData(prev => prev ? { ...prev, fotoPerfil: reader.result as string } : prev);
+    };
+    reader.readAsDataURL(blob);
+    setCropSrc(null);
   };
 
   const fetchCliente = useCallback(async () => {
@@ -127,7 +127,8 @@ const ClienteDetail = () => {
       line2: c.colonia,
       line3: c.ciudad,
       line4: `CP ${c.codigoPostal}`,
-      line5: c.pais
+      line5: c.estado,
+      line6: c.pais
     };
   };
 
@@ -188,6 +189,7 @@ const ClienteDetail = () => {
       numeroInterior: cliente.numeroInterior,
       colonia: cliente.colonia,
       ciudad: cliente.ciudad,
+      estado: cliente.estado,
       codigoPostal: cliente.codigoPostal,
       pais: cliente.pais,
       referencia: cliente.referencia
@@ -211,6 +213,7 @@ const ClienteDetail = () => {
         numeroInterior: editData.numeroInterior?.toUpperCase() ?? editData.numeroInterior,
         colonia: editData.colonia?.toUpperCase() ?? editData.colonia,
         ciudad: editData.ciudad?.toUpperCase() ?? editData.ciudad,
+        estado: editData.estado?.toUpperCase() ?? editData.estado,
         codigoPostal: editData.codigoPostal?.toUpperCase() ?? editData.codigoPostal,
         pais: editData.pais?.toUpperCase() ?? editData.pais,
       };
@@ -251,6 +254,7 @@ const ClienteDetail = () => {
   const addr = getPostalAddress(cliente);
 
   return (
+    <>
     <MainLayout>
       <div className="cliente-detail">
         {/* Fixed Top Bar */}
@@ -356,8 +360,9 @@ const ClienteDetail = () => {
                       </div>
                       <input type="text" value={editData?.colonia || ''} onChange={(e) => updateField('colonia', e.target.value)} placeholder="Colonia" className="cliente-detail__input" />
                       <div className="cliente-detail__address-row">
-                        <input type="text" value={editData?.ciudad || ''} onChange={(e) => updateField('ciudad', e.target.value)} placeholder="Ciudad" className="cliente-detail__input cliente-detail__input--flex" />
                         <input type="text" value={editData?.pais || ''} onChange={(e) => updateField('pais', e.target.value)} placeholder="País" className="cliente-detail__input cliente-detail__input--flex" />
+                        <input type="text" value={editData?.estado || ''} onChange={(e) => updateField('estado', e.target.value)} placeholder="Estado" className="cliente-detail__input cliente-detail__input--flex" />
+                        <input type="text" value={editData?.ciudad || ''} onChange={(e) => updateField('ciudad', e.target.value)} placeholder="Ciudad" className="cliente-detail__input cliente-detail__input--flex" />
                       </div>
                       <input type="text" value={editData?.codigoPostal || ''} onChange={(e) => updateField('codigoPostal', e.target.value)} placeholder="CP" className="cliente-detail__input cliente-detail__input--small" />
                     </>
@@ -365,7 +370,7 @@ const ClienteDetail = () => {
                     <>
                       <span className="cliente-detail__info-value">{addr.line1}</span>
                       <span className="cliente-detail__info-value">{addr.line2}</span>
-                      <span className="cliente-detail__info-value">{addr.line3}{addr.line5 ? `, ${addr.line5}` : ''}</span>
+                      <span className="cliente-detail__info-value">{addr.line3}{addr.line5 ? `, ${addr.line5}` : ''}{addr.line6 ? `, ${addr.line6}` : ''}</span>
                       <span className="cliente-detail__info-value">{addr.line4}</span>
                     </>
                   )}
@@ -402,8 +407,8 @@ const ClienteDetail = () => {
                     <span className="cliente-detail__info-label">{t('clients.detail.reference')}</span>
                     {isEditing ? (
                       <>
-                        <textarea value={editData?.referencia || ''} onChange={(e) => updateField('referencia', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} maxLength={80} style={{ resize: 'none' }} />
-                        <span className="cliente-detail__char-count">{(editData?.referencia || '').length}/80</span>
+                        <textarea value={editData?.referencia || ''} onChange={(e) => updateField('referencia', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} maxLength={140} style={{ resize: 'none' }} />
+                        <span className="cliente-detail__char-count">{(editData?.referencia || '').length}/140</span>
                       </>
                     ) : (
                       <span className={`cliente-detail__info-value ${!cliente.referencia ? 'cliente-detail__info-value--empty' : ''}`}>
@@ -467,6 +472,14 @@ const ClienteDetail = () => {
         </div>
       )}
     </MainLayout>
+    {cropSrc && (
+      <ImageCropper
+        imageSrc={cropSrc}
+        onConfirm={handleCropConfirm}
+        onCancel={() => setCropSrc(null)}
+      />
+    )}
+    </>
   );
 };
 

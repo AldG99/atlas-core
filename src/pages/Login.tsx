@@ -227,18 +227,25 @@ const Login = () => {
           {loading ? t('auth.login.submitting') : t('auth.login.submit')}
         </button>
 
-        {mode === 'admin' && (
-          <div className="login-form__footer">
-            <p className="login-form__link">
-              {t('auth.login.noAccount')} <Link to={ROUTES.REGISTER}>{t('auth.login.register')}</Link>
-            </p>
-            <p className="login-form__link">
-              <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(true); setResetEmail(email); }}>
-                {t('auth.login.forgotPassword')}
-              </button>
-            </p>
-          </div>
-        )}
+        <div className="login-form__footer">
+          {mode === 'admin' ? (
+            <>
+              <p className="login-form__link">
+                {t('auth.login.noAccount')} <Link to={ROUTES.REGISTER}>{t('auth.login.register')}</Link>
+              </p>
+              <p className="login-form__link">
+                <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(true); setResetEmail(email); }}>
+                  {t('auth.login.forgotPassword')}
+                </button>
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="login-form__link">{t('auth.login.memberDesc')}</p>
+              <p className="login-form__link login-form__link--muted">{t('auth.login.memberDescSub')}</p>
+            </>
+          )}
+        </div>
       </form>
     </AuthLayout>
   );

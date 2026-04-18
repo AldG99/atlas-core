@@ -51,7 +51,7 @@ const NewPedido = () => {
       <div className="new-pedido">
         <div className="new-pedido__card">
           <div className="new-pedido__header">
-            <h1>{t('orders.newOrder')}</h1>
+            <h1>{t('dashboard.newOrder')}</h1>
           </div>
 
           {error && <div className="new-pedido__error">{error}</div>}
