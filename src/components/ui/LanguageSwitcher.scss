@@ -2,13 +2,14 @@
 
 .lang-switcher {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: $spacing-xs;
+  justify-content: center;
+  gap: 6px;
 
   &__sep {
     color: $color-gray-400;
     font-size: $font-size-xs;
+    line-height: 1;
     user-select: none;
   }
 
@@ -20,6 +21,7 @@
     font-size: $font-size-xs;
     color: $color-gray-500;
     transition: color $transition-fast;
+    line-height: 1;
 
     &:hover:not(&--active) {
       color: $color-gray-800;

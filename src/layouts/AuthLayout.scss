@@ -119,42 +119,16 @@
   // ── Card del formulario ──────────────────────────────────
   &__content {
     width: 100%;
+    height: 520px;
     background-color: $color-white;
     border: 1px solid $color-gray-200;
     padding: $spacing-xl;
+    display: flex;
+    flex-direction: column;
   }
 
   // ── Language switcher ────────────────────────────────────
   &__lang {
-    flex-direction: row !important;
     justify-content: center;
-    max-width: none !important;
-
-    .lang-switcher__option {
-      flex: 1;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: $spacing-xs $spacing-sm;
-      gap: $spacing-xs;
-    }
-
-    .lang-switcher__info {
-      align-items: center;
-    }
-
-    .lang-switcher__native {
-      display: none;
-    }
-
-    .lang-switcher__code {
-      width: 28px;
-      height: 28px;
-      font-size: 10px;
-    }
-
-    .lang-switcher__check {
-      display: none;
-    }
   }
 }

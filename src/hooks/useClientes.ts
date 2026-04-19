@@ -59,6 +59,7 @@ export const useClientes = () => {
       numeroInterior: data.numeroInterior || '',
       colonia: data.colonia,
       ciudad: data.ciudad,
+      estado: data.estado || '',
       codigoPostal: data.codigoPostal,
       pais: data.pais || '',
       referencia: data.referencia || '',

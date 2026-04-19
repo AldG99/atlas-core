@@ -5,6 +5,7 @@ import type { ClienteFormData } from '../../types/Cliente';
 import { uploadClienteImage } from '../../services/clienteService';
 import { useAuth } from '../../hooks/useAuth';
 import PhoneInput from './PhoneInput';
+import ImageCropper from '../ui/ImageCropper';
 import './ClienteModal.scss';
 
 const DOMINIOS_DESECHABLES = [
@@ -45,6 +46,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(cliente?.fotoPerfil ?? null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const [formData, setFormData] = useState<ClienteFormData>(
@@ -60,6 +62,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
       numeroInterior: '',
       colonia: '',
       ciudad: '',
+      estado: '',
       codigoPostal: '',
       pais: '',
       referencia: ''
@@ -156,6 +159,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!validate() || !user) return;
 
     let finalData = { ...formData };
@@ -180,6 +184,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
       numeroInterior: finalData.numeroInterior?.toUpperCase(),
       colonia: finalData.colonia?.toUpperCase(),
       ciudad: finalData.ciudad?.toUpperCase(),
+      estado: finalData.estado?.toUpperCase(),
       codigoPostal: finalData.codigoPostal?.toUpperCase(),
       pais: finalData.pais?.toUpperCase(),
     });
@@ -218,18 +223,23 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
+      reader.onloadend = () => setCropSrc(reader.result as string);
       reader.readAsDataURL(file);
     }
+    e.target.value = '';
+  };
+
+  const handleCropConfirm = (blob: Blob, url: string) => {
+    setImageFile(new File([blob], 'cliente.jpg', { type: 'image/jpeg' }));
+    setPreviewImage(url);
+    setCropSrc(null);
   };
 
   const removeImage = () => {
     setPreviewImage(null);
     setImageFile(null);
+    setCropSrc(null);
     setFormData((prev) => ({ ...prev, fotoPerfil: '' }));
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -237,6 +247,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
   };
 
   return (
+    <>
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
@@ -365,6 +376,20 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
               </div>
 
               <div className="form-group">
+                <label htmlFor="estado">{t('clients.modal.state')}</label>
+                <input
+                  type="text"
+                  id="estado"
+                  name="estado"
+                  value={formData.estado || ''}
+                  onChange={handleChange}
+                  className="input"
+                  placeholder={t('clients.modal.statePlaceholder')}
+                  maxLength={60}
+                />
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="ciudad">{t('clients.modal.city')}</label>
                 <input
                   type="text"
@@ -463,10 +488,10 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
                   className={`input ${errors.referencia ? 'input--error' : ''}`}
                   placeholder={t('clients.modal.referencePlaceholder')}
                   rows={2}
-                  maxLength={80}
+                  maxLength={140}
                   style={{ resize: 'none' }}
                 />
-                <span className="form-char-count">{(formData.referencia || '').length}/80</span>
+                <span className="form-char-count">{(formData.referencia || '').length}/140</span>
                 {errors.referencia && <span className="form-error">{errors.referencia}</span>}
               </div>
             </div>
@@ -483,6 +508,14 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
         </form>
       </div>
     </div>
+    {cropSrc && (
+      <ImageCropper
+        imageSrc={cropSrc}
+        onConfirm={handleCropConfirm}
+        onCancel={() => setCropSrc(null)}
+      />
+    )}
+    </>
   );
 };
 

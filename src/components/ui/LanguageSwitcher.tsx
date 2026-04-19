@@ -1,9 +1,11 @@
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import './LanguageSwitcher.scss';
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
   { code: 'es', label: 'Español' },
+  { code: 'pt', label: 'Português' },
 ];
 
 interface Props {
@@ -17,8 +19,8 @@ export default function LanguageSwitcher({ className }: Props) {
   return (
     <div className={`lang-switcher ${className ?? ''}`}>
       {LANGUAGES.map(({ code, label }, index) => (
-        <span key={code}>
-          {index > 0 && <span className="lang-switcher__sep">·</span>}
+        <Fragment key={code}>
+          {index > 0 && <span className="lang-switcher__sep" aria-hidden="true">·</span>}
           <button
             className={`lang-switcher__item${current === code ? ' lang-switcher__item--active' : ''}`}
             onClick={() => i18n.changeLanguage(code)}
@@ -26,7 +28,7 @@ export default function LanguageSwitcher({ className }: Props) {
           >
             {label}
           </button>
-        </span>
+        </Fragment>
       ))}
     </div>
   );

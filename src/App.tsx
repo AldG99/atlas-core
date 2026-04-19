@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
@@ -5,25 +6,43 @@ import { ROUTES } from './config/routes';
 import ProtectedRoute from './components/ui/ProtectedRoute';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import Toast from './components/ui/Toast';
+import './styles/main.scss';
+
+// Páginas cargadas de forma síncrona (rutas de auth — necesarias al inicio)
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import NewPedido from './pages/NewPedido';
-import PedidoDetail from './pages/PedidoDetail';
-import Clientes from './pages/Clientes';
-import ClienteDetail from './pages/ClienteDetail';
-import Productos from './pages/Productos';
-import ProductoDetail from './pages/ProductoDetail';
-import Reportes from './pages/Reportes';
-import Perfil from './pages/Perfil';
-import Configuracion from './pages/Configuracion';
-import Archivo from './pages/Archivo';
-import Soporte from './pages/Soporte';
-import Planes from './pages/Planes';
-import Terminos from './pages/Terminos';
-import Privacidad from './pages/Privacidad';
-import NotFound from './pages/NotFound';
-import './styles/main.scss';
+
+// Páginas cargadas de forma lazy (se descargan solo cuando se navega a ellas)
+const Dashboard      = lazy(() => import('./pages/Dashboard'));
+const NewPedido      = lazy(() => import('./pages/NewPedido'));
+const PedidoDetail   = lazy(() => import('./pages/PedidoDetail'));
+const Clientes       = lazy(() => import('./pages/Clientes'));
+const ClienteDetail  = lazy(() => import('./pages/ClienteDetail'));
+const Productos      = lazy(() => import('./pages/Productos'));
+const ProductoDetail = lazy(() => import('./pages/ProductoDetail'));
+const Reportes       = lazy(() => import('./pages/Reportes'));
+const Perfil         = lazy(() => import('./pages/Perfil'));
+const Configuracion  = lazy(() => import('./pages/Configuracion'));
+const Archivo        = lazy(() => import('./pages/Archivo'));
+const Soporte        = lazy(() => import('./pages/Soporte'));
+const Planes         = lazy(() => import('./pages/Planes'));
+const Terminos       = lazy(() => import('./pages/Terminos'));
+const Privacidad     = lazy(() => import('./pages/Privacidad'));
+const NotFound       = lazy(() => import('./pages/NotFound'));
+
+function PageLoader() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div style={{
+        width: 36, height: 36, borderRadius: '50%',
+        border: '3px solid var(--color-border, #e5e7eb)',
+        borderTopColor: 'var(--color-primary, #3b82f6)',
+        animation: 'spin 0.7s linear infinite'
+      }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
 
 function App() {
   return (
@@ -32,6 +51,7 @@ function App() {
       <AuthProvider>
         <ToastProvider>
           <Toast />
+          <Suspense fallback={<PageLoader />}>
           <Routes>
           <Route path={ROUTES.LOGIN} element={<Login />} />
           <Route path={ROUTES.REGISTER} element={<Register />} />
@@ -144,6 +164,7 @@ function App() {
           <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
           <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>

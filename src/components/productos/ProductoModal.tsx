@@ -6,6 +6,7 @@ import { uploadProductoImage } from '../../services/productoService';
 import { useAuth } from '../../hooks/useAuth';
 import { useEtiquetas } from '../../hooks/useEtiquetas';
 import { ETIQUETA_ICONS, ETIQUETA_COLORES } from '../../constants/etiquetaIcons';
+import ImageCropper from '../ui/ImageCropper';
 import './ProductoModal.scss';
 
 interface ProductoModalProps {
@@ -21,6 +22,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(producto?.imagen ?? null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const [formData, setFormData] = useState<ProductoFormData>(
@@ -33,6 +35,8 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
       etiquetas: [],
       controlStock: false,
       stock: 0,
+      unidad: '',
+      unidadCantidad: 1,
     }
   );
 
@@ -63,6 +67,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!validate() || !user) return;
 
     let finalData = { ...formData };
@@ -104,18 +109,23 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
+      reader.onloadend = () => setCropSrc(reader.result as string);
       reader.readAsDataURL(file);
     }
+    e.target.value = '';
+  };
+
+  const handleCropConfirm = (blob: Blob, url: string) => {
+    setImageFile(new File([blob], 'producto.jpg', { type: 'image/jpeg' }));
+    setPreviewImage(url);
+    setCropSrc(null);
   };
 
   const removeImage = () => {
     setPreviewImage(null);
     setImageFile(null);
+    setCropSrc(null);
     setFormData(prev => ({ ...prev, imagen: '' }));
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -168,6 +178,7 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
   };
 
   return (
+    <>
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal--large" onClick={e => e.stopPropagation()}>
         <div className="modal__header">
@@ -284,6 +295,55 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
                 style={{ resize: 'none' }}
               />
               <span className="form-char-count">{(formData.descripcion || '').length}/240</span>
+            </div>
+          </div>
+
+          {/* Unidad de medida */}
+          <div className="form-section">
+            <h3 className="form-section__title">{t('products.detail.unit')}</h3>
+            <div className="form-group">
+              <label className="stock-toggle">
+                <input
+                  type="checkbox"
+                  checked={!!formData.unidad}
+                  onChange={(e) =>
+                    setFormData(prev => ({
+                      ...prev,
+                      unidad: e.target.checked ? 'kg' : '',
+                      unidadCantidad: e.target.checked ? (prev.unidadCantidad ?? 1) : 1,
+                    }))
+                  }
+                />
+                <span>{t('products.detail.specifyUnit')}</span>
+                <input
+                  type="number"
+                  value={formData.unidadCantidad ?? 1}
+                  onChange={(e) =>
+                    setFormData(prev => ({
+                      ...prev,
+                      unidadCantidad: Math.max(0, parseFloat(e.target.value) || 0),
+                    }))
+                  }
+                  className="input stock-input"
+                  min="0"
+                  step="0.1"
+                  disabled={!formData.unidad}
+                />
+                <select
+                  value={formData.unidad || 'kg'}
+                  onChange={(e) =>
+                    setFormData(prev => ({ ...prev, unidad: e.target.value }))
+                  }
+                  className="input"
+                  disabled={!formData.unidad}
+                  style={{ width: 'auto' }}
+                >
+                  <option value="kg">kg</option>
+                  <option value="g">g</option>
+                  <option value="L">L</option>
+                  <option value="ml">ml</option>
+                </select>
+              </label>
             </div>
           </div>
 
@@ -526,6 +586,14 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
         </form>
       </div>
     </div>
+    {cropSrc && (
+      <ImageCropper
+        imageSrc={cropSrc}
+        onConfirm={handleCropConfirm}
+        onCancel={() => setCropSrc(null)}
+      />
+    )}
+    </>
   );
 };
 
