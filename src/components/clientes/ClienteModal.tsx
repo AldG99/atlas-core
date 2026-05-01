@@ -4,6 +4,7 @@ import { PiXBold, PiUserBold } from 'react-icons/pi';
 import type { ClienteFormData } from '../../types/Cliente';
 import { uploadClienteImage } from '../../services/clienteService';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 import PhoneInput from './PhoneInput';
 import ImageCropper from '../ui/ImageCropper';
 import './ClienteModal.scss';
@@ -43,6 +44,7 @@ interface ClienteModalProps {
 const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: ClienteModalProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(cliente?.fotoPerfil ?? null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -170,7 +172,10 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
         const imageUrl = await uploadClienteImage(imageFile, user.uid);
         finalData = { ...finalData, fotoPerfil: imageUrl };
       } catch (error) {
-        console.error('Error al subir imagen:', error);
+        const msg = error instanceof Error ? error.message : '';
+        if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
+        else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
+        else showToast(t('common.imageModeration.error'), 'error');
         setIsUploading(false);
         return;
       }

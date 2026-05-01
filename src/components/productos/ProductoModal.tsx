@@ -4,6 +4,7 @@ import { PiXBold, PiImageBold, PiPlusBold, PiTrashBold, PiWarehouseBold } from '
 import type { ProductoFormData, Etiqueta } from '../../types/Producto';
 import { uploadProductoImage } from '../../services/productoService';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 import { useEtiquetas } from '../../hooks/useEtiquetas';
 import { ETIQUETA_ICONS, ETIQUETA_COLORES } from '../../constants/etiquetaIcons';
 import ImageCropper from '../ui/ImageCropper';
@@ -18,6 +19,7 @@ interface ProductoModalProps {
 const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { etiquetas: todasEtiquetas, addEtiqueta, removeEtiqueta } = useEtiquetas();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(producto?.imagen ?? null);
@@ -78,7 +80,10 @@ const ProductoModal = ({ producto, onClose, onSave }: ProductoModalProps) => {
         const imageUrl = await uploadProductoImage(imageFile, user.uid);
         finalData = { ...finalData, imagen: imageUrl };
       } catch (error) {
-        console.error('Error al subir imagen:', error);
+        const msg = error instanceof Error ? error.message : '';
+        if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
+        else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
+        else showToast(t('common.imageModeration.error'), 'error');
         setIsUploading(false);
         return;
       }

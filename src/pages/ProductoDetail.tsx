@@ -46,6 +46,7 @@ const ProductoDetail = () => {
   const [confirmDeleteEtiquetaId, setConfirmDeleteEtiquetaId] = useState<string | null>(null);
   const [editData, setEditData] = useState<ProductoFormData | null>(null);
   const [saving, setSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectedImageFile = useRef<File | null>(null);
 
@@ -167,15 +168,26 @@ const ProductoDetail = () => {
   const handleSave = async () => {
     if (!producto || !editData || !user) return;
     try {
-      setSaving(true);
       const dataToSave = { ...editData };
 
-      // Si el usuario seleccionó una nueva imagen, subirla a Storage primero
       if (selectedImageFile.current) {
-        const url = await uploadProductoImage(selectedImageFile.current, user.uid);
-        dataToSave.imagen = url;
-        selectedImageFile.current = null;
+        setIsUploading(true);
+        try {
+          const url = await uploadProductoImage(selectedImageFile.current, user.uid);
+          dataToSave.imagen = url;
+          selectedImageFile.current = null;
+        } catch (error) {
+          const msg = error instanceof Error ? error.message : '';
+          if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
+          else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
+          else showToast(t('common.imageModeration.error'), 'error');
+          return;
+        } finally {
+          setIsUploading(false);
+        }
       }
+
+      setSaving(true);
 
       let cancelledDescuento: CancelDescuentoInfo | undefined;
       const hadDescuento = producto.descuento && producto.descuento > 0 && producto.fechaFinDescuento;
@@ -209,8 +221,12 @@ const ProductoDetail = () => {
       setIsEditing(false);
       setEditData(null);
       showToast(t('products.detail.updateSuccess'), 'success');
-    } catch {
-      showToast(t('products.detail.updateError'), 'error');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
+      else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
+      else if (msg === 'MODERACION_ERROR') showToast(t('common.imageModeration.error'), 'error');
+      else showToast(t('products.detail.updateError'), 'error');
     } finally {
       setSaving(false);
     }
@@ -278,16 +294,16 @@ const ProductoDetail = () => {
                   <button
                     onClick={cancelEditing}
                     className="btn btn--outline btn--sm"
-                    disabled={saving}
+                    disabled={saving || isUploading}
                   >
                     {t('common.cancel')}
                   </button>
                   <button
                     onClick={handleSave}
                     className="btn btn--primary btn--sm"
-                    disabled={saving}
+                    disabled={saving || isUploading}
                   >
-                    {saving ? t('common.saving') : t('common.save')}
+                    {isUploading ? t('common.imageModeration.verifying') : saving ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               ) : (

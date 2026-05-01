@@ -13,7 +13,7 @@ import {
 } from 'react-icons/pi';
 import type { Cliente, ClienteFormData } from '../types/Cliente';
 import type { Pedido } from '../types/Pedido';
-import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito } from '../services/clienteService';
+import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito, uploadClienteImage } from '../services/clienteService';
 import ImageCropper from '../components/ui/ImageCropper';
 import Avatar from '../components/ui/Avatar';
 import PhoneInput from '../components/clientes/PhoneInput';
@@ -48,10 +48,12 @@ const ClienteDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ClienteFormData | null>(null);
   const [saving, setSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [pedidosLoading, setPedidosLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const selectedBlobRef = useRef<Blob | null>(null);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -64,6 +66,7 @@ const ClienteDetail = () => {
   };
 
   const handleCropConfirm = (blob: Blob) => {
+    selectedBlobRef.current = blob;
     const reader = new FileReader();
     reader.onloadend = () => {
       setEditData(prev => prev ? { ...prev, fotoPerfil: reader.result as string } : prev);
@@ -203,11 +206,31 @@ const ClienteDetail = () => {
   };
 
   const handleSave = async () => {
-    if (!cliente || !editData) return;
+    if (!cliente || !editData || !user) return;
     try {
+      let finalFoto = editData.fotoPerfil;
+
+      if (selectedBlobRef.current) {
+        setIsUploading(true);
+        try {
+          const blobFile = new File([selectedBlobRef.current], 'foto.jpg', { type: 'image/jpeg' });
+          finalFoto = await uploadClienteImage(blobFile, user.uid);
+          selectedBlobRef.current = null;
+        } catch (error) {
+          const msg = error instanceof Error ? error.message : '';
+          if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
+          else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
+          else showToast(t('common.imageModeration.error'), 'error');
+          return;
+        } finally {
+          setIsUploading(false);
+        }
+      }
+
       setSaving(true);
       const dataToSave: ClienteFormData = {
         ...editData,
+        fotoPerfil: finalFoto,
         calle: editData.calle?.toUpperCase() ?? editData.calle,
         numeroExterior: editData.numeroExterior?.toUpperCase() ?? editData.numeroExterior,
         numeroInterior: editData.numeroInterior?.toUpperCase() ?? editData.numeroInterior,
@@ -269,11 +292,11 @@ const ClienteDetail = () => {
             </button>
             {role === 'admin' && isEditing ? (
               <div className="cliente-detail__top-bar-actions">
-                <button onClick={cancelEditing} className="btn btn--outline btn--sm" disabled={saving}>
+                <button onClick={cancelEditing} className="btn btn--outline btn--sm" disabled={saving || isUploading}>
                   {t('common.cancel')}
                 </button>
-                <button onClick={handleSave} className="btn btn--primary btn--sm" disabled={saving}>
-                  {saving ? t('common.saving') : t('common.save')}
+                <button onClick={handleSave} className="btn btn--primary btn--sm" disabled={saving || isUploading}>
+                  {isUploading ? t('common.imageModeration.verifying') : saving ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             ) : (

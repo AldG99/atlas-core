@@ -15,6 +15,7 @@ import {
   PiEyeSlashBold,
 } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
+import { uploadProfileImage } from '../services/authService';
 import { useToast } from '../hooks/useToast';
 import { useClientes } from '../hooks/useClientes';
 import { useProductos } from '../hooks/useProductos';
@@ -69,6 +70,7 @@ const Perfil = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
@@ -179,21 +181,39 @@ const Perfil = () => {
 
   const handleSave = async () => {
     if (!isMiembro && !validate()) return;
-    setSaving(true);
     const removePhotoData = photoRemoved && !imageFile ? { fotoPerfil: '' } : {};
+
+    let uploadedPhotoUrl: string | undefined;
+    if (imageFile && user) {
+      setIsUploading(true);
+      try {
+        uploadedPhotoUrl = await uploadProfileImage(imageFile, user.uid);
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : '';
+        if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
+        else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
+        else showToast(t('common.imageModeration.error'), 'error');
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+
+    setSaving(true);
+    const photoData = uploadedPhotoUrl ? { fotoPerfil: uploadedPhotoUrl } : removePhotoData;
     try {
       if (isMiembro) {
-        await updateProfile(removePhotoData, imageFile ?? undefined);
+        await updateProfile(photoData);
       } else {
         await updateProfile({
-          ...removePhotoData,
+          ...photoData,
           nombreNegocio: formData.nombreNegocio.trim(),
           nombre: formData.nombre.trim(),
           apellido: formData.apellido.trim(),
           fechaNacimiento: formData.fechaNacimiento,
           telefono: formData.telefono,
           telefonoCodigoPais: formData.telefonoCodigoPais,
-        }, imageFile);
+        });
       }
       setIsEditing(false);
       setImageFile(null);
@@ -301,11 +321,11 @@ const Perfil = () => {
                 <div className="perfil__card-header-actions">
                   {isEditing ? (
                     <>
-                      <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving}>
+                      <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving || isUploading}>
                         {t('common.cancel')}
                       </button>
-                      <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving}>
-                        {saving ? t('common.saving') : t('profile.saveButton')}
+                      <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving || isUploading}>
+                        {isUploading ? t('common.imageModeration.verifying') : saving ? t('common.saving') : t('profile.saveButton')}
                       </button>
                     </>
                   ) : (

@@ -1,13 +1,6 @@
 @use 'sass:color';
 @use '../../styles/abstracts/variables' as *;
-
-.form-char-count {
-  display: block;
-  text-align: right;
-  font-size: $font-size-xs;
-  color: $color-gray-400;
-  margin-top: 2px;
-}
+@use '../../styles/components/modal';
 
 .input-currency {
   position: relative;
