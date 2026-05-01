@@ -11,17 +11,19 @@ import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
 export const useEtiquetas = () => {
   const [etiquetas, setEtiquetas] = useState<Etiqueta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user, negocioUid } = useAuth();
 
   const fetchEtiquetas = useCallback(async () => {
     if (!user || !negocioUid) return;
 
     setLoading(true);
+    setError(null);
     try {
       const data = await getEtiquetas(negocioUid);
       setEtiquetas(data);
-    } catch (err) {
-      console.error('Error al cargar etiquetas:', err);
+    } catch {
+      setError('Error al cargar las etiquetas');
     } finally {
       setLoading(false);
     }
@@ -47,5 +49,5 @@ export const useEtiquetas = () => {
     setEtiquetas((prev) => prev.filter((e) => e.id !== id));
   };
 
-  return { etiquetas, loading, addEtiqueta, removeEtiqueta };
+  return { etiquetas, loading, error, addEtiqueta, removeEtiqueta };
 };

@@ -24,8 +24,7 @@ export const useProductos = () => {
     try {
       const data = await getProductos(negocioUid);
       setProductos(data);
-    } catch (err) {
-      console.error('Error al cargar productos:', err);
+    } catch {
       setError('Error al cargar los productos');
     } finally {
       setLoading(false);
