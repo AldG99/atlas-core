@@ -34,14 +34,14 @@ export const ETIQUETA_ICONS: Record<string, { icon: IconType; label: string }> =
 };
 
 export const ETIQUETA_COLORES = [
-  '#C0392B', // terracota
-  '#B45309', // ámbar
-  '#D97706', // dorado
-  '#2E7D5A', // musgo
-  '#334E68', // pizarra
-  '#5B8A8A', // teal muted
-  '#7C5C8E', // ciruela
-  '#A0522D', // cobre
-  '#6B7C3B', // oliva
-  '#524F4A', // grafito cálido
+  '#EF4444', // rojo
+  '#F97316', // naranja
+  '#F59E0B', // ámbar
+  '#84CC16', // lima
+  '#10B981', // esmeralda
+  '#14B8A6', // teal
+  '#3B82F6', // azul
+  '#8B5CF6', // violeta
+  '#EC4899', // rosa
+  '#F43F5E', // carmín
 ];

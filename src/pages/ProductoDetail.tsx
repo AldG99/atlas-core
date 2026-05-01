@@ -8,6 +8,8 @@ import {
   PiPackageBold,
   PiCalendarBold,
   PiCameraBold,
+  PiPlusBold,
+  PiXBold,
 } from 'react-icons/pi';
 import type { Producto, ProductoFormData } from '../types/Producto';
 import { getProductoById, updateProducto, uploadProductoImage } from '../services/productoService';
@@ -17,7 +19,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useCurrency } from '../hooks/useCurrency';
 import { ROUTES } from '../config/routes';
-import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
+import { ETIQUETA_ICONS, ETIQUETA_COLORES } from '../constants/etiquetaIcons';
 import { compressImage } from '../utils/imageUtils';
 import ProductImage from '../components/ui/ProductImage';
 import ProductoDeleteModal from '../components/pedidos/ProductoDeleteModal';
@@ -30,13 +32,18 @@ const ProductoDetail = () => {
   const { t, i18n } = useTranslation();
   const { user, role } = useAuth();
   const { showToast } = useToast();
-  const { etiquetas } = useEtiquetas();
+  const { etiquetas, addEtiqueta, removeEtiqueta } = useEtiquetas();
   const { format } = useCurrency();
 
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showNewEtiqueta, setShowNewEtiqueta] = useState(false);
+  const [nuevaEtiquetaNombre, setNuevaEtiquetaNombre] = useState('');
+  const [nuevaEtiquetaColor, setNuevaEtiquetaColor] = useState(ETIQUETA_COLORES[0]);
+  const [nuevaEtiquetaIcono, setNuevaEtiquetaIcono] = useState('star');
+  const [confirmDeleteEtiquetaId, setConfirmDeleteEtiquetaId] = useState<string | null>(null);
   const [editData, setEditData] = useState<ProductoFormData | null>(null);
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -130,6 +137,31 @@ const ProductoDetail = () => {
     setIsEditing(false);
     setEditData(null);
     selectedImageFile.current = null;
+    setShowNewEtiqueta(false);
+    setNuevaEtiquetaNombre('');
+    setNuevaEtiquetaColor(ETIQUETA_COLORES[0]);
+    setNuevaEtiquetaIcono('star');
+  };
+
+  const handleDeleteEtiqueta = async (id: string) => {
+    await removeEtiqueta(id);
+    if (editData) {
+      setEditData({ ...editData, etiquetas: (editData.etiquetas || []).filter(eid => eid !== id) });
+    }
+    setConfirmDeleteEtiquetaId(null);
+  };
+
+  const handleCrearEtiqueta = async () => {
+    if (!editData) return;
+    const nombre = nuevaEtiquetaNombre.trim() || ETIQUETA_ICONS[nuevaEtiquetaIcono]?.label || nuevaEtiquetaIcono;
+    const nueva = await addEtiqueta(nombre, nuevaEtiquetaColor, nuevaEtiquetaIcono);
+    if (nueva && (editData.etiquetas || []).length < MAX_ETIQUETAS) {
+      setEditData({ ...editData, etiquetas: [...(editData.etiquetas || []), nueva.id] });
+    }
+    setNuevaEtiquetaNombre('');
+    setNuevaEtiquetaColor(ETIQUETA_COLORES[0]);
+    setNuevaEtiquetaIcono('star');
+    setShowNewEtiqueta(false);
   };
 
   const handleSave = async () => {
@@ -474,19 +506,130 @@ const ProductoDetail = () => {
                           const isSelected = editData?.etiquetas?.includes(et.id);
                           const isDisabled = !isSelected && limiteAlcanzado;
                           return (
-                            <span
-                              key={et.id}
-                              className={`producto-detail__etiqueta producto-detail__etiqueta--selectable ${isSelected ? '' : 'producto-detail__etiqueta--unselected'} ${isDisabled ? 'producto-detail__etiqueta--disabled' : ''}`}
-                              style={{ backgroundColor: isSelected ? et.color : undefined }}
-                              onClick={() => !isDisabled && toggleEtiqueta(et.id)}
-                              title={et.nombre}
-                            >
-                              {Icon && <Icon size={12} />}
-                            </span>
+                            <div key={et.id} className="producto-detail__etiqueta-wrapper">
+                              <span
+                                className={`producto-detail__etiqueta producto-detail__etiqueta--selectable ${isSelected ? '' : 'producto-detail__etiqueta--unselected'} ${isDisabled ? 'producto-detail__etiqueta--disabled' : ''}`}
+                                style={{ backgroundColor: isSelected ? et.color : undefined }}
+                                onClick={() => !isDisabled && toggleEtiqueta(et.id)}
+                                title={et.nombre}
+                              >
+                                {Icon && <Icon size={12} />}
+                              </span>
+                              {confirmDeleteEtiquetaId === et.id ? (
+                                <div className="producto-detail__etiqueta-confirm">
+                                  <button
+                                    type="button"
+                                    className="producto-detail__etiqueta-confirm-yes"
+                                    onClick={() => handleDeleteEtiqueta(et.id)}
+                                  >
+                                    {t('common.yes')}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="producto-detail__etiqueta-confirm-no"
+                                    onClick={() => setConfirmDeleteEtiquetaId(null)}
+                                  >
+                                    {t('common.no')}
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="producto-detail__etiqueta-delete"
+                                  onClick={() => setConfirmDeleteEtiquetaId(et.id)}
+                                  title={t('products.modal.labelDelete')}
+                                >
+                                  <PiTrashBold size={9} />
+                                </button>
+                              )}
+                            </div>
                           );
                         })}
                         {limiteAlcanzado && (
                           <span className="producto-detail__etiquetas-limite">{t('products.detail.labelsLimit', { max: MAX_ETIQUETAS })}</span>
+                        )}
+                        {!showNewEtiqueta ? (
+                          <button
+                            type="button"
+                            className="etiqueta-add-btn"
+                            onClick={() => setShowNewEtiqueta(true)}
+                          >
+                            <PiPlusBold size={12} />
+                            {t('products.modal.labelNew')}
+                          </button>
+                        ) : (
+                          <div className="etiqueta-new-form producto-detail__etiqueta-form">
+                            <div className="etiqueta-picker-row">
+                              <span className="etiqueta-picker-label">{t('products.modal.labelName')}</span>
+                              <input
+                                type="text"
+                                className="input etiqueta-nombre-input"
+                                placeholder={t('products.modal.labelNamePlaceholder')}
+                                value={nuevaEtiquetaNombre}
+                                onChange={(e) => setNuevaEtiquetaNombre(e.target.value)}
+                              />
+                            </div>
+                            <div className="etiqueta-picker-row">
+                              <span className="etiqueta-picker-label">{t('products.modal.labelIcon')}</span>
+                              <div className="etiqueta-icon-picker">
+                                {Object.entries(ETIQUETA_ICONS).map(([key, { icon: Icon, label }]) => (
+                                  <button
+                                    key={key}
+                                    type="button"
+                                    className={`etiqueta-icon-swatch ${nuevaEtiquetaIcono === key ? 'etiqueta-icon-swatch--active' : ''}`}
+                                    style={{ color: nuevaEtiquetaColor }}
+                                    onClick={() => setNuevaEtiquetaIcono(key)}
+                                    title={label}
+                                  >
+                                    <Icon size={16} />
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="etiqueta-picker-row">
+                              <span className="etiqueta-picker-label">{t('products.modal.labelColor')}</span>
+                              <div className="etiqueta-color-picker">
+                                {ETIQUETA_COLORES.map(color => (
+                                  <button
+                                    key={color}
+                                    type="button"
+                                    className={`etiqueta-color-swatch ${nuevaEtiquetaColor === color ? 'etiqueta-color-swatch--active' : ''}`}
+                                    style={{ backgroundColor: color }}
+                                    onClick={() => setNuevaEtiquetaColor(color)}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                            <div className="etiqueta-new-preview">
+                              {(() => {
+                                const Icon = ETIQUETA_ICONS[nuevaEtiquetaIcono]?.icon;
+                                const previewName = nuevaEtiquetaNombre.trim() || ETIQUETA_ICONS[nuevaEtiquetaIcono]?.label;
+                                return (
+                                  <span className="etiqueta-chip" style={{ backgroundColor: nuevaEtiquetaColor }}>
+                                    {Icon && <Icon size={12} />}
+                                    <span className="etiqueta-chip__label">{previewName}</span>
+                                  </span>
+                                );
+                              })()}
+                            </div>
+                            <div className="etiqueta-new-form__actions">
+                              <button
+                                type="button"
+                                className="btn btn--sm btn--secondary"
+                                onClick={() => { setShowNewEtiqueta(false); setNuevaEtiquetaNombre(''); }}
+                              >
+                                <PiXBold size={12} />
+                                {t('common.cancel')}
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn--sm btn--primary"
+                                onClick={handleCrearEtiqueta}
+                              >
+                                {t('products.modal.labelCreate')}
+                              </button>
+                            </div>
+                          </div>
                         )}
                       </>
                     ) : productoEtiquetas.length > 0 ? (
