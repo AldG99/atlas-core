@@ -216,7 +216,7 @@ $topbar-height: 52px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $spacing-sm $spacing-md;
+    padding: $spacing-xs $spacing-md;
   }
 
   &__client {
@@ -252,7 +252,7 @@ $topbar-height: 52px;
   &__client-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
   }
 
   &__name-row {
@@ -282,7 +282,7 @@ $topbar-height: 52px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 4px;
+    gap: 0;
   }
 
   &__header-top-row {
@@ -335,6 +335,11 @@ $topbar-height: 52px;
     font-weight: 600;
     color: $color-gray-400;
     letter-spacing: 0.5px;
+  }
+
+  &__folio-sep {
+    color: $color-gray-300;
+    flex-shrink: 0;
   }
 
   &__section {
@@ -465,8 +470,7 @@ $topbar-height: 52px;
         font-weight: 600;
         color: $color-gray-500;
         text-align: left;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 
@@ -484,6 +488,7 @@ $topbar-height: 52px;
       color: $color-gray-800;
       vertical-align: middle;
       white-space: nowrap;
+      overflow: hidden;
     }
 
     thead th:first-child,
@@ -584,8 +589,11 @@ $topbar-height: 52px;
   }
 
   &__product-name {
+    display: block;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   &__product-discount-badge {
@@ -1082,6 +1090,12 @@ $topbar-height: 52px;
     justify-content: flex-end;
     gap: $spacing-sm;
   }
+}
+
+.pedido-detail__info-divider {
+  border: none;
+  border-top: 1px solid $color-gray-200;
+  margin: 0;
 }
 
 .pedido-detail__creado-por-row {

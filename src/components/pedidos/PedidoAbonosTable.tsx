@@ -103,9 +103,9 @@ const PedidoAbonosTable: React.FC<Props> = ({
                         </span>
                       ) : '-'}
                     </td>
-                    <td>
+                    <td title={typeof abono.productoIndex === 'number' && productos[abono.productoIndex] ? productos[abono.productoIndex].nombre : undefined}>
                       {typeof abono.productoIndex === 'number' && productos[abono.productoIndex] ? (
-                        productos[abono.productoIndex].nombre
+                        <span className="pedido-detail__abono-autor">{productos[abono.productoIndex].nombre}</span>
                       ) : (
                         <span className="pedido-detail__general-label">{t('orders.detail.generalPayment')}</span>
                       )}
@@ -179,6 +179,7 @@ const PedidoAbonosTable: React.FC<Props> = ({
           {t('orders.detail.createdBy')} <span>{creadoPor.nombre}</span>
         </div>
       )}
+      <hr className="pedido-detail__info-divider" />
       <div className="pedido-detail__creado-por-row">
         {t('orders.detail.deliveredBy')} <span>{entregadoPor ? entregadoPor.nombre : <em>{t('orders.detail.notDeliveredYet')}</em>}</span>
       </div>

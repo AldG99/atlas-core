@@ -302,7 +302,6 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
             </tfoot>
           </table>
         </div>
-        <div className="cliente-detail__pedidos-table-footer" />
       </div>
     </div>
   );

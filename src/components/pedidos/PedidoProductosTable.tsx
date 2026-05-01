@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiEyeBold } from 'react-icons/pi';
 import type { ProductoItem } from '../../types/Pedido';
 import type { Producto, Etiqueta } from '../../types/Producto';
 import { ETIQUETA_ICONS } from '../../constants/etiquetaIcons';
@@ -16,20 +15,18 @@ interface Props {
   catalogoProductos: Producto[];
   todasEtiquetas: Etiqueta[];
   onRowClick: (index: number) => void;
-  onProductoClick: (item: ProductoItem) => void;
 }
 
 const Colgroup = () => (
   <colgroup>
-    <col style={{ width: '8%' }} />
-    <col style={{ width: '7%' }} />
-    <col style={{ width: '12%' }} />
-    <col style={{ width: '9%' }} />
-    <col style={{ width: '14%' }} />
-    <col style={{ width: '13%' }} />
-    <col style={{ width: '15%' }} />
-    <col style={{ width: '12%' }} />
-    <col style={{ width: '10%' }} />
+    <col style={{ width: '7%' }} />   {/* Clave */}
+    <col style={{ width: '6%' }} />   {/* Cant. */}
+    <col style={{ width: '18%' }} />  {/* Producto */}
+    <col style={{ width: '10%' }} />  {/* Etiquetas */}
+    <col style={{ width: '14%' }} />  {/* Precio */}
+    <col style={{ width: '13%' }} />  {/* Abonado */}
+    <col style={{ width: '22%' }} />  {/* Subtotal */}
+    <col style={{ width: '10%' }} />  {/* Estado */}
   </colgroup>
 );
 
@@ -44,7 +41,6 @@ const PedidoProductosTable: React.FC<Props> = ({
   catalogoProductos,
   todasEtiquetas,
   onRowClick,
-  onProductoClick,
 }) => {
   const { t } = useTranslation();
   const etiquetasPorClave = useMemo(() => {
@@ -78,7 +74,6 @@ const PedidoProductosTable: React.FC<Props> = ({
                 <th>{t('orders.paid')}</th>
                 <th className="pedido-detail__col--right">{t('orders.subtotal')}</th>
                 <th>{t('orders.status_col')}</th>
-                <th>{t('orders.actions')}</th>
               </tr>
             </thead>
           </table>
@@ -103,7 +98,7 @@ const PedidoProductosTable: React.FC<Props> = ({
                       {p.clave ? <span className="pedido-detail__clave">{p.clave}</span> : '-'}
                     </td>
                     <td>{p.cantidad}</td>
-                    <td>
+                    <td title={p.nombre}>
                       <span className="pedido-detail__product-name">{p.nombre}</span>
                     </td>
                     <td>
@@ -150,15 +145,6 @@ const PedidoProductosTable: React.FC<Props> = ({
                         {status === 'paid' ? t('orders.detail.statusPaid') : status === 'partial' ? `${Math.round(porcentaje)}%` : t('orders.detail.statusPending')}
                       </span>
                     </td>
-                    <td>
-                      <button
-                        className="pedido-detail__product-eye"
-                        title={t('common.edit')}
-                        onClick={() => onProductoClick(p)}
-                      >
-                        <PiEyeBold size={20} />
-                      </button>
-                    </td>
                   </tr>
                 );
               })}
@@ -194,7 +180,6 @@ const PedidoProductosTable: React.FC<Props> = ({
                     {pagado >= total ? t('orders.detail.statusLiquidated') : format(total - pagado)}
                   </strong>
                 </td>
-                <td></td>
               </tr>
             </tfoot>
           </table>

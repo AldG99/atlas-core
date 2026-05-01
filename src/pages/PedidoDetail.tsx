@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   PiArrowRightBold,
   PiStarFill,
+  PiCaretRightBold,
 } from 'react-icons/pi';
 import { toPng } from 'html-to-image';
 import PedidoCaptura from '../components/pedidos/PedidoCaptura';
@@ -427,7 +428,10 @@ const PedidoDetail = () => {
             <div className="pedido-detail__header-right">
               <div className="pedido-detail__header-top-row">
                 {pedido.folio && (
-                  <span className="pedido-detail__folio">{pedido.folio}</span>
+                  <>
+                    <span className="pedido-detail__folio">{pedido.folio}</span>
+                    <PiCaretRightBold size={12} className="pedido-detail__folio-sep" />
+                  </>
                 )}
                 <span
                   className="pedido-detail__status-badge"
@@ -467,11 +471,6 @@ const PedidoDetail = () => {
             catalogoProductos={catalogoProductos}
             todasEtiquetas={todasEtiquetas}
             onRowClick={(index) => { setFocusedRow(index); setFocusedAbonoRow(null); }}
-            onProductoClick={(p) => {
-              const found = p.clave ? catalogoProductos.find(cp => cp.clave === p.clave) : undefined;
-              if (found) setSelectedProducto(found);
-              else showToast(t('orders.detail.productUnavailable'), 'warning');
-            }}
           />
 
           <div className="pedido-detail__section pedido-detail__section--notes">
