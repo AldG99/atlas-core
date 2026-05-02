@@ -1,0 +1,20 @@
+export const ROUTES = {
+  HOME: '/',
+  LOGIN: '/login',
+  REGISTER: '/register',
+  DASHBOARD: '/dashboard',
+  NEW_PEDIDO: '/pedido/nuevo',
+  DETAIL_PEDIDO: '/pedido/:id',
+  CLIENTES: '/clientes',
+  DETAIL_CLIENTE: '/cliente/:id',
+  PRODUCTOS: '/productos',
+  DETAIL_PRODUCTO: '/producto-detalle/:id',
+  REPORTES: '/reportes',
+  ARCHIVO: '/archivo',
+  PERFIL: '/perfil',
+  CONFIGURACION: '/configuracion',
+  SOPORTE: '/soporte',
+  PLANES: '/planes',
+  TERMINOS: '/terminos',
+  PRIVACIDAD: '/privacidad'
+};

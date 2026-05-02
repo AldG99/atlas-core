@@ -1,0 +1,48 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper — true if the caller belongs to the given business (admin owns it, employee is linked)
+    function belongsToBusiness(businessUid) {
+      let u = firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data;
+      return request.auth.uid == businessUid ||
+        (u.keys().hasAll(['negocioUid']) && u.negocioUid == businessUid);
+    }
+
+    // Image write constraints: JPEG/PNG/WebP only, max 5 MB
+    function isValidImage() {
+      return request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+
+    // ── Imágenes pendientes de moderación ─────────────────────────────────────
+    // Los usuarios pueden subir a su carpeta pending; solo el Admin SDK puede leer/borrar.
+    match /pending/{userId}/{type}/{fileName} {
+      allow write: if request.auth != null && request.auth.uid == userId && isValidImage();
+      allow read, delete: if false;
+    }
+
+    // ── Profile images ─────────────────────────────────────────────────────────
+    match /users/{uid}/profile/{fileName} {
+      allow read:  if request.auth != null && request.auth.uid == uid;
+      allow write: if request.auth != null && request.auth.uid == uid && isValidImage();
+    }
+
+    // ── Cliente images ─────────────────────────────────────────────────────────
+    match /clientes/{businessUid}/{fileName} {
+      allow read:  if request.auth != null && belongsToBusiness(businessUid);
+      allow write: if request.auth != null && belongsToBusiness(businessUid) && isValidImage();
+    }
+
+    // ── Producto images ────────────────────────────────────────────────────────
+    match /productos/{businessUid}/{fileName} {
+      allow read:  if request.auth != null && belongsToBusiness(businessUid);
+      allow write: if request.auth != null && belongsToBusiness(businessUid) && isValidImage();
+    }
+
+    // Deny everything else by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
