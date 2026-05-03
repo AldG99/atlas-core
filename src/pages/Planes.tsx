@@ -17,60 +17,31 @@ import { useToast } from '../hooks/useToast';
 import { STRIPE_PRICES } from '../services/stripeService';
 import './Planes.scss';
 
-const PLANES = [
+const PLANES_CONFIG = [
   {
     id: 'gratuito',
-    nombre: 'Gratuito',
+    tier: 'free',
     precio: null,
     stripePrice: null,
-    descripcion: 'Para empezar a gestionar tu negocio sin costo.',
     icono: <PiStorefrontBold size={22} />,
-    caracteristicas: [
-      { texto: 'Hasta 360 pedidos al mes', incluido: true },
-      { texto: 'Hasta 120 clientes', incluido: true },
-      { texto: 'Hasta 80 productos', incluido: true },
-      { texto: 'Hasta 6 etiquetas', incluido: true },
-      { texto: 'Exportar CSV', incluido: true },
-      { texto: 'Exportar e importar datos', incluido: false },
-      { texto: 'Miembros del equipo', incluido: false },
-    ],
+    incluidos: [true, true, true, true, true, false, false],
   },
   {
     id: 'pro',
-    nombre: 'Pro',
+    tier: 'pro',
     precio: '$4',
-    periodo: 'mes',
     stripePrice: STRIPE_PRICES.pro,
-    descripcion: 'Para negocios en crecimiento que necesitan más capacidad.',
     icono: <PiDiamondBold size={22} />,
     destacado: true,
-    caracteristicas: [
-      { texto: 'Hasta 720 pedidos al mes', incluido: true },
-      { texto: 'Hasta 240 clientes', incluido: true },
-      { texto: 'Hasta 160 productos', incluido: true },
-      { texto: 'Hasta 10 etiquetas', incluido: true },
-      { texto: 'Exportar CSV', incluido: true },
-      { texto: 'Exportar e importar datos', incluido: true },
-      { texto: 'Hasta 2 miembros en tu negocio', incluido: true },
-    ],
+    incluidos: [true, true, true, true, true, true, true],
   },
   {
     id: 'enterprise',
-    nombre: 'Business',
+    tier: 'business',
     precio: '$6',
-    periodo: 'mes',
     stripePrice: STRIPE_PRICES.enterprise,
-    descripcion: 'Para equipos y negocios con operaciones de alto volumen.',
     icono: <PiDiamondsFourBold size={22} />,
-    caracteristicas: [
-      { texto: 'Pedidos ilimitados', incluido: true },
-      { texto: 'Clientes ilimitados', incluido: true },
-      { texto: 'Hasta 640 productos', incluido: true },
-      { texto: 'Hasta 16 etiquetas', incluido: true },
-      { texto: 'Exportar CSV', incluido: true },
-      { texto: 'Exportar e importar datos', incluido: true },
-      { texto: 'Hasta 6 miembros en tu negocio', incluido: true },
-    ],
+    incluidos: [true, true, true, true, true, true, true],
   },
 ];
 
@@ -99,7 +70,7 @@ const Planes = () => {
     setSearchParams({}, { replace: true });
   }, [searchParams, setSearchParams, showToast, t]);
 
-  const handlePlanAction = (plan: (typeof PLANES)[number]) => {
+  const handlePlanAction = (plan: (typeof PLANES_CONFIG)[number]) => {
     if (plan.id === 'gratuito' || !plan.stripePrice) return;
     // Si ya tiene suscripción de pago, el cambio se hace desde el portal de Stripe
     if (tienePlanPago) {
@@ -145,8 +116,11 @@ const Planes = () => {
         )}
 
         <div className="planes__grid">
-          {PLANES.map(plan => {
+          {PLANES_CONFIG.map(plan => {
             const esActual = planActual === plan.id;
+            const nombre = t(`plans.tiers.${plan.tier}.name`);
+            const descripcion = t(`plans.tiers.${plan.tier}.description`);
+            const features = t(`plans.tiers.${plan.tier}.features`, { returnObjects: true }) as string[];
             return (
               <div
                 key={plan.id}
@@ -160,75 +134,50 @@ const Planes = () => {
 
                 <div className="planes__card-header">
                   <div className="planes__card-icon">{plan.icono}</div>
-                  <h2 className="planes__card-nombre">{plan.nombre}</h2>
+                  <h2 className="planes__card-nombre">{nombre}</h2>
                   <div
                     className="planes__card-precio"
-                    aria-label={
-                      plan.precio
-                        ? `${plan.precio} USD / ${plan.periodo}`
-                        : t('plans.free')
-                    }
+                    aria-label={plan.precio ? `${plan.precio} USD / ${t('plans.perMonth')}` : t('plans.free')}
                   >
                     {plan.precio ? (
                       <>
-                        <span className="planes__precio-monto" aria-hidden="true">
-                          {plan.precio}
-                        </span>
-                        <span className="planes__precio-periodo" aria-hidden="true">
-                          USD / {t('plans.perMonth')}
-                        </span>
+                        <span className="planes__precio-monto" aria-hidden="true">{plan.precio}</span>
+                        <span className="planes__precio-periodo" aria-hidden="true">USD / {t('plans.perMonth')}</span>
                       </>
                     ) : (
-                      <span className="planes__precio-monto" aria-hidden="true">
-                        {t('plans.free')}
-                      </span>
+                      <span className="planes__precio-monto" aria-hidden="true">{t('plans.free')}</span>
                     )}
                   </div>
-                  <p className="planes__card-desc">{plan.descripcion}</p>
+                  <p className="planes__card-desc">{descripcion}</p>
                 </div>
 
                 <ul className="planes__features">
-                  {plan.caracteristicas.map((c, i) => (
+                  {features.map((texto, i) => (
                     <li
                       key={i}
-                      className={`planes__feature${c.incluido ? '' : ' planes__feature--no'}`}
+                      className={`planes__feature${plan.incluidos[i] ? '' : ' planes__feature--no'}`}
                     >
                       <span className="planes__feature-icon" aria-hidden="true">
-                        {c.incluido ? (
-                          <PiCheckBold size={14} />
-                        ) : (
-                          <PiXBold size={14} />
-                        )}
+                        {plan.incluidos[i] ? <PiCheckBold size={14} /> : <PiXBold size={14} />}
                       </span>
-                      <span>
-                        <span className="sr-only">
-                          {c.incluido ? 'Incluido: ' : 'No incluido: '}
-                        </span>
-                        {c.texto}
-                      </span>
+                      <span>{texto}</span>
                     </li>
                   ))}
                 </ul>
 
                 <div className="planes__card-footer">
                   {esActual ? (
-                    <button
-                      className="btn btn--outline btn--sm planes__btn"
-                      disabled
-                    >
+                    <button className="btn btn--outline btn--sm planes__btn" disabled>
                       {t('plans.currentPlan')}
                     </button>
                   ) : plan.id === 'gratuito' ? (
-                    // Gratuito: solo mostrar info, sin acción (se gestiona desde el portal)
                     <button
                       className="btn btn--outline btn--sm planes__btn"
                       onClick={manage}
                       disabled={loading || !tienePlanPago}
                     >
-                      {loading ? (
-                        <PiSpinnerBold size={14} className="spin" aria-hidden="true" />
-                      ) : null}
-                      {tienePlanPago ? t('plans.changeTo') + ' Gratuito' : t('plans.free')}
+                      {loading ? <PiSpinnerBold size={14} className="spin" aria-hidden="true" /> : null}
+                      {tienePlanPago ? `${t('plans.changeTo')} ${nombre}` : t('plans.free')}
                     </button>
                   ) : (
                     <button
@@ -236,12 +185,8 @@ const Planes = () => {
                       onClick={() => handlePlanAction(plan)}
                       disabled={loading}
                     >
-                      {loading ? (
-                        <PiSpinnerBold size={14} className="spin" aria-hidden="true" />
-                      ) : null}
-                      {tienePlanPago
-                        ? `${t('plans.changeTo')} ${plan.nombre}`
-                        : `${t('plans.subscribe')} ${plan.nombre}`}
+                      {loading ? <PiSpinnerBold size={14} className="spin" aria-hidden="true" /> : null}
+                      {tienePlanPago ? `${t('plans.changeTo')} ${nombre}` : `${t('plans.subscribe')} ${nombre}`}
                     </button>
                   )}
                 </div>

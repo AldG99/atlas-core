@@ -997,7 +997,24 @@
     "portalError": "Could not open the subscription portal. Please try again.",
     "alreadySubscribed": "You already have an active subscription. Use 'Manage subscription' to change your plan.",
     "checkoutSuccess": "Subscription activated successfully!",
-    "checkoutCanceled": "The payment process was canceled."
+    "checkoutCanceled": "The payment process was canceled.",
+    "tiers": {
+      "free": {
+        "name": "Free",
+        "description": "Start managing your business at no cost.",
+        "features": ["Up to 360 orders per month", "Up to 120 clients", "Up to 80 products", "Up to 6 labels", "CSV export", "Export & import data", "Team members"]
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For growing businesses that need more capacity.",
+        "features": ["Up to 720 orders per month", "Up to 240 clients", "Up to 160 products", "Up to 10 labels", "CSV export", "Export & import data", "Up to 2 team members"]
+      },
+      "business": {
+        "name": "Business",
+        "description": "For teams and businesses with high-volume operations.",
+        "features": ["Unlimited orders", "Unlimited clients", "Up to 640 products", "Up to 16 labels", "CSV export", "Export & import data", "Up to 6 team members"]
+      }
+    }
   },
   "notFound": {
     "code": "404",

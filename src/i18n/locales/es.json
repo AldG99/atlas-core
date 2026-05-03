@@ -997,7 +997,24 @@
     "portalError": "No se pudo abrir el portal de suscripción. Intenta de nuevo.",
     "alreadySubscribed": "Ya tienes una suscripción activa. Usa 'Gestionar suscripción' para cambiar de plan.",
     "checkoutSuccess": "¡Suscripción activada correctamente!",
-    "checkoutCanceled": "El proceso de pago fue cancelado."
+    "checkoutCanceled": "El proceso de pago fue cancelado.",
+    "tiers": {
+      "free": {
+        "name": "Gratuito",
+        "description": "Para empezar a gestionar tu negocio sin costo.",
+        "features": ["Hasta 360 pedidos al mes", "Hasta 120 clientes", "Hasta 80 productos", "Hasta 6 etiquetas", "Exportar CSV", "Exportar e importar datos", "Miembros del equipo"]
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Para negocios en crecimiento que necesitan más capacidad.",
+        "features": ["Hasta 720 pedidos al mes", "Hasta 240 clientes", "Hasta 160 productos", "Hasta 10 etiquetas", "Exportar CSV", "Exportar e importar datos", "Hasta 2 miembros en tu negocio"]
+      },
+      "business": {
+        "name": "Business",
+        "description": "Para equipos y negocios con operaciones de alto volumen.",
+        "features": ["Pedidos ilimitados", "Clientes ilimitados", "Hasta 640 productos", "Hasta 16 etiquetas", "Exportar CSV", "Exportar e importar datos", "Hasta 6 miembros en tu negocio"]
+      }
+    }
   },
   "notFound": {
     "code": "404",
