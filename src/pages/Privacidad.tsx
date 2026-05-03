@@ -5,7 +5,7 @@ const Privacidad = () => {
     <div className="legal-page">
       <div className="legal-page__container">
         <div className="legal-page__header">
-          <img src="/logo-orderly.svg" alt="Orderly" className="legal-page__logo" />
+          <img src="/logo-skytla.svg" alt="Skytla" className="legal-page__logo" />
         </div>
 
         <div className="legal-page__card">
@@ -15,10 +15,10 @@ const Privacidad = () => {
           <section className="legal-page__section">
             <h2>1. Responsable del tratamiento</h2>
             <p>
-              <strong>Al García</strong>, operador de Orderly, es el responsable del tratamiento
+              <strong>Al García</strong>, operador de Skytla, es el responsable del tratamiento
               de los datos personales que nos proporcionas. Para cualquier solicitud relacionada
               con tus datos, contáctanos en{' '}
-              <a href="mailto:orderly.vault@gmail.com">orderly.vault@gmail.com</a>.
+              <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a>.
             </p>
             <p>
               Este aviso cumple con las legislaciones de protección de datos aplicables
@@ -84,7 +84,7 @@ const Privacidad = () => {
             <h2>4. Finalidad del tratamiento</h2>
             <p>Tus datos personales son utilizados para:</p>
             <ul>
-              <li>Crear y gestionar tu cuenta en Orderly.</li>
+              <li>Crear y gestionar tu cuenta en Skytla.</li>
               <li>Brindarte acceso al Servicio y sus funcionalidades.</li>
               <li>Enviarte notificaciones relacionadas con el Servicio.</li>
               <li>Atender solicitudes de soporte.</li>
@@ -148,7 +148,7 @@ const Privacidad = () => {
               <li>Solicitar la eliminación de tus datos.</li>
               <li>No discriminación por ejercer tus derechos.</li>
               <li>
-                Derecho a no vender tus datos personales — <strong>Orderly no vende datos.</strong>
+                Derecho a no vender tus datos personales — <strong>Skytla no vende datos.</strong>
               </li>
             </ul>
 
@@ -161,7 +161,7 @@ const Privacidad = () => {
 
             <p>
               Para ejercer cualquiera de estos derechos, contáctanos en{' '}
-              <a href="mailto:orderly.vault@gmail.com">orderly.vault@gmail.com</a> o a través
+              <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> o a través
               de la sección de Soporte dentro de la plataforma.
             </p>
           </section>
@@ -187,7 +187,7 @@ const Privacidad = () => {
           <section className="legal-page__section">
             <h2>9. Cookies y tecnologías similares</h2>
             <p>
-              Orderly utiliza tokens de sesión necesarios para la autenticación y funcionamiento del
+              Skytla utiliza tokens de sesión necesarios para la autenticación y funcionamiento del
               Servicio. No utilizamos cookies de rastreo, publicidad o análisis de comportamiento
               de terceros.
             </p>
@@ -216,7 +216,7 @@ const Privacidad = () => {
             <p>
               Para cualquier duda, ejercicio de derechos o reclamación relacionada con tus datos
               personales, contáctanos en{' '}
-              <a href="mailto:orderly.vault@gmail.com">orderly.vault@gmail.com</a> o a través
+              <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> o a través
               de la sección de Soporte dentro de la plataforma.
             </p>
           </section>

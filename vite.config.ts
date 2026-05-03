@@ -12,10 +12,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'logo-orderly.svg'],
+      includeAssets: ['favicon.svg', 'logo-skytla.svg'],
       manifest: {
-        name: 'Orderly — Gestor de Pedidos',
-        short_name: 'Orderly',
+        name: 'Skytla — Gestor de Pedidos',
+        short_name: 'Skytla',
         description: 'Gestiona tus pedidos, clientes y productos desde cualquier dispositivo.',
         theme_color: '#3b82f6',
         background_color: '#ffffff',

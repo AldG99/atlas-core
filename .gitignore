@@ -12,13 +12,10 @@ dist
 dist-ssr
 *.local
 
-# Firebase config
-src/services
-src/config
-src/types
 .env*
 
 .firebaserc
+cors.json
 
 # Docs
 fase-1-gestor-pedidos.md
@@ -26,16 +23,7 @@ fase-2-escalabilidad-saas.md
 fase-3-produccion.md
 fase-4-configuracion-firebase-stripe.md
 
-firestore.rules
-storage.rules
-
-firebase.json
-cors.json
-
-# i18n
-src/i18n
-
-# functions
+# functions (solo servidor, no necesario para Vercel)
 functions
 
 # Tests

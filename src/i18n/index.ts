@@ -23,7 +23,7 @@ i18n
     detection: {
       order: ['localStorage'],
       caches: ['localStorage'],
-      lookupLocalStorage: 'orderly_lang',
+      lookupLocalStorage: 'skytla_lang',
     },
   });
 

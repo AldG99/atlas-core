@@ -1,6 +1,6 @@
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_DRIVE_CLIENT_ID;
 const SCOPE = 'https://www.googleapis.com/auth/drive.file';
-const FOLDER_NAME = 'Orderly';
+const FOLDER_NAME = 'Skytla';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GoogleAccounts = any;

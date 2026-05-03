@@ -129,7 +129,7 @@
       "termsText": "Al crear una cuenta aceptas nuestros",
       "terms": "Términos de uso",
       "privacy": "Aviso de privacidad",
-      "welcome": "¡Bienvenido a Orderly, {{businessName}}!",
+      "welcome": "¡Bienvenido a Skytla, {{businessName}}!",
       "errors": {
         "businessNameRequired": "El nombre del negocio es requerido",
         "firstNameRequired": "El nombre es requerido",
@@ -773,13 +773,13 @@
       "active": "Activadas",
       "test": "Probar",
       "activate": "Activar notificaciones",
-      "testTitle": "Orderly",
+      "testTitle": "Skytla",
       "testBody": "¡Las notificaciones están activadas correctamente!"
     },
     "install": {
-      "desc": "Instala Orderly en tu dispositivo para acceder más rápido y usarla sin conexión.",
-      "button": "Instalar Orderly",
-      "bannerTitle": "Instalar Orderly",
+      "desc": "Instala Skytla en tu dispositivo para acceder más rápido y usarla sin conexión.",
+      "button": "Instalar Skytla",
+      "bannerTitle": "Instalar Skytla",
       "bannerDesc": "Accede más rápido desde tu pantalla de inicio",
       "bannerButton": "Instalar",
       "bannerClose": "Cerrar"
@@ -857,7 +857,7 @@
       "exportError": "Error al generar el respaldo",
       "importTitle": "Importar",
       "importDesc": "Carga un archivo de respaldo para restaurar tus datos en esta cuenta. Los datos existentes no se eliminan.",
-      "importNote": "Solo se aceptan archivos generados por Orderly (.json).",
+      "importNote": "Solo se aceptan archivos generados por Skytla (.json).",
       "selectFile": "Seleccionar archivo",
       "cancel": "Cancelar",
       "confirm": "Confirmar importación",
@@ -903,7 +903,7 @@
   },
   "support": {
     "title": "Centro de Soporte",
-    "subtitle": "Encuentra respuestas, guías y ayuda para usar Orderly",
+    "subtitle": "Encuentra respuestas, guías y ayuda para usar Skytla",
     "faqTitle": "Preguntas Frecuentes",
     "faq": [
       {

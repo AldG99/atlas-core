@@ -12,7 +12,7 @@ const InstallBanner = () => {
   return (
     <div className="install-banner">
       <div className="install-banner__content">
-        <img src="/favicon.svg" alt="Orderly" className="install-banner__icon" />
+        <img src="/favicon.svg" alt="Skytla" className="install-banner__icon" />
         <div className="install-banner__text">
           <span className="install-banner__title">{t('settings.install.bannerTitle')}</span>
           <span className="install-banner__desc">{t('settings.install.bannerDesc')}</span>

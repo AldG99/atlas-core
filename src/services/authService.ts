@@ -159,7 +159,7 @@ export const deleteAccount = async (password: string, uid: string): Promise<void
 
 export const loginMiembro = async (username: string, password: string): Promise<User> => {
   // Email sintético construido desde el username — no requiere consulta previa
-  const authEmail = `${username}@orderly.miembro`;
+  const authEmail = `${username}@skytla.miembro`;
 
   let userCredential;
   try {

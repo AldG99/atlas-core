@@ -32,8 +32,8 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
       <aside id="sidebar" className={`sidebar ${isMobileOpen ? 'sidebar--mobile-open' : ''}`}>
         <div className="sidebar__header">
           <img
-            src="/logo-orderly.svg"
-            alt="Orderly"
+            src="/logo-skytla.svg"
+            alt="Skytla"
             className="sidebar__logo"
           />
         </div>

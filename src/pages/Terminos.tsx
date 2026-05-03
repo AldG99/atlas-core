@@ -5,7 +5,7 @@ const Terminos = () => {
     <div className="legal-page">
       <div className="legal-page__container">
         <div className="legal-page__header">
-          <img src="/logo-orderly.svg" alt="Orderly" className="legal-page__logo" />
+          <img src="/logo-skytla.svg" alt="Skytla" className="legal-page__logo" />
         </div>
 
         <div className="legal-page__card">
@@ -15,9 +15,9 @@ const Terminos = () => {
           <section className="legal-page__section">
             <h2>1. Responsable del Servicio</h2>
             <p>
-              Orderly es operado por <strong>Al García</strong>, en adelante "el Responsable".
+              Skytla es operado por <strong>Al García</strong>, en adelante "el Responsable".
               Para cualquier consulta relacionada con estos Términos, puedes contactarnos en{' '}
-              <a href="mailto:orderly.vault@gmail.com">orderly.vault@gmail.com</a> o a través
+              <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> o a través
               de la sección de Soporte dentro de la plataforma.
             </p>
           </section>
@@ -25,7 +25,7 @@ const Terminos = () => {
           <section className="legal-page__section">
             <h2>2. Aceptación de los términos</h2>
             <p>
-              Al registrarte y utilizar Orderly ("el Servicio"), aceptas quedar sujeto a estos
+              Al registrarte y utilizar Skytla ("el Servicio"), aceptas quedar sujeto a estos
               Términos de Uso. Si no estás de acuerdo con alguno de ellos, no debes utilizar el
               Servicio. Estos términos aplican a usuarios de cualquier país.
             </p>
@@ -34,7 +34,7 @@ const Terminos = () => {
           <section className="legal-page__section">
             <h2>3. Descripción del Servicio</h2>
             <p>
-              Orderly es una plataforma de gestión de pedidos, clientes y productos diseñada para
+              Skytla es una plataforma de gestión de pedidos, clientes y productos diseñada para
               pequeños y medianos negocios. El Servicio se encuentra actualmente en{' '}
               <strong>versión Beta</strong>, por lo que algunas funciones pueden cambiar,
               actualizarse o eliminarse sin previo aviso.
@@ -104,7 +104,7 @@ const Terminos = () => {
           <section className="legal-page__section">
             <h2>8. Pagos y política de reembolsos</h2>
             <p>
-              Orderly ofrece planes de pago disponibles durante la <strong>versión Beta</strong>.
+              Skytla ofrece planes de pago disponibles durante la <strong>versión Beta</strong>.
               Al suscribirte a un plan de pago, aceptas las siguientes condiciones:
             </p>
             <ul>
@@ -123,7 +123,7 @@ const Terminos = () => {
               </li>
               <li>
                 En caso de disputa relacionada con un cobro, contáctanos en{' '}
-                <a href="mailto:orderly.vault@gmail.com">orderly.vault@gmail.com</a> dentro de los
+                <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> dentro de los
                 30 días siguientes al cargo.
               </li>
             </ul>
@@ -205,7 +205,7 @@ const Terminos = () => {
             <h2>14. Contacto</h2>
             <p>
               Si tienes dudas sobre estos Términos, puedes contactarnos en{' '}
-              <a href="mailto:orderly.vault@gmail.com">orderly.vault@gmail.com</a> o a través
+              <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> o a través
               de la sección de Soporte dentro de la plataforma.
             </p>
           </section>

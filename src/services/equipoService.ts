@@ -30,7 +30,7 @@ export const createMiembro = async (
 ): Promise<string> => {
   const username = generarUsername();
 
-  const authEmail = `${username}@orderly.miembro`;
+  const authEmail = `${username}@skytla.miembro`;
   const apiKey = import.meta.env.VITE_FIREBASE_API_KEY as string;
 
   const response = await fetch(
