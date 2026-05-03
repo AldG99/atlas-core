@@ -59,7 +59,13 @@ export const sendSupportMessage = async (
     fecha: Timestamp.now()
   });
 
-  await emailjs.send(
+  if (snap.exists()) {
+    await updateDoc(limitRef, { count: increment(1), lastSent: Timestamp.now() });
+  } else {
+    await setDoc(limitRef, { count: 1, lastSent: Timestamp.now() });
+  }
+
+  emailjs.send(
     import.meta.env.VITE_EMAILJS_SERVICE_ID,
     import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
     {
@@ -69,11 +75,5 @@ export const sendSupportMessage = async (
       date: new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
     },
     import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-  );
-
-  if (snap.exists()) {
-    await updateDoc(limitRef, { count: increment(1), lastSent: Timestamp.now() });
-  } else {
-    await setDoc(limitRef, { count: 1, lastSent: Timestamp.now() });
-  }
+  ).catch((err) => console.error('[EmailJS]', err));
 };
