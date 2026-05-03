@@ -44,7 +44,7 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
         setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
       } else if (e.key === 'Enter' && focusedRow !== null) {
         e.preventDefault();
-        navigate(`/cliente/${clientes[focusedRow].id}`, { state: { from: location.pathname } });
+        navigate(`/clients/${clientes[focusedRow].id}`, { state: { from: location.pathname } });
       }
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -115,7 +115,7 @@ const ClientesTable = ({ clientes, loading, error, searchTerm }: ClientesTablePr
             <tr
               key={cliente.id}
               className={`clientes-table__row${focusedRow === index ? ' clientes-table__row--focused' : ''}`}
-              onClick={() => navigate(`/cliente/${cliente.id}`, { state: { from: location.pathname } })}
+              onClick={() => navigate(`/clients/${cliente.id}`, { state: { from: location.pathname } })}
               onMouseEnter={() => setFocusedRow(index)}
             >
               <td>

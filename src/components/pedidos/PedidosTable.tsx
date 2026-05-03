@@ -71,7 +71,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
         setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
       } else if (e.key === 'Enter' && focusedRow !== null) {
         e.preventDefault();
-        navigate(`/pedido/${paginatedPedidos[focusedRow].id}`, { state: { from: location.pathname } });
+        navigate(`/orders/${paginatedPedidos[focusedRow].id}`, { state: { from: location.pathname } });
       }
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -158,7 +158,7 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
             <tr
               key={pedido.id}
               className={`pedidos-table__row${focusedRow === index ? ' pedidos-table__row--focused' : ''}`}
-              onClick={() => navigate(`/pedido/${pedido.id}`, { state: { from: location.pathname } })}
+              onClick={() => navigate(`/orders/${pedido.id}`, { state: { from: location.pathname } })}
               onMouseEnter={() => setFocusedRow(index)}
             >
               <td>

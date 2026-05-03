@@ -114,7 +114,7 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
         let ri = 0;
         for (const pedido of pedidosFiltrados) {
           if (focusedRow === ri) {
-            navigate(ROUTES.DETAIL_PEDIDO.replace(':id', pedido.id), { state: { from: `/cliente/${clienteId}` } });
+            navigate(ROUTES.DETAIL_PEDIDO.replace(':id', pedido.id), { state: { from: `/clients/${clienteId}` } });
             break;
           }
           ri += pedido.productos.length + 2;
@@ -229,7 +229,7 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
                             )}
                             <button
                               className="cliente-detail__pedidos-detail-btn"
-                              onClick={() => navigate(ROUTES.DETAIL_PEDIDO.replace(':id', pedido.id), { state: { from: `/cliente/${clienteId}` } })}
+                              onClick={() => navigate(ROUTES.DETAIL_PEDIDO.replace(':id', pedido.id), { state: { from: `/clients/${clienteId}` } })}
                               title={t('clients.detail.viewOrderDetail')}
                             >
                               <PiArrowRightBold size={14} />

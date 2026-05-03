@@ -65,7 +65,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
         setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
       } else if (e.key === 'Enter' && focusedRow !== null) {
         e.preventDefault();
-        navigate(`/producto-detalle/${productos[focusedRow].id}`, { state: { from: location.pathname } });
+        navigate(`/products/${productos[focusedRow].id}`, { state: { from: location.pathname } });
       }
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -137,7 +137,7 @@ const ProductosTable = ({ productos, etiquetas, loading, error, searchTerm }: Pr
               <tr
                 key={producto.id}
                 className={`productos-table__row${focusedRow === index ? ' productos-table__row--focused' : ''}`}
-                onClick={() => navigate(`/producto-detalle/${producto.id}`, { state: { from: location.pathname } })}
+                onClick={() => navigate(`/products/${producto.id}`, { state: { from: location.pathname } })}
                 onMouseEnter={() => setFocusedRow(index)}
               >
                 <td>

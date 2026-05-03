@@ -29,8 +29,12 @@ const Login = () => {
   const [resetSent, setResetSent] = useState(false);
   const [resetError, setResetError] = useState('');
 
-  const { login, loginMiembro, sendPasswordReset } = useAuth();
+  const { login, loginMiembro, sendPasswordReset, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authLoading && user) navigate(ROUTES.DASHBOARD, { replace: true });
+  }, [user, authLoading, navigate]);
 
   // Live countdown when account is temporarily locked
   useEffect(() => {

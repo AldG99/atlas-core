@@ -54,7 +54,6 @@ function App() {
             <Toast />
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path={ROUTES.LOGIN}      element={<Login />} />
                 <Route path={ROUTES.REGISTER}   element={<Register />} />
                 <Route path={ROUTES.TERMINOS}   element={<Terminos />} />
                 <Route path={ROUTES.PRIVACIDAD} element={<Privacidad />} />
@@ -67,7 +66,7 @@ function App() {
                   />
                 ))}
 
-                <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+                <Route path={ROUTES.HOME} element={<Login />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

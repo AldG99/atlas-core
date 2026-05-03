@@ -72,7 +72,7 @@ export const useNotificaciones = () => {
         tipo: 'info',
         titulo: `${descuentosVenciendo.length} descuento${descuentosVenciendo.length > 1 ? 's' : ''} por vencer`,
         descripcion: `Vencen en los próximos ${DIAS_DESCUENTO} días`,
-        link: '/productos',
+        link: '/products',
         filterState: { filterDescuento: true },
       });
     }
@@ -108,7 +108,7 @@ export const useNotificaciones = () => {
         tipo: 'warning',
         titulo: `${sinStock.length} producto${sinStock.length > 1 ? 's' : ''} sin stock`,
         descripcion: sinStock.length === 1 ? sinStock[0].nombre : `${sinStock[0].nombre} y ${sinStock.length - 1} más`,
-        link: '/productos',
+        link: '/products',
         filterState: {},
       });
     }
@@ -123,7 +123,7 @@ export const useNotificaciones = () => {
         tipo: 'info',
         titulo: `${stockBajo.length} producto${stockBajo.length > 1 ? 's' : ''} con stock bajo`,
         descripcion: `Menos de ${UMBRAL_STOCK_BAJO} unidades disponibles`,
-        link: '/productos',
+        link: '/products',
         filterState: {},
       });
     }
