@@ -27,13 +27,22 @@ const AuthLayout = ({ children, showSubtitle = true, fullWidth = false }: AuthLa
       {!fullWidth && (
         <div className="auth-layout__image" style={{ backgroundImage: `url('${bgImage}')` }}>
           <div className="auth-layout__image-overlay">
-            <img src="/logo-skytla.svg" alt="Skytla" className="auth-layout__image-logo" draggable={false} onContextMenu={e => e.preventDefault()} />
-            {showSubtitle && (
+{showSubtitle && (
               <p className="auth-layout__image-tagline">
                 {i18n.language?.startsWith('en') ? (
                   <>
                     Designed to <span className="auth-layout__image-tagline--accent">manage</span> your orders.{' '}
                     Built to <span className="auth-layout__image-tagline--accent">scale</span> your business.
+                  </>
+                ) : i18n.language?.startsWith('pt') ? (
+                  <>
+                    Projetado para <span className="auth-layout__image-tagline--accent">gerenciar</span> seus pedidos.{' '}
+                    Construído para <span className="auth-layout__image-tagline--accent">escalar</span> seu negócio.
+                  </>
+                ) : i18n.language?.startsWith('fr') ? (
+                  <>
+                    Conçu pour <span className="auth-layout__image-tagline--accent">gérer</span> vos commandes.{' '}
+                    Construit pour <span className="auth-layout__image-tagline--accent">développer</span> votre activité.
                   </>
                 ) : (
                   <>
