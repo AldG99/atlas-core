@@ -5,7 +5,7 @@ const Terminos = () => {
     <div className="legal-page">
       <div className="legal-page__container">
         <div className="legal-page__header">
-          <img src="/logo-skytla.svg" alt="Skytla" className="legal-page__logo" />
+          <img src="/logo-skytla.svg" alt="Skytla" className="legal-page__logo" draggable={false} onContextMenu={e => e.preventDefault()} />
         </div>
 
         <div className="legal-page__card">

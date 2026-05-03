@@ -27,7 +27,7 @@ const AuthLayout = ({ children, showSubtitle = true, fullWidth = false }: AuthLa
       {!fullWidth && (
         <div className="auth-layout__image" style={{ backgroundImage: `url('${bgImage}')` }}>
           <div className="auth-layout__image-overlay">
-            <img src="/logo-skytla.svg" alt="Skytla" className="auth-layout__image-logo" />
+            <img src="/logo-skytla.svg" alt="Skytla" className="auth-layout__image-logo" draggable={false} onContextMenu={e => e.preventDefault()} />
             {showSubtitle && (
               <p className="auth-layout__image-tagline">
                 {i18n.language?.startsWith('en') ? (
@@ -50,7 +50,7 @@ const AuthLayout = ({ children, showSubtitle = true, fullWidth = false }: AuthLa
       <div className="auth-layout__panel">
         <div className="auth-layout__panel-inner">
           <div className="auth-layout__header">
-            <img src="/logo-skytla.svg" alt="Skytla" className="auth-layout__logo" />
+            <img src="/logo-skytla.svg" alt="Skytla" className="auth-layout__logo" draggable={false} onContextMenu={e => e.preventDefault()} />
             <span className="auth-layout__beta">{t('auth.beta')}</span>
           </div>
           <div className="auth-layout__content">{children}</div>

@@ -19,6 +19,9 @@
   &__logo {
     max-width: 140px;
     height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
   }
 
   &__card {

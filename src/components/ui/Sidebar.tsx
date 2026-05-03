@@ -35,6 +35,8 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             src="/logo-skytla.svg"
             alt="Skytla"
             className="sidebar__logo"
+            draggable={false}
+            onContextMenu={e => e.preventDefault()}
           />
         </div>
 
