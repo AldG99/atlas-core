@@ -43,7 +43,7 @@
     align-items: center;
     justify-content: center;
     gap: $spacing-sm;
-    margin-bottom: $spacing-sm;
+    margin-bottom: $spacing-lg;
     flex-shrink: 0;
   }
 
@@ -99,31 +99,32 @@
     background-color: $color-gray-200;
   }
 
-  &__step2-header {
+  &__actions {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    margin-bottom: $spacing-xs;
+    gap: $spacing-sm;
+    margin-top: auto;
     flex-shrink: 0;
+    align-items: stretch;
 
-    h2 {
-      margin-bottom: 0;
+    .btn--full {
+      margin-top: 0;
+      flex: 1;
+      width: auto;
     }
   }
 
   &__back {
-    position: absolute;
-    left: 0;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    padding: $spacing-sm $spacing-md;
     background: none;
     border: 1px solid $color-gray-200;
     cursor: pointer;
     color: $color-gray-600;
+    font-size: $font-size-sm;
+    font-weight: 500;
 
     &:hover {
       background-color: $color-gray-50;
@@ -185,7 +186,7 @@
 
   &__legal {
     text-align: center;
-    margin-top: $spacing-xs;
+    margin-top: $spacing-md;
     flex-shrink: 0;
     font-size: $font-size-xs;
     color: $color-gray-500;
@@ -203,7 +204,7 @@
 
   &__link {
     text-align: center;
-    margin-top: $spacing-xs;
+    margin-top: $spacing-md;
     flex-shrink: 0;
     font-size: $font-size-sm;
     color: $color-gray-600;

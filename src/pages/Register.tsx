@@ -2,7 +2,7 @@ import type { FormEvent } from 'react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PiEyeBold, PiEyeSlashBold, PiArrowLeftBold } from 'react-icons/pi';
+import { PiEyeBold, PiEyeSlashBold } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
@@ -214,8 +214,6 @@ const Register = () => {
             className={step !== 1 ? 'register-form__panel--hidden' : ''}
             {...(step !== 1 ? { inert: true } : {})}
           >
-            <h2>{t('auth.register.step1Title')}</h2>
-
             <div className="form-group">
               <label htmlFor="nombreNegocio">{t('auth.register.businessName')}</label>
               <input
@@ -300,13 +298,6 @@ const Register = () => {
             className={step !== 2 ? 'register-form__panel--hidden' : ''}
             {...(step !== 2 ? { inert: true } : {})}
           >
-            <div className="register-form__step2-header">
-              <button type="button" className="register-form__back" onClick={handleBack}>
-                <PiArrowLeftBold size={16} />
-              </button>
-              <h2>{t('auth.register.step2Title')}</h2>
-            </div>
-
             {submitError && <div className="register-form__error">{submitError}</div>}
 
             <div className="form-group">
@@ -371,13 +362,18 @@ const Register = () => {
               {errors.confirmPassword && <span className="register-form__field-error">{errors.confirmPassword}</span>}
             </div>
 
-            <button
-              type="submit"
-              className="btn btn--primary btn--full"
-              disabled={loading}
-            >
-              {loading ? t('auth.register.submitting') : t('auth.register.submit')}
-            </button>
+            <div className="register-form__actions">
+              <button type="button" className="register-form__back" onClick={handleBack}>
+                {t('common.back')}
+              </button>
+              <button
+                type="submit"
+                className="btn btn--primary btn--full"
+                disabled={loading}
+              >
+                {loading ? t('auth.register.submitting') : t('auth.register.submit')}
+              </button>
+            </div>
           </form>
         </div>
 
