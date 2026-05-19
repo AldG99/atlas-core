@@ -181,7 +181,7 @@ const PedidoAbonosTable: React.FC<Props> = ({
       )}
       <hr className="pedido-detail__info-divider" />
       <div className="pedido-detail__creado-por-row">
-        {t('orders.detail.deliveredBy')} <span>{entregadoPor ? entregadoPor.nombre : <em>{t('orders.detail.notDeliveredYet')}</em>}</span>
+        {t('orders.detail.deliveredBy')} <span>{entregadoPor ? entregadoPor.nombre : t('orders.detail.notDeliveredYet')}</span>
       </div>
     </div>
   );

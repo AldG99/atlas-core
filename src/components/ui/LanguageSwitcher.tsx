@@ -11,17 +11,18 @@ const LANGUAGES = [
 
 interface Props {
   className?: string;
+  vertical?: boolean;
 }
 
-export default function LanguageSwitcher({ className }: Props) {
+export default function LanguageSwitcher({ className, vertical }: Props) {
   const { i18n } = useTranslation();
   const current = i18n.language?.slice(0, 2) ?? 'en';
 
   return (
-    <div className={`lang-switcher ${className ?? ''}`}>
+    <div className={`lang-switcher ${vertical ? 'lang-switcher--vertical' : ''} ${className ?? ''}`}>
       {LANGUAGES.map(({ code, label }, index) => (
         <Fragment key={code}>
-          {index > 0 && <span className="lang-switcher__sep" aria-hidden="true">·</span>}
+          {!vertical && index > 0 && <span className="lang-switcher__sep" aria-hidden="true">·</span>}
           <button
             className={`lang-switcher__item${current === code ? ' lang-switcher__item--active' : ''}`}
             onClick={() => i18n.changeLanguage(code)}

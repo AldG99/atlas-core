@@ -911,40 +911,40 @@
         "answer": "Allez dans \"Mes Commandes\" et cliquez sur \"Nouvelle Commande\". Sélectionnez un client, ajoutez les produits avec leur quantité et confirmez. La commande recevra une référence automatique."
       },
       {
-        "question": "Comment enregistrer un paiement partiel ?",
-        "answer": "Ouvrez le détail de la commande. Dans la barre supérieure, vous trouverez le champ pour saisir le montant du paiement. Vous pouvez l'appliquer à la commande en général ou à un produit spécifique. La commande est marquée comme \"Livrée\" automatiquement lorsque le paiement total est complété."
-      },
-      {
         "question": "Comment changer le statut d'une commande ?",
         "answer": "Ouvrez le détail de la commande. Dans la barre inférieure, vous trouverez le bouton \"Livrer\", disponible lorsque la commande est en statut \"En préparation\". Le statut passe aussi automatiquement à \"Livré\" lorsque le total des paiements est soldé."
       },
       {
-        "question": "Qu'est-ce que la section Archives ?",
-        "answer": "Les commandes livrées sont archivées automatiquement après 48 heures. Dans la section \"Archivés\", vous pouvez les consulter, les exporter en CSV ou les restaurer dans la liste principale si nécessaire."
+        "question": "Comment enregistrer un paiement partiel ?",
+        "answer": "Ouvrez le détail de la commande. Dans la barre supérieure, vous trouverez le champ pour saisir le montant du paiement. Vous pouvez l'appliquer à la commande en général ou à un produit spécifique. La commande est marquée comme \"Livrée\" automatiquement lorsque le paiement total est complété."
       },
       {
         "question": "Comment envoyer une commande par WhatsApp ?",
         "answer": "Ouvrez le détail de la commande et utilisez le bouton WhatsApp dans la barre supérieure. WhatsApp s'ouvrira avec un message pré-formaté contenant le résumé complet de la commande."
       },
       {
-        "question": "Comment appliquer une remise à un produit ?",
-        "answer": "Dans la section \"Produits\", modifiez le produit et configurez le pourcentage de remise ainsi qu'une date d'expiration. La remise s'applique automatiquement dans les commandes tant qu'elle est valide et s'affiche dans le détail de la commande."
-      },
-      {
         "question": "Comment rechercher et filtrer mes commandes ?",
         "answer": "Dans \"Mes Commandes\", vous trouverez une barre de recherche par nom de client ou référence, des filtres par statut (En attente, En préparation, Livré), des filtres par date (aujourd'hui, cette semaine, ce mois) et des options de tri. Tous les filtres peuvent être combinés."
       },
       {
-        "question": "Puis-je télécharger une image de la commande ?",
-        "answer": "Oui. Ouvrez le détail de la commande et utilisez le bouton de téléchargement dans la barre supérieure. Une image PNG sera générée avec le résumé complet de la commande, prête à être partagée."
+        "question": "Où voir l'historique des commandes d'un client ?",
+        "answer": "Accédez au détail du client depuis la section \"Clients\". Vous y trouverez toutes les commandes associées à ce client, triées par date, avec leur statut et leurs totaux."
+      },
+      {
+        "question": "Qu'est-ce que la section Archives ?",
+        "answer": "Les commandes livrées sont archivées automatiquement après 48 heures. Dans la section \"Archivés\", vous pouvez les consulter, les exporter en CSV ou les restaurer dans la liste principale si nécessaire."
+      },
+      {
+        "question": "Comment appliquer une remise à un produit ?",
+        "answer": "Dans la section \"Produits\", modifiez le produit et configurez le pourcentage de remise ainsi qu'une date d'expiration. La remise s'applique automatiquement dans les commandes tant qu'elle est valide et s'affiche dans le détail de la commande."
       },
       {
         "question": "Que sont les étiquettes et à quoi servent-elles ?",
         "answer": "Les étiquettes sont des catégories visuelles que vous pouvez assigner à vos produits depuis la section \"Produits\". Elles apparaissent dans le détail de chaque commande à côté des produits, facilitant l'identification rapide par catégorie ou type."
       },
       {
-        "question": "Où voir l'historique des commandes d'un client ?",
-        "answer": "Accédez au détail du client depuis la section \"Clients\". Vous y trouverez toutes les commandes associées à ce client, triées par date, avec leur statut et leurs totaux."
+        "question": "Puis-je télécharger une image de la commande ?",
+        "answer": "Oui. Ouvrez le détail de la commande et utilisez le bouton de téléchargement dans la barre supérieure. Une image PNG sera générée avec le résumé complet de la commande, prête à être partagée."
       },
       {
         "question": "Comment sauvegarder mes données ?",

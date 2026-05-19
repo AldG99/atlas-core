@@ -911,40 +911,40 @@
         "answer": "Go to \"My Orders\" and click \"New Order\". Select a client, add the products with their quantities and confirm. The order will receive an automatic folio number."
       },
       {
-        "question": "How do I register a payment on an order?",
-        "answer": "Open the order detail. In the top bar you will find the field to enter the payment amount. You can apply it to the order in general or to a specific product. The order is automatically marked as \"Delivered\" when the full payment is completed."
-      },
-      {
         "question": "How do I change the status of an order?",
         "answer": "Open the order detail. In the bottom bar you will find the \"Delivered\" button, available when the order is in \"In preparation\" status. The status also changes automatically to \"Delivered\" when the total payments are settled."
       },
       {
-        "question": "What is the Archive section?",
-        "answer": "Delivered orders are automatically archived after 48 hours. In the \"Archive\" section you can view them, export them to CSV, or restore them to the main list if needed."
+        "question": "How do I register a payment on an order?",
+        "answer": "Open the order detail. In the top bar you will find the field to enter the payment amount. You can apply it to the order in general or to a specific product. The order is automatically marked as \"Delivered\" when the full payment is completed."
       },
       {
         "question": "How do I send an order via WhatsApp?",
         "answer": "Open the order detail and use the WhatsApp button in the top bar. WhatsApp will open with a pre-formatted message that includes the full order summary."
       },
       {
-        "question": "How do I apply a discount to a product?",
-        "answer": "In the \"Products\" section, edit the product and set the discount percentage along with an expiration date. The discount is automatically applied to orders while it is active and is shown in the order detail."
-      },
-      {
         "question": "How do I search and filter my orders?",
         "answer": "In \"My Orders\" you will find a search bar by client name or folio, filters by status (Pending, In preparation, Delivered), filters by date (today, this week, this month) and sorting options. All filters can be combined."
       },
       {
-        "question": "Can I download an image of the order?",
-        "answer": "Yes. Open the order detail and use the download button in the top bar. A PNG image will be generated with the full order summary, ready to share."
+        "question": "Where can I see a client's order history?",
+        "answer": "Go to the client detail from the \"Clients\" section. There you will find all orders associated with that client, sorted by date, with their status and totals."
+      },
+      {
+        "question": "What is the Archive section?",
+        "answer": "Delivered orders are automatically archived after 48 hours. In the \"Archive\" section you can view them, export them to CSV, or restore them to the main list if needed."
+      },
+      {
+        "question": "How do I apply a discount to a product?",
+        "answer": "In the \"Products\" section, edit the product and set the discount percentage along with an expiration date. The discount is automatically applied to orders while it is active and is shown in the order detail."
       },
       {
         "question": "What are labels and what are they for?",
         "answer": "Labels are visual categories you can assign to your products from the \"Products\" section. They appear in the detail of each order alongside the products, making it easy to quickly identify by category, type, or any criteria you define."
       },
       {
-        "question": "Where can I see a client's order history?",
-        "answer": "Go to the client detail from the \"Clients\" section. There you will find all orders associated with that client, sorted by date, with their status and totals."
+        "question": "Can I download an image of the order?",
+        "answer": "Yes. Open the order detail and use the download button in the top bar. A PNG image will be generated with the full order summary, ready to share."
       },
       {
         "question": "How do I back up my data?",

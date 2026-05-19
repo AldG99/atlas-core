@@ -911,40 +911,40 @@
         "answer": "Vá para \"Meus Pedidos\" e clique em \"Novo Pedido\". Selecione um cliente, adicione os produtos com suas quantidades e confirme. O pedido receberá um número automático."
       },
       {
-        "question": "Como registro um pagamento em um pedido?",
-        "answer": "Abra o detalhe do pedido. Na barra superior você encontrará o campo para inserir o valor do pagamento. Você pode aplicá-lo ao pedido em geral ou a um produto específico. O pedido é marcado automaticamente como \"Entregue\" quando o pagamento total é concluído."
-      },
-      {
         "question": "Como altero o status de um pedido?",
         "answer": "Abra o detalhe do pedido. Na barra inferior você encontrará o botão \"Entregar\", disponível quando o pedido está com status \"Em preparo\". O status também muda automaticamente para \"Entregue\" quando os pagamentos totais são liquidados."
       },
       {
-        "question": "O que é a seção Arquivados?",
-        "answer": "Os pedidos entregues são arquivados automaticamente após 48 horas. Na seção \"Arquivados\" você pode visualizá-los, exportá-los para CSV ou restaurá-los para a lista principal se necessário."
+        "question": "Como registro um pagamento em um pedido?",
+        "answer": "Abra o detalhe do pedido. Na barra superior você encontrará o campo para inserir o valor do pagamento. Você pode aplicá-lo ao pedido em geral ou a um produto específico. O pedido é marcado automaticamente como \"Entregue\" quando o pagamento total é concluído."
       },
       {
         "question": "Como envio um pedido pelo WhatsApp?",
         "answer": "Abra o detalhe do pedido e use o botão do WhatsApp na barra superior. O WhatsApp abrirá com uma mensagem pré-formatada contendo o resumo completo do pedido."
       },
       {
-        "question": "Como aplico um desconto a um produto?",
-        "answer": "Na seção \"Produtos\", edite o produto e defina a porcentagem de desconto junto com uma data de expiração. O desconto é aplicado automaticamente aos pedidos enquanto estiver ativo e é mostrado no detalhe do pedido."
-      },
-      {
         "question": "Como pesquiso e filtro meus pedidos?",
         "answer": "Em \"Meus Pedidos\" você encontrará uma barra de pesquisa por nome do cliente ou número, filtros por status (Pendente, Em preparo, Entregue), filtros por data (hoje, esta semana, este mês) e opções de ordenação. Todos os filtros podem ser combinados."
       },
       {
-        "question": "Posso baixar uma imagem do pedido?",
-        "answer": "Sim. Abra o detalhe do pedido e use o botão de download na barra superior. Uma imagem PNG será gerada com o resumo completo do pedido, pronta para compartilhar."
+        "question": "Onde posso ver o histórico de pedidos de um cliente?",
+        "answer": "Vá para o detalhe do cliente na seção \"Clientes\". Lá você encontrará todos os pedidos associados a esse cliente, ordenados por data, com seus status e totais."
+      },
+      {
+        "question": "O que é a seção Arquivados?",
+        "answer": "Os pedidos entregues são arquivados automaticamente após 48 horas. Na seção \"Arquivados\" você pode visualizá-los, exportá-los para CSV ou restaurá-los para a lista principal se necessário."
+      },
+      {
+        "question": "Como aplico um desconto a um produto?",
+        "answer": "Na seção \"Produtos\", edite o produto e defina a porcentagem de desconto junto com uma data de expiração. O desconto é aplicado automaticamente aos pedidos enquanto estiver ativo e é mostrado no detalhe do pedido."
       },
       {
         "question": "O que são etiquetas e para que servem?",
         "answer": "Etiquetas são categorias visuais que você pode atribuir aos seus produtos na seção \"Produtos\". Elas aparecem no detalhe de cada pedido ao lado dos produtos, facilitando a identificação rápida por categoria, tipo ou qualquer critério que você defina."
       },
       {
-        "question": "Onde posso ver o histórico de pedidos de um cliente?",
-        "answer": "Vá para o detalhe do cliente na seção \"Clientes\". Lá você encontrará todos os pedidos associados a esse cliente, ordenados por data, com seus status e totais."
+        "question": "Posso baixar uma imagem do pedido?",
+        "answer": "Sim. Abra o detalhe do pedido e use o botão de download na barra superior. Uma imagem PNG será gerada com o resumo completo do pedido, pronta para compartilhar."
       },
       {
         "question": "Como faço backup dos meus dados?",

@@ -413,7 +413,7 @@ const Configuracion = () => {
             <p className="configuracion__desc">
               {t('settings.language.desc')}
             </p>
-            <LanguageSwitcher />
+            <LanguageSwitcher vertical />
           </>
         );
 
