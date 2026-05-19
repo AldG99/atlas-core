@@ -16,7 +16,7 @@ export default defineConfig({
       manifest: {
         name: 'Skytla — Gestor de Pedidos',
         short_name: 'Skytla',
-        description: 'Gestiona tus pedidos, clientes y productos desde cualquier dispositivo.',
+        description: 'Diseñado para gestionar tus pedidos. Construido para escalar tu negocio.',
         theme_color: '#3b82f6',
         background_color: '#ffffff',
         display: 'standalone',

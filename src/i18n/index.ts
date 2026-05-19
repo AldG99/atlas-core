@@ -7,6 +7,11 @@ import en from './locales/en.json';
 import pt from './locales/pt.json';
 import fr from './locales/fr.json';
 
+const updateMetaDescription = () => {
+  const description = i18n.t('auth.tagline');
+  document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+};
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -27,6 +32,9 @@ i18n
       caches: ['localStorage'],
       lookupLocalStorage: 'skytla_lang',
     },
-  });
+  })
+  .then(updateMetaDescription);
+
+i18n.on('languageChanged', updateMetaDescription);
 
 export default i18n;

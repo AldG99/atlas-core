@@ -5,7 +5,6 @@
 $topbar-height: 52px;
 
 .cliente-detail {
-  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
   padding-top: $topbar-height;
@@ -45,12 +44,10 @@ $topbar-height: 52px;
   }
 
   &__top-bar-inner {
-    max-width: 1000px;
     width: 100%;
     display: flex;
     align-items: center;
     gap: $spacing-md;
-    padding-left: 0;
   }
 
   &__top-bar-actions {
@@ -109,12 +106,8 @@ $topbar-height: 52px;
     }
 
     &--back {
-      position: absolute;
-      left: $spacing-md;
-
-      @include md {
-        left: $spacing-lg;
-      }
+      flex-shrink: 0;
+      margin-right: $spacing-sm;
     }
   }
 
