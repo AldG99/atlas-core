@@ -523,7 +523,7 @@ const PedidoDetail = () => {
       )}
       {downloading && (
         <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', zIndex: -1 }}>
-          <PedidoCaptura ref={capturaRef} pedido={pedido} cobertura={cobertura} telefonoCodigoPais={clienteData?.telefonoCodigoPais} fechaDescarga={fechaDescarga} />
+          <PedidoCaptura ref={capturaRef} pedido={pedido} cobertura={cobertura} telefonoCodigoPais={clienteData?.telefonoCodigoPais} fechaDescarga={fechaDescarga} nombreNegocio={user?.nombreNegocio} />
         </div>
       )}
     </MainLayout>

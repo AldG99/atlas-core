@@ -1,8 +1,7 @@
 import { forwardRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Pedido } from '../../types/Pedido';
-import { PEDIDO_STATUS_COLORS } from '../../constants/pedidoStatus';
-import { formatDate, formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
+import { formatShortDate, getTotalPagado, formatTelefono } from '../../utils/formatters';
 import { getCodigoPais } from '../../data/codigosPais';
 import { useCurrency } from '../../hooks/useCurrency';
 import './PedidoCaptura.scss';
@@ -12,10 +11,11 @@ interface PedidoCapturaProps {
   cobertura: number[];
   telefonoCodigoPais?: string;
   fechaDescarga?: Date | null;
+  nombreNegocio?: string;
 }
 
 const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
-  ({ pedido, cobertura, telefonoCodigoPais, fechaDescarga }, ref) => {
+  ({ pedido, cobertura, telefonoCodigoPais, fechaDescarga, nombreNegocio }, ref) => {
     const { t, i18n } = useTranslation();
     const { format } = useCurrency();
     const pagado = getTotalPagado(pedido);
@@ -25,152 +25,137 @@ const PedidoCaptura = forwardRef<HTMLDivElement, PedidoCapturaProps>(
       [pedido.abonos]
     );
 
+    const tel = telefonoCodigoPais
+      ? `${getCodigoPais(telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(pedido.clienteTelefono)}`
+      : formatTelefono(pedido.clienteTelefono);
+
     return (
       <div ref={ref} className="pedido-captura">
-        {/* Encabezado */}
+
+        {/* Header */}
         <div className="pedido-captura__header">
-          <div className="pedido-captura__client">
-            <span className="pedido-captura__client-name">{pedido.clienteNombre}</span>
-            <span className="pedido-captura__client-phone">
-              {telefonoCodigoPais
-                ? `${getCodigoPais(telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(pedido.clienteTelefono)}`
-                : formatTelefono(pedido.clienteTelefono)}
-            </span>
-          </div>
-          <div className="pedido-captura__meta">
-            {pedido.folio && (
-              <span className="pedido-captura__folio">{pedido.folio}</span>
-            )}
-            <span className="pedido-captura__date">{formatDate(pedido.fechaCreacion)}</span>
-            <span
-              className="pedido-captura__estado"
-              style={{ color: PEDIDO_STATUS_COLORS[pedido.estado] }}
-            >
+          {nombreNegocio && (
+            <div className="pedido-captura__negocio">{nombreNegocio}</div>
+          )}
+          {pedido.folio && (
+            <div className="pedido-captura__folio">{pedido.folio}</div>
+          )}
+        </div>
+
+        <hr className="pedido-captura__sep pedido-captura__sep--double" />
+
+        {/* Info del cliente */}
+        <div className="pedido-captura__info">
+          <div className="pedido-captura__info-row">
+            <span>{pedido.clienteNombre}</span>
+            <span className="pedido-captura__estado">
               {t(`orders.status.${pedido.estado}`)}
             </span>
           </div>
+          <div className="pedido-captura__info-row">
+            <span>{tel}</span>
+            <span>{formatShortDate(pedido.fechaCreacion)}</span>
+          </div>
         </div>
 
-        {/* Tabla de productos */}
-        <div className="pedido-captura__section">
-          <span className="pedido-captura__section-title">{t('orders.capture.products')}</span>
-          <table className="pedido-captura__table pedido-captura__products-table">
-            <thead>
-              <tr>
-                <th>{t('orders.code')}</th>
-                <th>{t('orders.quantity')}</th>
-                <th>{t('orders.product')}</th>
-                <th>{t('orders.price')}</th>
-                <th>{t('orders.paid')}</th>
-                <th>{t('orders.subtotal')}</th>
-                <th>{t('orders.status_col')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pedido.productos.map((p, idx) => {
-                const cubierto = Math.min(cobertura[idx] || 0, p.subtotal);
-                const porcentaje = p.subtotal > 0 ? (cubierto / p.subtotal) * 100 : 0;
-                const status =
-                  porcentaje >= 100 ? 'paid' : porcentaje > 0 ? 'partial' : 'pending';
-                return (
-                  <tr key={idx}>
-                    <td className="pedido-captura__clave">{p.clave || '-'}</td>
-                    <td>{p.cantidad}</td>
-                    <td>
-                      {p.nombre}
-                      {p.descuento && p.descuento > 0 ? (
-                        <span className="pedido-captura__discount"> (-{p.descuento}%)</span>
-                      ) : null}
-                    </td>
-                    <td>{format(p.precioUnitario)}</td>
-                    <td>{format(cubierto)}</td>
-                    <td>{format(p.subtotal)}</td>
-                    <td className={`pedido-captura__pago-status pedido-captura__pago-status--${status}`}>
-                      {status === 'paid'
-                        ? t('orders.capture.statusPaid')
-                        : status === 'partial'
-                          ? `${Math.round(porcentaje)}%`
-                          : t('orders.capture.statusPending')}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <hr className="pedido-captura__sep pedido-captura__sep--dashed" />
+
+        {/* Productos */}
+        <div className="pedido-captura__section-title">{t('orders.capture.products')}</div>
+        {pedido.productos.map((p, idx) => {
+          const cubierto = Math.min(cobertura[idx] || 0, p.subtotal);
+          const porcentaje = p.subtotal > 0 ? (cubierto / p.subtotal) * 100 : 0;
+          const statusLabel =
+            porcentaje >= 100
+              ? t('orders.capture.statusPaid')
+              : porcentaje > 0
+                ? `${Math.round(porcentaje)}%`
+                : t('orders.capture.statusPending');
+          return (
+            <div key={idx} className="pedido-captura__product">
+              <div className="pedido-captura__product-name">
+                {p.clave && <span className="pedido-captura__clave">[{p.clave}] </span>}
+                {p.nombre}
+                {p.descuento ? ` (-${p.descuento}%)` : ''}
+              </div>
+              <div className="pedido-captura__product-detail">
+                <span>{p.cantidad} × {format(p.precioUnitario)}</span>
+                <span>{format(p.subtotal)} · {statusLabel}</span>
+              </div>
+            </div>
+          );
+        })}
+
+        <hr className="pedido-captura__sep pedido-captura__sep--double" />
+
+        {/* Totales */}
+        <div className="pedido-captura__total-block">
+          <div className="pedido-captura__total-row">
+            <span>{t('orders.capture.total')}</span>
+            <span>{format(pedido.total)}</span>
+          </div>
+          <div className="pedido-captura__total-row">
+            <span>{t('orders.capture.paid')}</span>
+            <span>{format(pagado)}</span>
+          </div>
+          <div className="pedido-captura__total-row pedido-captura__total-row--highlight">
+            <span>{t('orders.capture.remaining')}</span>
+            <span>{restante <= 0 ? t('orders.capture.settled') : format(restante)}</span>
+          </div>
         </div>
 
         {/* Notas */}
         {pedido.notas && (
-          <div className="pedido-captura__section">
-            <div className="pedido-captura__notes">
-              <span className="pedido-captura__notes-label">{t('orders.capture.notes')}</span> {pedido.notas}
-            </div>
-          </div>
+          <>
+            <hr className="pedido-captura__sep pedido-captura__sep--dashed" />
+            <div className="pedido-captura__section-title">{t('orders.capture.notes')}</div>
+            <div className="pedido-captura__notas">{pedido.notas}</div>
+          </>
         )}
 
-        {/* Tabla de abonos */}
+        {/* Abonos */}
         {abonos.length > 0 && (
-          <div className="pedido-captura__section">
-            <span className="pedido-captura__section-title">{t('orders.capture.payments')}</span>
-            <table className="pedido-captura__table pedido-captura__abonos-table">
-              <thead>
-                <tr>
-                  <th>{t('orders.code')}</th>
-                  <th>{t('orders.product')}</th>
-                  <th>{t('orders.detail.paymentsTable.amount')}</th>
-                  <th>{t('common.date')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {abonos.map((abono, i) => (
-                  <tr key={i}>
-                    <td className="pedido-captura__clave">
-                      {typeof abono.productoIndex === 'number' &&
-                      pedido.productos[abono.productoIndex]
-                        ? pedido.productos[abono.productoIndex].clave || '-'
-                        : '-'}
-                    </td>
-                    <td>
-                      {typeof abono.productoIndex === 'number' &&
-                      pedido.productos[abono.productoIndex]
-                        ? pedido.productos[abono.productoIndex].nombre
-                        : t('orders.capture.general')}
-                    </td>
-                    <td>{format(abono.monto)}</td>
-                    <td>{formatShortDate(abono.fecha)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <hr className="pedido-captura__sep pedido-captura__sep--dashed" />
+            <div className="pedido-captura__section-title">{t('orders.capture.payments')}</div>
+            {abonos.map((abono, i) => {
+              const prod =
+                typeof abono.productoIndex === 'number'
+                  ? pedido.productos[abono.productoIndex]
+                  : undefined;
+              const label = prod
+                ? `${prod.clave ? `[${prod.clave}] ` : ''}${prod.nombre}`
+                : t('orders.capture.general');
+              return (
+                <div key={i} className="pedido-captura__abono-row">
+                  <span className="pedido-captura__abono-left">{label}</span>
+                  <span className="pedido-captura__abono-right">
+                    {format(abono.monto)}{'  '}{formatShortDate(abono.fecha)}
+                  </span>
+                </div>
+              );
+            })}
+          </>
         )}
 
-        {/* Totales */}
+        <hr className="pedido-captura__sep pedido-captura__sep--double" />
+
+        {/* Pie */}
         <div className="pedido-captura__footer">
-          <div className="pedido-captura__total-row">
-            <span>{t('orders.capture.total')}</span>
-            <strong>{format(pedido.total)}</strong>
-          </div>
-          <div className="pedido-captura__total-row">
-            <span>{t('orders.capture.paid')}</span>
-            <strong className="pedido-captura__total-paid">{format(pagado)}</strong>
-          </div>
-          <div className="pedido-captura__total-row pedido-captura__total-row--highlight">
-            <span>{t('orders.capture.remaining')}</span>
-            <strong className={restante <= 0 ? 'pedido-captura__total-paid' : 'pedido-captura__total-pending'}>
-              {restante <= 0 ? t('orders.capture.settled') : format(restante)}
-            </strong>
-          </div>
+          {fechaDescarga &&
+            t('orders.capture.generatedOn', {
+              date: fechaDescarga.toLocaleDateString(i18n.language, {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              }),
+              time: fechaDescarga.toLocaleTimeString(i18n.language, {
+                hour: '2-digit',
+                minute: '2-digit',
+              }),
+            })}
         </div>
 
-        {fechaDescarga && (
-          <div className="pedido-captura__descarga">
-            {t('orders.capture.generatedOn', {
-              date: fechaDescarga.toLocaleDateString(i18n.language, { day: '2-digit', month: 'long', year: 'numeric' }),
-              time: fechaDescarga.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
-            })}
-          </div>
-        )}
       </div>
     );
   }

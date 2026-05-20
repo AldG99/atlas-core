@@ -5,9 +5,9 @@ export interface Plantillas {
 }
 
 export const PLANTILLAS_DEFAULT: Plantillas = {
-  confirmacion: '*Pedido confirmado — {{nombre}}*\n{{folio}}\n\n*Productos:*\n{{productos}}\n\n*Total: {{total}}*',
-  preparacion: '{{nombre}}, tu pedido *{{folio}}* está en preparación. 🍳',
-  entrega: '{{nombre}}, tu pedido *{{folio}}* está listo para entrega. ✅\n\n*Total: {{total}}*\n_Restante: {{restante}}_',
+  confirmacion: '*{{negocio}}*\n{{folio}}\n─────────────────────\n{{nombre}}\n\n*PRODUCTOS*\n{{productos}}\n─────────────────────\n*Total: {{total}}*\nAbonado: {{pagado}}\n*Restante: {{restante}}*\n─────────────────────',
+  preparacion: '*{{negocio}}*\n─────────────────────\n{{nombre}}, tu pedido {{folio}} está en preparación.',
+  entrega: '*{{negocio}}*\n{{folio}}\n─────────────────────\n{{nombre}}, tu pedido está listo.\n─────────────────────\n*Total: {{total}}*\nAbonado: {{pagado}}\n*Restante: {{restante}}*\n─────────────────────',
 };
 
 export interface User {

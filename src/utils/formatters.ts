@@ -50,7 +50,9 @@ interface PedidoForWhatsApp {
 const formatProductosText = (productos: ProductoItem[], simbolo = '$'): string => {
   return productos.map(p => {
     const clave = p.clave ? `[${p.clave}] ` : '';
-    return `${p.cantidad}x ${clave}${p.nombre} - ${formatCurrency(p.subtotal, simbolo)}`;
+    const descuento = p.descuento ? ` (-${p.descuento}%)` : '';
+    const detalle = `  ${p.cantidad} × ${formatCurrency(p.precioUnitario, simbolo)} = *${formatCurrency(p.subtotal, simbolo)}*`;
+    return `• ${clave}${p.nombre}${descuento}\n${detalle}`;
   }).join('\n');
 };
 

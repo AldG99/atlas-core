@@ -1,231 +1,149 @@
-@use '../../styles/abstracts/variables' as *;
-
 .pedido-captura {
-  width: 680px;
-  background-color: $color-white;
-  font-family: $font-family;
-  font-size: $font-size-sm;
-  color: $color-gray-800;
-  padding: 24px;
+  width: 380px;
+  background: #fff;
+  color: #000;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 28px 24px;
   box-sizing: border-box;
 
+  &__sep {
+    border: none;
+    margin: 10px 0;
+
+    &--double {
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      padding: 2px 0;
+      height: 4px;
+      background: transparent;
+    }
+
+    &--dashed {
+      border-top: 1px dashed #000;
+    }
+  }
+
   &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-bottom: 16px;
-    border-bottom: 2px solid $color-gray-900;
-    margin-bottom: 20px;
+    text-align: center;
+    padding-bottom: 10px;
   }
 
-  &__client {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  &__client-name {
-    font-size: $font-size-lg;
-    font-weight: 700;
-    color: $color-gray-900;
-  }
-
-  &__client-phone {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
-  }
-
-  &__meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
+  &__negocio {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 3px;
   }
 
   &__folio {
-    font-family: monospace;
-    font-size: $font-size-sm;
-    font-weight: 700;
-    color: $color-gray-500;
-    letter-spacing: 0.5px;
+    font-size: 11px;
+    margin-top: 4px;
+    letter-spacing: 1px;
   }
 
-  &__date {
-    font-size: $font-size-xs;
-    color: $color-gray-500;
+  &__info {
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
   }
 
   &__estado {
-    font-size: $font-size-xs;
-    font-weight: 700;
     text-transform: uppercase;
+    font-weight: bold;
+    font-size: 11px;
     letter-spacing: 0.5px;
   }
 
-  &__section {
-    margin-bottom: 20px;
+  &__section-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
   }
 
-  &__section-title {
-    display: block;
-    font-size: $font-size-xs;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: $color-gray-500;
+  &__product {
     margin-bottom: 8px;
   }
 
-  &__table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: auto;
-
-    thead {
-      background-color: $color-gray-50;
-
-      th {
-        padding: 6px 8px;
-        font-size: $font-size-xs;
-        font-weight: 600;
-        color: $color-gray-600;
-        text-align: left;
-        border-bottom: 1px solid $color-gray-200;
-        white-space: nowrap;
-      }
-    }
-
-    tbody {
-      tr {
-        border-bottom: 1px solid $color-gray-100;
-
-        &:last-child {
-          border-bottom: none;
-        }
-      }
-
-      td {
-        padding: 7px 8px;
-        font-size: $font-size-sm;
-        color: $color-gray-800;
-        vertical-align: middle;
-      }
-    }
+  &__product-name {
+    font-weight: bold;
+    word-break: break-word;
   }
 
-  &__products-table {
-    thead th,
-    tbody td {
-      &:nth-child(2) { text-align: center; }  // Cant.
-      &:nth-child(4) { text-align: right; }   // Precio
-      &:nth-child(5) { text-align: right; }   // Abonado
-      &:nth-child(6) { text-align: right; }   // Subtotal
-      &:nth-child(7) { text-align: center; }  // Estado
-    }
-
-    tbody td {
-      &:nth-child(2) { font-weight: 600; }    // Cant.
-      &:nth-child(5) { font-weight: 600; }    // Abonado
-      &:nth-child(6) { font-weight: 600; }    // Subtotal
-    }
-  }
-
-  &__abonos-table {
-    thead th,
-    tbody td {
-      &:nth-child(3) { text-align: right; }   // Monto
-      &:nth-child(4) { text-align: right; }   // Fecha
-    }
+  &__product-detail {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 12px;
+    font-size: 11px;
   }
 
   &__clave {
-    font-family: monospace;
-    font-size: $font-size-xs;
-    font-weight: 600;
-    color: $color-primary;
-    white-space: nowrap;
+    font-size: 10px;
+    font-weight: normal;
+    letter-spacing: 0.5px;
   }
 
-  &__center {
-    text-align: center;
-    font-weight: 600;
-  }
-
-  &__right {
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  &__discount {
-    font-size: $font-size-xs;
-    color: $color-danger;
-    font-weight: 600;
-  }
-
-  &__pago-status {
-    font-size: $font-size-xs;
-    font-weight: 700;
-    white-space: nowrap;
-
-    &--paid    { color: $color-success; }
-    &--partial { color: $color-warning; }
-    &--pending { color: $color-gray-400; }
-  }
-
-  &__footer {
-    border-top: 2px solid $color-gray-900;
-    padding-top: 14px;
-    margin-top: 4px;
+  &__total-block {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 2px;
   }
 
   &__total-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    font-size: $font-size-sm;
-    color: $color-gray-600;
-
-    strong {
-      font-size: $font-size-base;
-      color: $color-gray-900;
-    }
+    font-size: 12px;
 
     &--highlight {
+      font-weight: bold;
+      font-size: 13px;
       margin-top: 4px;
-      padding-top: 8px;
-      border-top: 1px solid $color-gray-200;
-      font-weight: 600;
-      color: $color-gray-900;
-
-      strong {
-        font-size: $font-size-lg;
-      }
+      padding-top: 4px;
+      border-top: 1px dashed #000;
     }
   }
 
-  &__total-paid    { color: $color-success !important; }
-  &__total-pending { color: $color-warning !important; }
-
-  &__notes {
-    font-size: $font-size-xs;
-    color: $color-gray-500;
-    line-height: 1.5;
+  &__notas {
+    font-size: 11px;
+    font-style: italic;
+    padding-left: 4px;
+    word-break: break-word;
   }
 
-  &__notes-label {
-    font-weight: 600;
-    color: $color-gray-600;
+  &__abono-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11px;
+    padding: 1px 0;
   }
 
-  &__descarga {
-    margin-top: 16px;
-    padding-top: 10px;
-    border-top: 1px solid $color-gray-200;
-    font-size: $font-size-xs;
-    color: $color-gray-400;
+  &__abono-left {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__abono-right {
+    white-space: nowrap;
     text-align: right;
+    flex-shrink: 0;
+  }
+
+  &__footer {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.3px;
   }
 }
