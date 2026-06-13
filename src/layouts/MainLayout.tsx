@@ -37,7 +37,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         onClose={() => setIsSidebarOpen(false)}
       />
       <div className="main-layout__header">
-        <Header />
+        <Header notificaciones={notificaciones} />
       </div>
       <div className="main-layout__wrapper">
         <main className="main-layout__content">

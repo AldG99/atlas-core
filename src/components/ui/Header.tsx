@@ -3,18 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold, PiShieldCheckBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
-import { useNotificaciones, type Notificacion } from '../../hooks/useNotificaciones';
+import type { Notificacion } from '../../hooks/useNotificaciones';
 import { ROUTES } from '../../config/routes';
 import Avatar from './Avatar';
 import './Header.scss';
 
-const Header = () => {
+interface HeaderProps {
+  notificaciones: Notificacion[];
+}
+
+const Header = ({ notificaciones }: HeaderProps) => {
   const { t, i18n } = useTranslation();
   const { user, logout, role } = useAuth();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const { notificaciones } = useNotificaciones();
 
   const handleLogout = async () => {
     await logout();

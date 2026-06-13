@@ -53,15 +53,25 @@ export const useProductos = () => {
   };
 
   const editProducto = async (id: string, data: Partial<ProductoFormData>) => {
-    await updateProducto(id, data);
-    setProductos((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...data } as typeof p : p))
-    );
+    const snapshot = productos;
+    setProductos((prev) => prev.map((p) => (p.id === id ? { ...p, ...data } as typeof p : p)));
+    try {
+      await updateProducto(id, data);
+    } catch (err) {
+      setProductos(snapshot);
+      throw err;
+    }
   };
 
   const removeProducto = async (id: string) => {
-    await deleteProducto(id);
+    const snapshot = productos;
     setProductos((prev) => prev.filter((p) => p.id !== id));
+    try {
+      await deleteProducto(id);
+    } catch (err) {
+      setProductos(snapshot);
+      throw err;
+    }
   };
 
   return {

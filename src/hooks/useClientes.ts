@@ -71,25 +71,37 @@ export const useClientes = () => {
   };
 
   const editCliente = async (id: string, data: Partial<ClienteFormData>) => {
-    await updateCliente(id, data);
-    setClientes((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...data } : c))
-    );
+    const snapshot = clientes;
+    setClientes((prev) => prev.map((c) => (c.id === id ? { ...c, ...data } : c)));
+    try {
+      await updateCliente(id, data);
+    } catch (err) {
+      setClientes(snapshot);
+      throw err;
+    }
   };
 
   const removeCliente = async (id: string) => {
-    await deleteCliente(id);
+    const snapshot = clientes;
     setClientes((prev) => prev.filter((c) => c.id !== id));
+    try {
+      await deleteCliente(id);
+    } catch (err) {
+      setClientes(snapshot);
+      throw err;
+    }
   };
 
   const toggleFavorito = async (id: string) => {
     const cliente = clientes.find((c) => c.id === id);
     if (!cliente) return;
     const nuevoValor = !cliente.favorito;
-    await toggleClienteFavorito(id, nuevoValor);
-    setClientes((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, favorito: nuevoValor } : c))
-    );
+    setClientes((prev) => prev.map((c) => (c.id === id ? { ...c, favorito: nuevoValor } : c)));
+    try {
+      await toggleClienteFavorito(id, nuevoValor);
+    } catch {
+      setClientes((prev) => prev.map((c) => (c.id === id ? { ...c, favorito: !nuevoValor } : c)));
+    }
   };
 
   return {
