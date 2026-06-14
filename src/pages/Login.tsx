@@ -2,6 +2,7 @@ import type { FormEvent } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PiUserGear, PiUsers, PiEyeBold, PiEyeSlashBold } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
 import { ROUTES } from '../config/routes';
 import AuthLayout from '../layouts/AuthLayout';
@@ -17,6 +18,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [lockedUntil, setLockedUntil] = useState<Date | null>(null);
   const [lockCountdown, setLockCountdown] = useState(0);
@@ -171,6 +173,7 @@ const Login = () => {
             className={`login-form__tab${mode === 'admin' ? ' login-form__tab--active' : ''}`}
             onClick={() => { setMode('admin'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
           >
+            <PiUserGear size={17} />
             {t('auth.login.adminTab')}
           </button>
           <button
@@ -178,6 +181,7 @@ const Login = () => {
             className={`login-form__tab${mode === 'miembro' ? ' login-form__tab--active' : ''}`}
             onClick={() => { setMode('miembro'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
           >
+            <PiUsers size={17} />
             {t('auth.login.memberTab')}
           </button>
         </div>
@@ -215,15 +219,25 @@ const Login = () => {
 
           <div className="form-group">
             <label htmlFor="password">{t('auth.login.password')}</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="input"
-              placeholder={t('auth.login.passwordPlaceholder')}
-              required
-            />
+            <div className="login-form__pwd-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="input"
+                placeholder={t('auth.login.passwordPlaceholder')}
+                required
+              />
+              <button
+                type="button"
+                className="login-form__pwd-toggle"
+                onClick={() => setShowPassword(v => !v)}
+                tabIndex={-1}
+              >
+                {showPassword ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+              </button>
+            </div>
           </div>
         </div>
 
