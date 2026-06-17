@@ -7,7 +7,7 @@ export const PEDIDO_STATUS: Record<PedidoStatus, string> = {
 };
 
 export const PEDIDO_STATUS_COLORS: Record<PedidoStatus, string> = {
-  pendiente: '#f4ac11', // ámbar — $color-warning
+  pendiente: '#E86E25', // naranja
   en_preparacion: '#2368C4', // azul — $color-primary
   entregado: '#09A870', // verde — $color-success
 };

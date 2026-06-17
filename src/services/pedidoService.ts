@@ -1,9 +1,7 @@
 import {
   collection,
   doc,
-  addDoc,
   updateDoc,
-  deleteDoc,
   getDocs,
   getDoc,
   query,
@@ -99,19 +97,18 @@ export const createPedido = async (data: PedidoFormData, userId: string, creadoP
     ...(creadoPor ? { creadoPor } : {})
   };
 
-  const docRef = await addDoc(collection(db, COLLECTION_NAME), stripUndefined(newPedido));
+  const newDocRef = doc(collection(db, COLLECTION_NAME));
+  const batch = writeBatch(db);
+  batch.set(newDocRef, stripUndefined(newPedido));
 
-  // Descontar stock de los productos que lo gestionan
-  const stockUpdates = data.productos
+  data.productos
     .filter(p => p.controlStock && p.productoId)
-    .map(p => updateDoc(doc(db, 'productos', p.productoId!), { stock: increment(-p.cantidad) }));
+    .forEach(p => batch.update(doc(db, 'productos', p.productoId!), { stock: increment(-p.cantidad) }));
 
-  if (stockUpdates.length > 0) {
-    await Promise.all(stockUpdates);
-  }
+  await batch.commit();
 
   return {
-    id: docRef.id,
+    id: newDocRef.id,
     folio,
     ...data,
     estado: 'pendiente',
@@ -204,17 +201,19 @@ export const updatePedidoStatus = async (pedidoId: string, estado: PedidoStatus,
 
 export const deletePedido = async (pedidoId: string): Promise<void> => {
   const pedidoRef = doc(db, COLLECTION_NAME, pedidoId);
-
   const pedidoSnap = await getDoc(pedidoRef);
+
+  const batch = writeBatch(db);
+  batch.delete(pedidoRef);
+
   if (pedidoSnap.exists()) {
     const productos = pedidoSnap.data().productos as ProductoItem[];
-    const stockRestores = productos
+    productos
       .filter(p => p.controlStock && p.productoId)
-      .map(p => updateDoc(doc(db, 'productos', p.productoId!), { stock: increment(p.cantidad) }));
-    if (stockRestores.length > 0) await Promise.all(stockRestores);
+      .forEach(p => batch.update(doc(db, 'productos', p.productoId!), { stock: increment(p.cantidad) }));
   }
 
-  await deleteDoc(pedidoRef);
+  await batch.commit();
 };
 
 export const getPedidoById = async (pedidoId: string, userId: string): Promise<Pedido | null> => {

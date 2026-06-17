@@ -5,8 +5,8 @@
 // ============================================================
 
 // Colores — Sistema Arena
-$color-primary: #356aaf;
-$color-primary-dark: #335c93;
+$color-primary: #232f3e;
+$color-primary-dark: #172130;
 $color-secondary: #5a5651;
 $color-success: #09a870;
 $color-success-dark: #057a52;
@@ -17,6 +17,7 @@ $color-white: #fdfcfa;
 $color-black: #2a2824;
 
 // Colores semánticos
+$color-chart: #F0B035;    // Barras de gráficas — naranja dorado
 $color-favorite: #f8a800; // Estrella favorito — ámbar
 $color-whatsapp: #30bb63; // WhatsApp brand
 $color-whatsapp-dark: #128c7e; // WhatsApp hover
@@ -73,9 +74,9 @@ $border-radius-lg: 0;
 $border-radius-xl: 0;
 $border-radius-full: 0;
 // Excepciones explícitas — usar solo en contextos específicos:
-$border-radius-pill: 999px;    // Badges, chips, tags
-$border-radius-circle: 50%;   // Avatares circulares
-$border-radius-avatar: 8px;   // Avatares cuadrado-redondeados (estilo app icon)
+$border-radius-pill: 999px; // Badges, chips, tags
+$border-radius-circle: 50%; // Avatares circulares
+$border-radius-avatar: 8px; // Avatares cuadrado-redondeados (estilo app icon)
 
 // Sombras
 $shadow-sm:

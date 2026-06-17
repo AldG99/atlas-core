@@ -2,7 +2,10 @@ import {
   collection, query, where, getDocs, onSnapshot,
   updateDoc, doc, getDoc, Timestamp, setDoc
 } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db, auth } from './firebase';
+
+const fns = getFunctions(auth.app, 'us-central1');
 import type { User } from '../types/User';
 
 export interface MiembroFormData {
@@ -125,40 +128,10 @@ export const actualizarMiembro = async (
   await updateDoc(doc(db, 'users', uid), data);
 };
 
-// Update employee password via Firebase REST API
-// NOTE: This operation should eventually be migrated to a Cloud Function
-// to avoid exposing the API key in network requests.
 export const actualizarContrasenaMiembro = async (uid: string, nuevaContrasena: string): Promise<void> => {
-  // Verify the caller is an authenticated admin
-  const currentUser = auth.currentUser;
-  if (!currentUser) throw new Error('No hay sesión activa');
-
-  const callerSnap = await getDoc(doc(db, 'users', currentUser.uid));
-  if (!callerSnap.exists() || callerSnap.data().role !== 'admin') {
-    throw new Error('No autorizado');
-  }
-
-  // Verify the target employee belongs to the same negocio
-  const targetSnap = await getDoc(doc(db, 'users', uid));
-  if (!targetSnap.exists()) throw new Error('Miembro no encontrado');
-  if (targetSnap.data().negocioUid !== callerSnap.data().negocioUid) {
-    throw new Error('No autorizado');
-  }
-
-  // Validate password strength
   if (nuevaContrasena.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres');
-
-  const apiKey = import.meta.env.VITE_FIREBASE_API_KEY as string;
-  const response = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ localId: uid, password: nuevaContrasena, returnSecureToken: false }),
-    }
-  );
-  const result = await response.json() as { error?: { message: string } };
-  if (result.error) throw new Error('Error al actualizar la contraseña');
+  const updatePassword = httpsCallable<{ uid: string; password: string }, void>(fns, 'updateMemberPassword');
+  await updatePassword({ uid, password: nuevaContrasena });
 };
 
 // Get admin user by UID

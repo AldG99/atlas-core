@@ -67,7 +67,7 @@ export const calculateKPIs = (pedidos: Pedido[]): KPIs => {
   const ventasTotales = pedidos.reduce((sum, p) => sum + p.total, 0);
   const totalPedidos = pedidos.length;
   const ticketPromedio = ventasTotales / totalPedidos;
-  const clientesUnicos = new Set(pedidos.map((p) => p.clienteNombre.toLowerCase().trim())).size;
+  const clientesUnicos = new Set(pedidos.map((p) => p.clienteTelefono || p.clienteNombre.toLowerCase().trim())).size;
 
   return {
     ventasTotales,
@@ -103,7 +103,7 @@ export const calculateTopClientes = (pedidos: Pedido[], limit: number = 3): TopC
   const clienteMap = new Map<string, { nombre: string; telefono: string; pedidos: number; total: number }>();
 
   pedidos.forEach((pedido) => {
-    const key = pedido.clienteNombre.toLowerCase().trim();
+    const key = pedido.clienteTelefono || pedido.clienteNombre.toLowerCase().trim();
     const existing = clienteMap.get(key);
 
     if (existing) {
