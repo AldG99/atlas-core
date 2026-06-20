@@ -166,31 +166,30 @@ const groupByHour = (pedidos: Pedido[]): ChartDataPoint[] => {
   return hours.slice(start, end + 1);
 };
 
+const toLocalMidnight = (d: Date): Date =>
+  new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
 const groupByDay = (pedidos: Pedido[], dateRange: DateRange): ChartDataPoint[] => {
   const days: ChartDataPoint[] = [];
   const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const current = new Date(dateRange.start);
 
   while (current <= dateRange.end) {
-    const dayOfWeek = current.getDay();
-    const dayOfMonth = current.getDate();
-
     days.push({
-      label: `${dayNames[dayOfWeek]} ${dayOfMonth}`,
+      label: `${dayNames[current.getDay()]} ${current.getDate()}`,
       value: 0,
-      pedidos: 0
+      pedidos: 0,
     });
-
     current.setDate(current.getDate() + 1);
   }
 
-  pedidos.forEach((pedido) => {
-    const pedidoDate = new Date(pedido.fechaCreacion).toISOString().split('T')[0];
-    const startDate = dateRange.start.toISOString().split('T')[0];
-    const dayIndex = Math.floor(
-      (new Date(pedidoDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
-    );
+  const startMidnight = toLocalMidnight(dateRange.start).getTime();
 
+  pedidos.forEach((pedido) => {
+    const dayIndex = Math.round(
+      (toLocalMidnight(new Date(pedido.fechaCreacion)).getTime() - startMidnight) /
+      (1000 * 60 * 60 * 24)
+    );
     if (dayIndex >= 0 && dayIndex < days.length) {
       days[dayIndex].value += pedido.total;
       days[dayIndex].pedidos += 1;

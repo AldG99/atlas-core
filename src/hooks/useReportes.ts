@@ -1,56 +1,77 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { PeriodType, ReporteData } from '../types/Reporte';
-import { usePedidos } from './usePedidos';
+import type { Pedido } from '../types/Pedido';
+import { useAuth } from './useAuth';
 import { useProductos } from './useProductos';
+import { getPedidosByDateRange } from '../services/pedidoService';
 import {
   getDateRange,
   getYearAgoDateRange,
-  filterPedidosByDate,
   calculateKPIs,
   calculateStatusBreakdown,
   calculateTopClientes,
   calculateTopProductos,
   calculateInventarioStats,
-  calculateChartData
+  calculateChartData,
 } from '../utils/reportCalculations';
 
 export const useReportes = () => {
-  const { pedidos: allPedidos, loading, error } = usePedidos();
+  const { negocioUid } = useAuth();
   const { productos } = useProductos();
   const [period, setPeriod] = useState<PeriodType>('semana');
+  const [pedidosPeriodo, setPedidosPeriodo] = useState<Pedido[]>([]);
+  const [pedidosAnterior, setPedidosAnterior] = useState<Pedido[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const dateRange = useMemo(() => {
-    return getDateRange(period);
-  }, [period]);
+  const dateRange = useMemo(() => getDateRange(period), [period]);
 
-  const filteredPedidos = useMemo(() => {
-    return filterPedidosByDate(allPedidos, dateRange);
-  }, [allPedidos, dateRange]);
+  useEffect(() => {
+    if (!negocioUid) return;
 
-  const yearAgoPedidos = useMemo(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
     const yearAgoRange = getYearAgoDateRange(dateRange);
-    return filterPedidosByDate(allPedidos, yearAgoRange);
-  }, [allPedidos, dateRange]);
 
-  const reporteData: ReporteData = useMemo(() => {
-    return {
-      kpis: calculateKPIs(filteredPedidos),
-      comparisonKPIs: calculateKPIs(yearAgoPedidos),
-      statusBreakdown: calculateStatusBreakdown(filteredPedidos),
-      topClientes: calculateTopClientes(filteredPedidos),
-      topProductos: calculateTopProductos(filteredPedidos),
-      chartData: calculateChartData(filteredPedidos, period, dateRange),
-      inventario: calculateInventarioStats(productos)
-    };
-  }, [filteredPedidos, yearAgoPedidos, period, dateRange, productos]);
+    Promise.all([
+      getPedidosByDateRange(negocioUid, dateRange.start, dateRange.end),
+      getPedidosByDateRange(negocioUid, yearAgoRange.start, yearAgoRange.end),
+    ])
+      .then(([current, yearAgo]) => {
+        if (cancelled) return;
+        setPedidosPeriodo(current.filter(p => !p.archivado));
+        setPedidosAnterior(yearAgo.filter(p => !p.archivado));
+      })
+      .catch(err => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : 'Error al cargar reportes');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [negocioUid, dateRange]);
+
+  const reporteData: ReporteData = useMemo(() => ({
+    kpis: calculateKPIs(pedidosPeriodo),
+    comparisonKPIs: calculateKPIs(pedidosAnterior),
+    statusBreakdown: calculateStatusBreakdown(pedidosPeriodo),
+    topClientes: calculateTopClientes(pedidosPeriodo),
+    topProductos: calculateTopProductos(pedidosPeriodo),
+    chartData: calculateChartData(pedidosPeriodo, period, dateRange),
+    inventario: calculateInventarioStats(productos),
+  }), [pedidosPeriodo, pedidosAnterior, period, dateRange, productos]);
 
   return {
     reporteData,
-    filteredPedidos,
+    filteredPedidos: pedidosPeriodo,
     period,
     dateRange,
     loading,
     error,
-    setPeriod
+    setPeriod,
   };
 };

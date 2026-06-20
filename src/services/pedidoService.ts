@@ -381,6 +381,23 @@ export const addAbono = async (
   return { abono, nuevoEstado };
 };
 
+export const getPedidosByDateRange = async (
+  userId: string,
+  start: Date,
+  end: Date,
+): Promise<Pedido[]> => {
+  const q = query(
+    collection(db, COLLECTION_NAME),
+    where('userId', '==', userId),
+    where('fechaCreacion', '>=', Timestamp.fromDate(start)),
+    where('fechaCreacion', '<=', Timestamp.fromDate(end)),
+    orderBy('fechaCreacion', 'asc'),
+    limit(2000)
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(d => parsePedidoDoc(d.id, d.data()));
+};
+
 export const parsePedidoDoc = (docId: string, data: DocumentData): Pedido => ({
   id: docId,
   ...data,
