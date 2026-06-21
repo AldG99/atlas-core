@@ -426,6 +426,7 @@
       "orderHistoryLoading": "Chargement des commandes...",
       "orderHistoryEmpty": "Ce client n'a aucune commande",
       "orderHistoryNotFound": "Aucune commande trouvée avec les filtres appliqués",
+      "orderHistoryError": "Impossible de charger l'historique des commandes. Veuillez réessayer.",
       "searchPlaceholder": "Rechercher un produit ou un code...",
       "allTime": "Tout le temps",
       "lastWeek": "Dernière semaine",

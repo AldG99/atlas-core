@@ -13,6 +13,7 @@ interface Props {
   clienteId: string;
   pedidos: Pedido[];
   pedidosLoading: boolean;
+  pedidosError: boolean;
   catalogoProductos: Producto[];
   todasEtiquetas: Etiqueta[];
   format: (n: number) => string;
@@ -22,6 +23,7 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
   clienteId,
   pedidos,
   pedidosLoading,
+  pedidosError,
   catalogoProductos,
   todasEtiquetas,
   format,
@@ -193,6 +195,10 @@ const ClienteHistorialPedidos: React.FC<Props> = ({
               {pedidosLoading ? (
                 <tr>
                   <td colSpan={6} className="cliente-detail__pedidos-table-empty">{t('clients.detail.orderHistoryLoading')}</td>
+                </tr>
+              ) : pedidosError ? (
+                <tr>
+                  <td colSpan={6} className="cliente-detail__pedidos-table-empty cliente-detail__pedidos-table-empty--error">{t('clients.detail.orderHistoryError')}</td>
                 </tr>
               ) : pedidosFiltrados.length === 0 ? (
                 <tr>

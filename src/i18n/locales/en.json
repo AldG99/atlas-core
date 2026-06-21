@@ -426,6 +426,7 @@
       "orderHistoryLoading": "Loading orders...",
       "orderHistoryEmpty": "This client has no orders",
       "orderHistoryNotFound": "No orders found with the applied filters",
+      "orderHistoryError": "Could not load order history. Please try again.",
       "searchPlaceholder": "Search product or code...",
       "allTime": "All time",
       "lastWeek": "Last week",

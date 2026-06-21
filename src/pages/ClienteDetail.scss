@@ -21,7 +21,7 @@ $topbar-height: 52px;
   // Fixed Top Bar
   &__top-bar {
     position: fixed;
-    top: 70px;
+    top: $header-height;
     left: 0;
     right: 0;
     z-index: 100;
@@ -708,6 +708,10 @@ $topbar-height: 52px;
     padding: $spacing-xl $spacing-md;
     color: $color-gray-500;
     font-size: $font-size-sm;
+
+    &--error {
+      color: $color-danger;
+    }
   }
 
   &__pedidos-date-row {

@@ -426,6 +426,7 @@
       "orderHistoryLoading": "Cargando pedidos...",
       "orderHistoryEmpty": "Este cliente no tiene pedidos",
       "orderHistoryNotFound": "No se encontraron pedidos con los filtros aplicados",
+      "orderHistoryError": "No se pudo cargar el historial de pedidos. Intenta de nuevo.",
       "searchPlaceholder": "Buscar producto o clave...",
       "allTime": "Todo el tiempo",
       "lastWeek": "Última semana",

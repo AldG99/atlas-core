@@ -6,6 +6,7 @@ import { usePedidos } from '../hooks/usePedidos';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useClientes } from '../hooks/useClientes';
+import { useCurrency } from '../hooks/useCurrency';
 import { useDashboardFilters, type StatusFilter } from '../hooks/useDashboardFilters';
 import { getCodigoPais } from '../data/codigosPais';
 import type { PedidoStatus } from '../types/Pedido';
@@ -36,6 +37,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { clientes } = useClientes();
+  const { format } = useCurrency();
   const location = useLocation();
 
   const {
@@ -183,7 +185,7 @@ const Dashboard = () => {
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.salesToday')}</span>
                 <span className="dashboard__summary-value">
-                  ${todaySummary.totalVentas.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                  {format(todaySummary.totalVentas)}
                 </span>
               </div>
             </div>
@@ -194,7 +196,7 @@ const Dashboard = () => {
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.delivered')}</span>
                 <span className="dashboard__summary-value">
-                  ${todaySummary.ventasEntregadas.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                  {format(todaySummary.ventasEntregadas)}
                 </span>
               </div>
             </div>

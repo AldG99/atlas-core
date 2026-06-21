@@ -51,6 +51,7 @@ const ClienteDetail = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [pedidosLoading, setPedidosLoading] = useState(false);
+  const [pedidosError, setPedidosError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const selectedBlobRef = useRef<Blob | null>(null);
@@ -102,10 +103,11 @@ const ClienteDetail = () => {
     if (!user) return;
     try {
       setPedidosLoading(true);
+      setPedidosError(false);
       const data = await getPedidosByClientPhone(user.uid, telefono);
       setPedidos(data);
     } catch {
-      // silently fail
+      setPedidosError(true);
     } finally {
       setPedidosLoading(false);
     }
@@ -448,6 +450,7 @@ const ClienteDetail = () => {
               clienteId={id!}
               pedidos={pedidos}
               pedidosLoading={pedidosLoading}
+              pedidosError={pedidosError}
               catalogoProductos={catalogoProductos}
               todasEtiquetas={todasEtiquetas}
               format={format}

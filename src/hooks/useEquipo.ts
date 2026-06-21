@@ -19,13 +19,20 @@ export const useEquipo = () => {
   useEffect(() => {
     if (!user || role !== 'admin' || !negocioUid) return;
     if (getPlanLimits(user.plan).miembros === 0) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
+    let active = true;
     setLoading(true);
+
     const unsub = suscribirMiembros(negocioUid, (data) => {
+      if (!active) return;
       setMiembros(data);
       setLoading(false);
     });
-    return unsub;
+
+    return () => {
+      active = false;
+      unsub();
+    };
   }, [user, role, negocioUid]);
 
   const crearMiembro = async (data: MiembroFormData): Promise<void> => {
