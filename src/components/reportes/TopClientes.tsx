@@ -28,7 +28,7 @@ const TopClientes = ({ clientes }: TopClientesProps) => {
       ) : (
         <ul className="top-clientes__list">
           {clientes.map((cliente, index) => (
-            <li key={cliente.nombre} className="top-clientes__item">
+            <li key={cliente.telefono || cliente.nombre} className="top-clientes__item">
               <div className="top-clientes__rank">#{index + 1}</div>
               <div className="top-clientes__info">
                 <span className="top-clientes__name">{cliente.nombre}</span>

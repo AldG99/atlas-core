@@ -1,4 +1,4 @@
-import { collection, getDocs, addDoc, query, where, Timestamp, writeBatch, type DocumentReference } from 'firebase/firestore';
+import { collection, doc, getDocs, query, where, Timestamp, writeBatch, type DocumentReference } from 'firebase/firestore';
 import { db, auth } from './firebase';
 
 const BACKUP_VERSION = 1;
@@ -191,6 +191,9 @@ export const importBackup = async (data: BackupData, userId: string): Promise<Im
   });
 
   let omitidos = 0;
+  // Pending writes — refs generated client-side so ID maps can be built before any network call
+  const allWrites: Array<{ ref: DocumentReference; data: Record<string, unknown> }> = [];
+  const BATCH_SIZE = 499;
 
   try {
     // 1. Etiquetas
@@ -200,20 +203,19 @@ export const importBackup = async (data: BackupData, userId: string): Promise<Im
       const { id: oldId, userId: _uid, ...rest } = etiqueta;
       const nombre = rest.nombre as string;
       if (existingEtiquetaMap[nombre]) {
-        // Reusar el ID existente para mantener referencias correctas
         if (typeof oldId === 'string') etiquetaIdMap[oldId] = existingEtiquetaMap[nombre];
         omitidos++;
         continue;
       }
       try {
-        const ref = await addDoc(collection(db, 'etiquetas'), cleanUndefined({ ...rest, userId }));
-        insertedRefs.push(ref);
+        const ref = doc(collection(db, 'etiquetas'));
         if (typeof oldId === 'string') etiquetaIdMap[oldId] = ref.id;
+        allWrites.push({ ref, data: cleanUndefined({ ...rest, userId }) });
         etiquetasImported++;
       } catch { omitidos++; }
     }
 
-    // 2. Productos
+    // 2. Productos — etiquetaIdMap ya está completo, no hay dependencia de red
     const productoIdMap: Record<string, string> = {};
     let productosImported = 0;
     for (const producto of data.productos || []) {
@@ -244,9 +246,9 @@ export const importBackup = async (data: BackupData, userId: string): Promise<Im
             fechaCierre: Timestamp.fromDate(parseDate(h.fechaCierre)),
           }));
         }
-        const ref = await addDoc(collection(db, 'productos'), cleanUndefined(productoData));
-        insertedRefs.push(ref);
+        const ref = doc(collection(db, 'productos'));
         if (typeof oldId === 'string') productoIdMap[oldId] = ref.id;
+        allWrites.push({ ref, data: cleanUndefined(productoData) });
         productosImported++;
       } catch { omitidos++; }
     }
@@ -261,13 +263,13 @@ export const importBackup = async (data: BackupData, userId: string): Promise<Im
         continue;
       }
       try {
-        const ref = await addDoc(collection(db, 'clientes'), cleanUndefined({ ...rest, userId, fechaCreacion: Timestamp.now() }));
-        insertedRefs.push(ref);
+        const ref = doc(collection(db, 'clientes'));
+        allWrites.push({ ref, data: cleanUndefined({ ...rest, userId, fechaCreacion: Timestamp.now() }) });
         clientesImported++;
       } catch { omitidos++; }
     }
 
-    // 4. Pedidos — duplicado detectado por folio
+    // 4. Pedidos — productoIdMap ya está completo
     let pedidosImported = 0;
     for (const pedido of data.pedidos || []) {
       const { id: _id, userId: _uid, fechaCreacion, fechaEntrega, clienteFoto: _foto, abonos, productos, folio, ...rest } = pedido;
@@ -297,10 +299,20 @@ export const importBackup = async (data: BackupData, userId: string): Promise<Im
         if (fechaEntrega) {
           pedidoData.fechaEntrega = Timestamp.fromDate(parseDate(fechaEntrega));
         }
-        const ref = await addDoc(collection(db, 'pedidos'), cleanUndefined(pedidoData));
-        insertedRefs.push(ref);
+        const ref = doc(collection(db, 'pedidos'));
+        allWrites.push({ ref, data: cleanUndefined(pedidoData) });
         pedidosImported++;
       } catch { omitidos++; }
+    }
+
+    // Commit all writes in batches of BATCH_SIZE (Firestore limit: 500 ops/batch)
+    for (let i = 0; i < allWrites.length; i += BATCH_SIZE) {
+      const chunk = allWrites.slice(i, i + BATCH_SIZE);
+      const batch = writeBatch(db);
+      chunk.forEach(({ ref, data }) => batch.set(ref, data));
+      await batch.commit();
+      // Track committed refs for rollback only after each successful commit
+      chunk.forEach(({ ref }) => insertedRefs.push(ref));
     }
 
     return {

@@ -55,6 +55,7 @@
     "logout": "Cerrar sesión",
     "notifications": "Notificaciones",
     "noNotifications": "Sin notificaciones",
+    "logoutError": "Error al cerrar sesión. Intenta de nuevo.",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
     "menu": "Menú"

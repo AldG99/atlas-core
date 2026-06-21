@@ -35,7 +35,7 @@ export const getDateRange = (period: PeriodType): DateRange => {
       return { start, end };
     }
     default:
-      return { start: end, end };
+      return getDateRange('mes');
   }
 };
 
@@ -127,12 +127,13 @@ export const calculateTopClientes = (pedidos: Pedido[], limit: number = 3): TopC
 export const calculateChartData = (
   pedidos: Pedido[],
   period: PeriodType,
-  dateRange: DateRange
+  dateRange: DateRange,
+  locale = 'es'
 ): ChartDataPoint[] => {
   if (period === 'hoy') {
     return groupByHour(pedidos);
   }
-  return groupByDay(pedidos, dateRange);
+  return groupByDay(pedidos, dateRange, locale);
 };
 
 const groupByHour = (pedidos: Pedido[]): ChartDataPoint[] => {
@@ -169,14 +170,21 @@ const groupByHour = (pedidos: Pedido[]): ChartDataPoint[] => {
 const toLocalMidnight = (d: Date): Date =>
   new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
-const groupByDay = (pedidos: Pedido[], dateRange: DateRange): ChartDataPoint[] => {
+const formatDayLabel = (date: Date, locale: string): string => {
+  const name = new Intl.DateTimeFormat(locale, { weekday: 'short' })
+    .format(date)
+    .replace(/\.$/, '')
+    .replace(/^\w/, c => c.toUpperCase());
+  return `${name} ${date.getDate()}`;
+};
+
+const groupByDay = (pedidos: Pedido[], dateRange: DateRange, locale: string): ChartDataPoint[] => {
   const days: ChartDataPoint[] = [];
-  const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const current = new Date(dateRange.start);
 
   while (current <= dateRange.end) {
     days.push({
-      label: `${dayNames[current.getDay()]} ${current.getDate()}`,
+      label: formatDayLabel(new Date(current), locale),
       value: 0,
       pedidos: 0,
     });

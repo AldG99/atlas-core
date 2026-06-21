@@ -213,65 +213,6 @@
     }
   }
 
-  &__plan-banner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: $spacing-sm $spacing-md;
-    margin: $spacing-xs 0;
-
-    &[data-plan='gratuito'] {
-      background-color: $color-gray-50;
-
-      .header__plan-info {
-        color: $color-gray-600;
-      }
-    }
-
-    &[data-plan='pro'] {
-      background: linear-gradient(135deg, rgba($color-primary, 0.08), rgba($color-primary-dark, 0.12));
-
-      .header__plan-info {
-        color: $color-primary-dark;
-      }
-    }
-
-    &[data-plan='enterprise'] {
-      background: linear-gradient(135deg, rgba($color-plan-enterprise, 0.08), rgba($color-plan-enterprise, 0.12));
-
-      .header__plan-info {
-        color: $color-plan-enterprise;
-      }
-    }
-  }
-
-  &__plan-info {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-    font-size: $font-size-sm;
-    font-weight: 600;
-  }
-
-  &__plan-upgrade {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px $spacing-sm;
-    background-color: $color-primary;
-    color: $color-white;
-    border: none;
-    border-radius: $border-radius-sm;
-    font-size: $font-size-sm;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color $transition-fast;
-
-    &:hover {
-      background-color: $color-primary-dark;
-    }
-  }
-
   &__dropdown-header {
     display: flex;
     align-items: center;
@@ -335,25 +276,6 @@
     height: 1px;
     background-color: $color-gray-200;
     margin: $spacing-xs 0;
-  }
-
-  &__dropdown-footer {
-    padding: $spacing-sm $spacing-md;
-    border-top: 1px solid $color-gray-200;
-    text-align: center;
-
-    button {
-      background: none;
-      border: none;
-      color: $color-primary;
-      font-size: $font-size-sm;
-      font-weight: 500;
-      cursor: pointer;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
   }
 
   &__notification-item {

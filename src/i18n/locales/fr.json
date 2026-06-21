@@ -55,6 +55,7 @@
     "logout": "Déconnexion",
     "notifications": "Notifications",
     "noNotifications": "Aucune notification",
+    "logoutError": "Erreur lors de la déconnexion. Réessayez.",
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
     "menu": "Menu"

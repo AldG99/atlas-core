@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold, PiShieldCheckBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 import type { Notificacion } from '../../hooks/useNotificaciones';
 import { ROUTES } from '../../config/routes';
 import Avatar from './Avatar';
@@ -15,17 +16,22 @@ interface HeaderProps {
 const Header = ({ notificaciones }: HeaderProps) => {
   const { t, i18n } = useTranslation();
   const { user, logout, role } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
   const handleLogout = async () => {
-    await logout();
+    try {
+      await logout();
+    } catch {
+      showToast(t('nav.logoutError'), 'error');
+    }
   };
 
   const getInitials = (name: string | undefined) => {
     if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    return name.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
   const getWeekday = () => {
@@ -71,7 +77,7 @@ const Header = ({ notificaciones }: HeaderProps) => {
         <div className="header__notifications">
           <button
             className="header__icon-btn header__icon-btn--notifications"
-            onClick={() => setShowNotifications(!showNotifications)}
+            onClick={() => { setShowNotifications(!showNotifications); setShowProfileMenu(false); }}
             aria-label={`${t('nav.notifications')}${notificaciones.length > 0 ? ` (${notificaciones.length})` : ''}`}
             aria-haspopup="true"
             aria-expanded={showNotifications}
@@ -121,7 +127,7 @@ const Header = ({ notificaciones }: HeaderProps) => {
         <div className="header__profile">
           <button
             className="header__profile-btn"
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false); }}
             aria-haspopup="true"
             aria-expanded={showProfileMenu}
             aria-label={`${t('nav.profile')} — ${user?.nombreNegocio ?? ''}`}

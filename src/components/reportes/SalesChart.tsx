@@ -9,9 +9,16 @@ interface SalesChartProps {
   totalPedidos: number;
 }
 
+const formatAxisValue = (value: number, simbolo: string): string => {
+  if (value === 0) return `${simbolo}0`;
+  if (value >= 1_000_000) return `${simbolo}${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${simbolo}${(value / 1_000).toFixed(1)}K`;
+  return `${simbolo}${Math.round(value)}`;
+};
+
 const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
   const { t } = useTranslation();
-  const { format } = useCurrency();
+  const { format, simbolo } = useCurrency();
   if (data.length === 0) {
     return (
       <div className="sales-chart sales-chart--empty">
@@ -32,7 +39,7 @@ const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
           {[100, 75, 50, 25, 0].map((pct) => (
             <div key={pct} className="sales-chart__grid-line">
               <span className="sales-chart__grid-value">
-                {format(maxValue * (pct / 100))}
+                {formatAxisValue(maxValue * pct / 100, simbolo)}
               </span>
             </div>
           ))}
@@ -46,7 +53,9 @@ const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
                 <div className="sales-chart__track">
                   <div
                     className="sales-chart__fill"
-                    style={{ height: `${Math.max(pct, d.value > 0 ? 6 : 0)}%` }}
+                    style={{
+                      height: d.value > 0 ? `max(${pct.toFixed(2)}%, 4px)` : '0',
+                    }}
                   />
                 </div>
                 <span className="sales-chart__day">

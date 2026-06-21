@@ -55,6 +55,7 @@
     "logout": "Log out",
     "notifications": "Notifications",
     "noNotifications": "No notifications",
+    "logoutError": "Error signing out. Please try again.",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "menu": "Menu"

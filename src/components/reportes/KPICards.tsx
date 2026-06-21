@@ -61,7 +61,6 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
         const delta = card.comparisonValue !== undefined
           ? getDelta(card.rawValue, card.comparisonValue)
           : null;
-        const isUp = delta !== null && delta >= 0;
 
         return (
           <div key={card.label} className={`kpi-card ${card.className}`}>
@@ -70,9 +69,9 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
               <div className="kpi-card__value">{card.value}</div>
               <div className="kpi-card__bottom">
                 <span className="kpi-card__label">{card.label}</span>
-                {delta !== null && (
-                  <div className={`kpi-card__delta kpi-card__delta--${isUp ? 'up' : 'down'}`}>
-                    {isUp ? <PiArrowUpBold size={9} /> : <PiArrowDownBold size={9} />}
+                {delta !== null && delta !== 0 && (
+                  <div className={`kpi-card__delta kpi-card__delta--${delta > 0 ? 'up' : 'down'}`}>
+                    {delta > 0 ? <PiArrowUpBold size={9} /> : <PiArrowDownBold size={9} />}
                     <span>{Math.abs(delta).toFixed(1)}%</span>
                   </div>
                 )}

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PiXBold, PiUserBold } from 'react-icons/pi';
 import type { ClienteFormData } from '../../types/Cliente';
+import { isValidPhone } from '../../utils/validators';
 import { uploadClienteImage } from '../../services/clienteService';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
@@ -17,22 +18,6 @@ const DOMINIOS_DESECHABLES = [
 ];
 
 const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s-]+$/;
-
-const esTelefonoFicticio = (tel: string): boolean => {
-  // Todos los dígitos iguales: 0000000000, 5555555555
-  if (/^(\d)\1+$/.test(tel)) return true;
-
-  // Secuencia ascendente o descendente estricta
-  let esAscendente = true;
-  let esDescendente = true;
-  for (let i = 1; i < tel.length; i++) {
-    if (parseInt(tel[i]) - parseInt(tel[i - 1]) !== 1) esAscendente = false;
-    if (parseInt(tel[i - 1]) - parseInt(tel[i]) !== 1) esDescendente = false;
-  }
-  if (esAscendente || esDescendente) return true;
-
-  return false;
-};
 
 interface ClienteModalProps {
   cliente?: ClienteFormData;
@@ -97,7 +82,7 @@ const ClienteModal = ({ cliente, onClose, onSave, telefonosExistentes = [] }: Cl
     // Teléfono
     if (!formData.telefono.trim()) {
       newErrors.telefono = t('clients.modal.errors.phoneRequired');
-    } else if (esTelefonoFicticio(formData.telefono)) {
+    } else if (!isValidPhone(formData.telefono, formData.telefonoCodigoPais)) {
       newErrors.telefono = t('clients.modal.errors.phoneInvalid');
     } else if (telefonosExistentes.includes(formData.telefono)) {
       newErrors.telefono = t('clients.modal.errors.phoneDuplicate');

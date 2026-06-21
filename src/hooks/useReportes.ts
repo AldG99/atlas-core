@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { PeriodType, ReporteData } from '../types/Reporte';
 import type { Pedido } from '../types/Pedido';
 import { useAuth } from './useAuth';
@@ -18,6 +19,7 @@ import {
 export const useReportes = () => {
   const { negocioUid } = useAuth();
   const { productos } = useProductos();
+  const { i18n } = useTranslation();
   const [period, setPeriod] = useState<PeriodType>('semana');
   const [pedidosPeriodo, setPedidosPeriodo] = useState<Pedido[]>([]);
   const [pedidosAnterior, setPedidosAnterior] = useState<Pedido[]>([]);
@@ -63,9 +65,9 @@ export const useReportes = () => {
     statusBreakdown: calculateStatusBreakdown(pedidosPeriodo),
     topClientes: calculateTopClientes(pedidosPeriodo),
     topProductos: calculateTopProductos(pedidosPeriodo),
-    chartData: calculateChartData(pedidosPeriodo, period, dateRange),
+    chartData: calculateChartData(pedidosPeriodo, period, dateRange, i18n.language),
     inventario: calculateInventarioStats(productos),
-  }), [pedidosPeriodo, pedidosAnterior, period, dateRange, productos]);
+  }), [pedidosPeriodo, pedidosAnterior, period, dateRange, productos, i18n.language]);
 
   return {
     reporteData,

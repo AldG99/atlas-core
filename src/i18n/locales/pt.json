@@ -55,6 +55,7 @@
     "logout": "Sair",
     "notifications": "Notificações",
     "noNotifications": "Sem notificações",
+    "logoutError": "Erro ao sair. Tente novamente.",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
     "menu": "Menu"
