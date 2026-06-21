@@ -1,4 +1,7 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { PiArrowLeft } from 'react-icons/pi';
+import { CONTACT_EMAIL, getLegalLang } from '../constants/legal';
 import './Legal.scss';
 
 function ContentES() {
@@ -13,7 +16,7 @@ function ContentES() {
           <strong>Al García</strong>, operador de Skytla, es el responsable del tratamiento
           de los datos personales que nos proporcionas. Para cualquier solicitud relacionada
           con tus datos, contáctanos en{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a>.
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </p>
         <p>
           Este aviso cumple con las legislaciones de protección de datos aplicables
@@ -37,7 +40,6 @@ function ContentES() {
           <li>Fecha de nacimiento (para verificar que eres mayor de 18 años)</li>
           <li>Nombre del negocio</li>
           <li>Datos de clientes, productos y pedidos que registres en la plataforma</li>
-          <li>Datos de uso del Servicio (accesos, funciones utilizadas)</li>
         </ul>
         <p>No recopilamos datos sensibles como información financiera, de salud o biométrica.</p>
       </section>
@@ -158,7 +160,7 @@ function ContentES() {
 
         <p>
           Para ejercer cualquiera de estos derechos, contáctanos en{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> o a través
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> o a través
           de la sección de Soporte dentro de la plataforma.
         </p>
       </section>
@@ -213,7 +215,7 @@ function ContentES() {
         <p>
           Para cualquier duda, ejercicio de derechos o reclamación relacionada con tus datos
           personales, contáctanos en{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> o a través
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> o a través
           de la sección de Soporte dentro de la plataforma.
         </p>
       </section>
@@ -232,7 +234,7 @@ function ContentEN() {
         <p>
           <strong>Al García</strong>, operator of Skytla, is responsible for processing
           the personal data you provide to us. For any request related to your data, contact us at{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a>.
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </p>
         <p>
           This notice complies with internationally applicable data protection laws, including:
@@ -255,7 +257,6 @@ function ContentEN() {
           <li>Date of birth (to verify you are at least 18 years old)</li>
           <li>Business name</li>
           <li>Customer, product, and order data you enter into the platform</li>
-          <li>Service usage data (logins, features used)</li>
         </ul>
         <p>We do not collect sensitive data such as financial, health, or biometric information.</p>
       </section>
@@ -374,7 +375,7 @@ function ContentEN() {
 
         <p>
           To exercise any of these rights, contact us at{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> or through
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> or through
           the Support section within the platform.
         </p>
       </section>
@@ -429,7 +430,7 @@ function ContentEN() {
         <p>
           For any questions, rights requests, or complaints related to your personal data,
           contact us at{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> or through
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> or through
           the Support section within the platform.
         </p>
       </section>
@@ -449,7 +450,7 @@ function ContentPT() {
           <strong>Al García</strong>, operador do Skytla, é o responsável pelo tratamento
           dos dados pessoais que você nos fornece. Para qualquer solicitação relacionada aos
           seus dados, entre em contato pelo e-mail{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a>.
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </p>
         <p>
           Este aviso está em conformidade com as legislações de proteção de dados aplicáveis
@@ -473,7 +474,6 @@ function ContentPT() {
           <li>Data de nascimento (para verificar que você tem pelo menos 18 anos)</li>
           <li>Nome do negócio</li>
           <li>Dados de clientes, produtos e pedidos que você registrar na plataforma</li>
-          <li>Dados de uso do Serviço (acessos, funcionalidades utilizadas)</li>
         </ul>
         <p>Não coletamos dados sensíveis como informações financeiras, de saúde ou biométricas.</p>
       </section>
@@ -594,7 +594,7 @@ function ContentPT() {
 
         <p>
           Para exercer qualquer um desses direitos, entre em contato pelo e-mail{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> ou pela
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ou pela
           seção de Suporte dentro da plataforma.
         </p>
       </section>
@@ -649,7 +649,7 @@ function ContentPT() {
         <p>
           Para quaisquer dúvidas, exercício de direitos ou reclamações relacionadas aos seus
           dados pessoais, entre em contato pelo e-mail{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> ou pela
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ou pela
           seção de Suporte dentro da plataforma.
         </p>
       </section>
@@ -669,7 +669,7 @@ function ContentFR() {
           <strong>Al García</strong>, opérateur de Skytla, est responsable du traitement
           des données personnelles que vous nous fournissez. Pour toute demande relative à
           vos données, contactez-nous à{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a>.
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </p>
         <p>
           Cette politique est conforme aux législations internationales applicables en matière
@@ -693,7 +693,6 @@ function ContentFR() {
           <li>Date de naissance (pour vérifier que vous avez au moins 18 ans)</li>
           <li>Nom de l'entreprise</li>
           <li>Données clients, produits et commandes que vous enregistrez sur la plateforme</li>
-          <li>Données d'utilisation du Service (connexions, fonctionnalités utilisées)</li>
         </ul>
         <p>Nous ne collectons pas de données sensibles telles que des informations financières, de santé ou biométriques.</p>
       </section>
@@ -814,7 +813,7 @@ function ContentFR() {
 
         <p>
           Pour exercer l'un de ces droits, contactez-nous à{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> ou via
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ou via
           la section Assistance de la plateforme.
         </p>
       </section>
@@ -870,7 +869,7 @@ function ContentFR() {
         <p>
           Pour toute question, demande d'exercice de droits ou réclamation relative à vos
           données personnelles, contactez-nous à{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> ou via
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ou via
           la section Assistance de la plateforme.
         </p>
       </section>
@@ -880,7 +879,8 @@ function ContentFR() {
 
 const Privacidad = () => {
   const { i18n } = useTranslation();
-  const lang = i18n.language?.startsWith('en') ? 'en' : i18n.language?.startsWith('pt') ? 'pt' : i18n.language?.startsWith('fr') ? 'fr' : 'es';
+  const navigate = useNavigate();
+  const lang = getLegalLang(i18n.language);
   const Content = lang === 'en' ? ContentEN : lang === 'pt' ? ContentPT : lang === 'fr' ? ContentFR : ContentES;
 
   return (
@@ -894,6 +894,11 @@ const Privacidad = () => {
             draggable={false}
             onContextMenu={e => e.preventDefault()}
           />
+        </div>
+        <div className="legal-page__nav">
+          <button className="legal-page__back" onClick={() => navigate(-1)}>
+            <PiArrowLeft size={16} /> Volver
+          </button>
         </div>
         <div className="legal-page__card">
           <Content />

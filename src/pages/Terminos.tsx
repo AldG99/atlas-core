@@ -1,4 +1,7 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { PiArrowLeft } from 'react-icons/pi';
+import { CONTACT_EMAIL, getLegalLang } from '../constants/legal';
 import './Legal.scss';
 
 function ContentES() {
@@ -12,7 +15,7 @@ function ContentES() {
         <p>
           Skytla es operado por <strong>Al García</strong>, en adelante "el Responsable".
           Para cualquier consulta relacionada con estos Términos, puedes contactarnos en{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> o a través
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> o a través
           de la sección de Soporte dentro de la plataforma.
         </p>
       </section>
@@ -119,7 +122,7 @@ function ContentES() {
           </li>
           <li>
             En caso de disputa relacionada con un cobro, contáctanos en{' '}
-            <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> dentro de los
+            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> dentro de los
             30 días siguientes al cargo.
           </li>
           <li>
@@ -192,7 +195,7 @@ function ContentES() {
         <h2>14. Contacto</h2>
         <p>
           Si tienes dudas sobre estos Términos, puedes contactarnos en{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> o a través
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> o a través
           de la sección de Soporte dentro de la plataforma.
         </p>
       </section>
@@ -211,7 +214,7 @@ function ContentEN() {
         <p>
           Skytla is operated by <strong>Al García</strong>, hereinafter "the Operator."
           For any inquiries related to these Terms, you may contact us at{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> or through
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> or through
           the Support section within the platform.
         </p>
       </section>
@@ -316,7 +319,7 @@ function ContentEN() {
           </li>
           <li>
             In case of a dispute related to a charge, contact us at{' '}
-            <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> within
+            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> within
             30 days of the charge.
           </li>
           <li>
@@ -387,7 +390,7 @@ function ContentEN() {
         <h2>14. Contact</h2>
         <p>
           If you have questions about these Terms, you may contact us at{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> or through
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> or through
           the Support section within the platform.
         </p>
       </section>
@@ -406,7 +409,7 @@ function ContentPT() {
         <p>
           Skytla é operado por <strong>Al García</strong>, doravante denominado "o Responsável."
           Para quaisquer dúvidas relacionadas a estes Termos, entre em contato pelo e-mail{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> ou pela
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ou pela
           seção de Suporte dentro da plataforma.
         </p>
       </section>
@@ -512,7 +515,7 @@ function ContentPT() {
           </li>
           <li>
             Em caso de disputa relacionada a uma cobrança, entre em contato em{' '}
-            <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> dentro de
+            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> dentro de
             30 dias após o lançamento do pagamento.
           </li>
           <li>
@@ -585,7 +588,7 @@ function ContentPT() {
         <h2>14. Contato</h2>
         <p>
           Se você tiver dúvidas sobre estes Termos, entre em contato pelo e-mail{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> ou pela
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ou pela
           seção de Suporte dentro da plataforma.
         </p>
       </section>
@@ -604,7 +607,7 @@ function ContentFR() {
         <p>
           Skytla est exploité par <strong>Al García</strong>, ci-après dénommé « le Responsable ».
           Pour toute question relative aux présentes Conditions, vous pouvez nous contacter à{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> ou via
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ou via
           la section Assistance de la plateforme.
         </p>
       </section>
@@ -712,7 +715,7 @@ function ContentFR() {
           </li>
           <li>
             En cas de litige lié à un prélèvement, contactez-nous à{' '}
-            <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> dans les
+            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> dans les
             30 jours suivant le prélèvement.
           </li>
           <li>
@@ -785,7 +788,7 @@ function ContentFR() {
         <h2>14. Contact</h2>
         <p>
           Si vous avez des questions sur les présentes Conditions, vous pouvez nous contacter à{' '}
-          <a href="mailto:skytla.vault@gmail.com">skytla.vault@gmail.com</a> ou via
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ou via
           la section Assistance de la plateforme.
         </p>
       </section>
@@ -795,7 +798,8 @@ function ContentFR() {
 
 const Terminos = () => {
   const { i18n } = useTranslation();
-  const lang = i18n.language?.startsWith('en') ? 'en' : i18n.language?.startsWith('pt') ? 'pt' : i18n.language?.startsWith('fr') ? 'fr' : 'es';
+  const navigate = useNavigate();
+  const lang = getLegalLang(i18n.language);
   const Content = lang === 'en' ? ContentEN : lang === 'pt' ? ContentPT : lang === 'fr' ? ContentFR : ContentES;
 
   return (
@@ -809,6 +813,11 @@ const Terminos = () => {
             draggable={false}
             onContextMenu={e => e.preventDefault()}
           />
+        </div>
+        <div className="legal-page__nav">
+          <button className="legal-page__back" onClick={() => navigate(-1)}>
+            <PiArrowLeft size={16} /> Volver
+          </button>
         </div>
         <div className="legal-page__card">
           <Content />

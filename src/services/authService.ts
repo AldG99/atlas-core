@@ -11,7 +11,7 @@ import {
 } from 'firebase/auth';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, writeBatch, Timestamp, deleteField } from 'firebase/firestore';
-import { ref, uploadBytes } from 'firebase/storage';
+import { ref, uploadBytes, deleteObject } from 'firebase/storage';
 import { auth, db, storage } from './firebase';
 import type { User, LoginCredentials, RegisterCredentials, Plantillas } from '../types/User';
 import { compressImage } from '../utils/imageUtils';
@@ -134,16 +134,61 @@ export const deleteAllUserDataWithAuth = async (password: string, uid: string): 
   await deleteAllUserData(uid);
 };
 
+const parseStoragePath = (url: string): string | null => {
+  try {
+    const match = new URL(url).pathname.match(/\/o\/(.+)$/);
+    return match ? decodeURIComponent(match[1]) : null;
+  } catch {
+    return null;
+  }
+};
+
+const deleteStorageFile = async (url: string): Promise<void> => {
+  const path = parseStoragePath(url);
+  if (!path) return;
+  try { await deleteObject(ref(storage, path)); } catch { /* best effort */ }
+};
+
 export const deleteAllUserData = async (uid: string): Promise<void> => {
-  const cols = ['clientes', 'productos', 'pedidos', 'etiquetas', 'pedidoCounters'];
-  for (const col of cols) {
-    const snap = await getDocs(query(collection(db, col), where('userId', '==', uid)));
+  // Fetch before deleting to collect Storage URLs
+  const [clientesSnap, productosSnap, userSnap] = await Promise.all([
+    getDocs(query(collection(db, 'clientes'), where('userId', '==', uid))),
+    getDocs(query(collection(db, 'productos'), where('userId', '==', uid))),
+    getDoc(doc(db, 'users', uid)),
+  ]);
+
+  const storageUrls: string[] = [];
+  clientesSnap.docs.forEach(d => {
+    const url = d.data().fotoPerfil as string | undefined;
+    if (url) storageUrls.push(url);
+  });
+  productosSnap.docs.forEach(d => {
+    const url = d.data().imagen as string | undefined;
+    if (url) storageUrls.push(url);
+  });
+  if (userSnap.exists()) {
+    const url = userSnap.data().fotoPerfil as string | undefined;
+    if (url) storageUrls.push(url);
+  }
+
+  // Delete Firestore docs, reusing already-fetched snaps for clientes y productos
+  const deleteSnap = async (snap: typeof clientesSnap) => {
     for (let i = 0; i < snap.docs.length; i += 400) {
       const batch = writeBatch(db);
       snap.docs.slice(i, i + 400).forEach(d => batch.delete(d.ref));
       await batch.commit();
     }
+  };
+
+  await Promise.all([deleteSnap(clientesSnap), deleteSnap(productosSnap)]);
+
+  for (const col of ['pedidos', 'etiquetas', 'pedidoCounters']) {
+    const snap = await getDocs(query(collection(db, col), where('userId', '==', uid)));
+    await deleteSnap(snap);
   }
+
+  // Best-effort: delete Storage files (no falla el proceso si Storage falla)
+  await Promise.allSettled(storageUrls.map(deleteStorageFile));
 };
 
 export const deleteAccount = async (password: string, uid: string): Promise<void> => {

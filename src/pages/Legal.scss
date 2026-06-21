@@ -24,6 +24,26 @@
     pointer-events: none;
   }
 
+  &__nav {
+    margin-bottom: $spacing-md;
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $color-gray-500;
+    font-size: $font-size-sm;
+    padding: 0;
+
+    &:hover {
+      color: $color-gray-700;
+    }
+  }
+
   &__card {
     background-color: $color-white;
     border: 1px solid $color-gray-200;
