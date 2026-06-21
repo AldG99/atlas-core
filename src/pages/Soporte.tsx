@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiCaretDownBold, PiPaperPlaneRightBold, PiBookOpenBold } from 'react-icons/pi';
+import { PiPaperPlaneRightBold, PiBookOpenBold } from 'react-icons/pi';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -40,10 +40,8 @@ const validarMensaje = (texto: string): string | null => {
 
 const Soporte = () => {
   const { t } = useTranslation();
-  const faqData = t('support.faq', { returnObjects: true }) as { question: string; answer: string }[];
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const [formData, setFormData] = useState({ asunto: '', mensaje: '' });
   const [sending, setSending] = useState(false);
   const [cooldownRestante, setCooldownRestante] = useState(0);
@@ -74,10 +72,6 @@ const Soporte = () => {
     const timer = setTimeout(() => setCooldownRestante(c => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [cooldownRestante]);
-
-  const toggleFAQ = (index: number) => {
-    setOpenFAQ(openFAQ === index ? null : index);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,35 +136,7 @@ const Soporte = () => {
         </div>
 
         <div className="soporte__body">
-          {/* FAQ */}
           <section className="soporte__section">
-            <h2 className="soporte__section-title">{t('support.faqTitle')}</h2>
-            <div className="soporte__faq">
-              {faqData.map((item, index) => (
-                <div
-                  key={index}
-                  className={`soporte__faq-item ${openFAQ === index ? 'soporte__faq-item--open' : ''}`}
-                >
-                  <button
-                    className="soporte__faq-question"
-                    onClick={() => toggleFAQ(index)}
-                  >
-                    <span>{item.question}</span>
-                    <span className="soporte__faq-icon">
-                      <PiCaretDownBold size={20} />
-                    </span>
-                  </button>
-                  <div className="soporte__faq-answer">
-                    <p>{item.answer}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Formulario de Contacto */}
-          <section className="soporte__section">
-            <h2 className="soporte__section-title">{t('support.contactTitle')}</h2>
             <div className="soporte__contact-card">
               <div className="soporte__contact-info">
                 <PiBookOpenBold size={24} />

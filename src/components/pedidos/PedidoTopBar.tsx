@@ -4,6 +4,7 @@ import {
   PiWhatsappLogoBold,
   PiCopyBold,
   PiCheckBold,
+  PiCheckCircleBold,
   PiTrashBold,
   PiDownloadSimpleBold,
 } from 'react-icons/pi';
@@ -137,7 +138,10 @@ const PedidoTopBar = ({
               className={`pedido-detail__btn-entregado ${puedeMarcarEntregado ? 'pedido-detail__btn-entregado--active' : ''} ${pedido.estado === 'entregado' ? 'pedido-detail__btn-entregado--done' : ''}`}
               disabled={!puedeMarcarEntregado || submitting}
             >
-              {pedido.estado === 'entregado' ? t('orders.status.entregado') : t('orders.detail.deliver')}
+              {pedido.estado === 'entregado'
+                ? <><PiCheckBold size={16} />{t('orders.status.entregado')}</>
+                : <><PiCheckCircleBold size={16} />{t('orders.detail.deliver')}</>
+              }
             </button>
             {abonoError && (
               <span className="pedido-detail__top-bar-abono-error">{abonoError}</span>

@@ -110,24 +110,26 @@ $topbar-height: 52px;
     }
   }
 
-  // Botones de acción — misma altura y anchura
+  // Botones de acción — misma altura
   &__top-bar-abono-group > .btn,
   &__top-bar-inner > .pedido-detail__btn-entregado {
     height: 36px;
     min-height: 36px;
-    width: 64px;
     border-radius: 0;
     font-size: $font-size-sm;
     font-weight: 600;
-    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
+  }
 
-    @include sm {
-      width: 96px;
-    }
+  &__top-bar-abono-group > .btn {
+    padding: 0 $spacing-md;
+  }
+
+  &__top-bar-inner > .pedido-detail__btn-entregado {
+    padding: 0 $spacing-sm;
   }
 
   &__top-bar-abono-error {
@@ -788,6 +790,7 @@ $topbar-height: 52px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     padding: 0 $spacing-md;
     height: 32px;
     min-height: 32px;

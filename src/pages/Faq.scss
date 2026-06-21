@@ -1,0 +1,54 @@
+@use '../styles/abstracts/variables' as *;
+@use '../styles/abstracts/mixins' as *;
+
+.faq-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+
+  &__header {
+    text-align: center;
+    padding-bottom: $spacing-lg;
+    flex-shrink: 0;
+
+    h1 {
+      margin: 0 0 $spacing-xs;
+      font-size: $font-size-xl;
+      color: $color-gray-900;
+
+      @include sm {
+        font-size: $font-size-2xl;
+      }
+    }
+
+    p {
+      margin: 0;
+      color: $color-gray-500;
+      font-size: $font-size-sm;
+
+      @include sm {
+        font-size: $font-size-base;
+      }
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-height: 0;
+    background-color: $color-white;
+    border-radius: $border-radius-lg;
+    border: 1px solid $color-gray-200;
+    overflow-y: auto;
+    scrollbar-color: $color-gray-300 $color-white;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $color-gray-300;
+      border-radius: 0;
+    }
+  }
+}

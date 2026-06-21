@@ -23,6 +23,7 @@ const Reportes       = lazy(() => import('./pages/Reportes'));
 const Perfil         = lazy(() => import('./pages/Perfil'));
 const Configuracion  = lazy(() => import('./pages/Configuracion'));
 const Archivo        = lazy(() => import('./pages/Archivo'));
+const Faq            = lazy(() => import('./pages/Faq'));
 const Soporte        = lazy(() => import('./pages/Soporte'));
 const Planes         = lazy(() => import('./pages/Planes'));
 const Terminos       = lazy(() => import('./pages/Terminos'));
@@ -41,6 +42,7 @@ const PROTECTED_ROUTES = [
   { path: ROUTES.ARCHIVO,         component: Archivo        },
   { path: ROUTES.PERFIL,          component: Perfil         },
   { path: ROUTES.CONFIGURACION,   component: Configuracion  },
+  { path: ROUTES.FAQ,             component: Faq            },
   { path: ROUTES.SOPORTE,         component: Soporte        },
   { path: ROUTES.PLANES,          component: Planes         },
 ] as const;

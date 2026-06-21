@@ -98,22 +98,29 @@ export const usePedidos = () => {
     try {
       setLoading(true);
       setError(null);
-      const result = await getPedidos(negocioUid, lastDocRef.current);
-      const active = result.pedidos.filter((p) => !p.archivado);
-      setPedidos((prev) => [...prev, ...active]);
-      setAllPedidos((prev) => {
-        const updated = [...prev, ...active];
-        allPedidosRef.current = updated;
-        return updated;
-      });
-      lastDocRef.current = result.lastDoc;
-      setHasMore(result.hasMore);
+      if (showArchived) {
+        const result = await getArchivedPedidos(negocioUid, lastDocRef.current);
+        setPedidos((prev) => [...prev, ...result.pedidos]);
+        lastDocRef.current = result.lastDoc;
+        setHasMore(result.hasMore);
+      } else {
+        const result = await getPedidos(negocioUid, lastDocRef.current);
+        const active = result.pedidos.filter((p) => !p.archivado);
+        setPedidos((prev) => [...prev, ...active]);
+        setAllPedidos((prev) => {
+          const updated = [...prev, ...active];
+          allPedidosRef.current = updated;
+          return updated;
+        });
+        lastDocRef.current = result.lastDoc;
+        setHasMore(result.hasMore);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar más pedidos');
     } finally {
       setLoading(false);
     }
-  }, [user, negocioUid, hasMore]);
+  }, [user, negocioUid, hasMore, showArchived]);
 
   const fetchArchived = useCallback(async () => {
     if (!user || !negocioUid) return;
@@ -122,11 +129,11 @@ export const usePedidos = () => {
       setLoading(true);
       setError(null);
       isLiveViewRef.current = false;
-      const data = await getArchivedPedidos(negocioUid);
-      setPedidos(data);
+      const result = await getArchivedPedidos(negocioUid);
+      setPedidos(result.pedidos);
       setShowArchived(true);
-      setHasMore(false);
-      lastDocRef.current = null;
+      setHasMore(result.hasMore);
+      lastDocRef.current = result.lastDoc;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar pedidos archivados');
     } finally {

@@ -13,6 +13,7 @@ export const ROUTES = {
   ARCHIVO: '/archive',
   PERFIL: '/profile',
   CONFIGURACION: '/settings',
+  FAQ: '/faq',
   SOPORTE: '/support',
   PLANES: '/plans',
   TERMINOS: '/terms',

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold, PiShieldCheckBold } from 'react-icons/pi';
+import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold, PiShieldCheckBold, PiGearSixBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import type { Notificacion } from '../../hooks/useNotificaciones';
@@ -168,6 +168,16 @@ const Header = ({ notificaciones }: HeaderProps) => {
                 >
                   <PiUserBold size={18} />
                   <span>{t('nav.profile')}</span>
+                </button>
+                <button
+                  className="header__dropdown-item"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    navigate(ROUTES.CONFIGURACION);
+                  }}
+                >
+                  <PiGearSixBold size={18} />
+                  <span>{t('nav.settings')}</span>
                 </button>
                 <button
                   className="header__dropdown-item"

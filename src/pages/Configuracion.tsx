@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   PiDownloadSimpleBold,
@@ -20,7 +21,6 @@ import {
 } from 'react-icons/pi';
 import type { User } from '../types/User';
 import { usePWA } from '../hooks/usePWA';
-import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useEquipo } from '../hooks/useEquipo';
@@ -44,6 +44,7 @@ type NavGroup = { label: string; items: NavItem[] };
 
 const Configuracion = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user, updateProfile, deleteAllData, deleteAccount, role } = useAuth();
 
   const getSectionTitle = (section: Section): string => {
@@ -423,11 +424,16 @@ const Configuracion = () => {
   };
 
   return (
-    <MainLayout>
+    <div className="configuracion-page">
       <div className="configuracion">
         {/* Nav */}
         <nav className={`configuracion__nav${activeSection ? ' configuracion__nav--hidden' : ''}`}>
-          <p className="configuracion__nav-title">{t('settings.title')}</p>
+          <div className="configuracion__nav-header">
+            <button className="configuracion__back-btn" onClick={() => navigate(-1)}>
+              <PiArrowLeftBold size={20} />
+            </button>
+            <p className="configuracion__nav-title">{t('settings.title')}</p>
+          </div>
           {navGroups.map(group => (
             <div key={group.label} className="configuracion__group">
               <p className="configuracion__group-label">{group.label}</p>
@@ -450,24 +456,24 @@ const Configuracion = () => {
 
         {/* Detail panel */}
         <div className={`configuracion__detail${!activeSection ? ' configuracion__detail--hidden' : ''}`}>
-          <button className="configuracion__back" onClick={() => setActiveSection(null)}>
-            <PiArrowLeftBold size={14} />
-            {t('settings.back')}
-          </button>
-          {activeSection ? (
-            <div className="configuracion__detail-inner">
+          {activeSection && (
+            <div className="configuracion__detail-header">
+              <button className="configuracion__back" onClick={() => setActiveSection(null)}>
+                <PiArrowLeftBold size={15} />
+                {t('settings.back')}
+              </button>
               <h2 className="configuracion__detail-title">{getSectionTitle(activeSection)}</h2>
-              {renderPanel()}
-            </div>
-          ) : (
-            <div className="configuracion__placeholder">
-              <div className="configuracion__placeholder-icon">
-                <PiGearSixBold size={56} />
-              </div>
-              <p className="configuracion__placeholder-title">{t('settings.title')}</p>
-              <p className="configuracion__placeholder-desc">{t('settings.selectOption')}</p>
             </div>
           )}
+          <div className="configuracion__detail-inner">
+            {activeSection ? renderPanel() : (
+              <div className="configuracion__placeholder">
+                <PiGearSixBold size={36} className="configuracion__placeholder-icon" />
+                <p className="configuracion__placeholder-title">{t('settings.title')}</p>
+                <p className="configuracion__placeholder-desc">{t('settings.selectOption')}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -496,7 +502,7 @@ const Configuracion = () => {
           onActualizarContrasena={actualizarContrasena}
         />
       )}
-    </MainLayout>
+    </div>
   );
 };
 

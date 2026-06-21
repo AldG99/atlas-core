@@ -1,0 +1,63 @@
+@use '../../styles/abstracts/variables' as *;
+
+.faq-panel {
+  &__item {
+    border-bottom: 1px solid $color-gray-100;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--open {
+      .faq-panel__icon {
+        transform: rotate(180deg);
+      }
+
+      .faq-panel__answer {
+        max-height: 300px;
+        padding: 0 $spacing-md $spacing-sm;
+      }
+    }
+  }
+
+  &__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-gray-800;
+    cursor: pointer;
+    transition: background-color $transition-fast, color $transition-fast;
+
+    &:hover {
+      background-color: $color-gray-50;
+      color: $color-primary;
+    }
+  }
+
+  &__icon {
+    color: $color-gray-400;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  &__answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+
+    p {
+      margin: 0;
+      font-size: $font-size-sm;
+      color: $color-gray-600;
+      line-height: 1.6;
+    }
+  }
+}

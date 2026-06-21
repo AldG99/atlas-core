@@ -48,8 +48,8 @@ const Archivo = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getArchivedPedidos(user.uid);
-      setPedidos(data);
+      const result = await getArchivedPedidos(user.uid);
+      setPedidos(result.pedidos);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar pedidos archivados');
     } finally {

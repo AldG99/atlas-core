@@ -58,7 +58,8 @@
     "logoutError": "Error signing out. Please try again.",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "menu": "Menu"
+    "menu": "Menu",
+    "faq": "Info"
   },
   "auth": {
     "login": {
@@ -985,7 +986,8 @@
       "minLength": "Message must be at least {{min}} characters",
       "dailyLimit": "You've reached the limit of {{limit}} messages per day. Try tomorrow.",
       "cooldown": "You must wait before sending another message"
-    }
+    },
+    "faqSubtitle": "Find answers to the most common questions about Skytla"
   },
   "plans": {
     "title": "Plans",
@@ -1005,17 +1007,41 @@
       "free": {
         "name": "Free",
         "description": "Start managing your business at no cost.",
-        "features": ["Up to 360 orders per month", "Up to 120 clients", "Up to 80 products", "Up to 6 labels", "CSV export", "Export & import data", "Team members"]
+        "features": [
+          "Up to 360 orders per month",
+          "Up to 120 clients",
+          "Up to 80 products",
+          "Up to 6 labels",
+          "CSV export",
+          "Export & import data",
+          "Team members"
+        ]
       },
       "pro": {
         "name": "Pro",
         "description": "For growing businesses that need more capacity.",
-        "features": ["Up to 720 orders per month", "Up to 240 clients", "Up to 160 products", "Up to 10 labels", "CSV export", "Export & import data", "Up to 2 team members"]
+        "features": [
+          "Up to 720 orders per month",
+          "Up to 240 clients",
+          "Up to 160 products",
+          "Up to 10 labels",
+          "CSV export",
+          "Export & import data",
+          "Up to 2 team members"
+        ]
       },
       "business": {
         "name": "Business",
         "description": "For teams and businesses with high-volume operations.",
-        "features": ["Unlimited orders", "Unlimited clients", "Up to 640 products", "Up to 16 labels", "CSV export", "Export & import data", "Up to 6 team members"]
+        "features": [
+          "Unlimited orders",
+          "Unlimited clients",
+          "Up to 640 products",
+          "Up to 16 labels",
+          "CSV export",
+          "Export & import data",
+          "Up to 6 team members"
+        ]
       }
     }
   },

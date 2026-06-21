@@ -58,7 +58,8 @@
     "logoutError": "Erreur lors de la déconnexion. Réessayez.",
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
-    "menu": "Menu"
+    "menu": "Menu",
+    "faq": "Info"
   },
   "auth": {
     "login": {
@@ -985,7 +986,8 @@
       "minLength": "Le message doit comporter au moins {{min}} caractères",
       "dailyLimit": "Vous avez atteint la limite de {{limit}} messages par jour. Réessayez demain.",
       "cooldown": "Vous devez attendre avant d'envoyer un autre message"
-    }
+    },
+    "faqSubtitle": "Trouvez des réponses aux questions les plus courantes sur Skytla"
   },
   "plans": {
     "title": "Plans",
@@ -1005,17 +1007,41 @@
       "free": {
         "name": "Gratuit",
         "description": "Pour commencer à gérer votre entreprise sans frais.",
-        "features": ["Jusqu'à 360 commandes par mois", "Jusqu'à 120 clients", "Jusqu'à 80 produits", "Jusqu'à 6 étiquettes", "Export CSV", "Export et import de données", "Membres de l'équipe"]
+        "features": [
+          "Jusqu'à 360 commandes par mois",
+          "Jusqu'à 120 clients",
+          "Jusqu'à 80 produits",
+          "Jusqu'à 6 étiquettes",
+          "Export CSV",
+          "Export et import de données",
+          "Membres de l'équipe"
+        ]
       },
       "pro": {
         "name": "Pro",
         "description": "Pour les entreprises en croissance qui ont besoin de plus de capacité.",
-        "features": ["Jusqu'à 720 commandes par mois", "Jusqu'à 240 clients", "Jusqu'à 160 produits", "Jusqu'à 10 étiquettes", "Export CSV", "Export et import de données", "Jusqu'à 2 membres dans votre équipe"]
+        "features": [
+          "Jusqu'à 720 commandes par mois",
+          "Jusqu'à 240 clients",
+          "Jusqu'à 160 produits",
+          "Jusqu'à 10 étiquettes",
+          "Export CSV",
+          "Export et import de données",
+          "Jusqu'à 2 membres dans votre équipe"
+        ]
       },
       "business": {
         "name": "Business",
         "description": "Pour les équipes et les entreprises à haut volume d'opérations.",
-        "features": ["Commandes illimitées", "Clients illimités", "Jusqu'à 640 produits", "Jusqu'à 16 étiquettes", "Export CSV", "Export et import de données", "Jusqu'à 6 membres dans votre équipe"]
+        "features": [
+          "Commandes illimitées",
+          "Clients illimités",
+          "Jusqu'à 640 produits",
+          "Jusqu'à 16 étiquettes",
+          "Export CSV",
+          "Export et import de données",
+          "Jusqu'à 6 membres dans votre équipe"
+        ]
       }
     }
   },

@@ -38,14 +38,17 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
         <>
           <div className="status-breakdown__donut">
             <svg viewBox="0 0 100 100" className="status-breakdown__svg">
-              <g transform={`rotate(-90, ${CX}, ${CY})`}>
+              <g
+                transform={`rotate(-90, ${CX}, ${CY})`}
+                key={segments.map(s => `${s.estado}${s.porcentaje}`).join('-')}
+              >
                 <circle
                   cx={CX} cy={CY} r={RADIUS}
                   fill="none"
                   stroke="#DDD9D2"
                   strokeWidth={STROKE_WIDTH}
                 />
-                {segments.map((seg) => (
+                {segments.map((seg, i) => (
                   <circle
                     key={seg.estado}
                     cx={CX} cy={CY} r={RADIUS}
@@ -53,8 +56,13 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
                     stroke={PEDIDO_STATUS_COLORS[seg.estado]}
                     strokeWidth={STROKE_WIDTH}
                     strokeDasharray={`${seg.length} ${CIRCUMFERENCE - seg.length}`}
-                    strokeDashoffset={-seg.offset}
                     strokeLinecap="butt"
+                    className="status-breakdown__segment"
+                    style={{
+                      '--dashoffset-start': seg.length - seg.offset,
+                      '--dashoffset-end': -seg.offset,
+                      animationDelay: `${i * 150}ms`,
+                    } as React.CSSProperties}
                   />
                 ))}
               </g>

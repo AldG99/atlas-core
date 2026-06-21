@@ -44,7 +44,7 @@ const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
             </div>
           ))}
         </div>
-        <div className="sales-chart__bars">
+        <div className="sales-chart__bars" key={`${totalVentas}-${data.length}`}>
           {data.map((d, i) => {
             const pct = (d.value / maxValue) * 100;
             const showLabel = data.length <= 7 || i === 0 || i === data.length - 1 || i % Math.ceil(data.length / 5) === 0;
@@ -55,6 +55,7 @@ const SalesChart = ({ data, totalVentas, totalPedidos }: SalesChartProps) => {
                     className="sales-chart__fill"
                     style={{
                       height: d.value > 0 ? `max(${pct.toFixed(2)}%, 4px)` : '0',
+                      animationDelay: `${i * 18}ms`,
                     }}
                   />
                 </div>

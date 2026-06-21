@@ -1,6 +1,29 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
+@property --dashoffset-start {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --dashoffset-end {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes donut-segment {
+  from {
+    stroke-dashoffset: var(--dashoffset-start);
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: var(--dashoffset-end);
+    opacity: 1;
+  }
+}
+
 .status-breakdown {
   background-color: $color-white;
   border: 1px solid $color-gray-200;
@@ -38,6 +61,10 @@
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  &__segment {
+    animation: donut-segment 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   &__list {

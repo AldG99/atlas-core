@@ -104,7 +104,8 @@
     width: 100%;
     background-color: $color-chart;
     border-radius: 3px 3px 0 0;
-    transition: height 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: bottom;
+    animation: sales-bar-grow 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   &__day {
@@ -142,5 +143,16 @@
     font-size: $font-size-xs;
     color: $color-gray-400;
     font-weight: 400;
+  }
+}
+
+@keyframes sales-bar-grow {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
   }
 }

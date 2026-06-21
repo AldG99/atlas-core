@@ -251,29 +251,36 @@ export const unarchivePedido = async (pedidoId: string): Promise<void> => {
   await updateDoc(pedidoRef, { archivado: false });
 };
 
-export const getArchivedPedidos = async (userId: string): Promise<Pedido[]> => {
-  const q = query(
-    collection(db, COLLECTION_NAME),
-    where('userId', '==', userId),
-    where('archivado', '==', true),
-    orderBy('fechaCreacion', 'desc'),
-    limit(PAGE_LIMIT)
-  );
+export const getArchivedPedidos = async (
+  userId: string,
+  lastDoc?: QueryDocumentSnapshot
+): Promise<{ pedidos: Pedido[]; hasMore: boolean; lastDoc: QueryDocumentSnapshot | null }> => {
+  const q = lastDoc
+    ? query(
+        collection(db, COLLECTION_NAME),
+        where('userId', '==', userId),
+        where('archivado', '==', true),
+        orderBy('fechaCreacion', 'desc'),
+        limit(PAGE_LIMIT + 1),
+        startAfter(lastDoc)
+      )
+    : query(
+        collection(db, COLLECTION_NAME),
+        where('userId', '==', userId),
+        where('archivado', '==', true),
+        orderBy('fechaCreacion', 'desc'),
+        limit(PAGE_LIMIT + 1)
+      );
 
   const querySnapshot = await getDocs(q);
+  const hasMore = querySnapshot.docs.length > PAGE_LIMIT;
+  const docs = hasMore ? querySnapshot.docs.slice(0, PAGE_LIMIT) : querySnapshot.docs;
 
-  return querySnapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      ...data,
-      productos: (data.productos as ProductoItem[]),
-      abonos: parseAbonos(data.abonos),
-      archivado: true,
-      fechaCreacion: data.fechaCreacion.toDate(),
-      fechaEntrega: data.fechaEntrega?.toDate() || undefined
-    } as Pedido;
-  });
+  return {
+    pedidos: docs.map(d => parsePedidoDoc(d.id, d.data())),
+    hasMore,
+    lastDoc: docs[docs.length - 1] ?? null,
+  };
 };
 
 export const archiveAllDelivered = async (userId: string): Promise<number> => {
@@ -297,9 +304,14 @@ export const archiveAllDelivered = async (userId: string): Promise<number> => {
 
   if (toArchive.length === 0) return 0;
 
-  const batch = writeBatch(db);
-  toArchive.forEach((d) => batch.update(doc(db, COLLECTION_NAME, d.id), { archivado: true }));
-  await batch.commit();
+  const ARCHIVE_BATCH_SIZE = 499;
+  for (let i = 0; i < toArchive.length; i += ARCHIVE_BATCH_SIZE) {
+    const batch = writeBatch(db);
+    toArchive.slice(i, i + ARCHIVE_BATCH_SIZE).forEach((d) =>
+      batch.update(doc(db, COLLECTION_NAME, d.id), { archivado: true })
+    );
+    await batch.commit();
+  }
 
   return toArchive.length;
 };
@@ -438,20 +450,24 @@ export const updateAbono = async (
   nuevoMonto: number,
 ): Promise<Abono[]> => {
   const pedidoRef = doc(db, COLLECTION_NAME, pedidoId);
-  const snap = await getDoc(pedidoRef);
-  if (!snap.exists()) throw new Error('Pedido no encontrado');
+  let updatedRaw: Record<string, unknown>[] = [];
 
-  const raw = (snap.data().abonos ?? []) as Record<string, unknown>[];
-  const updated = raw.map(a => {
-    if (a.id !== abonoId) return a;
-    return {
-      ...a,
-      montoOriginal: a.montoOriginal ?? a.monto,
-      monto: nuevoMonto,
-      editadoEn: Timestamp.now(),
-    };
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(pedidoRef);
+    if (!snap.exists()) throw new Error('Pedido no encontrado');
+
+    const raw = (snap.data().abonos ?? []) as Record<string, unknown>[];
+    updatedRaw = raw.map(a => {
+      if (a.id !== abonoId) return a;
+      return {
+        ...a,
+        montoOriginal: a.montoOriginal ?? a.monto,
+        monto: nuevoMonto,
+        editadoEn: Timestamp.now(),
+      };
+    });
+    transaction.update(pedidoRef, { abonos: updatedRaw });
   });
 
-  await updateDoc(pedidoRef, { abonos: updated });
-  return parseAbonos(updated);
+  return parseAbonos(updatedRaw);
 };

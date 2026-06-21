@@ -58,7 +58,8 @@
     "logoutError": "Error al cerrar sesión. Intenta de nuevo.",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
-    "menu": "Menú"
+    "menu": "Menú",
+    "faq": "Info"
   },
   "auth": {
     "login": {
@@ -985,7 +986,8 @@
       "minLength": "El mensaje debe tener al menos {{min}} caracteres",
       "dailyLimit": "Alcanzaste el límite de {{limit}} mensajes por día. Intenta mañana.",
       "cooldown": "Debes esperar antes de enviar otro mensaje"
-    }
+    },
+    "faqSubtitle": "Encuentra respuestas a las preguntas más comunes sobre Skytla"
   },
   "plans": {
     "title": "Planes",
@@ -1005,17 +1007,41 @@
       "free": {
         "name": "Gratuito",
         "description": "Para empezar a gestionar tu negocio sin costo.",
-        "features": ["Hasta 360 pedidos al mes", "Hasta 120 clientes", "Hasta 80 productos", "Hasta 6 etiquetas", "Exportar CSV", "Exportar e importar datos", "Miembros del equipo"]
+        "features": [
+          "Hasta 360 pedidos al mes",
+          "Hasta 120 clientes",
+          "Hasta 80 productos",
+          "Hasta 6 etiquetas",
+          "Exportar CSV",
+          "Exportar e importar datos",
+          "Miembros del equipo"
+        ]
       },
       "pro": {
         "name": "Pro",
         "description": "Para negocios en crecimiento que necesitan más capacidad.",
-        "features": ["Hasta 720 pedidos al mes", "Hasta 240 clientes", "Hasta 160 productos", "Hasta 10 etiquetas", "Exportar CSV", "Exportar e importar datos", "Hasta 2 miembros en tu negocio"]
+        "features": [
+          "Hasta 720 pedidos al mes",
+          "Hasta 240 clientes",
+          "Hasta 160 productos",
+          "Hasta 10 etiquetas",
+          "Exportar CSV",
+          "Exportar e importar datos",
+          "Hasta 2 miembros en tu negocio"
+        ]
       },
       "business": {
         "name": "Business",
         "description": "Para equipos y negocios con operaciones de alto volumen.",
-        "features": ["Pedidos ilimitados", "Clientes ilimitados", "Hasta 640 productos", "Hasta 16 etiquetas", "Exportar CSV", "Exportar e importar datos", "Hasta 6 miembros en tu negocio"]
+        "features": [
+          "Pedidos ilimitados",
+          "Clientes ilimitados",
+          "Hasta 640 productos",
+          "Hasta 16 etiquetas",
+          "Exportar CSV",
+          "Exportar e importar datos",
+          "Hasta 6 miembros en tu negocio"
+        ]
       }
     }
   },
