@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PiStarFill, PiCaretLeftBold, PiCaretRightBold } from 'react-icons/pi';
+import { PiStarFill, PiCaretLeftBold, PiCaretRightBold, PiShoppingBagBold } from 'react-icons/pi';
 
 const PAGE_SIZE = 20;
 import type { Pedido } from '../../types/Pedido';
@@ -223,9 +223,9 @@ const PedidosTable = ({ pedidos, loading, error, searchTerm }: PedidosTableProps
                 })()}
               </td>
               <td>
-                <span
-                  className="pedidos-table__status-dot-indicator"
-                  style={{ backgroundColor: PEDIDO_STATUS_COLORS[pedido.estado] }}
+                <PiShoppingBagBold
+                  size={18}
+                  style={{ color: PEDIDO_STATUS_COLORS[pedido.estado], display: 'block', margin: '0 auto' }}
                   aria-hidden="true"
                 />
                 <span className="sr-only">{t(`orders.status.${pedido.estado}`)}</span>

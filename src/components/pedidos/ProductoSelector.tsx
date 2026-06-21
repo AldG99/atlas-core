@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { PiPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
+import { PiPlusBold, PiMinusBold, PiMagnifyingGlassBold, PiXBold } from 'react-icons/pi';
 import ProductoDetalleModal from '../productos/ProductoDetalleModal';
 import ProductoModal from '../productos/ProductoModal';
 import { useProductos } from '../../hooks/useProductos';
@@ -365,7 +365,7 @@ const ProductoSelector = ({
                             onUpdateCantidad(item.producto.id, item.cantidad - 1)
                           }
                         >
-                          -
+                          <PiMinusBold size={10} />
                         </button>
                         <span className="producto-selector__cantidad-value">
                           {item.cantidad}
@@ -378,7 +378,7 @@ const ProductoSelector = ({
                           }
                           disabled={item.producto.controlStock && item.cantidad >= (item.producto.stock ?? 0)}
                         >
-                          +
+                          <PiPlusBold size={10} />
                         </button>
                       </div>
                     </td>
@@ -445,7 +445,7 @@ const ProductoSelector = ({
                         onClick={() => onRemoveItem(item.producto.id)}
                         title={t('common.delete')}
                       >
-                        &times;
+                        <PiXBold size={12} />
                       </button>
                     </td>
                   </tr>

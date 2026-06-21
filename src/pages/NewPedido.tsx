@@ -5,6 +5,7 @@ import { usePedidos } from '../hooks/usePedidos';
 import { useToast } from '../hooks/useToast';
 import type { PedidoFormData, ProductoItem } from '../types/Pedido';
 import type { Cliente } from '../types/Cliente';
+import { PiShoppingBagBold } from 'react-icons/pi';
 import { ROUTES } from '../config/routes';
 import { PEDIDO_MESSAGES } from '../constants/messages';
 import MainLayout from '../layouts/MainLayout';
@@ -52,6 +53,7 @@ const NewPedido = () => {
         <div className="new-pedido__card">
           <div className="new-pedido__header">
             <h1>{t('dashboard.newOrder')}</h1>
+            <PiShoppingBagBold className="new-pedido__header-icon" size={28} />
           </div>
 
           {error && <div className="new-pedido__error">{error}</div>}

@@ -49,7 +49,7 @@ $bottom-nav-height: 56px;
 
     @include lg {
       left: $sidebar-width; // 220px en desktop
-      padding: 0 $spacing-lg;
+      padding: 0 $spacing-md;
     }
   }
 
@@ -72,7 +72,7 @@ $bottom-nav-height: 56px;
     }
 
     @include lg {
-      padding: $spacing-md $spacing-lg;
+      padding: $spacing-md;
     }
   }
 }
