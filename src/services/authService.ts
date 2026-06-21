@@ -16,6 +16,7 @@ import { auth, db, storage } from './firebase';
 import type { User, LoginCredentials, RegisterCredentials, Plantillas } from '../types/User';
 import { compressImage } from '../utils/imageUtils';
 import { waitForModeration } from '../utils/imageModeration';
+import { makeMiembroEmail } from '../constants/miembro';
 
 export const registerUser = async (credentials: RegisterCredentials): Promise<User> => {
   const { email, password, nombreNegocio, nombre, apellido, fechaNacimiento, telefono, telefonoCodigoPais } = credentials;
@@ -134,7 +135,7 @@ export const deleteAllUserDataWithAuth = async (password: string, uid: string): 
 };
 
 export const deleteAllUserData = async (uid: string): Promise<void> => {
-  const cols = ['clientes', 'productos', 'pedidos', 'etiquetas'];
+  const cols = ['clientes', 'productos', 'pedidos', 'etiquetas', 'pedidoCounters'];
   for (const col of cols) {
     const snap = await getDocs(query(collection(db, col), where('userId', '==', uid)));
     for (let i = 0; i < snap.docs.length; i += 400) {
@@ -159,7 +160,7 @@ export const deleteAccount = async (password: string, uid: string): Promise<void
 
 export const loginMiembro = async (username: string, password: string): Promise<User> => {
   // Email sintético construido desde el username — no requiere consulta previa
-  const authEmail = `${username}@skytla.miembro`;
+  const authEmail = makeMiembroEmail(username);
 
   let userCredential;
   try {

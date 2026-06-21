@@ -23,6 +23,7 @@ const Reportes = () => {
     period,
     loading,
     error,
+    hasMore,
     setPeriod
   } = useReportes();
   const { showToast } = useToast();
@@ -61,6 +62,9 @@ const Reportes = () => {
             period={period}
             onPeriodChange={setPeriod}
           />
+          {hasMore && (
+            <p className="reportes__limit-warning">{t('reports.limitWarning')}</p>
+          )}
         </div>
 
         <div className="reportes__content">

@@ -54,7 +54,7 @@ const generateFolio = async (userId: string): Promise<string> => {
     const counterDoc = await transaction.get(counterRef);
     const newCount = counterDoc.exists() ? (counterDoc.data().count as number) + 1 : 1;
     if (newCount > 9999) throw new Error('Límite de pedidos del día alcanzado (máx. 9,999)');
-    transaction.set(counterRef, { count: newCount });
+    transaction.set(counterRef, { count: newCount, userId });
     return newCount;
   });
 
@@ -381,21 +381,25 @@ export const addAbono = async (
   return { abono, nuevoEstado };
 };
 
+const RANGE_LIMIT = 2000;
+
 export const getPedidosByDateRange = async (
   userId: string,
   start: Date,
   end: Date,
-): Promise<Pedido[]> => {
+): Promise<{ pedidos: Pedido[]; hasMore: boolean }> => {
   const q = query(
     collection(db, COLLECTION_NAME),
     where('userId', '==', userId),
     where('fechaCreacion', '>=', Timestamp.fromDate(start)),
     where('fechaCreacion', '<=', Timestamp.fromDate(end)),
     orderBy('fechaCreacion', 'asc'),
-    limit(2000)
+    limit(RANGE_LIMIT + 1)
   );
   const snap = await getDocs(q);
-  return snap.docs.map(d => parsePedidoDoc(d.id, d.data()));
+  const hasMore = snap.docs.length > RANGE_LIMIT;
+  const docs = hasMore ? snap.docs.slice(0, RANGE_LIMIT) : snap.docs;
+  return { pedidos: docs.map(d => parsePedidoDoc(d.id, d.data())), hasMore };
 };
 
 export const parsePedidoDoc = (docId: string, data: DocumentData): Pedido => ({

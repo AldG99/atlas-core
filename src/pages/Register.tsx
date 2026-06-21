@@ -385,9 +385,9 @@ const Register = () => {
         {step === 2 && (
           <p className="register-form__legal">
             {t('auth.register.termsText')}{' '}
-            <a href="/terminos" target="_blank" rel="noopener noreferrer">{t('auth.register.terms')}</a>
+            <a href={ROUTES.TERMINOS} target="_blank" rel="noopener noreferrer">{t('auth.register.terms')}</a>
             {' '}{t('common.of').toLowerCase()}{' '}
-            <a href="/privacidad" target="_blank" rel="noopener noreferrer">{t('auth.register.privacy')}</a>.
+            <a href={ROUTES.PRIVACIDAD} target="_blank" rel="noopener noreferrer">{t('auth.register.privacy')}</a>.
           </p>
         )}
       </div>

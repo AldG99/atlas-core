@@ -675,6 +675,7 @@
     "title": "Relatórios",
     "export": "Exportar CSV",
     "noDataExport": "Sem pedidos para exportar",
+    "limitWarning": "Há mais de 2.000 pedidos neste período. Apenas os primeiros 2.000 são exibidos.",
     "period": {
       "today": "Hoje",
       "week": "Esta semana",

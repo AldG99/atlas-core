@@ -23,6 +23,7 @@ export const useReportes = () => {
   const [pedidosAnterior, setPedidosAnterior] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
 
   const dateRange = useMemo(() => getDateRange(period), [period]);
 
@@ -41,8 +42,9 @@ export const useReportes = () => {
     ])
       .then(([current, yearAgo]) => {
         if (cancelled) return;
-        setPedidosPeriodo(current.filter(p => !p.archivado));
-        setPedidosAnterior(yearAgo.filter(p => !p.archivado));
+        setPedidosPeriodo(current.pedidos.filter(p => !p.archivado));
+        setPedidosAnterior(yearAgo.pedidos.filter(p => !p.archivado));
+        setHasMore(current.hasMore);
       })
       .catch(err => {
         if (cancelled) return;
@@ -72,6 +74,7 @@ export const useReportes = () => {
     dateRange,
     loading,
     error,
+    hasMore,
     setPeriod,
   };
 };

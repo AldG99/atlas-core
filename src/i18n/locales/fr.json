@@ -675,6 +675,7 @@
     "title": "Rapports",
     "export": "Exporter CSV",
     "noDataExport": "Aucune commande à exporter",
+    "limitWarning": "Il y a plus de 2 000 commandes sur cette période. Seules les 2 000 premières sont affichées.",
     "period": {
       "today": "Aujourd'hui",
       "week": "Cette semaine",

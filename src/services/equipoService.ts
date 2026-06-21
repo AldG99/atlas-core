@@ -7,6 +7,9 @@ import { db, auth } from './firebase';
 
 const fns = getFunctions(auth.app, 'us-central1');
 import type { User } from '../types/User';
+import { makeMiembroEmail, generarUsername } from '../constants/miembro';
+
+export { generarUsername };
 
 export interface MiembroFormData {
   nombre: string;
@@ -17,14 +20,6 @@ export interface MiembroFormData {
   fechaNacimiento: string;
 }
 
-// Genera username con 10 caracteres aleatorios criptográficamente seguros.
-// No contiene datos personales ni patrones predecibles.
-const generarUsername = (): string => {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const bytes = crypto.getRandomValues(new Uint8Array(10));
-  return Array.from(bytes, b => alphabet[b % alphabet.length]).join('');
-};
-
 // Create employee account using Firebase REST API (doesn't sign out admin)
 export const createMiembro = async (
   data: MiembroFormData,
@@ -33,7 +28,7 @@ export const createMiembro = async (
 ): Promise<string> => {
   const username = generarUsername();
 
-  const authEmail = `${username}@skytla.miembro`;
+  const authEmail = makeMiembroEmail(username);
   const apiKey = import.meta.env.VITE_FIREBASE_API_KEY as string;
 
   const response = await fetch(

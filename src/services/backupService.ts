@@ -1,4 +1,4 @@
-import { collection, getDocs, addDoc, query, where, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, addDoc, query, where, Timestamp, writeBatch, type DocumentReference } from 'firebase/firestore';
 import { db, auth } from './firebase';
 
 const BACKUP_VERSION = 1;
@@ -153,6 +153,16 @@ export const importBackup = async (data: BackupData, userId: string): Promise<Im
     throw new Error('No autorizado');
   }
 
+  const insertedRefs: DocumentReference[] = [];
+
+  const rollback = async () => {
+    for (let i = 0; i < insertedRefs.length; i += 400) {
+      const batch = writeBatch(db);
+      insertedRefs.slice(i, i + 400).forEach(r => batch.delete(r));
+      await batch.commit().catch(() => { /* best effort */ });
+    }
+  };
+
   // Pre-cargar datos existentes para detectar duplicados
   const [existingClientesSnap, existingProductosSnap, existingPedidosSnap, existingEtiquetasSnap] = await Promise.all([
     getDocs(query(collection(db, 'clientes'), where('userId', '==', userId))),
@@ -182,117 +192,126 @@ export const importBackup = async (data: BackupData, userId: string): Promise<Im
 
   let omitidos = 0;
 
-  // 1. Etiquetas
-  const etiquetaIdMap: Record<string, string> = {};
-  let etiquetasImported = 0;
-  for (const etiqueta of data.etiquetas || []) {
-    const { id: oldId, userId: _uid, ...rest } = etiqueta;
-    const nombre = rest.nombre as string;
-    if (existingEtiquetaMap[nombre]) {
-      // Reusar el ID existente para mantener referencias correctas
-      if (typeof oldId === 'string') etiquetaIdMap[oldId] = existingEtiquetaMap[nombre];
-      omitidos++;
-      continue;
-    }
-    try {
-      const ref = await addDoc(collection(db, 'etiquetas'), cleanUndefined({ ...rest, userId }));
-      if (typeof oldId === 'string') etiquetaIdMap[oldId] = ref.id;
-      etiquetasImported++;
-    } catch { omitidos++; }
-  }
-
-  // 2. Productos
-  const productoIdMap: Record<string, string> = {};
-  let productosImported = 0;
-  for (const producto of data.productos || []) {
-    const { id: oldId, userId: _uid, fechaCreacion: _fc, fechaFinDescuento, historialDescuentos, etiquetas, imagen: _img, ...rest } = producto;
-    const clave = rest.clave as string;
-    if (existingClaves.has(clave)) {
-      if (typeof oldId === 'string') productoIdMap[oldId] = existingProductoMap[clave];
-      omitidos++;
-      continue;
-    }
-    try {
-      const productoData: Record<string, unknown> = {
-        ...rest,
-        userId,
-        fechaCreacion: Timestamp.now(),
-        etiquetas: Array.isArray(etiquetas)
-          ? etiquetas.map(eid => etiquetaIdMap[eid as string] ?? eid)
-          : [],
-      };
-      if (fechaFinDescuento) {
-        productoData.fechaFinDescuento = Timestamp.fromDate(parseDate(fechaFinDescuento));
+  try {
+    // 1. Etiquetas
+    const etiquetaIdMap: Record<string, string> = {};
+    let etiquetasImported = 0;
+    for (const etiqueta of data.etiquetas || []) {
+      const { id: oldId, userId: _uid, ...rest } = etiqueta;
+      const nombre = rest.nombre as string;
+      if (existingEtiquetaMap[nombre]) {
+        // Reusar el ID existente para mantener referencias correctas
+        if (typeof oldId === 'string') etiquetaIdMap[oldId] = existingEtiquetaMap[nombre];
+        omitidos++;
+        continue;
       }
-      if (Array.isArray(historialDescuentos) && historialDescuentos.length > 0) {
-        productoData.historialDescuentos = historialDescuentos.map((h: Record<string, unknown>) => ({
-          ...h,
-          fechaInicio: Timestamp.fromDate(parseDate(h.fechaInicio)),
-          fechaFin: Timestamp.fromDate(parseDate(h.fechaFin)),
-          fechaCierre: Timestamp.fromDate(parseDate(h.fechaCierre)),
-        }));
-      }
-      const ref = await addDoc(collection(db, 'productos'), cleanUndefined(productoData));
-      if (typeof oldId === 'string') productoIdMap[oldId] = ref.id;
-      productosImported++;
-    } catch { omitidos++; }
-  }
-
-  // 3. Clientes — duplicado detectado por teléfono
-  let clientesImported = 0;
-  for (const cliente of data.clientes || []) {
-    const { id: _id, userId: _uid, fechaCreacion: _fc, fotoPerfil: _foto, ...rest } = cliente;
-    const telefono = rest.telefono as string;
-    if (existingTelefonos.has(telefono)) {
-      omitidos++;
-      continue;
+      try {
+        const ref = await addDoc(collection(db, 'etiquetas'), cleanUndefined({ ...rest, userId }));
+        insertedRefs.push(ref);
+        if (typeof oldId === 'string') etiquetaIdMap[oldId] = ref.id;
+        etiquetasImported++;
+      } catch { omitidos++; }
     }
-    try {
-      await addDoc(collection(db, 'clientes'), cleanUndefined({ ...rest, userId, fechaCreacion: Timestamp.now() }));
-      clientesImported++;
-    } catch { omitidos++; }
-  }
 
-  // 4. Pedidos — duplicado detectado por folio
-  let pedidosImported = 0;
-  for (const pedido of data.pedidos || []) {
-    const { id: _id, userId: _uid, fechaCreacion, fechaEntrega, clienteFoto: _foto, abonos, productos, folio, ...rest } = pedido;
-    if (folio && existingFolios.has(folio as string)) {
-      omitidos++;
-      continue;
-    }
-    try {
-      const pedidoData: Record<string, unknown> = {
-        ...rest,
-        folio,
-        userId,
-        fechaCreacion: Timestamp.fromDate(parseDate(fechaCreacion)),
-        productos: Array.isArray(productos)
-          ? productos.map((p: Record<string, unknown>) => ({
-              ...p,
-              productoId: p.productoId ? (productoIdMap[p.productoId as string] ?? p.productoId) : undefined,
-            }))
-          : [],
-        abonos: Array.isArray(abonos)
-          ? abonos.map((a: Record<string, unknown>) => ({
-              ...a,
-              fecha: Timestamp.fromDate(parseDate(a.fecha)),
-            }))
-          : [],
-      };
-      if (fechaEntrega) {
-        pedidoData.fechaEntrega = Timestamp.fromDate(parseDate(fechaEntrega));
+    // 2. Productos
+    const productoIdMap: Record<string, string> = {};
+    let productosImported = 0;
+    for (const producto of data.productos || []) {
+      const { id: oldId, userId: _uid, fechaCreacion: _fc, fechaFinDescuento, historialDescuentos, etiquetas, imagen: _img, ...rest } = producto;
+      const clave = rest.clave as string;
+      if (existingClaves.has(clave)) {
+        if (typeof oldId === 'string') productoIdMap[oldId] = existingProductoMap[clave];
+        omitidos++;
+        continue;
       }
-      await addDoc(collection(db, 'pedidos'), cleanUndefined(pedidoData));
-      pedidosImported++;
-    } catch { omitidos++; }
-  }
+      try {
+        const productoData: Record<string, unknown> = {
+          ...rest,
+          userId,
+          fechaCreacion: Timestamp.now(),
+          etiquetas: Array.isArray(etiquetas)
+            ? etiquetas.map(eid => etiquetaIdMap[eid as string] ?? eid)
+            : [],
+        };
+        if (fechaFinDescuento) {
+          productoData.fechaFinDescuento = Timestamp.fromDate(parseDate(fechaFinDescuento));
+        }
+        if (Array.isArray(historialDescuentos) && historialDescuentos.length > 0) {
+          productoData.historialDescuentos = historialDescuentos.map((h: Record<string, unknown>) => ({
+            ...h,
+            fechaInicio: Timestamp.fromDate(parseDate(h.fechaInicio)),
+            fechaFin: Timestamp.fromDate(parseDate(h.fechaFin)),
+            fechaCierre: Timestamp.fromDate(parseDate(h.fechaCierre)),
+          }));
+        }
+        const ref = await addDoc(collection(db, 'productos'), cleanUndefined(productoData));
+        insertedRefs.push(ref);
+        if (typeof oldId === 'string') productoIdMap[oldId] = ref.id;
+        productosImported++;
+      } catch { omitidos++; }
+    }
 
-  return {
-    clientes: clientesImported,
-    productos: productosImported,
-    pedidos: pedidosImported,
-    etiquetas: etiquetasImported,
-    omitidos,
-  };
+    // 3. Clientes — duplicado detectado por teléfono
+    let clientesImported = 0;
+    for (const cliente of data.clientes || []) {
+      const { id: _id, userId: _uid, fechaCreacion: _fc, fotoPerfil: _foto, ...rest } = cliente;
+      const telefono = rest.telefono as string;
+      if (existingTelefonos.has(telefono)) {
+        omitidos++;
+        continue;
+      }
+      try {
+        const ref = await addDoc(collection(db, 'clientes'), cleanUndefined({ ...rest, userId, fechaCreacion: Timestamp.now() }));
+        insertedRefs.push(ref);
+        clientesImported++;
+      } catch { omitidos++; }
+    }
+
+    // 4. Pedidos — duplicado detectado por folio
+    let pedidosImported = 0;
+    for (const pedido of data.pedidos || []) {
+      const { id: _id, userId: _uid, fechaCreacion, fechaEntrega, clienteFoto: _foto, abonos, productos, folio, ...rest } = pedido;
+      if (folio && existingFolios.has(folio as string)) {
+        omitidos++;
+        continue;
+      }
+      try {
+        const pedidoData: Record<string, unknown> = {
+          ...rest,
+          folio,
+          userId,
+          fechaCreacion: Timestamp.fromDate(parseDate(fechaCreacion)),
+          productos: Array.isArray(productos)
+            ? productos.map((p: Record<string, unknown>) => ({
+                ...p,
+                productoId: p.productoId ? (productoIdMap[p.productoId as string] ?? p.productoId) : undefined,
+              }))
+            : [],
+          abonos: Array.isArray(abonos)
+            ? abonos.map((a: Record<string, unknown>) => ({
+                ...a,
+                fecha: Timestamp.fromDate(parseDate(a.fecha)),
+              }))
+            : [],
+        };
+        if (fechaEntrega) {
+          pedidoData.fechaEntrega = Timestamp.fromDate(parseDate(fechaEntrega));
+        }
+        const ref = await addDoc(collection(db, 'pedidos'), cleanUndefined(pedidoData));
+        insertedRefs.push(ref);
+        pedidosImported++;
+      } catch { omitidos++; }
+    }
+
+    return {
+      clientes: clientesImported,
+      productos: productosImported,
+      pedidos: pedidosImported,
+      etiquetas: etiquetasImported,
+      omitidos,
+    };
+  } catch (err) {
+    await rollback();
+    throw err;
+  }
 };
