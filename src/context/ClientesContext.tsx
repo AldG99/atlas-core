@@ -1,0 +1,130 @@
+import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import type { Cliente, ClienteFormData } from '../types/Cliente';
+import {
+  getClientes,
+  createCliente,
+  updateCliente,
+  deleteCliente,
+  toggleClienteFavorito,
+} from '../services/clienteService';
+import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
+
+interface ClientesContextType {
+  clientes: Cliente[];
+  loading: boolean;
+  error: string | null;
+  addCliente: (data: ClienteFormData) => Promise<Cliente>;
+  editCliente: (id: string, data: Partial<ClienteFormData>) => Promise<void>;
+  removeCliente: (id: string) => Promise<void>;
+  toggleFavorito: (id: string) => Promise<void>;
+  fetchClientes: () => Promise<void>;
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const ClientesContext = createContext<ClientesContextType | null>(null);
+
+export const ClientesProvider = ({ children }: { children: ReactNode }) => {
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user, negocioUid } = useAuth();
+
+  const fetchClientes = useCallback(async () => {
+    if (!user || !negocioUid) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getClientes(negocioUid);
+      setClientes(data);
+    } catch {
+      setError('Error al cargar los clientes');
+    } finally {
+      setLoading(false);
+    }
+  }, [user, negocioUid]);
+
+  useEffect(() => {
+    if (!user || !negocioUid) {
+      setClientes([]);
+      setLoading(false);
+      return;
+    }
+    fetchClientes();
+  }, [user, negocioUid, fetchClientes]);
+
+  const addCliente = async (data: ClienteFormData): Promise<Cliente> => {
+    if (!user || !negocioUid) throw new Error('Usuario no autenticado');
+    const limites = getPlanLimits(user.plan);
+    checkPlanLimit(clientes.length, limites.clientes, 'clientes');
+    const id = await createCliente(data, negocioUid);
+    const newCliente: Cliente = {
+      id,
+      fotoPerfil: data.fotoPerfil || '',
+      nombre: data.nombre,
+      apellido: data.apellido,
+      telefono: data.telefono,
+      telefonoCodigoPais: data.telefonoCodigoPais,
+      correo: data.correo || '',
+      calle: data.calle,
+      numeroExterior: data.numeroExterior,
+      numeroInterior: data.numeroInterior || '',
+      colonia: data.colonia,
+      ciudad: data.ciudad,
+      estado: data.estado || '',
+      codigoPostal: data.codigoPostal,
+      pais: data.pais || '',
+      referencia: data.referencia || '',
+      userId: negocioUid,
+      fechaCreacion: new Date(),
+    };
+    setClientes((prev) => [...prev, newCliente].sort((a, b) => a.nombre.localeCompare(b.nombre)));
+    return newCliente;
+  };
+
+  const editCliente = async (id: string, data: Partial<ClienteFormData>) => {
+    const snapshot = clientes;
+    setClientes((prev) => prev.map((c) => (c.id === id ? { ...c, ...data } : c)));
+    try {
+      await updateCliente(id, data);
+    } catch (err) {
+      setClientes(snapshot);
+      throw err;
+    }
+  };
+
+  const removeCliente = async (id: string) => {
+    const snapshot = clientes;
+    setClientes((prev) => prev.filter((c) => c.id !== id));
+    try {
+      await deleteCliente(id);
+    } catch (err) {
+      setClientes(snapshot);
+      throw err;
+    }
+  };
+
+  const toggleFavorito = async (id: string) => {
+    const cliente = clientes.find((c) => c.id === id);
+    if (!cliente) return;
+    const nuevoValor = !cliente.favorito;
+    setClientes((prev) => prev.map((c) => (c.id === id ? { ...c, favorito: nuevoValor } : c)));
+    try {
+      await toggleClienteFavorito(id, nuevoValor);
+    } catch {
+      setClientes((prev) => prev.map((c) => (c.id === id ? { ...c, favorito: !nuevoValor } : c)));
+    }
+  };
+
+  return (
+    <ClientesContext.Provider value={{
+      clientes, loading, error,
+      addCliente, editCliente, removeCliente, toggleFavorito, fetchClientes,
+    }}>
+      {children}
+    </ClientesContext.Provider>
+  );
+};

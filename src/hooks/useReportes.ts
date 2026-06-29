@@ -16,6 +16,18 @@ import {
   calculateChartData,
 } from '../utils/reportCalculations';
 
+interface CacheEntry {
+  current: { pedidos: Pedido[]; hasMore: boolean };
+  yearAgo: { pedidos: Pedido[]; hasMore: boolean };
+  cachedAt: number;
+}
+
+const reportesCache = new Map<string, CacheEntry>();
+const CACHE_TTL = 5 * 60 * 1000;
+
+const getCacheKey = (negocioUid: string, start: Date, end: Date) =>
+  `${negocioUid}:${start.getTime()}:${end.getTime()}`;
+
 export const useReportes = () => {
   const { negocioUid } = useAuth();
   const { productos } = useProductos();
@@ -32,6 +44,16 @@ export const useReportes = () => {
   useEffect(() => {
     if (!negocioUid) return;
 
+    const cacheKey = getCacheKey(negocioUid, dateRange.start, dateRange.end);
+    const cached = reportesCache.get(cacheKey);
+
+    if (cached && Date.now() - cached.cachedAt < CACHE_TTL) {
+      setPedidosPeriodo(cached.current.pedidos.filter(p => !p.archivado));
+      setPedidosAnterior(cached.yearAgo.pedidos.filter(p => !p.archivado));
+      setHasMore(cached.current.hasMore);
+      return;
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -44,6 +66,7 @@ export const useReportes = () => {
     ])
       .then(([current, yearAgo]) => {
         if (cancelled) return;
+        reportesCache.set(cacheKey, { current, yearAgo, cachedAt: Date.now() });
         setPedidosPeriodo(current.pedidos.filter(p => !p.archivado));
         setPedidosAnterior(yearAgo.pedidos.filter(p => !p.archivado));
         setHasMore(current.hasMore);

@@ -1,7 +1,11 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { PedidosProvider } from './context/PedidosContext';
+import { ClientesProvider } from './context/ClientesContext';
+import { ProductosProvider } from './context/ProductosContext';
+import { EtiquetasProvider } from './context/EtiquetasContext';
 import { ROUTES } from './config/routes';
 import ProtectedRoute from './components/ui/ProtectedRoute';
 import ErrorBoundary from './components/ui/ErrorBoundary';
@@ -52,6 +56,10 @@ function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <AuthProvider>
+          <PedidosProvider>
+          <ClientesProvider>
+          <ProductosProvider>
+          <EtiquetasProvider>
           <ToastProvider>
             <Toast />
             <Suspense fallback={<PageLoader />}>
@@ -73,6 +81,10 @@ function App() {
               </Routes>
             </Suspense>
           </ToastProvider>
+          </EtiquetasProvider>
+          </ProductosProvider>
+          </ClientesProvider>
+          </PedidosProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
