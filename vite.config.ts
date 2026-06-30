@@ -12,6 +12,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'script',
       includeAssets: ['favicon.svg', 'logo-skytla.svg'],
       manifest: {
         name: 'Skytla — Gestor de Pedidos',
