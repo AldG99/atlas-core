@@ -1,40 +1,40 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
-import { savePlantillas } from '../services/templateService';
-import { type Plantillas, PLANTILLAS_DEFAULT } from '../types/User';
+import { saveTemplates } from '../services/templateService';
+import { type Templates, DEFAULT_TEMPLATES } from '../types/User';
 
 export const useTemplates = () => {
   const { user, updateProfile } = useAuth();
   const { showToast } = useToast();
 
-  const current: Plantillas = {
-    confirmacion: user?.plantillas?.confirmacion ?? PLANTILLAS_DEFAULT.confirmacion,
-    preparacion:  user?.plantillas?.preparacion  ?? PLANTILLAS_DEFAULT.preparacion,
-    entrega:      user?.plantillas?.entrega      ?? PLANTILLAS_DEFAULT.entrega,
+  const current: Templates = {
+    confirmation: user?.templates?.confirmation ?? DEFAULT_TEMPLATES.confirmation,
+    preparing:    user?.templates?.preparing    ?? DEFAULT_TEMPLATES.preparing,
+    delivery:     user?.templates?.delivery     ?? DEFAULT_TEMPLATES.delivery,
   };
 
-  const [draft, setDraft] = useState<Plantillas>(current);
+  const [draft, setDraft] = useState<Templates>(current);
   const [saving, setSaving] = useState(false);
 
   const reset = useCallback(() => {
     setDraft({
-      confirmacion: user?.plantillas?.confirmacion ?? PLANTILLAS_DEFAULT.confirmacion,
-      preparacion:  user?.plantillas?.preparacion  ?? PLANTILLAS_DEFAULT.preparacion,
-      entrega:      user?.plantillas?.entrega      ?? PLANTILLAS_DEFAULT.entrega,
+      confirmation: user?.templates?.confirmation ?? DEFAULT_TEMPLATES.confirmation,
+      preparing:    user?.templates?.preparing    ?? DEFAULT_TEMPLATES.preparing,
+      delivery:     user?.templates?.delivery     ?? DEFAULT_TEMPLATES.delivery,
     });
-  }, [user?.plantillas?.confirmacion, user?.plantillas?.preparacion, user?.plantillas?.entrega]);
+  }, [user?.templates?.confirmation, user?.templates?.preparing, user?.templates?.delivery]);
 
   const resetToDefaults = useCallback(() => {
-    setDraft(PLANTILLAS_DEFAULT);
+    setDraft(DEFAULT_TEMPLATES);
   }, []);
 
   const save = useCallback(async () => {
     if (!user) return;
     setSaving(true);
     try {
-      await savePlantillas(user.uid, draft);
-      await updateProfile({ plantillas: draft });
+      await saveTemplates(user.uid, draft);
+      await updateProfile({ templates: draft });
       showToast('Plantillas guardadas', 'success');
     } catch {
       showToast('Error al guardar las plantillas', 'error');
@@ -44,9 +44,9 @@ export const useTemplates = () => {
   }, [user, draft, updateProfile, showToast]);
 
   const isDirty =
-    draft.confirmacion !== current.confirmacion ||
-    draft.preparacion  !== current.preparacion  ||
-    draft.entrega      !== current.entrega;
+    draft.confirmation !== current.confirmation ||
+    draft.preparing    !== current.preparing    ||
+    draft.delivery      !== current.delivery;
 
   return { draft, setDraft, saving, isDirty, save, reset, resetToDefaults };
 };

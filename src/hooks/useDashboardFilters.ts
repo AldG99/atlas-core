@@ -1,27 +1,30 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Pedido, PedidoStatus } from '../types/Pedido';
+import type { Order, OrderStatus } from '../types/Order';
 
+// Nota: estos valores de sort/filtro son claves internas de UI (usadas también
+// como llaves de i18next en dashboard.sortOptions.*), no reflejan OrderStatus —
+// se mantienen en español intencionalmente.
 export type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc' | 'nombre_desc';
 export type DateFilter = 'todos' | 'hoy' | 'semana' | 'mes';
-export type StatusFilter = PedidoStatus | 'todos' | 'abono_pendiente';
+export type StatusFilter = OrderStatus | 'todos' | 'abono_pendiente';
 
-const DIAS_ABONO_SIN_MOVIMIENTO = 3;
+const DAYS_PAYMENT_NO_ACTIVITY = 3;
 
-const diffDiasAbono = (fecha: Date): number =>
-  Math.floor((Date.now() - new Date(fecha).getTime()) / (1000 * 60 * 60 * 24));
+const daysSincePayment = (date: Date): number =>
+  Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24));
 
 interface UseDashboardFiltersOptions {
-  pedidos: Pedido[];
-  allPedidos: Pedido[];
-  fetchPedidos: () => Promise<void>;
-  fetchByStatus: (estado: PedidoStatus) => Promise<void>;
+  orders: Order[];
+  allOrders: Order[];
+  fetchOrders: () => Promise<void>;
+  fetchByStatus: (status: OrderStatus) => Promise<void>;
 }
 
 export const useDashboardFilters = ({
-  pedidos,
-  allPedidos,
-  fetchPedidos,
+  orders,
+  allOrders,
+  fetchOrders,
   fetchByStatus,
 }: UseDashboardFiltersOptions) => {
   const { t } = useTranslation();
@@ -47,45 +50,45 @@ export const useDashboardFilters = ({
   };
 
   const statusCounts = useMemo(() => ({
-    pendiente: allPedidos.filter((p) => p.estado === 'pendiente').length,
-    en_preparacion: allPedidos.filter((p) => p.estado === 'en_preparacion').length,
-    entregado: allPedidos.filter((p) => p.estado === 'entregado').length,
-  }), [allPedidos]);
+    pending: allOrders.filter((o) => o.status === 'pending').length,
+    preparing: allOrders.filter((o) => o.status === 'preparing').length,
+    delivered: allOrders.filter((o) => o.status === 'delivered').length,
+  }), [allOrders]);
 
   const todaySummary = useMemo(() => {
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const pedidosHoy = allPedidos.filter((p) => new Date(p.fechaCreacion) >= startOfDay);
-    const totalVentas = pedidosHoy.reduce((sum, p) => sum + p.total, 0);
-    const pedidosEntregados = pedidosHoy.filter((p) => p.estado === 'entregado');
+    const ordersToday = allOrders.filter((o) => new Date(o.createdAt) >= startOfDay);
+    const totalSales = ordersToday.reduce((sum, o) => sum + o.total, 0);
+    const deliveredOrders = ordersToday.filter((o) => o.status === 'delivered');
     return {
-      cantidadPedidos: pedidosHoy.length,
-      totalVentas,
-      pedidosEntregados: pedidosEntregados.length,
-      ventasEntregadas: pedidosEntregados.reduce((sum, p) => sum + p.total, 0),
+      orderCount: ordersToday.length,
+      totalSales,
+      deliveredCount: deliveredOrders.length,
+      deliveredSales: deliveredOrders.reduce((sum, o) => sum + o.total, 0),
     };
-  }, [allPedidos]);
+  }, [allOrders]);
 
-  const filteredAndSortedPedidos = useMemo(() => {
-    let result = filterStatus === 'abono_pendiente' ? [...allPedidos] : [...pedidos];
+  const filteredAndSortedOrders = useMemo(() => {
+    let result = filterStatus === 'abono_pendiente' ? [...allOrders] : [...orders];
 
     // Filtro por fecha
     if (dateFilter !== 'todos') {
       const now = new Date();
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      result = result.filter((pedido) => {
-        const pedidoDate = new Date(pedido.fechaCreacion);
+      result = result.filter((order) => {
+        const orderDate = new Date(order.createdAt);
         switch (dateFilter) {
           case 'hoy':
-            return pedidoDate >= startOfDay;
+            return orderDate >= startOfDay;
           case 'semana': {
             const startOfWeek = new Date(startOfDay);
             startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-            return pedidoDate >= startOfWeek;
+            return orderDate >= startOfWeek;
           }
           case 'mes': {
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            return pedidoDate >= startOfMonth;
+            return orderDate >= startOfMonth;
           }
           default:
             return true;
@@ -95,15 +98,15 @@ export const useDashboardFilters = ({
 
     // Filtro por abono pendiente
     if (filterStatus === 'abono_pendiente') {
-      result = result.filter((p) => {
-        const abonos = p.abonos || [];
-        if (abonos.length === 0) return false;
-        const totalPagado = abonos.reduce((sum, a) => sum + a.monto, 0);
-        if (totalPagado <= 0 || totalPagado >= p.total) return false;
-        const ultimoAbono = abonos.reduce((max, a) =>
-          new Date(a.fecha) > new Date(max.fecha) ? a : max
+      result = result.filter((o) => {
+        const payments = o.payments || [];
+        if (payments.length === 0) return false;
+        const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+        if (totalPaid <= 0 || totalPaid >= o.total) return false;
+        const lastPayment = payments.reduce((max, p) =>
+          new Date(p.date) > new Date(max.date) ? p : max
         );
-        return diffDiasAbono(ultimoAbono.fecha) >= DIAS_ABONO_SIN_MOVIMIENTO;
+        return daysSincePayment(lastPayment.date) >= DAYS_PAYMENT_NO_ACTIVITY;
       });
     }
 
@@ -111,9 +114,9 @@ export const useDashboardFilters = ({
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
-        (p) =>
-          p.clienteNombre.toLowerCase().includes(term) ||
-          p.clienteTelefono.toLowerCase().includes(term)
+        (o) =>
+          o.clientName.toLowerCase().includes(term) ||
+          o.clientPhone.toLowerCase().includes(term)
       );
     }
 
@@ -121,31 +124,31 @@ export const useDashboardFilters = ({
     result.sort((a, b) => {
       switch (sortBy) {
         case 'fecha_desc':
-          return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         case 'fecha_asc':
-          return new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case 'total_desc':
           return b.total - a.total;
         case 'total_asc':
           return a.total - b.total;
         case 'nombre_asc':
-          return a.clienteNombre.localeCompare(b.clienteNombre);
+          return a.clientName.localeCompare(b.clientName);
         case 'nombre_desc':
-          return b.clienteNombre.localeCompare(a.clienteNombre);
+          return b.clientName.localeCompare(a.clientName);
         default:
           return 0;
       }
     });
 
     return result;
-  }, [pedidos, allPedidos, searchTerm, sortBy, dateFilter, filterStatus]);
+  }, [orders, allOrders, searchTerm, sortBy, dateFilter, filterStatus]);
 
   const handleFilterChange = async (status: StatusFilter) => {
     setFilterStatus(status);
     if (status === 'todos') {
-      await fetchPedidos();
+      await fetchOrders();
     } else if (status !== 'abono_pendiente') {
-      await fetchByStatus(status as PedidoStatus);
+      await fetchByStatus(status as OrderStatus);
     }
   };
 
@@ -160,7 +163,7 @@ export const useDashboardFilters = ({
     setDateFilter,
     statusCounts,
     todaySummary,
-    filteredAndSortedPedidos,
+    filteredAndSortedOrders,
     handleFilterChange,
     SORT_OPTIONS,
     DATE_FILTERS,

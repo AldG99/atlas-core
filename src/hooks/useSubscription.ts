@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useToast } from './useToast';
 import { redirectToCheckout, redirectToPortal } from '../services/stripeService';
 
-export const useSubscripcion = () => {
+export const useSubscription = () => {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);

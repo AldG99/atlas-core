@@ -8,11 +8,11 @@ const LEGACY_MAP: Record<string, string> = {
 
 export const useCurrency = () => {
   const { user } = useAuth();
-  const raw = user?.moneda ?? '$';
-  const simbolo = LEGACY_MAP[raw] ?? raw;
+  const raw = user?.currency ?? '$';
+  const symbol = LEGACY_MAP[raw] ?? raw;
 
   return {
-    simbolo,
-    format: (amount: number) => formatCurrency(amount, simbolo),
+    symbol,
+    format: (amount: number) => formatCurrency(amount, symbol),
   };
 };
