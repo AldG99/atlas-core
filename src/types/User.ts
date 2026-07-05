@@ -1,35 +1,35 @@
-export interface Plantillas {
-  confirmacion: string;
-  preparacion: string;
-  entrega: string;
+export interface Templates {
+  confirmation: string;
+  preparing: string;
+  delivery: string;
 }
 
-export const PLANTILLAS_DEFAULT: Plantillas = {
-  confirmacion: '*{{negocio}}*\n{{folio}}\n─────────────────────\n{{nombre}}\n\n*PRODUCTOS*\n{{productos}}\n─────────────────────\n*Total: {{total}}*\nAbonado: {{pagado}}\n*Restante: {{restante}}*\n─────────────────────',
-  preparacion: '*{{negocio}}*\n─────────────────────\n{{nombre}}, tu pedido {{folio}} está en preparación.',
-  entrega: '*{{negocio}}*\n{{folio}}\n─────────────────────\n{{nombre}}, tu pedido está listo.\n─────────────────────\n*Total: {{total}}*\nAbonado: {{pagado}}\n*Restante: {{restante}}*\n─────────────────────',
+export const DEFAULT_TEMPLATES: Templates = {
+  confirmation: '*{{negocio}}*\n{{folio}}\n─────────────────────\n{{nombre}}\n\n*PRODUCTOS*\n{{productos}}\n─────────────────────\n*Total: {{total}}*\nAbonado: {{pagado}}\n*Restante: {{restante}}*\n─────────────────────',
+  preparing: '*{{negocio}}*\n─────────────────────\n{{nombre}}, tu pedido {{folio}} está en preparación.',
+  delivery: '*{{negocio}}*\n{{folio}}\n─────────────────────\n{{nombre}}, tu pedido está listo.\n─────────────────────\n*Total: {{total}}*\nAbonado: {{pagado}}\n*Restante: {{restante}}*\n─────────────────────',
 };
 
 export interface User {
   uid: string;
   email: string;
-  nombreNegocio: string;
-  nombre?: string;
-  apellido?: string;
-  fechaNacimiento?: string;
-  telefono?: string;
-  telefonoCodigoPais?: string;
-  direccion?: string;
-  fotoPerfil?: string;
-  fechaRegistro: Date;
-  plan?: 'gratuito' | 'pro' | 'enterprise';
-  moneda?: string;
-  plantillas?: Plantillas;
-  role?: 'admin' | 'miembro';
-  negocioUid?: string;
+  businessName: string;
+  firstName?: string;
+  lastName?: string;
+  birthDate?: string;
+  phone?: string;
+  phoneCountryCode?: string;
+  address?: string;
+  profilePhoto?: string;
+  registeredAt: Date;
+  plan?: 'free' | 'pro' | 'enterprise';
+  currency?: string;
+  templates?: Templates;
+  role?: 'admin' | 'member';
+  businessUid?: string;
   username?: string;
-  numeroMiembro?: string;
-  activo?: boolean;
+  memberNumber?: string;
+  active?: boolean;
 }
 
 export interface AuthState {
@@ -46,10 +46,10 @@ export interface LoginCredentials {
 export interface RegisterCredentials {
   email: string;
   password: string;
-  nombreNegocio: string;
-  nombre: string;
-  apellido: string;
-  fechaNacimiento: string;
-  telefono: string;
-  telefonoCodigoPais: string;
+  businessName: string;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  phone: string;
+  phoneCountryCode: string;
 }

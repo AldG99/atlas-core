@@ -1,14 +1,14 @@
-import type { Pedido, PedidoStatus } from '../types/Pedido';
-import type { Producto } from '../types/Producto';
+import type { Order, OrderStatus } from '../types/Order';
+import type { Product } from '../types/Product';
 import type {
   KPIs,
   StatusBreakdownItem,
-  TopCliente,
-  TopProducto,
-  InventarioStats,
+  TopClient,
+  TopProduct,
+  InventoryStats,
   ChartDataPoint,
   PeriodType
-} from '../types/Reporte';
+} from '../types/Report';
 
 export interface DateRange {
   start: Date;
@@ -47,118 +47,118 @@ export const getYearAgoDateRange = (dateRange: DateRange): DateRange => {
   return { start, end };
 };
 
-export const filterPedidosByDate = (pedidos: Pedido[], dateRange: DateRange): Pedido[] => {
-  return pedidos.filter((pedido) => {
-    const fecha = new Date(pedido.fechaCreacion);
-    return fecha >= dateRange.start && fecha <= dateRange.end;
+export const filterOrdersByDate = (orders: Order[], dateRange: DateRange): Order[] => {
+  return orders.filter((order) => {
+    const date = new Date(order.createdAt);
+    return date >= dateRange.start && date <= dateRange.end;
   });
 };
 
-export const calculateKPIs = (pedidos: Pedido[]): KPIs => {
-  if (pedidos.length === 0) {
+export const calculateKPIs = (orders: Order[]): KPIs => {
+  if (orders.length === 0) {
     return {
-      ventasTotales: 0,
-      totalPedidos: 0,
-      ticketPromedio: 0,
-      clientesUnicos: 0
+      totalSales: 0,
+      totalOrders: 0,
+      averageTicket: 0,
+      uniqueClients: 0
     };
   }
 
-  const ventasTotales = pedidos.reduce((sum, p) => sum + p.total, 0);
-  const totalPedidos = pedidos.length;
-  const ticketPromedio = ventasTotales / totalPedidos;
-  const clientesUnicos = new Set(pedidos.map((p) => p.clienteTelefono || p.clienteNombre.toLowerCase().trim())).size;
+  const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
+  const totalOrders = orders.length;
+  const averageTicket = totalSales / totalOrders;
+  const uniqueClients = new Set(orders.map((o) => o.clientPhone || o.clientName.toLowerCase().trim())).size;
 
   return {
-    ventasTotales,
-    totalPedidos,
-    ticketPromedio,
-    clientesUnicos
+    totalSales,
+    totalOrders,
+    averageTicket,
+    uniqueClients
   };
 };
 
-export const calculateStatusBreakdown = (pedidos: Pedido[]): StatusBreakdownItem[] => {
-  const statusMap: Record<PedidoStatus, { cantidad: number; total: number }> = {
-    pendiente: { cantidad: 0, total: 0 },
-    en_preparacion: { cantidad: 0, total: 0 },
-    entregado: { cantidad: 0, total: 0 }
+export const calculateStatusBreakdown = (orders: Order[]): StatusBreakdownItem[] => {
+  const statusMap: Record<OrderStatus, { count: number; total: number }> = {
+    pending: { count: 0, total: 0 },
+    preparing: { count: 0, total: 0 },
+    delivered: { count: 0, total: 0 }
   };
 
-  pedidos.forEach((pedido) => {
-    statusMap[pedido.estado].cantidad += 1;
-    statusMap[pedido.estado].total += pedido.total;
+  orders.forEach((order) => {
+    statusMap[order.status].count += 1;
+    statusMap[order.status].total += order.total;
   });
 
-  const total = pedidos.length;
+  const total = orders.length;
 
-  return (Object.keys(statusMap) as PedidoStatus[]).map((estado) => ({
-    estado,
-    cantidad: statusMap[estado].cantidad,
-    porcentaje: total > 0 ? (statusMap[estado].cantidad / total) * 100 : 0,
-    total: statusMap[estado].total
+  return (Object.keys(statusMap) as OrderStatus[]).map((status) => ({
+    status,
+    count: statusMap[status].count,
+    percentage: total > 0 ? (statusMap[status].count / total) * 100 : 0,
+    total: statusMap[status].total
   }));
 };
 
-export const calculateTopClientes = (pedidos: Pedido[], limit: number = 3): TopCliente[] => {
-  const clienteMap = new Map<string, { nombre: string; telefono: string; pedidos: number; total: number }>();
+export const calculateTopClients = (orders: Order[], limit: number = 3): TopClient[] => {
+  const clientMap = new Map<string, { name: string; phone: string; orders: number; total: number }>();
 
-  pedidos.forEach((pedido) => {
-    const key = pedido.clienteTelefono || pedido.clienteNombre.toLowerCase().trim();
-    const existing = clienteMap.get(key);
+  orders.forEach((order) => {
+    const key = order.clientPhone || order.clientName.toLowerCase().trim();
+    const existing = clientMap.get(key);
 
     if (existing) {
-      existing.pedidos += 1;
-      existing.total += pedido.total;
+      existing.orders += 1;
+      existing.total += order.total;
     } else {
-      clienteMap.set(key, {
-        nombre: pedido.clienteNombre,
-        telefono: pedido.clienteTelefono,
-        pedidos: 1,
-        total: pedido.total
+      clientMap.set(key, {
+        name: order.clientName,
+        phone: order.clientPhone,
+        orders: 1,
+        total: order.total
       });
     }
   });
 
-  return Array.from(clienteMap.values())
+  return Array.from(clientMap.values())
     .sort((a, b) => b.total - a.total)
     .slice(0, limit);
 };
 
 export const calculateChartData = (
-  pedidos: Pedido[],
+  orders: Order[],
   period: PeriodType,
   dateRange: DateRange,
   locale = 'es'
 ): ChartDataPoint[] => {
   if (period === 'hoy') {
-    return groupByHour(pedidos);
+    return groupByHour(orders);
   }
-  return groupByDay(pedidos, dateRange, locale);
+  return groupByDay(orders, dateRange, locale);
 };
 
-const groupByHour = (pedidos: Pedido[]): ChartDataPoint[] => {
+const groupByHour = (orders: Order[]): ChartDataPoint[] => {
   const hours: ChartDataPoint[] = [];
 
   for (let i = 0; i < 24; i++) {
     hours.push({
       label: `${i.toString().padStart(2, '0')}:00`,
       value: 0,
-      pedidos: 0
+      orders: 0
     });
   }
 
-  pedidos.forEach((pedido) => {
-    const hour = new Date(pedido.fechaCreacion).getHours();
-    hours[hour].value += pedido.total;
-    hours[hour].pedidos += 1;
+  orders.forEach((order) => {
+    const hour = new Date(order.createdAt).getHours();
+    hours[hour].value += order.total;
+    hours[hour].orders += 1;
   });
 
   // Filter to only show hours with activity or between first and last active hour
-  const activeHours = hours.filter((h) => h.pedidos > 0);
+  const activeHours = hours.filter((h) => h.orders > 0);
   if (activeHours.length === 0) return hours.slice(8, 21); // Default business hours
 
-  const firstActive = hours.findIndex((h) => h.pedidos > 0);
-  const lastActive = hours.length - 1 - [...hours].reverse().findIndex((h) => h.pedidos > 0);
+  const firstActive = hours.findIndex((h) => h.orders > 0);
+  const lastActive = hours.length - 1 - [...hours].reverse().findIndex((h) => h.orders > 0);
 
   // Expand range by 1 hour on each side
   const start = Math.max(0, firstActive - 1);
@@ -178,7 +178,7 @@ const formatDayLabel = (date: Date, locale: string): string => {
   return `${name} ${date.getDate()}`;
 };
 
-const groupByDay = (pedidos: Pedido[], dateRange: DateRange, locale: string): ChartDataPoint[] => {
+const groupByDay = (orders: Order[], dateRange: DateRange, locale: string): ChartDataPoint[] => {
   const days: ChartDataPoint[] = [];
   const current = new Date(dateRange.start);
 
@@ -186,42 +186,42 @@ const groupByDay = (pedidos: Pedido[], dateRange: DateRange, locale: string): Ch
     days.push({
       label: formatDayLabel(new Date(current), locale),
       value: 0,
-      pedidos: 0,
+      orders: 0,
     });
     current.setDate(current.getDate() + 1);
   }
 
   const startMidnight = toLocalMidnight(dateRange.start).getTime();
 
-  pedidos.forEach((pedido) => {
+  orders.forEach((order) => {
     const dayIndex = Math.round(
-      (toLocalMidnight(new Date(pedido.fechaCreacion)).getTime() - startMidnight) /
+      (toLocalMidnight(new Date(order.createdAt)).getTime() - startMidnight) /
       (1000 * 60 * 60 * 24)
     );
     if (dayIndex >= 0 && dayIndex < days.length) {
-      days[dayIndex].value += pedido.total;
-      days[dayIndex].pedidos += 1;
+      days[dayIndex].value += order.total;
+      days[dayIndex].orders += 1;
     }
   });
 
   return days;
 };
 
-export const calculateTopProductos = (pedidos: Pedido[], limit = 3): TopProducto[] => {
-  const map = new Map<string, TopProducto>();
+export const calculateTopProducts = (orders: Order[], limit = 3): TopProduct[] => {
+  const map = new Map<string, TopProduct>();
 
-  pedidos.forEach((pedido) => {
-    pedido.productos.forEach((item) => {
-      const key = item.productoId ?? item.nombre.toLowerCase().trim();
+  orders.forEach((order) => {
+    order.items.forEach((item) => {
+      const key = item.productId ?? item.name.toLowerCase().trim();
       const existing = map.get(key);
       if (existing) {
-        existing.unidades += item.cantidad;
+        existing.units += item.quantity;
         existing.total += item.subtotal;
       } else {
         map.set(key, {
-          nombre: item.nombre,
-          clave: item.clave,
-          unidades: item.cantidad,
+          name: item.name,
+          sku: item.sku,
+          units: item.quantity,
           total: item.subtotal
         });
       }
@@ -229,18 +229,18 @@ export const calculateTopProductos = (pedidos: Pedido[], limit = 3): TopProducto
   });
 
   return Array.from(map.values())
-    .sort((a, b) => b.unidades - a.unidades)
+    .sort((a, b) => b.units - a.units)
     .slice(0, limit);
 };
 
-export const calculateInventarioStats = (productos: Producto[]): InventarioStats => {
-  const conControl = productos.filter((p) => p.controlStock);
-  const agotados = conControl
+export const calculateInventoryStats = (products: Product[]): InventoryStats => {
+  const tracked = products.filter((p) => p.trackStock);
+  const outOfStock = tracked
     .filter((p) => (p.stock ?? 0) === 0)
-    .map((p) => ({ id: p.id, nombre: p.nombre, clave: p.clave, stock: 0 }));
-  const bajoStock = conControl
+    .map((p) => ({ id: p.id, name: p.name, sku: p.sku, stock: 0 }));
+  const lowStock = tracked
     .filter((p) => (p.stock ?? 0) > 0 && (p.stock ?? 0) <= 5)
-    .map((p) => ({ id: p.id, nombre: p.nombre, clave: p.clave, stock: p.stock ?? 0 }));
+    .map((p) => ({ id: p.id, name: p.name, sku: p.sku, stock: p.stock ?? 0 }));
 
-  return { totalConControl: conControl.length, agotados, bajoStock };
+  return { totalTracked: tracked.length, outOfStock, lowStock };
 };

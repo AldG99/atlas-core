@@ -1,7 +1,7 @@
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Plantillas } from '../types/User';
+import type { Templates } from '../types/User';
 
-export const savePlantillas = async (userId: string, plantillas: Plantillas): Promise<void> => {
-  await updateDoc(doc(db, 'users', userId), { plantillas });
+export const saveTemplates = async (userId: string, templates: Templates): Promise<void> => {
+  await updateDoc(doc(db, 'users', userId), { templates });
 };

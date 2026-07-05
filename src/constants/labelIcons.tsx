@@ -16,7 +16,7 @@ import {
 } from 'react-icons/pi';
 import type { IconType } from 'react-icons';
 
-export const ETIQUETA_ICONS: Record<string, { icon: IconType; label: string }> = {
+export const LABEL_ICONS: Record<string, { icon: IconType; label: string }> = {
   star: { icon: PiStarBold, label: 'Estrella' },
   heart: { icon: PiHeartBold, label: 'Corazón' },
   fire: { icon: PiFireBold, label: 'Fuego' },
@@ -33,7 +33,7 @@ export const ETIQUETA_ICONS: Record<string, { icon: IconType; label: string }> =
   flower: { icon: PiFlowerBold, label: 'Flor' },
 };
 
-export const ETIQUETA_COLORES = [
+export const LABEL_COLORS = [
   '#EF4444', // rojo
   '#F97316', // naranja
   '#F59E0B', // ámbar

@@ -1,17 +1,17 @@
 // Formatea 10 dígitos como XXX XXX XXXX
-export const formatTelefono = (numero: string): string => {
-  const d = numero.replace(/\D/g, '');
+export const formatPhone = (number: string): string => {
+  const d = number.replace(/\D/g, '');
   if (d.length <= 3) return d;
   if (d.length <= 6) return `${d.slice(0, 3)} ${d.slice(3)}`;
   return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 10)}`;
 };
 
-export const formatCurrency = (amount: number, simbolo = '$'): string => {
+export const formatCurrency = (amount: number, symbol = '$'): string => {
   const formatted = new Intl.NumberFormat('es-MX', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
-  return `${simbolo}${formatted}`;
+  return `${symbol}${formatted}`;
 };
 
 export const formatDate = (date: Date): string => {
@@ -33,37 +33,38 @@ export const formatShortDate = (date: Date): string => {
   }).format(date);
 };
 
-import type { Pedido, ProductoItem } from '../types/Pedido';
-import { getCodigoPais } from '../data/codigosPais';
+import type { Order, OrderItem } from '../types/Order';
+import type { Templates } from '../types/User';
+import { getCountryCode } from '../data/countryCodes';
 
-export const getTotalPagado = (pedido: Pedido): number =>
-  (pedido.abonos || []).reduce((sum, a) => sum + a.monto, 0);
+export const getTotalPaid = (order: Order): number =>
+  (order.payments || []).reduce((sum, p) => sum + p.amount, 0);
 
-interface PedidoForWhatsApp {
-  clienteNombre: string;
-  clienteTelefono: string;
-  productos: ProductoItem[];
+interface OrderForWhatsApp {
+  clientName: string;
+  clientPhone: string;
+  items: OrderItem[];
   total: number;
-  notas?: string;
+  notes?: string;
 }
 
-const formatProductosText = (productos: ProductoItem[], simbolo = '$'): string => {
-  return productos.map(p => {
-    const clave = p.clave ? `[${p.clave}] ` : '';
-    const descuento = p.descuento ? ` (-${p.descuento}%)` : '';
-    const detalle = `  ${p.cantidad} × ${formatCurrency(p.precioUnitario, simbolo)} = *${formatCurrency(p.subtotal, simbolo)}*`;
-    return `• ${clave}${p.nombre}${descuento}\n${detalle}`;
+const formatItemsText = (items: OrderItem[], symbol = '$'): string => {
+  return items.map(i => {
+    const sku = i.sku ? `[${i.sku}] ` : '';
+    const discount = i.discount ? ` (-${i.discount}%)` : '';
+    const detail = `  ${i.quantity} × ${formatCurrency(i.unitPrice, symbol)} = *${formatCurrency(i.subtotal, symbol)}*`;
+    return `• ${sku}${i.name}${discount}\n${detail}`;
   }).join('\n');
 };
 
-export const formatPedidoForWhatsApp = (pedido: PedidoForWhatsApp, simbolo = '$'): string => {
-  let message = `*Pedido - ${pedido.clienteNombre}*\n`;
-  message += `${pedido.clienteTelefono}\n\n`;
-  message += `*Productos:*\n${formatProductosText(pedido.productos, simbolo)}\n\n`;
-  message += `*Total: ${formatCurrency(pedido.total, simbolo)}*`;
+export const formatOrderForWhatsApp = (order: OrderForWhatsApp, symbol = '$'): string => {
+  let message = `*Pedido - ${order.clientName}*\n`;
+  message += `${order.clientPhone}\n\n`;
+  message += `*Productos:*\n${formatItemsText(order.items, symbol)}\n\n`;
+  message += `*Total: ${formatCurrency(order.total, symbol)}*`;
 
-  if (pedido.notas) {
-    message += `\n\n_${pedido.notas}_`;
+  if (order.notes) {
+    message += `\n\n_${order.notes}_`;
   }
 
   return message;
@@ -71,41 +72,35 @@ export const formatPedidoForWhatsApp = (pedido: PedidoForWhatsApp, simbolo = '$'
 
 export const applyTemplate = (
   template: string,
-  pedido: PedidoForWhatsApp & { folio?: string; notas?: string; abonos?: { monto: number }[] },
-  simbolo = '$',
-  negocio = ''
+  order: OrderForWhatsApp & { orderNumber?: string; notes?: string; payments?: { amount: number }[] },
+  symbol = '$',
+  businessName = ''
 ): string => {
-  const pagado = (pedido.abonos || []).reduce((s, a) => s + a.monto, 0);
-  const restante = Math.max(0, pedido.total - pagado);
+  const paid = (order.payments || []).reduce((s, p) => s + p.amount, 0);
+  const remaining = Math.max(0, order.total - paid);
 
   return template
-    .replace(/\{\{nombre\}\}/g, pedido.clienteNombre)
-    .replace(/\{\{folio\}\}/g, pedido.folio ?? '')
-    .replace(/\{\{total\}\}/g, formatCurrency(pedido.total, simbolo))
-    .replace(/\{\{pagado\}\}/g, formatCurrency(pagado, simbolo))
-    .replace(/\{\{restante\}\}/g, formatCurrency(restante, simbolo))
-    .replace(/\{\{productos\}\}/g, formatProductosText(pedido.productos, simbolo))
-    .replace(/\{\{notas\}\}/g, pedido.notas ?? '')
-    .replace(/\{\{negocio\}\}/g, negocio);
+    .replace(/\{\{nombre\}\}/g, order.clientName)
+    .replace(/\{\{folio\}\}/g, order.orderNumber ?? '')
+    .replace(/\{\{total\}\}/g, formatCurrency(order.total, symbol))
+    .replace(/\{\{pagado\}\}/g, formatCurrency(paid, symbol))
+    .replace(/\{\{restante\}\}/g, formatCurrency(remaining, symbol))
+    .replace(/\{\{productos\}\}/g, formatItemsText(order.items, symbol))
+    .replace(/\{\{notas\}\}/g, order.notes ?? '')
+    .replace(/\{\{negocio\}\}/g, businessName);
 };
 
-interface PlantillasConfig {
-  confirmacion: string;
-  preparacion: string;
-  entrega: string;
-}
-
-export const buildMensajePedido = (
-  pedido: PedidoForWhatsApp & { folio?: string; estado: string; notas?: string; abonos?: { monto: number }[] },
-  plantillas: PlantillasConfig,
-  simbolo: string,
-  negocio: string
+export const buildOrderMessage = (
+  order: OrderForWhatsApp & { orderNumber?: string; status: string; notes?: string; payments?: { amount: number }[] },
+  templates: Templates,
+  symbol: string,
+  businessName: string
 ): string => {
   const template =
-    pedido.estado === 'entregado' ? plantillas.entrega :
-    pedido.estado === 'en_preparacion' ? plantillas.preparacion :
-    plantillas.confirmacion;
-  return applyTemplate(template, pedido, simbolo, negocio);
+    order.status === 'delivered' ? templates.delivery :
+    order.status === 'preparing' ? templates.preparing :
+    templates.confirmation;
+  return applyTemplate(template, order, symbol, businessName);
 };
 
 export const openWhatsApp = (phone: string, message: string): void => {
@@ -123,19 +118,19 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
   }
 };
 
-interface PedidoForCSV {
+interface OrderForCSV {
   id: string;
-  folio?: string;
-  clienteNombre: string;
-  clienteTelefono: string;
-  clienteCodigoPais?: string;
-  clienteCodigoPostal?: string;
-  productos: ProductoItem[];
-  abonos?: { monto: number; fecha: Date; productoIndex?: number }[];
+  orderNumber?: string;
+  clientName: string;
+  clientPhone: string;
+  clientCountryCode?: string;
+  clientPostalCode?: string;
+  items: OrderItem[];
+  payments?: { amount: number; date: Date; itemIndex?: number }[];
   total: number;
-  notas?: string;
-  estado: string;
-  fechaCreacion: Date;
+  notes?: string;
+  status: string;
+  createdAt: Date;
 }
 
 const escapeCSV = (value: string): string => {
@@ -145,29 +140,29 @@ const escapeCSV = (value: string): string => {
   return value;
 };
 
-export const generateCSVContent = (pedidos: PedidoForCSV[]): string => {
+export const generateCSVContent = (orders: OrderForCSV[]): string => {
   const headers = ['Cliente', 'Teléfono', 'C.P.', 'Folio', 'Productos', 'Abonado', 'Total', 'Estado', 'Notas', 'Fecha'];
 
-  const rows = pedidos.map((pedido) => [
-    escapeCSV(pedido.clienteNombre),
-    escapeCSV(pedido.clienteCodigoPais ? `${pedido.clienteCodigoPais} ${formatTelefono(pedido.clienteTelefono)}` : formatTelefono(pedido.clienteTelefono)),
-    escapeCSV(pedido.clienteCodigoPostal || ''),
-    escapeCSV(pedido.folio || ''),
-    escapeCSV(formatProductosText(pedido.productos).replace(/\n/g, ' | ')),
-    (pedido.abonos?.reduce((sum, a) => sum + a.monto, 0) ?? 0).toFixed(2),
-    pedido.total.toFixed(2),
-    pedido.estado,
-    escapeCSV(pedido.notas || ''),
-    formatDate(pedido.fechaCreacion)
+  const rows = orders.map((order) => [
+    escapeCSV(order.clientName),
+    escapeCSV(order.clientCountryCode ? `${order.clientCountryCode} ${formatPhone(order.clientPhone)}` : formatPhone(order.clientPhone)),
+    escapeCSV(order.clientPostalCode || ''),
+    escapeCSV(order.orderNumber || ''),
+    escapeCSV(formatItemsText(order.items).replace(/\n/g, ' | ')),
+    (order.payments?.reduce((sum, p) => sum + p.amount, 0) ?? 0).toFixed(2),
+    order.total.toFixed(2),
+    order.status,
+    escapeCSV(order.notes || ''),
+    formatDate(order.createdAt)
   ]);
 
   return [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
 };
 
-export const exportToCSV = (pedidos: PedidoForCSV[], filename: string = 'pedidos'): void => {
-  const csvContent = generateCSVContent(pedidos);
+export const exportToCSV = (orders: OrderForCSV[], filename: string = 'orders'): void => {
+  const csvContent = generateCSVContent(orders);
 
-  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
 
@@ -181,52 +176,52 @@ export const exportToCSV = (pedidos: PedidoForCSV[], filename: string = 'pedidos
   URL.revokeObjectURL(url);
 };
 
-interface ClienteForCSV {
-  nombre: string;
-  apellido: string;
-  telefono: string;
-  telefonoCodigoPais?: string;
-  correo?: string;
-  calle: string;
-  numeroExterior: string;
-  numeroInterior?: string;
-  colonia: string;
-  ciudad: string;
-  codigoPostal: string;
-  pais?: string;
-  referencia?: string;
-  favorito?: boolean;
-  fechaCreacion: Date;
+interface ClientForCSV {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  phoneCountryCode?: string;
+  email?: string;
+  street: string;
+  exteriorNumber: string;
+  interiorNumber?: string;
+  neighborhood: string;
+  city: string;
+  postalCode: string;
+  country?: string;
+  reference?: string;
+  favorite?: boolean;
+  createdAt: Date;
 }
 
-export const exportClientesCSV = (clientes: ClienteForCSV[]): void => {
+export const exportClientsCSV = (clients: ClientForCSV[]): void => {
 
   const headers = ['Nombre', 'Apellido', 'Teléfono', 'Correo', 'Calle', 'Núm. Ext.', 'Núm. Int.', 'Colonia', 'Ciudad', 'C.P.', 'País', 'Referencia', 'Favorito', 'Registro'];
 
-  const rows = clientes.map(c => [
-    escapeCSV(c.nombre),
-    escapeCSV(c.apellido),
-    escapeCSV(c.telefonoCodigoPais ? `${getCodigoPais(c.telefonoCodigoPais)?.codigo ?? c.telefonoCodigoPais} ${formatTelefono(c.telefono)}` : formatTelefono(c.telefono)),
-    escapeCSV(c.correo || ''),
-    escapeCSV(c.calle),
-    escapeCSV(c.numeroExterior),
-    escapeCSV(c.numeroInterior || ''),
-    escapeCSV(c.colonia),
-    escapeCSV(c.ciudad),
-    escapeCSV(c.codigoPostal),
-    escapeCSV(c.pais || ''),
-    escapeCSV(c.referencia || ''),
-    c.favorito ? 'Sí' : 'No',
-    formatDate(c.fechaCreacion)
+  const rows = clients.map(c => [
+    escapeCSV(c.firstName),
+    escapeCSV(c.lastName),
+    escapeCSV(c.phoneCountryCode ? `${getCountryCode(c.phoneCountryCode)?.code ?? c.phoneCountryCode} ${formatPhone(c.phone)}` : formatPhone(c.phone)),
+    escapeCSV(c.email || ''),
+    escapeCSV(c.street),
+    escapeCSV(c.exteriorNumber),
+    escapeCSV(c.interiorNumber || ''),
+    escapeCSV(c.neighborhood),
+    escapeCSV(c.city),
+    escapeCSV(c.postalCode),
+    escapeCSV(c.country || ''),
+    escapeCSV(c.reference || ''),
+    c.favorite ? 'Sí' : 'No',
+    formatDate(c.createdAt)
   ]);
 
   const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
 
   link.setAttribute('href', url);
-  link.setAttribute('download', `clientes_${new Date().toISOString().split('T')[0]}.csv`);
+  link.setAttribute('download', `clients_${new Date().toISOString().split('T')[0]}.csv`);
   link.style.visibility = 'hidden';
 
   document.body.appendChild(link);
@@ -235,44 +230,44 @@ export const exportClientesCSV = (clientes: ClienteForCSV[]): void => {
   URL.revokeObjectURL(url);
 };
 
-interface ProductoForCSV {
-  clave: string;
-  nombre: string;
-  precio: number;
-  descripcion?: string;
-  descuento?: number;
-  fechaFinDescuento?: Date;
-  controlStock?: boolean;
+interface ProductForCSV {
+  sku: string;
+  name: string;
+  price: number;
+  description?: string;
+  discount?: number;
+  discountEndDate?: Date;
+  trackStock?: boolean;
   stock?: number;
-  unidad?: string;
-  unidadCantidad?: number;
-  etiquetas?: string[];
-  fechaCreacion: Date;
+  unit?: string;
+  unitQuantity?: number;
+  labels?: string[];
+  createdAt: Date;
 }
 
-export const exportProductosCSV = (productos: ProductoForCSV[], etiquetaNombres: (ids: string[]) => string): void => {
+export const exportProductsCSV = (products: ProductForCSV[], labelNames: (ids: string[]) => string): void => {
   const headers = ['Clave', 'Nombre', 'Precio', 'Descuento %', 'Fin descuento', 'Stock', 'Unidad', 'Cant. unidad', 'Etiquetas', 'Registro'];
 
-  const rows = productos.map(p => [
-    escapeCSV(p.clave),
-    escapeCSV(p.nombre),
-    p.precio.toFixed(2),
-    p.descuento ? p.descuento.toString() : '',
-    p.fechaFinDescuento ? formatDate(p.fechaFinDescuento) : '',
-    p.controlStock ? (p.stock ?? 0).toString() : '',
-    escapeCSV(p.unidad || ''),
-    p.unidadCantidad ? p.unidadCantidad.toString() : '',
-    escapeCSV(etiquetaNombres(p.etiquetas || [])),
-    formatDate(p.fechaCreacion)
+  const rows = products.map(p => [
+    escapeCSV(p.sku),
+    escapeCSV(p.name),
+    p.price.toFixed(2),
+    p.discount ? p.discount.toString() : '',
+    p.discountEndDate ? formatDate(p.discountEndDate) : '',
+    p.trackStock ? (p.stock ?? 0).toString() : '',
+    escapeCSV(p.unit || ''),
+    p.unitQuantity ? p.unitQuantity.toString() : '',
+    escapeCSV(labelNames(p.labels || [])),
+    formatDate(p.createdAt)
   ]);
 
   const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
 
   link.setAttribute('href', url);
-  link.setAttribute('download', `productos_${new Date().toISOString().split('T')[0]}.csv`);
+  link.setAttribute('download', `products_${new Date().toISOString().split('T')[0]}.csv`);
   link.style.visibility = 'hidden';
 
   document.body.appendChild(link);

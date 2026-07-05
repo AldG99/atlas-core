@@ -14,34 +14,34 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes } from 'firebase/storage';
 import { db, storage } from './firebase';
-import type { Cliente, ClienteFormData } from '../types/Cliente';
+import type { Client, ClientFormData } from '../types/Client';
 import { compressImage } from '../utils/imageUtils';
 import { waitForModeration } from '../utils/imageModeration';
 
-const COLLECTION_NAME = 'clientes';
+const COLLECTION_NAME = 'clients';
 
-export const getClientes = async (userId: string): Promise<Cliente[]> => {
+export const getClients = async (userId: string): Promise<Client[]> => {
   const q = query(
     collection(db, COLLECTION_NAME),
     where('userId', '==', userId)
   );
 
   const snapshot = await getDocs(q);
-  const clientes = snapshot.docs.map((doc) => {
+  const clients = snapshot.docs.map((doc) => {
     const data = doc.data();
     return {
       id: doc.id,
       ...data,
-      apellido: data.apellido || '',
-      fechaCreacion: data.fechaCreacion?.toDate() || new Date()
-    } as Cliente;
+      lastName: data.lastName || '',
+      createdAt: data.createdAt?.toDate() || new Date()
+    } as Client;
   });
 
   // Ordenar en el cliente para evitar necesidad de índice compuesto
-  return clientes.sort((a, b) => a.nombre.localeCompare(b.nombre));
+  return clients.sort((a, b) => a.firstName.localeCompare(b.firstName));
 };
 
-export const getClienteById = async (id: string): Promise<Cliente | null> => {
+export const getClientById = async (id: string): Promise<Client | null> => {
   const docRef = doc(db, COLLECTION_NAME, id);
   const docSnap = await getDoc(docRef);
 
@@ -51,9 +51,9 @@ export const getClienteById = async (id: string): Promise<Cliente | null> => {
   return {
     id: docSnap.id,
     ...data,
-    apellido: data.apellido || '',
-    fechaCreacion: data.fechaCreacion?.toDate() || new Date()
-  } as Cliente;
+    lastName: data.lastName || '',
+    createdAt: data.createdAt?.toDate() || new Date()
+  } as Client;
 };
 
 type OptionalStringField = string | FieldValue | undefined;
@@ -61,17 +61,17 @@ type OptionalStringField = string | FieldValue | undefined;
 const optionalField = (value: string | undefined): OptionalStringField =>
   value?.trim() || deleteField();
 
-export const createCliente = async (
-  data: ClienteFormData,
+export const createClient = async (
+  data: ClientFormData,
   userId: string
 ): Promise<string> => {
   // addDoc no admite deleteField() — omitir campos opcionales vacíos directamente
   const doc: Record<string, unknown> = {
     ...data,
     userId,
-    fechaCreacion: Timestamp.now()
+    createdAt: Timestamp.now()
   };
-  const optionalFields: (keyof ClienteFormData)[] = ['correo', 'numeroInterior', 'pais', 'referencia', 'estado'];
+  const optionalFields: (keyof ClientFormData)[] = ['email', 'interiorNumber', 'country', 'reference', 'state'];
   for (const field of optionalFields) {
     const val = data[field];
     if (!val || !(val as string).trim()) {
@@ -82,37 +82,37 @@ export const createCliente = async (
   return docRef.id;
 };
 
-export const updateCliente = async (
+export const updateClient = async (
   id: string,
-  data: Partial<ClienteFormData>
+  data: Partial<ClientFormData>
 ): Promise<void> => {
   const docRef = doc(db, COLLECTION_NAME, id);
   // Firestore rechaza undefined — filtrar antes de construir el objeto
   const defined = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
   await updateDoc(docRef, {
     ...defined,
-    correo: optionalField(data.correo),
-    numeroInterior: optionalField(data.numeroInterior),
-    pais: optionalField(data.pais),
-    estado: optionalField(data.estado),
-    referencia: optionalField(data.referencia)
+    email: optionalField(data.email),
+    interiorNumber: optionalField(data.interiorNumber),
+    country: optionalField(data.country),
+    state: optionalField(data.state),
+    reference: optionalField(data.reference)
   });
 };
 
-export const deleteCliente = async (id: string): Promise<void> => {
+export const deleteClient = async (id: string): Promise<void> => {
   const docRef = doc(db, COLLECTION_NAME, id);
   await deleteDoc(docRef);
 };
 
-export const toggleClienteFavorito = async (
+export const toggleClientFavorite = async (
   id: string,
-  favorito: boolean
+  favorite: boolean
 ): Promise<void> => {
   const docRef = doc(db, COLLECTION_NAME, id);
-  await updateDoc(docRef, { favorito });
+  await updateDoc(docRef, { favorite });
 };
 
-export const uploadClienteImage = async (
+export const uploadClientImage = async (
   file: File,
   userId: string
 ): Promise<string> => {
@@ -125,7 +125,7 @@ export const uploadClienteImage = async (
   const compressed = await compressImage(file, 400, 0.75);
   const moderationId = crypto.randomUUID();
   const fileName = `${Date.now()}.jpg`;
-  const storageRef = ref(storage, `pending/${userId}/clientes/${fileName}`);
+  const storageRef = ref(storage, `pending/${userId}/clients/${fileName}`);
   await uploadBytes(storageRef, compressed, { customMetadata: { moderationId } });
   return waitForModeration(moderationId);
 };

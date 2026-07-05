@@ -28,19 +28,19 @@ const cleanUndefined = (obj: Record<string, unknown>): Record<string, unknown> =
 
 export interface BackupData {
   version: number;
-  exportadoEn: string;
-  clientes: Record<string, unknown>[];
-  productos: Record<string, unknown>[];
-  pedidos: Record<string, unknown>[];
-  etiquetas: Record<string, unknown>[];
+  exportedAt: string;
+  clients: Record<string, unknown>[];
+  products: Record<string, unknown>[];
+  orders: Record<string, unknown>[];
+  labels: Record<string, unknown>[];
 }
 
 export interface ImportSummary {
-  clientes: number;
-  productos: number;
-  pedidos: number;
-  etiquetas: number;
-  omitidos: number;
+  clients: number;
+  products: number;
+  orders: number;
+  labels: number;
+  skipped: number;
 }
 
 const toIso = (val: unknown): string | undefined => {
@@ -63,57 +63,57 @@ export const exportBackup = async (userId: string): Promise<void> => {
     throw new Error('No autorizado');
   }
 
-  const [clientesSnap, productosSnap, pedidosSnap, etiquetasSnap] = await Promise.all([
-    getDocs(query(collection(db, 'clientes'), where('userId', '==', userId))),
-    getDocs(query(collection(db, 'productos'), where('userId', '==', userId))),
-    getDocs(query(collection(db, 'pedidos'), where('userId', '==', userId))),
-    getDocs(query(collection(db, 'etiquetas'), where('userId', '==', userId))),
+  const [clientsSnap, productsSnap, ordersSnap, labelsSnap] = await Promise.all([
+    getDocs(query(collection(db, 'clients'), where('userId', '==', userId))),
+    getDocs(query(collection(db, 'products'), where('userId', '==', userId))),
+    getDocs(query(collection(db, 'orders'), where('userId', '==', userId))),
+    getDocs(query(collection(db, 'labels'), where('userId', '==', userId))),
   ]);
 
-  const clientes = clientesSnap.docs.map(doc => {
-    const { fotoPerfil: _foto, ...data } = doc.data();
-    return { ...data, id: doc.id, fechaCreacion: toIso(data.fechaCreacion) };
+  const clients = clientsSnap.docs.map(doc => {
+    const { profilePhoto: _photo, ...data } = doc.data();
+    return { ...data, id: doc.id, createdAt: toIso(data.createdAt) };
   });
 
-  const productos = productosSnap.docs.map(doc => {
-    const { imagen: _img, ...data } = doc.data();
+  const products = productsSnap.docs.map(doc => {
+    const { image: _img, ...data } = doc.data();
     return {
       ...data,
       id: doc.id,
-      fechaCreacion: toIso(data.fechaCreacion),
-      fechaFinDescuento: toIso(data.fechaFinDescuento),
-      historialDescuentos: (data.historialDescuentos || []).map((h: Record<string, unknown>) => ({
+      createdAt: toIso(data.createdAt),
+      discountEndDate: toIso(data.discountEndDate),
+      discountHistory: (data.discountHistory || []).map((h: Record<string, unknown>) => ({
         ...h,
-        fechaInicio: toIso(h.fechaInicio),
-        fechaFin: toIso(h.fechaFin),
-        fechaCierre: toIso(h.fechaCierre),
+        startDate: toIso(h.startDate),
+        endDate: toIso(h.endDate),
+        closedAt: toIso(h.closedAt),
       })),
     };
   });
 
-  const pedidos = pedidosSnap.docs.map(doc => {
-    const { clienteFoto: _foto, ...data } = doc.data();
+  const orders = ordersSnap.docs.map(doc => {
+    const { clientPhoto: _photo, ...data } = doc.data();
     return {
       ...data,
       id: doc.id,
-      fechaCreacion: toIso(data.fechaCreacion),
-      fechaEntrega: toIso(data.fechaEntrega),
-      abonos: (data.abonos || []).map((a: Record<string, unknown>) => ({
-        ...a,
-        fecha: toIso(a.fecha),
+      createdAt: toIso(data.createdAt),
+      deliveredAt: toIso(data.deliveredAt),
+      payments: (data.payments || []).map((p: Record<string, unknown>) => ({
+        ...p,
+        date: toIso(p.date),
       })),
     };
   });
 
-  const etiquetas = etiquetasSnap.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+  const labels = labelsSnap.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 
   const backup: BackupData = {
     version: BACKUP_VERSION,
-    exportadoEn: new Date().toISOString(),
-    clientes,
-    productos,
-    pedidos,
-    etiquetas,
+    exportedAt: new Date().toISOString(),
+    clients,
+    products,
+    orders,
+    labels,
   };
 
   const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
@@ -135,7 +135,7 @@ export const parseBackupFile = (file: File): Promise<BackupData> =>
           reject(new Error('Versión de respaldo no compatible'));
           return;
         }
-        if (!data.clientes || !data.productos || !data.pedidos) {
+        if (!data.clients || !data.products || !data.orders) {
           reject(new Error('Archivo incompleto o corrupto'));
           return;
         }
@@ -164,145 +164,145 @@ export const importBackup = async (data: BackupData, userId: string): Promise<Im
   };
 
   // Pre-cargar datos existentes para detectar duplicados
-  const [existingClientesSnap, existingProductosSnap, existingPedidosSnap, existingEtiquetasSnap] = await Promise.all([
-    getDocs(query(collection(db, 'clientes'), where('userId', '==', userId))),
-    getDocs(query(collection(db, 'productos'), where('userId', '==', userId))),
-    getDocs(query(collection(db, 'pedidos'), where('userId', '==', userId))),
-    getDocs(query(collection(db, 'etiquetas'), where('userId', '==', userId))),
+  const [existingClientsSnap, existingProductsSnap, existingOrdersSnap, existingLabelsSnap] = await Promise.all([
+    getDocs(query(collection(db, 'clients'), where('userId', '==', userId))),
+    getDocs(query(collection(db, 'products'), where('userId', '==', userId))),
+    getDocs(query(collection(db, 'orders'), where('userId', '==', userId))),
+    getDocs(query(collection(db, 'labels'), where('userId', '==', userId))),
   ]);
 
   // Conjuntos de claves únicas existentes
-  const existingTelefonos = new Set(existingClientesSnap.docs.map(d => d.data().telefono as string));
-  const existingClaves = new Set(existingProductosSnap.docs.map(d => d.data().clave as string));
-  const existingFolios = new Set(
-    existingPedidosSnap.docs.map(d => d.data().folio as string).filter(Boolean)
+  const existingPhones = new Set(existingClientsSnap.docs.map(d => d.data().phone as string));
+  const existingSkus = new Set(existingProductsSnap.docs.map(d => d.data().sku as string));
+  const existingOrderNumbers = new Set(
+    existingOrdersSnap.docs.map(d => d.data().orderNumber as string).filter(Boolean)
   );
 
-  // Mapa nombre → id para etiquetas existentes
-  const existingEtiquetaMap: Record<string, string> = {};
-  existingEtiquetasSnap.docs.forEach(d => {
-    existingEtiquetaMap[d.data().nombre as string] = d.id;
+  // Mapa name → id para labels existentes
+  const existingLabelMap: Record<string, string> = {};
+  existingLabelsSnap.docs.forEach(d => {
+    existingLabelMap[d.data().name as string] = d.id;
   });
 
-  // Mapa clave → id para productos existentes
-  const existingProductoMap: Record<string, string> = {};
-  existingProductosSnap.docs.forEach(d => {
-    existingProductoMap[d.data().clave as string] = d.id;
+  // Mapa sku → id para products existentes
+  const existingProductMap: Record<string, string> = {};
+  existingProductsSnap.docs.forEach(d => {
+    existingProductMap[d.data().sku as string] = d.id;
   });
 
-  let omitidos = 0;
+  let skipped = 0;
   // Pending writes — refs generated client-side so ID maps can be built before any network call
   const allWrites: Array<{ ref: DocumentReference; data: Record<string, unknown> }> = [];
   const BATCH_SIZE = 499;
 
   try {
-    // 1. Etiquetas
-    const etiquetaIdMap: Record<string, string> = {};
-    let etiquetasImported = 0;
-    for (const etiqueta of data.etiquetas || []) {
-      const { id: oldId, userId: _uid, ...rest } = etiqueta;
-      const nombre = rest.nombre as string;
-      if (existingEtiquetaMap[nombre]) {
-        if (typeof oldId === 'string') etiquetaIdMap[oldId] = existingEtiquetaMap[nombre];
-        omitidos++;
+    // 1. Labels
+    const labelIdMap: Record<string, string> = {};
+    let labelsImported = 0;
+    for (const label of data.labels || []) {
+      const { id: oldId, userId: _uid, ...rest } = label;
+      const name = rest.name as string;
+      if (existingLabelMap[name]) {
+        if (typeof oldId === 'string') labelIdMap[oldId] = existingLabelMap[name];
+        skipped++;
         continue;
       }
       try {
-        const ref = doc(collection(db, 'etiquetas'));
-        if (typeof oldId === 'string') etiquetaIdMap[oldId] = ref.id;
+        const ref = doc(collection(db, 'labels'));
+        if (typeof oldId === 'string') labelIdMap[oldId] = ref.id;
         allWrites.push({ ref, data: cleanUndefined({ ...rest, userId }) });
-        etiquetasImported++;
-      } catch { omitidos++; }
+        labelsImported++;
+      } catch { skipped++; }
     }
 
-    // 2. Productos — etiquetaIdMap ya está completo, no hay dependencia de red
-    const productoIdMap: Record<string, string> = {};
-    let productosImported = 0;
-    for (const producto of data.productos || []) {
-      const { id: oldId, userId: _uid, fechaCreacion: _fc, fechaFinDescuento, historialDescuentos, etiquetas, imagen: _img, ...rest } = producto;
-      const clave = rest.clave as string;
-      if (existingClaves.has(clave)) {
-        if (typeof oldId === 'string') productoIdMap[oldId] = existingProductoMap[clave];
-        omitidos++;
+    // 2. Products — labelIdMap ya está completo, no hay dependencia de red
+    const productIdMap: Record<string, string> = {};
+    let productsImported = 0;
+    for (const product of data.products || []) {
+      const { id: oldId, userId: _uid, createdAt: _ca, discountEndDate, discountHistory, labels, image: _img, ...rest } = product;
+      const sku = rest.sku as string;
+      if (existingSkus.has(sku)) {
+        if (typeof oldId === 'string') productIdMap[oldId] = existingProductMap[sku];
+        skipped++;
         continue;
       }
       try {
-        const productoData: Record<string, unknown> = {
+        const productData: Record<string, unknown> = {
           ...rest,
           userId,
-          fechaCreacion: Timestamp.now(),
-          etiquetas: Array.isArray(etiquetas)
-            ? etiquetas.map(eid => etiquetaIdMap[eid as string] ?? eid)
+          createdAt: Timestamp.now(),
+          labels: Array.isArray(labels)
+            ? labels.map(lid => labelIdMap[lid as string] ?? lid)
             : [],
         };
-        if (fechaFinDescuento) {
-          productoData.fechaFinDescuento = Timestamp.fromDate(parseDate(fechaFinDescuento));
+        if (discountEndDate) {
+          productData.discountEndDate = Timestamp.fromDate(parseDate(discountEndDate));
         }
-        if (Array.isArray(historialDescuentos) && historialDescuentos.length > 0) {
-          productoData.historialDescuentos = historialDescuentos.map((h: Record<string, unknown>) => ({
+        if (Array.isArray(discountHistory) && discountHistory.length > 0) {
+          productData.discountHistory = discountHistory.map((h: Record<string, unknown>) => ({
             ...h,
-            fechaInicio: Timestamp.fromDate(parseDate(h.fechaInicio)),
-            fechaFin: Timestamp.fromDate(parseDate(h.fechaFin)),
-            fechaCierre: Timestamp.fromDate(parseDate(h.fechaCierre)),
+            startDate: Timestamp.fromDate(parseDate(h.startDate)),
+            endDate: Timestamp.fromDate(parseDate(h.endDate)),
+            closedAt: Timestamp.fromDate(parseDate(h.closedAt)),
           }));
         }
-        const ref = doc(collection(db, 'productos'));
-        if (typeof oldId === 'string') productoIdMap[oldId] = ref.id;
-        allWrites.push({ ref, data: cleanUndefined(productoData) });
-        productosImported++;
-      } catch { omitidos++; }
+        const ref = doc(collection(db, 'products'));
+        if (typeof oldId === 'string') productIdMap[oldId] = ref.id;
+        allWrites.push({ ref, data: cleanUndefined(productData) });
+        productsImported++;
+      } catch { skipped++; }
     }
 
-    // 3. Clientes — duplicado detectado por teléfono
-    let clientesImported = 0;
-    for (const cliente of data.clientes || []) {
-      const { id: _id, userId: _uid, fechaCreacion: _fc, fotoPerfil: _foto, ...rest } = cliente;
-      const telefono = rest.telefono as string;
-      if (existingTelefonos.has(telefono)) {
-        omitidos++;
+    // 3. Clients — duplicado detectado por teléfono
+    let clientsImported = 0;
+    for (const client of data.clients || []) {
+      const { id: _id, userId: _uid, createdAt: _ca, profilePhoto: _photo, ...rest } = client;
+      const phone = rest.phone as string;
+      if (existingPhones.has(phone)) {
+        skipped++;
         continue;
       }
       try {
-        const ref = doc(collection(db, 'clientes'));
-        allWrites.push({ ref, data: cleanUndefined({ ...rest, userId, fechaCreacion: Timestamp.now() }) });
-        clientesImported++;
-      } catch { omitidos++; }
+        const ref = doc(collection(db, 'clients'));
+        allWrites.push({ ref, data: cleanUndefined({ ...rest, userId, createdAt: Timestamp.now() }) });
+        clientsImported++;
+      } catch { skipped++; }
     }
 
-    // 4. Pedidos — productoIdMap ya está completo
-    let pedidosImported = 0;
-    for (const pedido of data.pedidos || []) {
-      const { id: _id, userId: _uid, fechaCreacion, fechaEntrega, clienteFoto: _foto, abonos, productos, folio, ...rest } = pedido;
-      if (folio && existingFolios.has(folio as string)) {
-        omitidos++;
+    // 4. Orders — productIdMap ya está completo
+    let ordersImported = 0;
+    for (const order of data.orders || []) {
+      const { id: _id, userId: _uid, createdAt, deliveredAt, clientPhoto: _photo, payments, items, orderNumber, ...rest } = order;
+      if (orderNumber && existingOrderNumbers.has(orderNumber as string)) {
+        skipped++;
         continue;
       }
       try {
-        const pedidoData: Record<string, unknown> = {
+        const orderData: Record<string, unknown> = {
           ...rest,
-          folio,
+          orderNumber,
           userId,
-          fechaCreacion: Timestamp.fromDate(parseDate(fechaCreacion)),
-          productos: Array.isArray(productos)
-            ? productos.map((p: Record<string, unknown>) => ({
-                ...p,
-                productoId: p.productoId ? (productoIdMap[p.productoId as string] ?? p.productoId) : undefined,
+          createdAt: Timestamp.fromDate(parseDate(createdAt)),
+          items: Array.isArray(items)
+            ? items.map((i: Record<string, unknown>) => ({
+                ...i,
+                productId: i.productId ? (productIdMap[i.productId as string] ?? i.productId) : undefined,
               }))
             : [],
-          abonos: Array.isArray(abonos)
-            ? abonos.map((a: Record<string, unknown>) => ({
-                ...a,
-                fecha: Timestamp.fromDate(parseDate(a.fecha)),
+          payments: Array.isArray(payments)
+            ? payments.map((p: Record<string, unknown>) => ({
+                ...p,
+                date: Timestamp.fromDate(parseDate(p.date)),
               }))
             : [],
         };
-        if (fechaEntrega) {
-          pedidoData.fechaEntrega = Timestamp.fromDate(parseDate(fechaEntrega));
+        if (deliveredAt) {
+          orderData.deliveredAt = Timestamp.fromDate(parseDate(deliveredAt));
         }
-        const ref = doc(collection(db, 'pedidos'));
-        allWrites.push({ ref, data: cleanUndefined(pedidoData) });
-        pedidosImported++;
-      } catch { omitidos++; }
+        const ref = doc(collection(db, 'orders'));
+        allWrites.push({ ref, data: cleanUndefined(orderData) });
+        ordersImported++;
+      } catch { skipped++; }
     }
 
     // Commit all writes in batches of BATCH_SIZE (Firestore limit: 500 ops/batch)
@@ -316,11 +316,11 @@ export const importBackup = async (data: BackupData, userId: string): Promise<Im
     }
 
     return {
-      clientes: clientesImported,
-      productos: productosImported,
-      pedidos: pedidosImported,
-      etiquetas: etiquetasImported,
-      omitidos,
+      clients: clientsImported,
+      products: productsImported,
+      orders: ordersImported,
+      labels: labelsImported,
+      skipped,
     };
   } catch (err) {
     await rollback();

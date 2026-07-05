@@ -1,13 +1,13 @@
 export const PLAN_LIMITS = {
-  gratuito:   { pedidosMes: 360, clientes: 120,      productos: 80,  etiquetas: 6,  miembros: 0 },
-  pro:        { pedidosMes: 720, clientes: 240,       productos: 160, etiquetas: 10, miembros: 2 },
-  enterprise: { pedidosMes: Infinity, clientes: Infinity, productos: 640, etiquetas: 16, miembros: 6 },
+  free:       { ordersPerMonth: 360, clients: 120,      products: 80,  labels: 6,  members: 0 },
+  pro:        { ordersPerMonth: 720, clients: 240,       products: 160, labels: 10, members: 2 },
+  enterprise: { ordersPerMonth: Infinity, clients: Infinity, products: 640, labels: 16, members: 6 },
 } as const;
 
 export type PlanKey = keyof typeof PLAN_LIMITS;
 
 export const getPlanLimits = (plan?: string) =>
-  PLAN_LIMITS[(plan as PlanKey) ?? 'gratuito'] ?? PLAN_LIMITS.gratuito;
+  PLAN_LIMITS[(plan as PlanKey) ?? 'free'] ?? PLAN_LIMITS.free;
 
 export const checkPlanLimit = (count: number, limit: number, resource: string): void => {
   if (limit !== Infinity && count >= limit) {
@@ -16,7 +16,7 @@ export const checkPlanLimit = (count: number, limit: number, resource: string): 
 };
 
 export const PLAN_LABEL: Record<PlanKey, string> = {
-  gratuito: 'Gratuito',
+  free: 'Gratuito',
   pro: 'Pro',
   enterprise: 'Business',
 };

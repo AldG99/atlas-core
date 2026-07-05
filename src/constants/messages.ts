@@ -9,7 +9,7 @@ export const AUTH_MESSAGES = {
   WEAK_PASSWORD: 'La contraseña debe tener al menos 6 caracteres'
 };
 
-export const PEDIDO_MESSAGES = {
+export const ORDER_MESSAGES = {
   CREATE_SUCCESS: 'Pedido creado correctamente',
   CREATE_ERROR: 'Error al crear el pedido',
   UPDATE_SUCCESS: 'Pedido actualizado',

@@ -8,11 +8,11 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Etiqueta } from '../types/Producto';
+import type { Label } from '../types/Product';
 
-const COLLECTION_NAME = 'etiquetas';
+const COLLECTION_NAME = 'labels';
 
-export const getEtiquetas = async (userId: string): Promise<Etiqueta[]> => {
+export const getLabels = async (userId: string): Promise<Label[]> => {
   const q = query(
     collection(db, COLLECTION_NAME),
     where('userId', '==', userId)
@@ -22,25 +22,25 @@ export const getEtiquetas = async (userId: string): Promise<Etiqueta[]> => {
   return snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
-  })) as Etiqueta[];
+  })) as Label[];
 };
 
-export const createEtiqueta = async (
-  nombre: string,
+export const createLabel = async (
+  name: string,
   color: string,
-  icono: string,
+  icon: string,
   userId: string
-): Promise<Etiqueta> => {
+): Promise<Label> => {
   const docRef = await addDoc(collection(db, COLLECTION_NAME), {
-    nombre,
+    name,
     color,
-    icono,
+    icon,
     userId,
   });
-  return { id: docRef.id, nombre, color, icono, userId };
+  return { id: docRef.id, name, color, icon, userId };
 };
 
-export const deleteEtiqueta = async (id: string): Promise<void> => {
+export const deleteLabel = async (id: string): Promise<void> => {
   const docRef = doc(db, COLLECTION_NAME, id);
   await deleteDoc(docRef);
 };

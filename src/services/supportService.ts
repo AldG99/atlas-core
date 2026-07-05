@@ -21,28 +21,28 @@ const getRateLimitDocId = (userId: string): string => {
 
 export const getRateLimitStatus = async (
   userId: string
-): Promise<{ mensajesHoy: number; cooldownEnds: Date | null }> => {
-  const snap = await getDoc(doc(db, 'soporteRateLimit', getRateLimitDocId(userId)));
-  if (!snap.exists()) return { mensajesHoy: 0, cooldownEnds: null };
+): Promise<{ messagesToday: number; cooldownEnds: Date | null }> => {
+  const snap = await getDoc(doc(db, 'supportRateLimits', getRateLimitDocId(userId)));
+  if (!snap.exists()) return { messagesToday: 0, cooldownEnds: null };
 
   const data = snap.data();
-  const mensajesHoy: number = data.count ?? 0;
+  const messagesToday: number = data.count ?? 0;
   const lastSent: Date | null = (data.lastSent as Timestamp)?.toDate?.() ?? null;
   const cooldownEnds =
     lastSent && Date.now() - lastSent.getTime() < COOLDOWN_MS
       ? new Date(lastSent.getTime() + COOLDOWN_MS)
       : null;
 
-  return { mensajesHoy, cooldownEnds };
+  return { messagesToday, cooldownEnds };
 };
 
 export const sendSupportMessage = async (
   userId: string,
-  asunto: string,
-  mensaje: string
+  subject: string,
+  message: string
 ): Promise<void> => {
   const limitDocId = getRateLimitDocId(userId);
-  const limitRef = doc(db, 'soporteRateLimit', limitDocId);
+  const limitRef = doc(db, 'supportRateLimits', limitDocId);
   const snap = await getDoc(limitRef);
 
   if (snap.exists()) {
@@ -52,11 +52,11 @@ export const sendSupportMessage = async (
     if (lastSent && Date.now() - lastSent.getTime() < COOLDOWN_MS) throw new Error('COOLDOWN');
   }
 
-  await addDoc(collection(db, 'soporte'), {
+  await addDoc(collection(db, 'supportMessages'), {
     userId,
-    asunto: asunto.trim(),
-    mensaje: mensaje.trim(),
-    fecha: Timestamp.now()
+    subject: subject.trim(),
+    message: message.trim(),
+    createdAt: Timestamp.now()
   });
 
   if (snap.exists()) {
@@ -70,8 +70,8 @@ export const sendSupportMessage = async (
     import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
     {
       user_id: userId,
-      subject: asunto.trim(),
-      message: mensaje.trim(),
+      subject: subject.trim(),
+      message: message.trim(),
       date: new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
     },
     import.meta.env.VITE_EMAILJS_PUBLIC_KEY
