@@ -3,12 +3,12 @@ import { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import type { User, AuthState, LoginCredentials, RegisterCredentials } from '../types/User';
-import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserDataWithAuth, deleteAccount as deleteAccountService, loginMiembro as loginMiembroService, resetPassword } from '../services/authService';
+import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserDataWithAuth, deleteAccount as deleteAccountService, loginMember as loginMemberService, resetPassword } from '../services/authService';
 import type { UpdateProfileData } from '../services/authService';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
-  loginMiembro: (username: string, password: string) => Promise<void>;
+  loginMember: (username: string, password: string) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: UpdateProfileData, imageFile?: File | null) => Promise<void>;
@@ -16,8 +16,8 @@ interface AuthContextType extends AuthState {
   deleteAllData: (password: string) => Promise<void>;
   deleteAccount: (password: string) => Promise<void>;
   sendPasswordReset: (email: string) => Promise<void>;
-  negocioUid: string | null;
-  role: 'admin' | 'miembro';
+  businessUid: string | null;
+  role: 'admin' | 'member';
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const userData = await getUserData(firebaseUser.uid);
-        if (userData?.activo === false) {
+        if (userData?.active === false) {
           await logoutUser();
           setUser(null);
         } else {
@@ -65,11 +65,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const loginMiembro = async (username: string, password: string) => {
+  const loginMember = async (username: string, password: string) => {
     try {
       setError(null);
       setLoading(true);
-      const userData = await loginMiembroService(username, password);
+      const userData = await loginMemberService(username, password);
       setUser(userData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (imageFile) {
         const imageUrl = await uploadProfileImage(imageFile, user.uid);
-        profileData.fotoPerfil = imageUrl;
+        profileData.profilePhoto = imageUrl;
       }
 
       const updatedUser = await updateUserProfile(user.uid, profileData);
@@ -164,15 +164,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const negocioUid = user?.negocioUid ?? user?.uid ?? null;
-  const role = (user?.role ?? 'admin') as 'admin' | 'miembro';
+  const businessUid = user?.businessUid ?? user?.uid ?? null;
+  const role = (user?.role ?? 'admin') as 'admin' | 'member';
 
   const value: AuthContextType = {
     user,
     loading,
     error,
     login,
-    loginMiembro,
+    loginMember,
     register,
     logout,
     updateProfile,
@@ -180,7 +180,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     deleteAllData,
     deleteAccount,
     sendPasswordReset,
-    negocioUid,
+    businessUid,
     role,
   };
 
