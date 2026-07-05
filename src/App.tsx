@@ -2,71 +2,78 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
-import { PedidosProvider } from './context/PedidosContext';
-import { ClientesProvider } from './context/ClientesContext';
-import { ProductosProvider } from './context/ProductosContext';
-import { EtiquetasProvider } from './context/EtiquetasContext';
+import { OrdersProvider } from './context/OrdersContext';
+import { ClientsProvider } from './context/ClientsContext';
+import { ProductsProvider } from './context/ProductsContext';
+import { LabelsProvider } from './context/LabelsContext';
 import { ROUTES } from './config/routes';
 import ProtectedRoute from './components/ui/ProtectedRoute';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import PageLoader from './components/ui/PageLoader';
 import Toast from './components/ui/Toast';
+import Maintenance from './pages/Maintenance';
 import './styles/main.scss';
+
+const MAINTENANCE_MODE = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
 
 const Dashboard      = lazy(() => import('./pages/Dashboard'));
-const NewPedido      = lazy(() => import('./pages/NewPedido'));
-const PedidoDetail   = lazy(() => import('./pages/PedidoDetail'));
-const Clientes       = lazy(() => import('./pages/Clientes'));
-const ClienteDetail  = lazy(() => import('./pages/ClienteDetail'));
-const Productos      = lazy(() => import('./pages/Productos'));
-const ProductoDetail = lazy(() => import('./pages/ProductoDetail'));
-const Reportes       = lazy(() => import('./pages/Reportes'));
-const Perfil         = lazy(() => import('./pages/Perfil'));
-const Configuracion  = lazy(() => import('./pages/Configuracion'));
-const Archivo        = lazy(() => import('./pages/Archivo'));
+const NewOrder       = lazy(() => import('./pages/NewOrder'));
+const OrderDetail    = lazy(() => import('./pages/OrderDetail'));
+const Clients        = lazy(() => import('./pages/Clients'));
+const ClientDetail   = lazy(() => import('./pages/ClientDetail'));
+const Products       = lazy(() => import('./pages/Products'));
+const ProductDetail  = lazy(() => import('./pages/ProductDetail'));
+const Reports        = lazy(() => import('./pages/Reports'));
+const Profile        = lazy(() => import('./pages/Profile'));
+const Settings       = lazy(() => import('./pages/Settings'));
+const Archive        = lazy(() => import('./pages/Archive'));
 const Faq            = lazy(() => import('./pages/Faq'));
-const Soporte        = lazy(() => import('./pages/Soporte'));
-const Planes         = lazy(() => import('./pages/Planes'));
+const Support        = lazy(() => import('./pages/Support'));
+const Plans          = lazy(() => import('./pages/Plans'));
 const Terminos       = lazy(() => import('./pages/Terminos'));
 const Privacidad     = lazy(() => import('./pages/Privacidad'));
 const NotFound       = lazy(() => import('./pages/NotFound'));
 
 const PROTECTED_ROUTES = [
   { path: ROUTES.DASHBOARD,       component: Dashboard      },
-  { path: ROUTES.NEW_PEDIDO,      component: NewPedido      },
-  { path: ROUTES.DETAIL_PEDIDO,   component: PedidoDetail   },
-  { path: ROUTES.CLIENTES,        component: Clientes       },
-  { path: ROUTES.DETAIL_CLIENTE,  component: ClienteDetail  },
-  { path: ROUTES.PRODUCTOS,       component: Productos      },
-  { path: ROUTES.DETAIL_PRODUCTO, component: ProductoDetail },
-  { path: ROUTES.REPORTES,        component: Reportes       },
-  { path: ROUTES.ARCHIVO,         component: Archivo        },
-  { path: ROUTES.PERFIL,          component: Perfil         },
-  { path: ROUTES.CONFIGURACION,   component: Configuracion  },
+  { path: ROUTES.NEW_ORDER,      component: NewOrder       },
+  { path: ROUTES.ORDER_DETAIL,   component: OrderDetail    },
+  { path: ROUTES.CLIENTS,        component: Clients        },
+  { path: ROUTES.CLIENT_DETAIL,  component: ClientDetail   },
+  { path: ROUTES.PRODUCTS,       component: Products       },
+  { path: ROUTES.PRODUCT_DETAIL, component: ProductDetail  },
+  { path: ROUTES.REPORTS,        component: Reports        },
+  { path: ROUTES.ARCHIVE,         component: Archive        },
+  { path: ROUTES.PROFILE,          component: Profile        },
+  { path: ROUTES.SETTINGS,   component: Settings       },
   { path: ROUTES.FAQ,             component: Faq            },
-  { path: ROUTES.SOPORTE,         component: Soporte        },
-  { path: ROUTES.PLANES,          component: Planes         },
+  { path: ROUTES.SUPPORT,         component: Support        },
+  { path: ROUTES.PLANS,          component: Plans          },
 ] as const;
 
 function App() {
+  if (MAINTENANCE_MODE) {
+    return <Maintenance />;
+  }
+
   return (
     <ErrorBoundary>
       <BrowserRouter>
         <AuthProvider>
-          <PedidosProvider>
-          <ClientesProvider>
-          <ProductosProvider>
-          <EtiquetasProvider>
+          <OrdersProvider>
+          <ClientsProvider>
+          <ProductsProvider>
+          <LabelsProvider>
           <ToastProvider>
             <Toast />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path={ROUTES.REGISTER}   element={<Register />} />
-                <Route path={ROUTES.TERMINOS}   element={<Terminos />} />
-                <Route path={ROUTES.PRIVACIDAD} element={<Privacidad />} />
+                <Route path={ROUTES.TERMS}   element={<Terminos />} />
+                <Route path={ROUTES.PRIVACY} element={<Privacidad />} />
 
                 {PROTECTED_ROUTES.map(({ path, component: Component }) => (
                   <Route
@@ -81,10 +88,10 @@ function App() {
               </Routes>
             </Suspense>
           </ToastProvider>
-          </EtiquetasProvider>
-          </ProductosProvider>
-          </ClientesProvider>
-          </PedidosProvider>
+          </LabelsProvider>
+          </ProductsProvider>
+          </ClientsProvider>
+          </OrdersProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
