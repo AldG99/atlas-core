@@ -1,0 +1,149 @@
+.pedido-captura {
+  width: 380px;
+  background: #fff;
+  color: #000;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 28px 24px;
+  box-sizing: border-box;
+
+  &__sep {
+    border: none;
+    margin: 10px 0;
+
+    &--double {
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      padding: 2px 0;
+      height: 4px;
+      background: transparent;
+    }
+
+    &--dashed {
+      border-top: 1px dashed #000;
+    }
+  }
+
+  &__header {
+    text-align: center;
+    padding-bottom: 10px;
+  }
+
+  &__negocio {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+
+  &__folio {
+    font-size: 11px;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  &__info {
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__estado {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  &__section-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+
+  &__product {
+    margin-bottom: 8px;
+  }
+
+  &__product-name {
+    font-weight: bold;
+    word-break: break-word;
+  }
+
+  &__product-detail {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 12px;
+    font-size: 11px;
+  }
+
+  &__clave {
+    font-size: 10px;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+  }
+
+  &__total-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+
+    &--highlight {
+      font-weight: bold;
+      font-size: 13px;
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px dashed #000;
+    }
+  }
+
+  &__notas {
+    font-size: 11px;
+    font-style: italic;
+    padding-left: 4px;
+    word-break: break-word;
+  }
+
+  &__abono-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11px;
+    padding: 1px 0;
+  }
+
+  &__abono-left {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__abono-right {
+    white-space: nowrap;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  &__footer {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.3px;
+  }
+}

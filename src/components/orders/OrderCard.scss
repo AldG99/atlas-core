@@ -1,0 +1,102 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+.pedido-card {
+  @include card;
+  margin-bottom: $spacing-md;
+
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $color-gray-200;
+  }
+
+  &__client {
+    flex: 1;
+  }
+
+  &__name {
+    font-size: $font-size-lg;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__phone {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+  }
+
+  &__status {
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-full;
+    font-size: $font-size-xs;
+    font-weight: 500;
+    color: $color-white;
+  }
+
+  &__body {
+    margin-bottom: $spacing-md;
+  }
+
+  &__products,
+  &__notes {
+    margin-bottom: $spacing-sm;
+
+    strong {
+      display: block;
+      font-size: $font-size-sm;
+      color: $color-gray-600;
+      margin-bottom: $spacing-xs;
+    }
+
+    p {
+      margin: 0;
+      font-size: $font-size-sm;
+      white-space: pre-wrap;
+    }
+  }
+
+  &__total {
+    @include flex-between;
+    padding-top: $spacing-sm;
+    border-top: 1px solid $color-gray-200;
+    font-size: $font-size-lg;
+
+    strong {
+      color: $color-primary;
+    }
+  }
+
+  &__whatsapp {
+    display: flex;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $color-gray-200;
+  }
+
+  &__footer {
+    @include flex-between;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    padding-top: $spacing-md;
+    border-top: 1px solid $color-gray-200;
+  }
+
+  &__date {
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__select {
+    @include input-base;
+    width: auto;
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-sm;
+  }
+}

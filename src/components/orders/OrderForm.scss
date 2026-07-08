@@ -1,0 +1,42 @@
+@use '../../styles/abstracts/variables' as *;
+
+.pedido-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+
+  &__fields {
+    padding: $spacing-md;
+    padding-bottom: 0;
+
+    &--client {
+      padding: $spacing-sm $spacing-md;
+      border-bottom: 1px solid $color-gray-100;
+    }
+
+    &:last-child {
+      padding-bottom: $spacing-md;
+    }
+  }
+
+&__notas-counter {
+    display: block;
+    text-align: right;
+    font-size: $font-size-xs;
+    color: $color-gray-400;
+    margin-top: 4px;
+  }
+
+  .error-message {
+    display: block;
+    color: $color-danger;
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+}

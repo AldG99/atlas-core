@@ -1,0 +1,192 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { OrderItem } from '../../types/Order';
+import type { Product, Label } from '../../types/Product';
+import { LABEL_ICONS } from '../../constants/labelIcons';
+
+interface Props {
+  items: OrderItem[];
+  coverage: number[];
+  focusedRow: number | null;
+  tableScrollRef: React.RefObject<HTMLDivElement | null>;
+  format: (n: number) => string;
+  paid: number;
+  total: number;
+  productCatalog: Product[];
+  allLabels: Label[];
+  onRowClick: (index: number) => void;
+}
+
+const Colgroup = () => (
+  <colgroup>
+    <col style={{ width: '7%' }} />   {/* Clave */}
+    <col style={{ width: '6%' }} />   {/* Cant. */}
+    <col style={{ width: '18%' }} />  {/* Producto */}
+    <col style={{ width: '10%' }} />  {/* Etiquetas */}
+    <col style={{ width: '14%' }} />  {/* Precio */}
+    <col style={{ width: '13%' }} />  {/* Abonado */}
+    <col style={{ width: '22%' }} />  {/* Subtotal */}
+    <col style={{ width: '10%' }} />  {/* Estado */}
+  </colgroup>
+);
+
+const OrderItemsTable: React.FC<Props> = ({
+  items,
+  coverage,
+  focusedRow,
+  tableScrollRef,
+  format,
+  paid,
+  total,
+  productCatalog,
+  allLabels,
+  onRowClick,
+}) => {
+  const { t } = useTranslation();
+  const labelsBySku = useMemo(() => {
+    const map = new Map<string, Label[]>();
+    for (const cp of productCatalog) {
+      if (!cp.sku || !cp.labels?.length) continue;
+      map.set(cp.sku, cp.labels
+        .map(labelId => allLabels.find(l => l.id === labelId))
+        .filter((l): l is Label => !!l));
+    }
+    return map;
+  }, [productCatalog, allLabels]);
+
+  const getLabelsForSku = (sku?: string): Label[] =>
+    sku ? (labelsBySku.get(sku) ?? []) : [];
+
+  return (
+    <div className="pedido-detail__section pedido-detail__section--grow">
+      <div className="pedido-detail__table-wrapper">
+        {/* Header fijo */}
+        <div className="pedido-detail__table-head">
+          <table className="pedido-detail__products-table">
+            <Colgroup />
+            <thead>
+              <tr>
+                <th>{t('orders.code')}</th>
+                <th>{t('orders.quantity')}</th>
+                <th>{t('orders.product')}</th>
+                <th>{t('orders.labels')}</th>
+                <th>{t('orders.price')}</th>
+                <th>{t('orders.paid')}</th>
+                <th className="pedido-detail__col--right">{t('orders.subtotal')}</th>
+                <th>{t('orders.status_col')}</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+
+        {/* Cuerpo scrolleable */}
+        <div ref={tableScrollRef} className="pedido-detail__table-scroll pedido-detail__table-scroll--grow">
+          <table className="pedido-detail__products-table">
+            <Colgroup />
+            <tbody>
+              {items.map((p, index) => {
+                const covered = Math.min(coverage[index] || 0, p.subtotal);
+                const percentage = p.subtotal > 0 ? (covered / p.subtotal) * 100 : 0;
+                const status = percentage >= 100 ? 'paid' : percentage > 0 ? 'partial' : 'pending';
+                return (
+                  <tr
+                    key={index}
+                    className={`pedido-detail__product-row--${status}${focusedRow === index ? ' pedido-detail__product-row--focused' : ''}`}
+                    onClick={() => onRowClick(index)}
+                  >
+                    <td>
+                      {p.sku ? <span className="pedido-detail__clave">{p.sku}</span> : '-'}
+                    </td>
+                    <td>{p.quantity}</td>
+                    <td title={p.name}>
+                      <span className="pedido-detail__product-name">{p.name}</span>
+                    </td>
+                    <td>
+                      <div className="pedido-detail__etiquetas">
+                        {getLabelsForSku(p.sku).map(label => {
+                          const iconData = LABEL_ICONS[label.icon];
+                          const Icon = iconData?.icon;
+                          return (
+                            <span key={label.id} className="pedido-detail__etiqueta" style={{ backgroundColor: label.color }} title={label.name}>
+                              {Icon && <Icon size={12} />}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </td>
+                    <td>
+                      {p.originalPrice && p.discount ? (
+                        <div className="pedido-detail__product-subtotal-discount">
+                          <span className="pedido-detail__product-subtotal-original">{format(p.originalPrice)}</span>
+                          <span>{format(p.unitPrice)}</span>
+                        </div>
+                      ) : (
+                        format(p.unitPrice)
+                      )}
+                    </td>
+                    <td>
+                      <div className="pedido-detail__product-paid-cell">
+                        <span>{format(covered)}</span>
+                      </div>
+                    </td>
+                    <td className="pedido-detail__col--right">
+                      {p.originalPrice && p.discount ? (
+                        <div className="pedido-detail__product-subtotal-discount">
+                          <span className="pedido-detail__product-discount-badge">-{p.discount}%</span>
+                          <span className="pedido-detail__product-subtotal-original">{format(p.originalPrice * p.quantity)}</span>
+                          <span>{format(p.subtotal)}</span>
+                        </div>
+                      ) : (
+                        format(p.subtotal)
+                      )}
+                    </td>
+                    <td>
+                      <span className={`pedido-detail__product-status pedido-detail__product-status--${status}`}>
+                        {status === 'paid' ? t('orders.detail.statusPaid') : status === 'partial' ? `${Math.round(percentage)}%` : t('orders.detail.statusPending')}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pie fijo (total) */}
+        <div className="pedido-detail__table-foot">
+          <table className="pedido-detail__products-table">
+            <Colgroup />
+            <tfoot className="pedido-detail__products-tfoot">
+              <tr className="pedido-detail__product-total-row">
+                <td><strong>{t('common.total')}</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                  <div className="pedido-detail__product-paid-cell">
+                    <strong>{format(paid)}</strong>
+                  </div>
+                </td>
+                <td><strong>{format(total)}</strong></td>
+                <td>
+                  <strong className={
+                    paid >= total
+                      ? 'pedido-detail__product-status--paid'
+                      : paid > 0
+                        ? 'pedido-detail__product-status--partial'
+                        : 'pedido-detail__product-status--pending'
+                  }>
+                    {paid >= total ? t('orders.detail.statusLiquidated') : format(total - paid)}
+                  </strong>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default OrderItemsTable;
