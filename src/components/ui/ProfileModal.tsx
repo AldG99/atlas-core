@@ -14,13 +14,13 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(user?.fotoPerfil || null);
+  const [previewImage, setPreviewImage] = useState<string | null>(user?.profilePhoto || null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
-    nombreNegocio: user?.nombreNegocio || '',
+    businessName: user?.businessName || '',
     email: user?.email || '',
-    telefono: user?.telefono || '',
-    direccion: user?.direccion || ''
+    phone: user?.phone || '',
+    address: user?.address || ''
   });
 
   const getInitials = (name: string | undefined) => {
@@ -63,9 +63,9 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
     setIsSaving(true);
     try {
       await updateProfile({
-        nombreNegocio: formData.nombreNegocio,
-        telefono: formData.telefono,
-        direccion: formData.direccion
+        businessName: formData.businessName,
+        phone: formData.phone,
+        address: formData.address
       }, imageFile);
       setIsEditing(false);
       setImageFile(null);
@@ -78,12 +78,12 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
 
   const handleCancel = () => {
     setFormData({
-      nombreNegocio: user?.nombreNegocio || '',
+      businessName: user?.businessName || '',
       email: user?.email || '',
-      telefono: user?.telefono || '',
-      direccion: user?.direccion || ''
+      phone: user?.phone || '',
+      address: user?.address || ''
     });
-    setPreviewImage(user?.fotoPerfil || null);
+    setPreviewImage(user?.profilePhoto || null);
     setImageFile(null);
     setIsEditing(false);
   };
@@ -107,7 +107,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
               {previewImage ? (
                 <img src={previewImage} alt={t('profile.profilePhoto')} />
               ) : (
-                getInitials(user?.nombreNegocio)
+                getInitials(user?.businessName)
               )}
               {isEditing && (
                 <div className="profile-modal__avatar-overlay">
@@ -140,13 +140,13 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
               {isEditing ? (
                 <input
                   type="text"
-                  name="nombreNegocio"
-                  value={formData.nombreNegocio}
+                  name="businessName"
+                  value={formData.businessName}
                   onChange={handleChange}
                   className="input"
                 />
               ) : (
-                <p>{user?.nombreNegocio || '—'}</p>
+                <p>{user?.businessName || '—'}</p>
               )}
             </div>
 
@@ -170,13 +170,13 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
               {isEditing ? (
                 <input
                   type="tel"
-                  name="telefono"
-                  value={formData.telefono}
+                  name="phone"
+                  value={formData.phone}
                   onChange={handleChange}
                   className="input"
                 />
               ) : (
-                <p>{user?.telefono || '—'}</p>
+                <p>{user?.phone || '—'}</p>
               )}
             </div>
 
@@ -185,13 +185,13 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
               {isEditing ? (
                 <input
                   type="text"
-                  name="direccion"
-                  value={formData.direccion}
+                  name="address"
+                  value={formData.address}
                   onChange={handleChange}
                   className="input"
                 />
               ) : (
-                <p>{user?.direccion || '—'}</p>
+                <p>{user?.address || '—'}</p>
               )}
             </div>
           </div>

@@ -51,7 +51,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
           </NavLink>
 
           <NavLink
-            to={ROUTES.CLIENTES}
+            to={ROUTES.CLIENTS}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
@@ -60,7 +60,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
           </NavLink>
 
           <NavLink
-            to={ROUTES.PRODUCTOS}
+            to={ROUTES.PRODUCTS}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
@@ -69,7 +69,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
           </NavLink>
 
           <NavLink
-            to={ROUTES.REPORTES}
+            to={ROUTES.REPORTS}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
@@ -78,7 +78,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
           </NavLink>
 
           <NavLink
-            to={ROUTES.ARCHIVO}
+            to={ROUTES.ARCHIVE}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
@@ -99,7 +99,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
           </NavLink>
 
           <NavLink
-            to={ROUTES.SOPORTE}
+            to={ROUTES.SUPPORT}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >

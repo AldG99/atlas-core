@@ -4,16 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold, PiShieldCheckBold, PiGearSixBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
-import type { Notificacion } from '../../hooks/useNotificaciones';
+import type { Notification } from '../../hooks/useNotifications';
 import { ROUTES } from '../../config/routes';
 import Avatar from './Avatar';
 import './Header.scss';
 
 interface HeaderProps {
-  notificaciones: Notificacion[];
+  notifications: Notification[];
 }
 
-const Header = ({ notificaciones }: HeaderProps) => {
+const Header = ({ notifications }: HeaderProps) => {
   const { t, i18n } = useTranslation();
   const { user, logout, role } = useAuth();
   const { showToast } = useToast();
@@ -58,7 +58,7 @@ const Header = ({ notificaciones }: HeaderProps) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleNotificacionClick = (n: Notificacion) => {
+  const handleNotificationClick = (n: Notification) => {
     setShowNotifications(false);
     navigate(n.link, { state: n.filterState });
   };
@@ -78,13 +78,13 @@ const Header = ({ notificaciones }: HeaderProps) => {
           <button
             className="header__icon-btn header__icon-btn--notifications"
             onClick={() => { setShowNotifications(!showNotifications); setShowProfileMenu(false); }}
-            aria-label={`${t('nav.notifications')}${notificaciones.length > 0 ? ` (${notificaciones.length})` : ''}`}
+            aria-label={`${t('nav.notifications')}${notifications.length > 0 ? ` (${notifications.length})` : ''}`}
             aria-haspopup="true"
             aria-expanded={showNotifications}
           >
             <PiBellBold size={20} />
-            {notificaciones.length > 0 && (
-              <span className="header__notification-badge" aria-hidden="true">{notificaciones.length > 99 ? '99+' : notificaciones.length}</span>
+            {notifications.length > 0 && (
+              <span className="header__notification-badge" aria-hidden="true">{notifications.length > 99 ? '99+' : notifications.length}</span>
             )}
           </button>
 
@@ -94,26 +94,26 @@ const Header = ({ notificaciones }: HeaderProps) => {
                 <span>{t('nav.notifications')}</span>
               </div>
               <div className="header__dropdown-content">
-                {notificaciones.length === 0 ? (
+                {notifications.length === 0 ? (
                   <div className="header__notification-empty">
                     <p>{t('nav.noNotifications')}</p>
                   </div>
                 ) : (
-                  notificaciones.map(n => (
+                  notifications.map(n => (
                     <div
                       key={n.id}
-                      className={`header__notification-item header__notification-item--${n.tipo}`}
-                      onClick={() => handleNotificacionClick(n)}
+                      className={`header__notification-item header__notification-item--${n.type}`}
+                      onClick={() => handleNotificationClick(n)}
                     >
                       <div className="header__notification-icon">
-                        {n.tipo === 'warning'
+                        {n.type === 'warning'
                           ? <PiWarningBold size={16} />
                           : <PiInfoBold size={16} />
                         }
                       </div>
                       <div className="header__notification-text">
-                        <p>{n.titulo}</p>
-                        <span>{n.descripcion}</span>
+                        <p>{n.title}</p>
+                        <span>{n.description}</span>
                       </div>
                     </div>
                   ))
@@ -130,24 +130,24 @@ const Header = ({ notificaciones }: HeaderProps) => {
             onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false); }}
             aria-haspopup="true"
             aria-expanded={showProfileMenu}
-            aria-label={`${t('nav.profile')} — ${user?.nombreNegocio ?? ''}`}
+            aria-label={`${t('nav.profile')} — ${user?.businessName ?? ''}`}
           >
             <div className="header__avatar">
               <Avatar
-                src={user?.fotoPerfil}
-                initials={getInitials(user?.nombreNegocio)}
-                alt={user?.nombreNegocio}
+                src={user?.profilePhoto}
+                initials={getInitials(user?.businessName)}
+                alt={user?.businessName}
               />
             </div>
             <div className="header__profile-info">
-              <span className="header__profile-name">{user?.nombreNegocio}</span>
+              <span className="header__profile-name">{user?.businessName}</span>
               <div className="header__profile-bottom">
                 <span className="header__profile-role">
-                  {user?.nombre && user?.apellido
-                    ? `${user.nombre} ${user.apellido}`
+                  {user?.firstName && user?.lastName
+                    ? `${user.firstName} ${user.lastName}`
                     : t('auth.login.adminTab')}
                 </span>
-                {role === 'miembro'
+                {role === 'member'
                   ? <PiUserBold size={11} color="#2368C4" />
                   : <PiShieldCheckBold size={11} color="#F8A800" />
                 }
@@ -163,7 +163,7 @@ const Header = ({ notificaciones }: HeaderProps) => {
                   className="header__dropdown-item"
                   onClick={() => {
                     setShowProfileMenu(false);
-                    navigate(ROUTES.PERFIL);
+                    navigate(ROUTES.PROFILE);
                   }}
                 >
                   <PiUserBold size={18} />
@@ -173,7 +173,7 @@ const Header = ({ notificaciones }: HeaderProps) => {
                   className="header__dropdown-item"
                   onClick={() => {
                     setShowProfileMenu(false);
-                    navigate(ROUTES.CONFIGURACION);
+                    navigate(ROUTES.SETTINGS);
                   }}
                 >
                   <PiGearSixBold size={18} />
@@ -183,7 +183,7 @@ const Header = ({ notificaciones }: HeaderProps) => {
                   className="header__dropdown-item"
                   onClick={() => {
                     setShowProfileMenu(false);
-                    navigate(ROUTES.PLANES);
+                    navigate(ROUTES.PLANS);
                   }}
                 >
                   <PiCrownSimpleBold size={18} />

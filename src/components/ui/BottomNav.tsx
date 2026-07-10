@@ -30,7 +30,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
       </NavLink>
 
       <NavLink
-        to={ROUTES.CLIENTES}
+        to={ROUTES.CLIENTS}
         className={({ isActive }) =>
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
@@ -40,7 +40,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
       </NavLink>
 
       <NavLink
-        to={ROUTES.PRODUCTOS}
+        to={ROUTES.PRODUCTS}
         className={({ isActive }) =>
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
@@ -50,7 +50,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
       </NavLink>
 
       <NavLink
-        to={ROUTES.REPORTES}
+        to={ROUTES.REPORTS}
         className={({ isActive }) =>
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }

@@ -5,7 +5,7 @@ import { ROUTES } from '../../config/routes';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: Array<'admin' | 'miembro'>;
+  allowedRoles?: Array<'admin' | 'member'>;
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
