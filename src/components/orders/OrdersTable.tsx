@@ -190,7 +190,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
                     {order.items.reduce((sum, p) => sum + p.quantity, 0)}
                   </span>
                   {order.items.some(p => p.discount && p.discount > 0) && (
-                    <span className="pedidos-table__discount-indicator" title="Incluye descuento">%</span>
+                    <span className="pedidos-table__discount-indicator" title={t('orders.table.hasDiscount')}>%</span>
                   )}
                 </div>
               </td>

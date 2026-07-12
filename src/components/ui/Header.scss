@@ -108,17 +108,22 @@
   &__profile-btn {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: $spacing-sm;
     padding: $spacing-xs $spacing-sm;
     padding-right: $spacing-md;
     width: auto;
+    flex-shrink: 0;
     white-space: nowrap;
     background-color: $color-white;
     border: 1px solid $color-gray-300;
     border-radius: 0;
     cursor: pointer;
     transition: all $transition-fast;
+
+    @include md {
+      width: 220px;
+    }
 
     &:hover {
       background-color: $color-gray-100;
@@ -153,7 +158,9 @@
   &__profile-info {
     display: none;
     flex-direction: column;
-    align-items: flex-start;
+    text-align: left;
+    min-width: 0;
+    width: 130px;
     margin-right: $spacing-xs;
 
     @include md {
@@ -162,24 +169,35 @@
   }
 
   &__profile-name {
+    max-width: 100%;
     font-size: $font-size-sm;
     font-weight: 600;
     color: $color-gray-800;
     line-height: 1.2;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__profile-bottom {
     display: flex;
     align-items: center;
     gap: 5px;
+    min-width: 0;
   }
 
   &__profile-role {
+    min-width: 0;
     font-size: $font-size-xs;
     color: $color-gray-500;
     line-height: 1.2;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    & + svg {
+      flex-shrink: 0;
+    }
   }
 
 

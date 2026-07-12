@@ -116,7 +116,8 @@ export const useDashboardFilters = ({
       result = result.filter(
         (o) =>
           o.clientName.toLowerCase().includes(term) ||
-          o.clientPhone.toLowerCase().includes(term)
+          o.clientPhone.toLowerCase().includes(term) ||
+          (o.orderNumber?.toLowerCase().includes(term) ?? false)
       );
     }
 

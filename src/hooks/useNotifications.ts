@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOrders } from './useOrders';
 import { useProducts } from './useProducts';
 
@@ -21,6 +22,7 @@ const daysSince = (date: Date): number =>
   Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24));
 
 export const useNotifications = () => {
+  const { t } = useTranslation();
   const { orders } = useOrders();
   const { products } = useProducts();
 
@@ -37,8 +39,8 @@ export const useNotifications = () => {
       result.push({
         id: 'pendiente_atascado',
         type: 'warning',
-        title: `${stuckPending.length} pedido${stuckPending.length > 1 ? 's' : ''} en Pendiente`,
-        description: `Llevan más de ${DAYS_PENDING} días sin moverse`,
+        title: t('notifications.stuckPending.title', { count: stuckPending.length }),
+        description: t('notifications.stuckPending.description', { days: DAYS_PENDING }),
         link: '/dashboard',
         filterState: { filterStatus: 'pending' },
       });
@@ -52,8 +54,8 @@ export const useNotifications = () => {
       result.push({
         id: 'preparacion_atascada',
         type: 'warning',
-        title: `${stuckPreparing.length} pedido${stuckPreparing.length > 1 ? 's' : ''} en preparación`,
-        description: `Llevan más de ${DAYS_PREPARING} días sin entregarse`,
+        title: t('notifications.stuckPreparing.title', { count: stuckPreparing.length }),
+        description: t('notifications.stuckPreparing.description', { days: DAYS_PREPARING }),
         link: '/dashboard',
         filterState: { filterStatus: 'preparing' },
       });
@@ -70,8 +72,8 @@ export const useNotifications = () => {
       result.push({
         id: 'descuento_venciendo',
         type: 'info',
-        title: `${expiringDiscounts.length} descuento${expiringDiscounts.length > 1 ? 's' : ''} por vencer`,
-        description: `Vencen en los próximos ${DAYS_DISCOUNT} días`,
+        title: t('notifications.expiringDiscounts.title', { count: expiringDiscounts.length }),
+        description: t('notifications.expiringDiscounts.description', { days: DAYS_DISCOUNT }),
         link: '/products',
         filterState: { filterDescuento: true },
       });
@@ -93,8 +95,8 @@ export const useNotifications = () => {
       result.push({
         id: 'abono_pendiente',
         type: 'warning',
-        title: `${pendingPayments.length} pedido${pendingPayments.length > 1 ? 's' : ''} con saldo pendiente`,
-        description: `Sin abonos en más de ${DAYS_PAYMENT} días`,
+        title: t('notifications.pendingPayments.title', { count: pendingPayments.length }),
+        description: t('notifications.pendingPayments.description', { days: DAYS_PAYMENT }),
         link: '/dashboard',
         filterState: { filterStatus: 'abono_pendiente' },
       });
@@ -106,8 +108,12 @@ export const useNotifications = () => {
       result.push({
         id: 'sin_stock',
         type: 'warning',
-        title: `${outOfStock.length} producto${outOfStock.length > 1 ? 's' : ''} sin stock`,
-        description: outOfStock.length === 1 ? outOfStock[0].name : `${outOfStock[0].name} y ${outOfStock.length - 1} más`,
+        title: t('notifications.outOfStock.title', { count: outOfStock.length }),
+        description: t('notifications.outOfStock.description', {
+          count: outOfStock.length,
+          name: outOfStock[0].name,
+          remaining: outOfStock.length - 1,
+        }),
         link: '/products',
         filterState: {},
       });
@@ -121,15 +127,15 @@ export const useNotifications = () => {
       result.push({
         id: 'stock_bajo',
         type: 'info',
-        title: `${lowStock.length} producto${lowStock.length > 1 ? 's' : ''} con stock bajo`,
-        description: `Menos de ${LOW_STOCK_THRESHOLD} unidades disponibles`,
+        title: t('notifications.lowStock.title', { count: lowStock.length }),
+        description: t('notifications.lowStock.description', { threshold: LOW_STOCK_THRESHOLD }),
         link: '/products',
         filterState: {},
       });
     }
 
     return result;
-  }, [orders, products]);
+  }, [orders, products, t]);
 
   return { notifications };
 };

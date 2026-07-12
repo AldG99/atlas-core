@@ -264,7 +264,7 @@
     "googleDrive": "Google Drive",
     "uploading": "Enviando...",
     "newOrder": "Novo pedido",
-    "searchPlaceholder": "Pesquisar por nome ou telefone...",
+    "searchPlaceholder": "Pesquisar por nome, telefone ou número...",
     "ordersToday": "Pedidos hoje",
     "salesToday": "Vendas hoje",
     "delivered": "Entregue",
@@ -351,7 +351,8 @@
       "status": "Status",
       "date": "Data",
       "empty": "Nenhum pedido encontrado",
-      "emptySearch": "Nenhum pedido encontrado para \"{{term}}\""
+      "emptySearch": "Nenhum pedido encontrado para \"{{term}}\"",
+      "hasDiscount": "Inclui desconto"
     },
     "detail": {
       "loading": "Carregando pedido...",
@@ -1094,6 +1095,39 @@
           "Até 6 membros na sua equipe"
         ]
       }
+    }
+  },
+  "notifications": {
+    "stuckPending": {
+      "title": "{{count}} pedido Pendente",
+      "title_plural": "{{count}} pedidos Pendentes",
+      "description": "Parado há mais de {{days}} dias"
+    },
+    "stuckPreparing": {
+      "title": "{{count}} pedido em preparação",
+      "title_plural": "{{count}} pedidos em preparação",
+      "description": "Não entregue há mais de {{days}} dias"
+    },
+    "expiringDiscounts": {
+      "title": "{{count}} desconto a vencer",
+      "title_plural": "{{count}} descontos a vencer",
+      "description": "Vencem nos próximos {{days}} dias"
+    },
+    "pendingPayments": {
+      "title": "{{count}} pedido com saldo pendente",
+      "title_plural": "{{count}} pedidos com saldo pendente",
+      "description": "Sem pagamentos há mais de {{days}} dias"
+    },
+    "outOfStock": {
+      "title": "{{count}} produto sem estoque",
+      "title_plural": "{{count}} produtos sem estoque",
+      "description": "{{name}}",
+      "description_plural": "{{name}} e mais {{remaining}}"
+    },
+    "lowStock": {
+      "title": "{{count}} produto com estoque baixo",
+      "title_plural": "{{count}} produtos com estoque baixo",
+      "description": "Menos de {{threshold}} unidades disponíveis"
     }
   },
   "notFound": {

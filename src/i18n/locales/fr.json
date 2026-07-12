@@ -264,7 +264,7 @@
     "googleDrive": "Google Drive",
     "uploading": "Envoi...",
     "newOrder": "Nouvelle commande",
-    "searchPlaceholder": "Rechercher par nom ou téléphone...",
+    "searchPlaceholder": "Rechercher par nom, téléphone ou référence...",
     "ordersToday": "Commandes aujourd'hui",
     "salesToday": "Ventes du jour",
     "delivered": "Livrées",
@@ -351,7 +351,8 @@
       "status": "Statut",
       "date": "Date",
       "empty": "Aucune commande",
-      "emptySearch": "Aucune commande trouvée pour \"{{term}}\""
+      "emptySearch": "Aucune commande trouvée pour \"{{term}}\"",
+      "hasDiscount": "Inclut une remise"
     },
     "detail": {
       "loading": "Chargement de la commande...",
@@ -1094,6 +1095,39 @@
           "Jusqu'à 6 membres dans votre équipe"
         ]
       }
+    }
+  },
+  "notifications": {
+    "stuckPending": {
+      "title": "{{count}} commande en attente",
+      "title_plural": "{{count}} commandes en attente",
+      "description": "Bloquée depuis plus de {{days}} jours"
+    },
+    "stuckPreparing": {
+      "title": "{{count}} commande en préparation",
+      "title_plural": "{{count}} commandes en préparation",
+      "description": "Non livrée depuis plus de {{days}} jours"
+    },
+    "expiringDiscounts": {
+      "title": "{{count}} remise arrivant à expiration",
+      "title_plural": "{{count}} remises arrivant à expiration",
+      "description": "Expire dans les {{days}} prochains jours"
+    },
+    "pendingPayments": {
+      "title": "{{count}} commande avec solde en attente",
+      "title_plural": "{{count}} commandes avec solde en attente",
+      "description": "Aucun paiement depuis plus de {{days}} jours"
+    },
+    "outOfStock": {
+      "title": "{{count}} produit en rupture de stock",
+      "title_plural": "{{count}} produits en rupture de stock",
+      "description": "{{name}}",
+      "description_plural": "{{name}} et {{remaining}} de plus"
+    },
+    "lowStock": {
+      "title": "{{count}} produit avec un stock faible",
+      "title_plural": "{{count}} produits avec un stock faible",
+      "description": "Moins de {{threshold}} unités disponibles"
     }
   },
   "notFound": {

@@ -264,7 +264,7 @@
     "googleDrive": "Google Drive",
     "uploading": "Subiendo...",
     "newOrder": "Nuevo pedido",
-    "searchPlaceholder": "Buscar por nombre o teléfono...",
+    "searchPlaceholder": "Buscar por nombre, teléfono o folio...",
     "ordersToday": "Pedidos hoy",
     "salesToday": "Ventas del día",
     "delivered": "Entregados",
@@ -351,7 +351,8 @@
       "status": "Estado",
       "date": "Fecha",
       "empty": "No hay ningún pedido",
-      "emptySearch": "No se encontraron pedidos para \"{{term}}\""
+      "emptySearch": "No se encontraron pedidos para \"{{term}}\"",
+      "hasDiscount": "Incluye descuento"
     },
     "detail": {
       "loading": "Cargando pedido...",
@@ -1094,6 +1095,39 @@
           "Hasta 6 miembros en tu negocio"
         ]
       }
+    }
+  },
+  "notifications": {
+    "stuckPending": {
+      "title": "{{count}} pedido en Pendiente",
+      "title_plural": "{{count}} pedidos en Pendiente",
+      "description": "Llevan más de {{days}} días sin moverse"
+    },
+    "stuckPreparing": {
+      "title": "{{count}} pedido en preparación",
+      "title_plural": "{{count}} pedidos en preparación",
+      "description": "Llevan más de {{days}} días sin entregarse"
+    },
+    "expiringDiscounts": {
+      "title": "{{count}} descuento por vencer",
+      "title_plural": "{{count}} descuentos por vencer",
+      "description": "Vencen en los próximos {{days}} días"
+    },
+    "pendingPayments": {
+      "title": "{{count}} pedido con saldo pendiente",
+      "title_plural": "{{count}} pedidos con saldo pendiente",
+      "description": "Sin abonos en más de {{days}} días"
+    },
+    "outOfStock": {
+      "title": "{{count}} producto sin stock",
+      "title_plural": "{{count}} productos sin stock",
+      "description": "{{name}}",
+      "description_plural": "{{name}} y {{remaining}} más"
+    },
+    "lowStock": {
+      "title": "{{count}} producto con stock bajo",
+      "title_plural": "{{count}} productos con stock bajo",
+      "description": "Menos de {{threshold}} unidades disponibles"
     }
   },
   "notFound": {

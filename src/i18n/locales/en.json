@@ -264,7 +264,7 @@
     "googleDrive": "Google Drive",
     "uploading": "Uploading...",
     "newOrder": "New order",
-    "searchPlaceholder": "Search by name or phone...",
+    "searchPlaceholder": "Search by name, phone or folio...",
     "ordersToday": "Orders today",
     "salesToday": "Sales today",
     "delivered": "Delivered",
@@ -351,7 +351,8 @@
       "status": "Status",
       "date": "Date",
       "empty": "No orders found",
-      "emptySearch": "No orders found for \"{{term}}\""
+      "emptySearch": "No orders found for \"{{term}}\"",
+      "hasDiscount": "Includes discount"
     },
     "detail": {
       "loading": "Loading order...",
@@ -1094,6 +1095,39 @@
           "Up to 6 team members"
         ]
       }
+    }
+  },
+  "notifications": {
+    "stuckPending": {
+      "title": "{{count}} order in Pending",
+      "title_plural": "{{count}} orders in Pending",
+      "description": "Stuck for more than {{days}} days without movement"
+    },
+    "stuckPreparing": {
+      "title": "{{count}} order in preparation",
+      "title_plural": "{{count}} orders in preparation",
+      "description": "Not delivered for more than {{days}} days"
+    },
+    "expiringDiscounts": {
+      "title": "{{count}} discount ending soon",
+      "title_plural": "{{count}} discounts ending soon",
+      "description": "Ending within the next {{days}} days"
+    },
+    "pendingPayments": {
+      "title": "{{count}} order with pending balance",
+      "title_plural": "{{count}} orders with pending balance",
+      "description": "No payments in more than {{days}} days"
+    },
+    "outOfStock": {
+      "title": "{{count}} product out of stock",
+      "title_plural": "{{count}} products out of stock",
+      "description": "{{name}}",
+      "description_plural": "{{name}} and {{remaining}} more"
+    },
+    "lowStock": {
+      "title": "{{count}} product with low stock",
+      "title_plural": "{{count}} products with low stock",
+      "description": "Fewer than {{threshold}} units available"
     }
   },
   "notFound": {
