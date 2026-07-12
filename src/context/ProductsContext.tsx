@@ -8,6 +8,7 @@ import {
   deleteProduct,
 } from '../services/productService';
 import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
+import i18n from '../i18n';
 
 interface ProductsContextType {
   products: Product[];
@@ -54,7 +55,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   const addProduct = async (data: ProductFormData): Promise<Product | undefined> => {
     if (!user || !businessUid) return;
     const limits = getPlanLimits(user.plan);
-    checkPlanLimit(products.length, limits.products, 'productos');
+    checkPlanLimit(products.length, limits.products, i18n.t('common.resources.products'));
     const id = await createProduct(data, businessUid);
     const newProduct = { id, ...data, userId: businessUid, createdAt: new Date() } as Product;
     setProducts((prev) => [...prev, newProduct].sort((a, b) => a.name.localeCompare(b.name)));

@@ -38,6 +38,11 @@ interface FormErrors {
   lastName?: string;
   birthDate?: string;
   phone?: string;
+  street?: string;
+  exteriorNumber?: string;
+  neighborhood?: string;
+  city?: string;
+  postalCode?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -45,13 +50,21 @@ interface FormErrors {
 
 const Register = () => {
   const { t } = useTranslation();
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [businessName, setBusinessName] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [phone, setPhone] = useState('');
   const [phoneCountryCode, setPhoneCountryCode] = useState('MX');
+  const [street, setStreet] = useState('');
+  const [exteriorNumber, setExteriorNumber] = useState('');
+  const [interiorNumber, setInteriorNumber] = useState('');
+  const [neighborhood, setNeighborhood] = useState('');
+  const [city, setCity] = useState('');
+  const [addressState, setAddressState] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [country, setCountry] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -127,6 +140,43 @@ const Register = () => {
   const validateStep2 = (): boolean => {
     const newErrors: FormErrors = {};
 
+    if (!street.trim()) {
+      newErrors.street = t('clients.modal.errors.streetRequired');
+    } else if (street.trim().length < 3) {
+      newErrors.street = t('clients.modal.errors.streetShort');
+    }
+
+    if (!exteriorNumber.trim()) {
+      newErrors.exteriorNumber = t('clients.modal.errors.exteriorNumberRequired');
+    } else if (!/\d/.test(exteriorNumber)) {
+      newErrors.exteriorNumber = t('clients.modal.errors.exteriorNumberInvalid');
+    }
+
+    if (!neighborhood.trim()) {
+      newErrors.neighborhood = t('clients.modal.errors.colonyRequired');
+    } else if (neighborhood.trim().length < 3) {
+      newErrors.neighborhood = t('clients.modal.errors.colonyShort');
+    }
+
+    if (!city.trim()) {
+      newErrors.city = t('clients.modal.errors.cityRequired');
+    } else if (city.trim().length < 3) {
+      newErrors.city = t('clients.modal.errors.cityShort');
+    }
+
+    if (!postalCode.trim()) {
+      newErrors.postalCode = t('clients.modal.errors.postalRequired');
+    } else if (!/^\d{5}$/.test(postalCode.trim())) {
+      newErrors.postalCode = t('clients.modal.errors.postalInvalid');
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStep3 = (): boolean => {
+    const newErrors: FormErrors = {};
+
     if (!email.trim()) {
       newErrors.email = t('auth.register.errors.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
@@ -145,7 +195,7 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = (e: FormEvent) => {
+  const handleNextFromStep1 = (e: FormEvent) => {
     e.preventDefault();
     if (validateStep1()) {
       setErrors({});
@@ -153,16 +203,24 @@ const Register = () => {
     }
   };
 
+  const handleNextFromStep2 = (e: FormEvent) => {
+    e.preventDefault();
+    if (validateStep2()) {
+      setErrors({});
+      setStep(3);
+    }
+  };
+
   const handleBack = () => {
     setErrors({});
     setSubmitError('');
-    setStep(1);
+    setStep((s) => (s - 1) as 1 | 2);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitError('');
-    if (!validateStep2()) return;
+    if (!validateStep3()) return;
 
     setLoading(true);
     try {
@@ -175,6 +233,14 @@ const Register = () => {
         birthDate,
         phone,
         phoneCountryCode,
+        street: street.trim(),
+        exteriorNumber: exteriorNumber.trim(),
+        interiorNumber: interiorNumber.trim(),
+        neighborhood: neighborhood.trim(),
+        city: city.trim(),
+        state: addressState.trim(),
+        postalCode: postalCode.trim(),
+        country: country.trim(),
       });
       showToast(t('auth.register.welcome', { businessName: businessName.trim() }), 'success');
       navigate(ROUTES.DASHBOARD);
@@ -201,16 +267,21 @@ const Register = () => {
             <span className="register-form__step-label">{t('auth.register.step1')}</span>
           </div>
           <div className="register-form__step-line" />
-          <div className={`register-form__step ${step === 2 ? 'register-form__step--active' : ''}`}>
+          <div className={`register-form__step ${step === 2 ? 'register-form__step--active' : step === 3 ? 'register-form__step--done' : ''}`}>
             <span className="register-form__step-dot">2</span>
             <span className="register-form__step-label">{t('auth.register.step2')}</span>
+          </div>
+          <div className="register-form__step-line" />
+          <div className={`register-form__step ${step === 3 ? 'register-form__step--active' : ''}`}>
+            <span className="register-form__step-dot">3</span>
+            <span className="register-form__step-label">{t('auth.register.step3')}</span>
           </div>
         </div>
 
         <div className="register-form__panels">
-          {/* Paso 1 */}
+          {/* Paso 1: datos personales/negocio */}
           <form
-            onSubmit={handleNext}
+            onSubmit={handleNextFromStep1}
             className={step !== 1 ? 'register-form__panel--hidden' : ''}
             {...(step !== 1 ? { inert: true } : {})}
           >
@@ -292,11 +363,139 @@ const Register = () => {
             </button>
           </form>
 
-          {/* Paso 2 */}
+          {/* Paso 2: domicilio */}
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleNextFromStep2}
             className={step !== 2 ? 'register-form__panel--hidden' : ''}
             {...(step !== 2 ? { inert: true } : {})}
+          >
+            <div className="register-form__grid">
+              <div className="form-group">
+                <label htmlFor="country">{t('clients.modal.country')}</label>
+                <input
+                  type="text"
+                  id="country"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="input"
+                  placeholder={t('clients.modal.countryPlaceholder')}
+                  maxLength={40}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="addressState">{t('clients.modal.state')}</label>
+                <input
+                  type="text"
+                  id="addressState"
+                  value={addressState}
+                  onChange={(e) => setAddressState(e.target.value)}
+                  className="input"
+                  placeholder={t('clients.modal.statePlaceholder')}
+                  maxLength={60}
+                />
+              </div>
+            </div>
+
+            <div className="register-form__grid">
+              <div className="form-group">
+                <label htmlFor="city">{t('clients.modal.city')}</label>
+                <input
+                  type="text"
+                  id="city"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className={`input${errors.city ? ' input--error' : ''}`}
+                  placeholder={t('clients.modal.cityPlaceholder')}
+                  maxLength={60}
+                />
+                {errors.city && <span className="register-form__field-error">{errors.city}</span>}
+              </div>
+              <div className="form-group">
+                <label htmlFor="neighborhood">{t('clients.modal.colony')}</label>
+                <input
+                  type="text"
+                  id="neighborhood"
+                  value={neighborhood}
+                  onChange={(e) => setNeighborhood(e.target.value)}
+                  className={`input${errors.neighborhood ? ' input--error' : ''}`}
+                  placeholder={t('clients.modal.colonyPlaceholder')}
+                  maxLength={60}
+                />
+                {errors.neighborhood && <span className="register-form__field-error">{errors.neighborhood}</span>}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="street">{t('clients.modal.street')}</label>
+              <input
+                type="text"
+                id="street"
+                value={street}
+                onChange={(e) => setStreet(e.target.value)}
+                className={`input${errors.street ? ' input--error' : ''}`}
+                placeholder={t('clients.modal.streetPlaceholder')}
+                maxLength={80}
+              />
+              {errors.street && <span className="register-form__field-error">{errors.street}</span>}
+            </div>
+
+            <div className="register-form__grid">
+              <div className="form-group">
+                <label htmlFor="exteriorNumber">{t('clients.modal.exteriorNumber')}</label>
+                <input
+                  type="text"
+                  id="exteriorNumber"
+                  value={exteriorNumber}
+                  onChange={(e) => setExteriorNumber(e.target.value)}
+                  className={`input${errors.exteriorNumber ? ' input--error' : ''}`}
+                  placeholder={t('clients.modal.exteriorNumberPlaceholder')}
+                  maxLength={10}
+                />
+                {errors.exteriorNumber && <span className="register-form__field-error">{errors.exteriorNumber}</span>}
+              </div>
+              <div className="form-group">
+                <label htmlFor="interiorNumber">{t('clients.modal.interiorNumber')}</label>
+                <input
+                  type="text"
+                  id="interiorNumber"
+                  value={interiorNumber}
+                  onChange={(e) => setInteriorNumber(e.target.value)}
+                  className="input"
+                  placeholder={t('clients.modal.interiorNumberPlaceholder')}
+                  maxLength={20}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="postalCode">{t('clients.modal.postal')}</label>
+              <input
+                type="text"
+                id="postalCode"
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+                className={`input${errors.postalCode ? ' input--error' : ''}`}
+                placeholder={t('clients.modal.postalPlaceholder')}
+                maxLength={5}
+              />
+              {errors.postalCode && <span className="register-form__field-error">{errors.postalCode}</span>}
+            </div>
+
+            <div className="register-form__actions">
+              <button type="button" className="register-form__back" onClick={handleBack}>
+                {t('common.back')}
+              </button>
+              <button type="submit" className="btn btn--primary btn--full">
+                {t('auth.register.next')}
+              </button>
+            </div>
+          </form>
+
+          {/* Paso 3: cuenta */}
+          <form
+            onSubmit={handleSubmit}
+            className={step !== 3 ? 'register-form__panel--hidden' : ''}
+            {...(step !== 3 ? { inert: true } : {})}
           >
             {submitError && <div className="register-form__error">{submitError}</div>}
 
@@ -382,7 +581,7 @@ const Register = () => {
             {t('auth.register.alreadyHaveAccount')} <Link to={ROUTES.LOGIN}>{t('auth.register.signIn')}</Link>
           </p>
         )}
-        {step === 2 && (
+        {step === 3 && (
           <p className="register-form__legal">
             {t('auth.register.termsText')}{' '}
             <a href={ROUTES.TERMS} target="_blank" rel="noopener noreferrer">{t('auth.register.terms')}</a>

@@ -40,6 +40,56 @@
       "rejected": "L'image a été rejetée car elle contient du contenu inapproprié.",
       "timeout": "La vérification a pris trop de temps. Réessayez.",
       "error": "Erreur lors de la vérification de l'image. Réessayez."
+    },
+    "resources": {
+      "orders": "commandes",
+      "ordersThisMonth": "commandes ce mois-ci",
+      "clients": "clients",
+      "products": "produits",
+      "labels": "étiquettes",
+      "members": "membres"
+    },
+    "csvHeaders": {
+      "orders": [
+        "Client",
+        "Téléphone",
+        "Code postal",
+        "N° commande",
+        "Produits",
+        "Payé",
+        "Total",
+        "Statut",
+        "Notes",
+        "Date"
+      ],
+      "clients": [
+        "Prénom",
+        "Nom",
+        "Téléphone",
+        "E-mail",
+        "Rue",
+        "N° ext.",
+        "N° int.",
+        "Quartier",
+        "Ville",
+        "Code postal",
+        "Pays",
+        "Référence",
+        "Favori",
+        "Inscrit le"
+      ],
+      "products": [
+        "Référence",
+        "Nom",
+        "Prix",
+        "Remise %",
+        "Fin de la remise",
+        "Stock",
+        "Unité",
+        "Qté unité",
+        "Étiquettes",
+        "Inscrit le"
+      ]
     }
   },
   "nav": {
@@ -93,7 +143,7 @@
     "register": {
       "title": "Créer un compte",
       "step1": "Votre entreprise",
-      "step2": "Accès",
+      "step2": "Adresse",
       "step1Title": "Parlez-nous de votre entreprise",
       "step2Title": "Créez votre accès",
       "businessName": "Nom de l'entreprise *",
@@ -145,7 +195,8 @@
         "networkError": "Pas de connexion internet. Vérifiez votre réseau et réessayez.",
         "tooManyRequests": "Trop de tentatives. Attendez un moment et réessayez.",
         "generic": "Erreur lors de la création du compte. Réessayez."
-      }
+      },
+      "step3": "Accès"
     },
     "messages": {
       "loginSuccess": "Connexion réussie",
@@ -1051,5 +1102,30 @@
     "description": "L'adresse que vous recherchez n'existe pas ou a été déplacée.",
     "home": "Retour à l'accueil",
     "support": "Assistance"
+  },
+  "errors": {
+    "userNotFound": "Utilisateur introuvable",
+    "noActiveSession": "Aucune session active",
+    "invalidCredentials": "Nom d'utilisateur ou mot de passe incorrect",
+    "accountDisabled": "Votre compte a été désactivé. Contactez votre administrateur.",
+    "invalidImageFormat": "Seules les images au format JPEG, PNG ou WebP sont autorisées",
+    "imageTooLarge": "L'image ne peut pas dépasser 5 Mo",
+    "orderDailyLimitReached": "Limite quotidienne de commandes atteinte (max. 9 999)",
+    "orderNotFound": "Commande introuvable",
+    "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères",
+    "notAuthorized": "Non autorisé",
+    "backupIncompatibleVersion": "Version de sauvegarde non prise en charge",
+    "backupIncomplete": "Fichier incomplet ou corrompu",
+    "backupInvalidFile": "Le fichier n'est pas une sauvegarde valide",
+    "backupReadError": "Erreur lors de la lecture du fichier",
+    "driveTokenError": "Erreur lors de l'obtention du jeton",
+    "driveFolderSearchError": "Erreur lors de la recherche du dossier dans Drive",
+    "driveFolderCreateError": "Erreur lors de la création du dossier dans Drive",
+    "driveUploadError": "Erreur lors du téléversement du fichier vers Drive",
+    "driveNoFileLink": "Aucun lien de fichier reçu",
+    "planLimitReached": "Vous avez atteint la limite de {{limit}} {{resource}} de votre plan. Mettez à niveau votre plan pour en ajouter.",
+    "planNoMembers": "Votre plan n'inclut pas de membres d'équipe. Mettez à niveau votre plan pour ajouter des collaborateurs.",
+    "emailSendError": "Erreur lors de l'envoi de l'e-mail",
+    "driveLoadError": "Impossible de charger Google Identity Services"
   }
 }

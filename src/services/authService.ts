@@ -17,9 +17,13 @@ import type { User, LoginCredentials, RegisterCredentials, Templates } from '../
 import { compressImage } from '../utils/imageUtils';
 import { waitForModeration } from '../utils/imageModeration';
 import { makeMemberEmail } from '../constants/member';
+import i18n from '../i18n';
 
 export const registerUser = async (credentials: RegisterCredentials): Promise<User> => {
-  const { email, password, businessName, firstName, lastName, birthDate, phone, phoneCountryCode } = credentials;
+  const {
+    email, password, businessName, firstName, lastName, birthDate, phone, phoneCountryCode,
+    street, exteriorNumber, interiorNumber, neighborhood, city, state, postalCode, country, reference,
+  } = credentials;
 
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const { uid } = userCredential.user;
@@ -33,9 +37,17 @@ export const registerUser = async (credentials: RegisterCredentials): Promise<Us
     birthDate,
     phone,
     phoneCountryCode,
+    street,
+    exteriorNumber,
+    interiorNumber: interiorNumber ?? '',
+    neighborhood,
+    city,
+    state: state ?? '',
+    postalCode,
+    country: country ?? '',
+    reference: reference ?? '',
     registeredAt: new Date(),
     role: 'admin',
-    businessUid: uid,
   };
 
   await setDoc(doc(db, 'users', uid), newUser);
@@ -61,7 +73,7 @@ export const loginUser = async (credentials: LoginCredentials): Promise<User> =>
   const userDoc = await getDoc(doc(db, 'users', uid));
 
   if (!userDoc.exists()) {
-    throw new Error('Usuario no encontrado');
+    throw new Error(i18n.t('errors.userNotFound'));
   }
 
   return normalizeUserData(userDoc.data());
@@ -97,7 +109,15 @@ export interface UpdateProfileData {
   birthDate?: string;
   phone?: string;
   phoneCountryCode?: string;
-  address?: string;
+  street?: string;
+  exteriorNumber?: string;
+  interiorNumber?: string;
+  neighborhood?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  reference?: string;
   profilePhoto?: string;
   currency?: string;
   templates?: Templates;
@@ -119,7 +139,7 @@ export const updateUserProfile = async (uid: string, data: UpdateProfileData): P
 
 export const changeUserPassword = async (currentPassword: string, newPassword: string): Promise<void> => {
   const currentUser = auth.currentUser;
-  if (!currentUser || !currentUser.email) throw new Error('No hay sesión activa');
+  if (!currentUser || !currentUser.email) throw new Error(i18n.t('errors.noActiveSession'));
 
   const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
   await reauthenticateWithCredential(currentUser, credential);
@@ -128,7 +148,7 @@ export const changeUserPassword = async (currentPassword: string, newPassword: s
 
 export const deleteAllUserDataWithAuth = async (password: string, uid: string): Promise<void> => {
   const currentUser = auth.currentUser;
-  if (!currentUser || !currentUser.email) throw new Error('No hay sesión activa');
+  if (!currentUser || !currentUser.email) throw new Error(i18n.t('errors.noActiveSession'));
   const credential = EmailAuthProvider.credential(currentUser.email, password);
   await reauthenticateWithCredential(currentUser, credential);
   await deleteAllUserData(uid);
@@ -193,7 +213,7 @@ export const deleteAllUserData = async (uid: string): Promise<void> => {
 
 export const deleteAccount = async (password: string, uid: string): Promise<void> => {
   const currentUser = auth.currentUser;
-  if (!currentUser || !currentUser.email) throw new Error('No hay sesión activa');
+  if (!currentUser || !currentUser.email) throw new Error(i18n.t('errors.noActiveSession'));
 
   const credential = EmailAuthProvider.credential(currentUser.email, password);
   await reauthenticateWithCredential(currentUser, credential);
@@ -211,25 +231,25 @@ export const loginMember = async (username: string, password: string): Promise<U
   try {
     userCredential = await signInWithEmailAndPassword(auth, authEmail, password);
   } catch {
-    throw new Error('Usuario o contraseña incorrectos');
+    throw new Error(i18n.t('errors.invalidCredentials'));
   }
 
   const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
-  if (!userDoc.exists()) throw new Error('Usuario no encontrado');
+  if (!userDoc.exists()) throw new Error(i18n.t('errors.userNotFound'));
   const userData = normalizeUserData(userDoc.data());
   if (userData.active === false) {
     await signOut(auth);
-    throw new Error('Tu cuenta ha sido desactivada. Contacta con tu administrador.');
+    throw new Error(i18n.t('errors.accountDisabled'));
   }
   return userData;
 };
 
 export const uploadProfileImage = async (file: File, uid: string): Promise<string> => {
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-    throw new Error('Solo se permiten imágenes en formato JPEG, PNG o WebP');
+    throw new Error(i18n.t('errors.invalidImageFormat'));
   }
   if (file.size > 5 * 1024 * 1024) {
-    throw new Error('La imagen no puede superar 5 MB');
+    throw new Error(i18n.t('errors.imageTooLarge'));
   }
   const compressed = await compressImage(file, 400, 0.75);
   const moderationId = crypto.randomUUID();

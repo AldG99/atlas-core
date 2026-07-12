@@ -877,7 +877,7 @@ function ContentFR() {
   );
 }
 
-const Privacidad = () => {
+const Privacy = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const lang = getLegalLang(i18n.language);
@@ -908,4 +908,4 @@ const Privacidad = () => {
   );
 };
 
-export default Privacidad;
+export default Privacy;

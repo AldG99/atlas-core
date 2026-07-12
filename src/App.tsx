@@ -33,8 +33,8 @@ const Archive        = lazy(() => import('./pages/Archive'));
 const Faq            = lazy(() => import('./pages/Faq'));
 const Support        = lazy(() => import('./pages/Support'));
 const Plans          = lazy(() => import('./pages/Plans'));
-const Terminos       = lazy(() => import('./pages/Terminos'));
-const Privacidad     = lazy(() => import('./pages/Privacidad'));
+const Terms          = lazy(() => import('./pages/Terms'));
+const Privacy        = lazy(() => import('./pages/Privacy'));
 const NotFound       = lazy(() => import('./pages/NotFound'));
 
 const PROTECTED_ROUTES = [
@@ -72,8 +72,8 @@ function App() {
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path={ROUTES.REGISTER}   element={<Register />} />
-                <Route path={ROUTES.TERMS}   element={<Terminos />} />
-                <Route path={ROUTES.PRIVACY} element={<Privacidad />} />
+                <Route path={ROUTES.TERMS}   element={<Terms />} />
+                <Route path={ROUTES.PRIVACY} element={<Privacy />} />
 
                 {PROTECTED_ROUTES.map(({ path, component: Component }) => (
                   <Route

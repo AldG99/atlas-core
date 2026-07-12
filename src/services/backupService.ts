@@ -1,5 +1,6 @@
 import { collection, doc, getDocs, query, where, Timestamp, writeBatch, type DocumentReference } from 'firebase/firestore';
 import { db, auth } from './firebase';
+import i18n from '../i18n';
 
 const BACKUP_VERSION = 1;
 
@@ -60,7 +61,7 @@ const parseDate = (val: unknown): Date => {
 
 export const exportBackup = async (userId: string): Promise<void> => {
   if (!auth.currentUser || auth.currentUser.uid !== userId) {
-    throw new Error('No autorizado');
+    throw new Error(i18n.t('errors.notAuthorized'));
   }
 
   const [clientsSnap, productsSnap, ordersSnap, labelsSnap] = await Promise.all([
@@ -132,25 +133,25 @@ export const parseBackupFile = (file: File): Promise<BackupData> =>
       try {
         const data = JSON.parse(e.target?.result as string) as BackupData;
         if (data.version !== BACKUP_VERSION) {
-          reject(new Error('Versión de respaldo no compatible'));
+          reject(new Error(i18n.t('errors.backupIncompatibleVersion')));
           return;
         }
         if (!data.clients || !data.products || !data.orders) {
-          reject(new Error('Archivo incompleto o corrupto'));
+          reject(new Error(i18n.t('errors.backupIncomplete')));
           return;
         }
         resolve(data);
       } catch {
-        reject(new Error('El archivo no es un respaldo válido'));
+        reject(new Error(i18n.t('errors.backupInvalidFile')));
       }
     };
-    reader.onerror = () => reject(new Error('Error al leer el archivo'));
+    reader.onerror = () => reject(new Error(i18n.t('errors.backupReadError')));
     reader.readAsText(file);
   });
 
 export const importBackup = async (data: BackupData, userId: string): Promise<ImportSummary> => {
   if (!auth.currentUser || auth.currentUser.uid !== userId) {
-    throw new Error('No autorizado');
+    throw new Error(i18n.t('errors.notAuthorized'));
   }
 
   const insertedRefs: DocumentReference[] = [];

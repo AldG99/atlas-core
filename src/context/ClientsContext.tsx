@@ -9,6 +9,7 @@ import {
   toggleClientFavorite,
 } from '../services/clientService';
 import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
+import i18n from '../i18n';
 
 interface ClientsContextType {
   clients: Client[];
@@ -59,7 +60,7 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
   const addClient = async (data: ClientFormData): Promise<Client> => {
     if (!user || !businessUid) throw new Error('Usuario no autenticado');
     const limits = getPlanLimits(user.plan);
-    checkPlanLimit(clients.length, limits.clients, 'clientes');
+    checkPlanLimit(clients.length, limits.clients, i18n.t('common.resources.clients'));
     const id = await createClient(data, businessUid);
     const newClient: Client = {
       id,

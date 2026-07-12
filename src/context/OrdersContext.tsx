@@ -3,6 +3,7 @@ import type { QueryDocumentSnapshot } from 'firebase/firestore';
 import type { Order, OrderFormData, OrderStatus, CreatedBy } from '../types/Order';
 import type { User } from '../types/User';
 import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
+import i18n from '../i18n';
 import {
   getOrders,
   getOrdersByStatus,
@@ -180,10 +181,8 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       setError(null);
       const limits = getPlanLimits(user.plan);
       const ordersThisMonth = await countOrdersThisMonth(businessUid);
-      checkPlanLimit(ordersThisMonth, limits.ordersPerMonth, 'pedidos este mes');
+      checkPlanLimit(ordersThisMonth, limits.ordersPerMonth, i18n.t('common.resources.ordersThisMonth'));
       const newOrder = await createOrder(data, businessUid, buildCreatedBy(user));
-      setOrders((prev) => [newOrder, ...prev]);
-      setAllOrders((prev) => [newOrder, ...prev]);
       return newOrder;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al crear pedido');

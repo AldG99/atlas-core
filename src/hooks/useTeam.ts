@@ -10,6 +10,7 @@ import {
   type MemberFormData,
 } from '../services/teamService';
 import { getPlanLimits } from '../constants/planLimits';
+import i18n from '../i18n';
 
 export const useTeam = () => {
   const { user, role, businessUid } = useAuth();
@@ -40,10 +41,10 @@ export const useTeam = () => {
 
     const limits = getPlanLimits(user.plan);
     if (limits.members === 0) {
-      throw new Error('Tu plan no incluye miembros del equipo. Actualiza tu plan para agregar colaboradores.');
+      throw new Error(i18n.t('errors.planNoMembers'));
     }
     if (members.length >= limits.members) {
-      throw new Error(`Has alcanzado el límite de ${limits.members} miembros en tu plan. Actualiza tu plan para agregar más.`);
+      throw new Error(i18n.t('errors.planLimitReached', { limit: limits.members, resource: i18n.t('common.resources.members') }));
     }
 
     await createMemberService(data, businessUid, user.businessName);

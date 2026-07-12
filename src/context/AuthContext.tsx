@@ -5,6 +5,7 @@ import { auth } from '../services/firebase';
 import type { User, AuthState, LoginCredentials, RegisterCredentials } from '../types/User';
 import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserDataWithAuth, deleteAccount as deleteAccountService, loginMember as loginMemberService, resetPassword } from '../services/authService';
 import type { UpdateProfileData } from '../services/authService';
+import i18n from '../i18n';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -148,7 +149,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       await resetPassword(email);
     } catch (err) {
-      throw new Error(err instanceof Error ? err.message : 'Error al enviar el correo');
+      throw new Error(err instanceof Error ? err.message : i18n.t('errors.emailSendError'));
     }
   };
 

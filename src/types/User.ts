@@ -19,7 +19,15 @@ export interface User {
   birthDate?: string;
   phone?: string;
   phoneCountryCode?: string;
-  address?: string;
+  street?: string;
+  exteriorNumber?: string;
+  interiorNumber?: string;
+  neighborhood?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  reference?: string;
   profilePhoto?: string;
   registeredAt: Date;
   plan?: 'free' | 'pro' | 'enterprise';
@@ -52,4 +60,13 @@ export interface RegisterCredentials {
   birthDate: string;
   phone: string;
   phoneCountryCode: string;
+  street: string;
+  exteriorNumber: string;
+  interiorNumber?: string;
+  neighborhood: string;
+  city: string;
+  state?: string;
+  postalCode: string;
+  country?: string;
+  reference?: string;
 }

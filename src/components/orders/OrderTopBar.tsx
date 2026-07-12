@@ -139,7 +139,7 @@ const OrderTopBar = ({
               disabled={!canMarkDelivered || submitting}
             >
               {order.status === 'delivered'
-                ? <><PiCheckBold size={16} />{t('orders.status.entregado')}</>
+                ? <><PiCheckBold size={16} />{t('orders.status.delivered')}</>
                 : <><PiCheckCircleBold size={16} />{t('orders.detail.deliver')}</>
               }
             </button>

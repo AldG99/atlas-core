@@ -40,6 +40,56 @@
       "rejected": "La imagen fue rechazada por contener contenido inapropiado.",
       "timeout": "La verificación tardó demasiado. Intenta de nuevo.",
       "error": "Error al verificar la imagen. Intenta de nuevo."
+    },
+    "resources": {
+      "orders": "pedidos",
+      "ordersThisMonth": "pedidos este mes",
+      "clients": "clientes",
+      "products": "productos",
+      "labels": "etiquetas",
+      "members": "miembros"
+    },
+    "csvHeaders": {
+      "orders": [
+        "Cliente",
+        "Teléfono",
+        "C.P.",
+        "Folio",
+        "Productos",
+        "Abonado",
+        "Total",
+        "Estado",
+        "Notas",
+        "Fecha"
+      ],
+      "clients": [
+        "Nombre",
+        "Apellido",
+        "Teléfono",
+        "Correo",
+        "Calle",
+        "Núm. Ext.",
+        "Núm. Int.",
+        "Colonia",
+        "Ciudad",
+        "C.P.",
+        "País",
+        "Referencia",
+        "Favorito",
+        "Registro"
+      ],
+      "products": [
+        "Clave",
+        "Nombre",
+        "Precio",
+        "Descuento %",
+        "Fin descuento",
+        "Stock",
+        "Unidad",
+        "Cant. unidad",
+        "Etiquetas",
+        "Registro"
+      ]
     }
   },
   "nav": {
@@ -93,7 +143,7 @@
     "register": {
       "title": "Crear cuenta",
       "step1": "Tu negocio",
-      "step2": "Acceso",
+      "step2": "Domicilio",
       "step1Title": "Cuéntanos de tu negocio",
       "step2Title": "Crea tu acceso",
       "businessName": "Nombre del negocio *",
@@ -145,7 +195,8 @@
         "networkError": "Sin conexión a internet. Revisa tu red e intenta de nuevo.",
         "tooManyRequests": "Demasiados intentos. Espera un momento e intenta de nuevo.",
         "generic": "Error al crear la cuenta. Intenta de nuevo."
-      }
+      },
+      "step3": "Acceso"
     },
     "messages": {
       "loginSuccess": "Sesión iniciada correctamente",
@@ -1051,5 +1102,30 @@
     "description": "La dirección que buscas no existe o fue movida.",
     "home": "Ir al inicio",
     "support": "Soporte"
+  },
+  "errors": {
+    "userNotFound": "Usuario no encontrado",
+    "noActiveSession": "No hay sesión activa",
+    "invalidCredentials": "Usuario o contraseña incorrectos",
+    "accountDisabled": "Tu cuenta ha sido desactivada. Contacta con tu administrador.",
+    "invalidImageFormat": "Solo se permiten imágenes en formato JPEG, PNG o WebP",
+    "imageTooLarge": "La imagen no puede superar 5 MB",
+    "orderDailyLimitReached": "Límite de pedidos del día alcanzado (máx. 9,999)",
+    "orderNotFound": "Pedido no encontrado",
+    "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+    "notAuthorized": "No autorizado",
+    "backupIncompatibleVersion": "Versión de respaldo no compatible",
+    "backupIncomplete": "Archivo incompleto o corrupto",
+    "backupInvalidFile": "El archivo no es un respaldo válido",
+    "backupReadError": "Error al leer el archivo",
+    "driveTokenError": "Error al obtener token",
+    "driveFolderSearchError": "Error al buscar carpeta en Drive",
+    "driveFolderCreateError": "Error al crear carpeta en Drive",
+    "driveUploadError": "Error al subir archivo a Drive",
+    "driveNoFileLink": "No se recibió enlace del archivo",
+    "planLimitReached": "Has alcanzado el límite de {{limit}} {{resource}} en tu plan. Actualiza tu plan para agregar más.",
+    "planNoMembers": "Tu plan no incluye miembros del equipo. Actualiza tu plan para agregar colaboradores.",
+    "emailSendError": "Error al enviar el correo",
+    "driveLoadError": "No se pudo cargar Google Identity Services"
   }
 }

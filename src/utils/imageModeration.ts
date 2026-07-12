@@ -5,7 +5,7 @@ const TIMEOUT_MS = 30_000;
 
 export const waitForModeration = (moderationId: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    const docRef = doc(db, 'imagenModerada', moderationId);
+    const docRef = doc(db, 'moderatedImages', moderationId);
 
     const unsubscribe = onSnapshot(
       docRef,
@@ -15,9 +15,9 @@ export const waitForModeration = (moderationId: string): Promise<string> => {
         unsubscribe();
         deleteDoc(docRef).catch(() => { /* no-op */ });
 
-        if (data['aprobada'] && data['url']) {
+        if (data['approved'] && data['url']) {
           resolve(data['url'] as string);
-        } else if (data['rechazada']) {
+        } else if (data['rejected']) {
           reject(new Error(data['error'] ? 'MODERACION_ERROR' : 'IMAGEN_RECHAZADA'));
         }
       },

@@ -17,6 +17,7 @@ import { db, storage } from './firebase';
 import type { Product, ProductFormData, DiscountHistory } from '../types/Product';
 import { compressImage } from '../utils/imageUtils';
 import { waitForModeration } from '../utils/imageModeration';
+import i18n from '../i18n';
 
 const COLLECTION_NAME = 'products';
 
@@ -187,10 +188,10 @@ export const uploadProductImage = async (
   userId: string
 ): Promise<string> => {
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-    throw new Error('Solo se permiten imágenes en formato JPEG, PNG o WebP');
+    throw new Error(i18n.t('errors.invalidImageFormat'));
   }
   if (file.size > 5 * 1024 * 1024) {
-    throw new Error('La imagen no puede superar 5 MB');
+    throw new Error(i18n.t('errors.imageTooLarge'));
   }
   const compressed = await compressImage(file, 800, 0.78);
   const moderationId = crypto.randomUUID();

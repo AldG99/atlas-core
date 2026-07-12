@@ -8,6 +8,7 @@ import { db, auth } from './firebase';
 const fns = getFunctions(auth.app, 'us-central1');
 import type { User } from '../types/User';
 import { makeMemberEmail, generateUsername } from '../constants/member';
+import i18n from '../i18n';
 
 export { generateUsername };
 
@@ -124,7 +125,7 @@ export const updateMember = async (
 };
 
 export const updateMemberPassword = async (uid: string, newPassword: string): Promise<void> => {
-  if (newPassword.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres');
+  if (newPassword.length < 8) throw new Error(i18n.t('errors.passwordTooShort'));
   const updatePassword = httpsCallable<{ uid: string; password: string }, void>(fns, 'updateMemberPassword');
   await updatePassword({ uid, password: newPassword });
 };

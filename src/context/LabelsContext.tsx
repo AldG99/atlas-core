@@ -7,6 +7,7 @@ import {
   deleteLabel,
 } from '../services/labelService';
 import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
+import i18n from '../i18n';
 
 interface LabelsContextType {
   labels: Label[];
@@ -51,7 +52,7 @@ export const LabelsProvider = ({ children }: { children: ReactNode }) => {
   const addLabel = async (name: string, color: string, icon: string) => {
     if (!user || !businessUid) return;
     const limits = getPlanLimits(user.plan);
-    checkPlanLimit(labels.length, limits.labels, 'etiquetas');
+    checkPlanLimit(labels.length, limits.labels, i18n.t('common.resources.labels'));
     const created = await createLabel(name, color, icon, businessUid);
     setLabels((prev) => [...prev, created]);
     return created;

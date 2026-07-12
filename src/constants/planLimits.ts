@@ -1,3 +1,5 @@
+import i18n from '../i18n';
+
 export const PLAN_LIMITS = {
   free:       { ordersPerMonth: 360, clients: 120,      products: 80,  labels: 6,  members: 0 },
   pro:        { ordersPerMonth: 720, clients: 240,       products: 160, labels: 10, members: 2 },
@@ -11,7 +13,7 @@ export const getPlanLimits = (plan?: string) =>
 
 export const checkPlanLimit = (count: number, limit: number, resource: string): void => {
   if (limit !== Infinity && count >= limit) {
-    throw new Error(`Has alcanzado el límite de ${limit} ${resource} en tu plan. Actualiza tu plan para agregar más.`);
+    throw new Error(i18n.t('errors.planLimitReached', { limit, resource }));
   }
 };
 

@@ -36,6 +36,7 @@ export const formatShortDate = (date: Date): string => {
 import type { Order, OrderItem } from '../types/Order';
 import type { Templates } from '../types/User';
 import { getCountryCode } from '../data/countryCodes';
+import i18n from '../i18n';
 
 export const getTotalPaid = (order: Order): number =>
   (order.payments || []).reduce((sum, p) => sum + p.amount, 0);
@@ -141,7 +142,7 @@ const escapeCSV = (value: string): string => {
 };
 
 export const generateCSVContent = (orders: OrderForCSV[]): string => {
-  const headers = ['Cliente', 'Teléfono', 'C.P.', 'Folio', 'Productos', 'Abonado', 'Total', 'Estado', 'Notas', 'Fecha'];
+  const headers = i18n.t('common.csvHeaders.orders', { returnObjects: true }) as string[];
 
   const rows = orders.map((order) => [
     escapeCSV(order.clientName),
@@ -196,7 +197,7 @@ interface ClientForCSV {
 
 export const exportClientsCSV = (clients: ClientForCSV[]): void => {
 
-  const headers = ['Nombre', 'Apellido', 'Teléfono', 'Correo', 'Calle', 'Núm. Ext.', 'Núm. Int.', 'Colonia', 'Ciudad', 'C.P.', 'País', 'Referencia', 'Favorito', 'Registro'];
+  const headers = i18n.t('common.csvHeaders.clients', { returnObjects: true }) as string[];
 
   const rows = clients.map(c => [
     escapeCSV(c.firstName),
@@ -246,7 +247,7 @@ interface ProductForCSV {
 }
 
 export const exportProductsCSV = (products: ProductForCSV[], labelNames: (ids: string[]) => string): void => {
-  const headers = ['Clave', 'Nombre', 'Precio', 'Descuento %', 'Fin descuento', 'Stock', 'Unidad', 'Cant. unidad', 'Etiquetas', 'Registro'];
+  const headers = i18n.t('common.csvHeaders.products', { returnObjects: true }) as string[];
 
   const rows = products.map(p => [
     escapeCSV(p.sku),

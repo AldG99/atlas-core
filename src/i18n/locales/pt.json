@@ -40,6 +40,56 @@
       "rejected": "A imagem foi rejeitada por conter conteúdo inapropriado.",
       "timeout": "A verificação demorou muito. Tente novamente.",
       "error": "Erro ao verificar a imagem. Tente novamente."
+    },
+    "resources": {
+      "orders": "pedidos",
+      "ordersThisMonth": "pedidos este mês",
+      "clients": "clientes",
+      "products": "produtos",
+      "labels": "etiquetas",
+      "members": "membros"
+    },
+    "csvHeaders": {
+      "orders": [
+        "Cliente",
+        "Telefone",
+        "CEP",
+        "Nº pedido",
+        "Produtos",
+        "Pago",
+        "Total",
+        "Status",
+        "Notas",
+        "Data"
+      ],
+      "clients": [
+        "Nome",
+        "Sobrenome",
+        "Telefone",
+        "E-mail",
+        "Rua",
+        "Núm. ext.",
+        "Núm. int.",
+        "Bairro",
+        "Cidade",
+        "CEP",
+        "País",
+        "Referência",
+        "Favorito",
+        "Registrado"
+      ],
+      "products": [
+        "Código",
+        "Nome",
+        "Preço",
+        "Desconto %",
+        "Fim do desconto",
+        "Estoque",
+        "Unidade",
+        "Qtd. unidade",
+        "Etiquetas",
+        "Registrado"
+      ]
     }
   },
   "nav": {
@@ -93,7 +143,7 @@
     "register": {
       "title": "Criar conta",
       "step1": "Seu negócio",
-      "step2": "Acesso",
+      "step2": "Endereço",
       "step1Title": "Fale sobre o seu negócio",
       "step2Title": "Crie seu acesso",
       "businessName": "Nome do negócio *",
@@ -145,7 +195,8 @@
         "networkError": "Sem conexão com a internet. Verifique sua rede e tente novamente.",
         "tooManyRequests": "Muitas tentativas. Aguarde um momento e tente novamente.",
         "generic": "Erro ao criar conta. Por favor, tente novamente."
-      }
+      },
+      "step3": "Acesso"
     },
     "messages": {
       "loginSuccess": "Sessão iniciada com sucesso",
@@ -1051,5 +1102,30 @@
     "description": "O endereço que você está procurando não existe ou foi movido.",
     "home": "Ir para o início",
     "support": "Suporte"
+  },
+  "errors": {
+    "userNotFound": "Usuário não encontrado",
+    "noActiveSession": "Nenhuma sessão ativa",
+    "invalidCredentials": "Usuário ou senha incorretos",
+    "accountDisabled": "Sua conta foi desativada. Entre em contato com seu administrador.",
+    "invalidImageFormat": "Só são permitidas imagens em formato JPEG, PNG ou WebP",
+    "imageTooLarge": "A imagem não pode exceder 5 MB",
+    "orderDailyLimitReached": "Limite diário de pedidos atingido (máx. 9.999)",
+    "orderNotFound": "Pedido não encontrado",
+    "passwordTooShort": "A senha deve ter pelo menos 8 caracteres",
+    "notAuthorized": "Não autorizado",
+    "backupIncompatibleVersion": "Versão de backup não compatível",
+    "backupIncomplete": "Arquivo incompleto ou corrompido",
+    "backupInvalidFile": "O arquivo não é um backup válido",
+    "backupReadError": "Erro ao ler o arquivo",
+    "driveTokenError": "Erro ao obter token",
+    "driveFolderSearchError": "Erro ao buscar pasta no Drive",
+    "driveFolderCreateError": "Erro ao criar pasta no Drive",
+    "driveUploadError": "Erro ao enviar arquivo para o Drive",
+    "driveNoFileLink": "Nenhum link de arquivo recebido",
+    "planLimitReached": "Você atingiu o limite de {{limit}} {{resource}} do seu plano. Atualize seu plano para adicionar mais.",
+    "planNoMembers": "Seu plano não inclui membros da equipe. Atualize seu plano para adicionar colaboradores.",
+    "emailSendError": "Erro ao enviar o e-mail",
+    "driveLoadError": "Não foi possível carregar o Google Identity Services"
   }
 }

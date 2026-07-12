@@ -796,7 +796,7 @@ function ContentFR() {
   );
 }
 
-const Terminos = () => {
+const Terms = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const lang = getLegalLang(i18n.language);
@@ -827,4 +827,4 @@ const Terminos = () => {
   );
 };
 
-export default Terminos;
+export default Terms;

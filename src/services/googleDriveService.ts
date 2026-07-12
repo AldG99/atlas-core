@@ -1,3 +1,5 @@
+import i18n from '../i18n';
+
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_DRIVE_CLIENT_ID;
 const SCOPE = 'https://www.googleapis.com/auth/drive.file';
 const FOLDER_NAME = 'Skytla';
@@ -34,7 +36,7 @@ const loadGSI = (): Promise<void> => {
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error('No se pudo cargar Google Identity Services'));
+    script.onerror = () => reject(new Error(i18n.t('errors.driveLoadError')));
     document.head.appendChild(script);
   });
 };
@@ -49,7 +51,7 @@ const getAccessToken = async (): Promise<string> => {
       scope: SCOPE,
       callback: (response: { access_token?: string; error?: string }) => {
         if (response.error || !response.access_token) {
-          throw new Error(response.error ?? 'Error al obtener token');
+          throw new Error(response.error ?? i18n.t('errors.driveTokenError'));
         }
         cachedToken = response.access_token;
       }
@@ -66,7 +68,7 @@ const getAccessToken = async (): Promise<string> => {
       callback: (response: { access_token?: string; expires_in?: number; error?: string }) => {
         if (response.error || !response.access_token) {
           clearToken();
-          reject(new Error(response.error ?? 'Error al obtener token'));
+          reject(new Error(response.error ?? i18n.t('errors.driveTokenError')));
           return;
         }
         cachedToken = response.access_token;
@@ -108,7 +110,7 @@ const getOrCreateFolder = async (): Promise<string> => {
     `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`
   );
 
-  if (!searchRes.ok) throw new Error('Error al buscar carpeta en Drive');
+  if (!searchRes.ok) throw new Error(i18n.t('errors.driveFolderSearchError'));
 
   const { files } = await searchRes.json();
   if (files?.length > 0) return files[0].id;
@@ -122,7 +124,7 @@ const getOrCreateFolder = async (): Promise<string> => {
     })
   });
 
-  if (!createRes.ok) throw new Error('Error al crear carpeta en Drive');
+  if (!createRes.ok) throw new Error(i18n.t('errors.driveFolderCreateError'));
 
   const folder = await createRes.json();
   return folder.id;
@@ -146,10 +148,10 @@ export const uploadCSVToDrive = async (csvContent: string, fileName: string): Pr
     { method: 'POST', body: form }
   );
 
-  if (!res.ok) throw new Error('Error al subir archivo a Drive');
+  if (!res.ok) throw new Error(i18n.t('errors.driveUploadError'));
 
   const data = await res.json();
-  if (!data.webViewLink) throw new Error('No se recibió enlace del archivo');
+  if (!data.webViewLink) throw new Error(i18n.t('errors.driveNoFileLink'));
 
   return data.webViewLink;
 };

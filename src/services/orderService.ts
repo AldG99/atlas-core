@@ -21,6 +21,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Order, OrderFormData, OrderStatus, OrderItem, Payment, CreatedBy } from '../types/Order';
+import i18n from '../i18n';
 
 // Firestore rechaza valores undefined — los elimina recursivamente
 const stripUndefined = <T extends Record<string, unknown>>(obj: T): T => {
@@ -53,7 +54,7 @@ const generateOrderNumber = async (userId: string): Promise<string> => {
   const count = await runTransaction(db, async (transaction) => {
     const counterDoc = await transaction.get(counterRef);
     const newCount = counterDoc.exists() ? (counterDoc.data().count as number) + 1 : 1;
-    if (newCount > 9999) throw new Error('Límite de pedidos del día alcanzado (máx. 9,999)');
+    if (newCount > 9999) throw new Error(i18n.t('errors.orderDailyLimitReached'));
     transaction.set(counterRef, { count: newCount, userId });
     return newCount;
   });
@@ -371,7 +372,7 @@ export const addPayment = async (
 
   await runTransaction(db, async (transaction) => {
     const snap = await transaction.get(orderRef);
-    if (!snap.exists()) throw new Error('Pedido no encontrado');
+    if (!snap.exists()) throw new Error(i18n.t('errors.orderNotFound'));
 
     const data = snap.data();
     const currentStatus = data.status as OrderStatus;
@@ -454,7 +455,7 @@ export const updatePayment = async (
 
   await runTransaction(db, async (transaction) => {
     const snap = await transaction.get(orderRef);
-    if (!snap.exists()) throw new Error('Pedido no encontrado');
+    if (!snap.exists()) throw new Error(i18n.t('errors.orderNotFound'));
 
     const raw = (snap.data().payments ?? []) as Record<string, unknown>[];
     updatedRaw = raw.map(p => {

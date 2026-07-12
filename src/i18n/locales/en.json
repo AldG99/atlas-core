@@ -40,6 +40,56 @@
       "rejected": "The image was rejected for containing inappropriate content.",
       "timeout": "Verification took too long. Please try again.",
       "error": "Error verifying image. Please try again."
+    },
+    "resources": {
+      "orders": "orders",
+      "ordersThisMonth": "orders this month",
+      "clients": "clients",
+      "products": "products",
+      "labels": "labels",
+      "members": "members"
+    },
+    "csvHeaders": {
+      "orders": [
+        "Client",
+        "Phone",
+        "Zip",
+        "Order #",
+        "Products",
+        "Paid",
+        "Total",
+        "Status",
+        "Notes",
+        "Date"
+      ],
+      "clients": [
+        "First Name",
+        "Last Name",
+        "Phone",
+        "Email",
+        "Street",
+        "Ext. No.",
+        "Int. No.",
+        "Neighborhood",
+        "City",
+        "Zip",
+        "Country",
+        "Reference",
+        "Favorite",
+        "Registered"
+      ],
+      "products": [
+        "SKU",
+        "Name",
+        "Price",
+        "Discount %",
+        "Discount end",
+        "Stock",
+        "Unit",
+        "Unit qty.",
+        "Labels",
+        "Registered"
+      ]
     }
   },
   "nav": {
@@ -93,7 +143,7 @@
     "register": {
       "title": "Create account",
       "step1": "Your business",
-      "step2": "Access",
+      "step2": "Address",
       "step1Title": "Tell us about your business",
       "step2Title": "Create your access",
       "businessName": "Business name *",
@@ -145,7 +195,8 @@
         "networkError": "No internet connection. Check your network and try again.",
         "tooManyRequests": "Too many attempts. Wait a moment and try again.",
         "generic": "Error creating account. Please try again."
-      }
+      },
+      "step3": "Access"
     },
     "messages": {
       "loginSuccess": "Signed in successfully",
@@ -1051,5 +1102,30 @@
     "description": "The address you're looking for doesn't exist or was moved.",
     "home": "Go to home",
     "support": "Support"
+  },
+  "errors": {
+    "userNotFound": "User not found",
+    "noActiveSession": "No active session",
+    "invalidCredentials": "Incorrect username or password",
+    "accountDisabled": "Your account has been disabled. Contact your administrator.",
+    "invalidImageFormat": "Only JPEG, PNG or WebP images are allowed",
+    "imageTooLarge": "The image cannot exceed 5 MB",
+    "orderDailyLimitReached": "Daily order limit reached (max. 9,999)",
+    "orderNotFound": "Order not found",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "notAuthorized": "Not authorized",
+    "backupIncompatibleVersion": "Unsupported backup version",
+    "backupIncomplete": "Incomplete or corrupted file",
+    "backupInvalidFile": "The file is not a valid backup",
+    "backupReadError": "Error reading the file",
+    "driveTokenError": "Error obtaining token",
+    "driveFolderSearchError": "Error searching for folder in Drive",
+    "driveFolderCreateError": "Error creating folder in Drive",
+    "driveUploadError": "Error uploading file to Drive",
+    "driveNoFileLink": "No file link was received",
+    "planLimitReached": "You've reached the limit of {{limit}} {{resource}} on your plan. Upgrade your plan to add more.",
+    "planNoMembers": "Your plan does not include team members. Upgrade your plan to add collaborators.",
+    "emailSendError": "Error sending the email",
+    "driveLoadError": "Could not load Google Identity Services"
   }
 }

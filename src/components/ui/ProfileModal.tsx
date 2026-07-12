@@ -20,7 +20,15 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
     businessName: user?.businessName || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    address: user?.address || ''
+    street: user?.street || '',
+    exteriorNumber: user?.exteriorNumber || '',
+    interiorNumber: user?.interiorNumber || '',
+    neighborhood: user?.neighborhood || '',
+    city: user?.city || '',
+    state: user?.state || '',
+    postalCode: user?.postalCode || '',
+    country: user?.country || '',
+    reference: user?.reference || ''
   });
 
   const getInitials = (name: string | undefined) => {
@@ -28,7 +36,7 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -65,7 +73,15 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
       await updateProfile({
         businessName: formData.businessName,
         phone: formData.phone,
-        address: formData.address
+        street: formData.street,
+        exteriorNumber: formData.exteriorNumber,
+        interiorNumber: formData.interiorNumber,
+        neighborhood: formData.neighborhood,
+        city: formData.city,
+        state: formData.state,
+        postalCode: formData.postalCode,
+        country: formData.country,
+        reference: formData.reference
       }, imageFile);
       setIsEditing(false);
       setImageFile(null);
@@ -81,7 +97,15 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
       businessName: user?.businessName || '',
       email: user?.email || '',
       phone: user?.phone || '',
-      address: user?.address || ''
+      street: user?.street || '',
+      exteriorNumber: user?.exteriorNumber || '',
+      interiorNumber: user?.interiorNumber || '',
+      neighborhood: user?.neighborhood || '',
+      city: user?.city || '',
+      state: user?.state || '',
+      postalCode: user?.postalCode || '',
+      country: user?.country || '',
+      reference: user?.reference || ''
     });
     setPreviewImage(user?.profilePhoto || null);
     setImageFile(null);
@@ -180,20 +204,94 @@ const ProfileModal = ({ onClose }: ProfileModalProps) => {
               )}
             </div>
 
-            <div className="profile-modal__field">
-              <label>{t('profile.address')}</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="input"
-                />
-              ) : (
-                <p>{user?.address || '—'}</p>
-              )}
-            </div>
+          </div>
+
+          <div className="form-section">
+            <h3 className="form-section__title">{t('clients.modal.deliveryAddress')}</h3>
+            {isEditing ? (
+              <div className="form-grid form-grid--2">
+                <div className="form-group">
+                  <label htmlFor="country">{t('clients.modal.country')}</label>
+                  <input
+                    type="text" id="country" name="country"
+                    value={formData.country} onChange={handleChange}
+                    className="input" placeholder={t('clients.modal.countryPlaceholder')} maxLength={40}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="state">{t('clients.modal.state')}</label>
+                  <input
+                    type="text" id="state" name="state"
+                    value={formData.state} onChange={handleChange}
+                    className="input" placeholder={t('clients.modal.statePlaceholder')} maxLength={60}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="city">{t('clients.modal.city')}</label>
+                  <input
+                    type="text" id="city" name="city"
+                    value={formData.city} onChange={handleChange}
+                    className="input" placeholder={t('clients.modal.cityPlaceholder')} maxLength={60}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="neighborhood">{t('clients.modal.colony')}</label>
+                  <input
+                    type="text" id="neighborhood" name="neighborhood"
+                    value={formData.neighborhood} onChange={handleChange}
+                    className="input" placeholder={t('clients.modal.colonyPlaceholder')} maxLength={60}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="street">{t('clients.modal.street')}</label>
+                  <input
+                    type="text" id="street" name="street"
+                    value={formData.street} onChange={handleChange}
+                    className="input" placeholder={t('clients.modal.streetPlaceholder')} maxLength={80}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="exteriorNumber">{t('clients.modal.exteriorNumber')}</label>
+                  <input
+                    type="text" id="exteriorNumber" name="exteriorNumber"
+                    value={formData.exteriorNumber} onChange={handleChange}
+                    className="input" placeholder={t('clients.modal.exteriorNumberPlaceholder')} maxLength={10}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="interiorNumber">{t('clients.modal.interiorNumber')}</label>
+                  <input
+                    type="text" id="interiorNumber" name="interiorNumber"
+                    value={formData.interiorNumber} onChange={handleChange}
+                    className="input" placeholder={t('clients.modal.interiorNumberPlaceholder')} maxLength={20}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="postalCode">{t('clients.modal.postal')}</label>
+                  <input
+                    type="text" id="postalCode" name="postalCode"
+                    value={formData.postalCode} onChange={handleChange}
+                    className="input" placeholder={t('clients.modal.postalPlaceholder')} maxLength={5}
+                  />
+                </div>
+                <div className="form-group form-group--full">
+                  <label htmlFor="reference">{t('clients.modal.reference')}</label>
+                  <textarea
+                    id="reference" name="reference"
+                    value={formData.reference} onChange={handleChange}
+                    className="input" placeholder={t('clients.modal.referencePlaceholder')}
+                    rows={2} maxLength={140} style={{ resize: 'none' }}
+                  />
+                  <span className="form-char-count">{formData.reference.length}/140</span>
+                </div>
+              </div>
+            ) : (
+              <p>
+                {user?.street
+                  ? `${user.street} ${user.exteriorNumber ?? ''}${user.interiorNumber ? ` int. ${user.interiorNumber}` : ''}, ${user.neighborhood ?? ''}, ${user.city ?? ''}${user.state ? `, ${user.state}` : ''}${user.postalCode ? `, ${user.postalCode}` : ''}${user.country ? `, ${user.country}` : ''}`
+                  : '—'}
+              </p>
+            )}
           </div>
         </div>
 
