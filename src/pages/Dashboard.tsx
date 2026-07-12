@@ -2,41 +2,41 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold, PiDownloadSimpleBold, PiPlusBold } from 'react-icons/pi';
-import { usePedidos } from '../hooks/usePedidos';
+import { useOrders } from '../hooks/useOrders';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { useClientes } from '../hooks/useClientes';
+import { useClients } from '../hooks/useClients';
 import { useCurrency } from '../hooks/useCurrency';
 import { useDashboardFilters, type StatusFilter } from '../hooks/useDashboardFilters';
-import { getCodigoPais } from '../data/codigosPais';
-import type { PedidoStatus } from '../types/Pedido';
-import { PEDIDO_STATUS_COLORS } from '../constants/pedidoStatus';
+import { getCountryCode } from '../data/countryCodes';
+import type { OrderStatus } from '../types/Order';
+import { ORDER_STATUS_COLORS } from '../constants/orderStatus';
 import { ROUTES } from '../config/routes';
-import { archiveAllDelivered } from '../services/pedidoService';
+import { archiveAllDelivered } from '../services/orderService';
 import { exportToCSV, generateCSVContent } from '../utils/formatters';
 import { uploadCSVToDrive } from '../services/googleDriveService';
 import MainLayout from '../layouts/MainLayout';
-import PedidosTable from '../components/pedidos/PedidosTable';
+import OrdersTable from '../components/orders/OrdersTable';
 import './Dashboard.scss';
 
-const PEDIDO_STATUS_KEYS: PedidoStatus[] = ['pendiente', 'en_preparacion', 'entregado'];
-const FILTER_ORDER: StatusFilter[] = ['todos', ...PEDIDO_STATUS_KEYS];
+const ORDER_STATUS_KEYS: OrderStatus[] = ['pending', 'preparing', 'delivered'];
+const FILTER_ORDER: StatusFilter[] = ['todos', ...ORDER_STATUS_KEYS];
 
 const Dashboard = () => {
   const { t } = useTranslation();
   const {
-    pedidos,
-    allPedidos,
+    orders,
+    allOrders,
     loading,
     error,
     hasMore,
-    fetchPedidos,
+    fetchOrders,
     fetchByStatus,
     loadMore
-  } = usePedidos();
+  } = useOrders();
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { clientes } = useClientes();
+  const { clients } = useClients();
   const { format } = useCurrency();
   const location = useLocation();
 
@@ -51,11 +51,11 @@ const Dashboard = () => {
     setDateFilter,
     statusCounts,
     todaySummary,
-    filteredAndSortedPedidos,
+    filteredAndSortedOrders,
     handleFilterChange,
     SORT_OPTIONS,
     DATE_FILTERS,
-  } = useDashboardFilters({ pedidos, allPedidos, fetchPedidos, fetchByStatus });
+  } = useDashboardFilters({ orders, allOrders, fetchOrders, fetchByStatus });
 
   // Apply filter from notification navigation
   useEffect(() => {
@@ -64,7 +64,7 @@ const Dashboard = () => {
     const status = state.filterStatus as StatusFilter;
     setFilterStatus(status);
     if (status !== 'todos' && status !== 'abono_pendiente') {
-      fetchByStatus(status as PedidoStatus);
+      fetchByStatus(status as OrderStatus);
     }
   }, [location.state, setFilterStatus, fetchByStatus]);
 
@@ -76,10 +76,10 @@ const Dashboard = () => {
     archiveAllDelivered(user.uid).then((count) => {
       if (count > 0) {
         showToast(t('dashboard.autoArchived', { count }), 'success');
-        fetchPedidos();
+        fetchOrders();
       }
     }).catch(() => {});
-  }, [user, loading, showToast, fetchPedidos, t]);
+  }, [user, loading, showToast, fetchOrders, t]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -100,18 +100,18 @@ const Dashboard = () => {
   const [uploadingDrive, setUploadingDrive] = useState(false);
 
   const handleGoogleDrive = async () => {
-    if (filteredAndSortedPedidos.length === 0) {
+    if (filteredAndSortedOrders.length === 0) {
       showToast(t('dashboard.noOrdersExport'), 'warning');
       return;
     }
     setUploadingDrive(true);
     try {
-      const pedidosConCodigo = filteredAndSortedPedidos.map(p => ({
-        ...p,
-        clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
+      const ordersWithCode = filteredAndSortedOrders.map(o => ({
+        ...o,
+        clientCountryCode: getCountryCode(clients.find(c => c.phone === o.clientPhone)?.phoneCountryCode ?? '')?.code
       }));
-      const csvContent = generateCSVContent(pedidosConCodigo);
-      const fileName = `pedidos_${new Date().toISOString().split('T')[0]}.csv`;
+      const csvContent = generateCSVContent(ordersWithCode);
+      const fileName = `orders_${new Date().toISOString().split('T')[0]}.csv`;
       const link = await uploadCSVToDrive(csvContent, fileName);
       showToast(t('dashboard.driveSuccess'), 'success');
       window.open(link, '_blank');
@@ -126,15 +126,15 @@ const Dashboard = () => {
   };
 
   const handleExport = () => {
-    if (filteredAndSortedPedidos.length === 0) {
+    if (filteredAndSortedOrders.length === 0) {
       showToast(t('dashboard.noOrdersExport'), 'warning');
       return;
     }
-    const pedidosConCodigo = filteredAndSortedPedidos.map(p => ({
-      ...p,
-      clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
+    const ordersWithCode = filteredAndSortedOrders.map(o => ({
+      ...o,
+      clientCountryCode: getCountryCode(clients.find(c => c.phone === o.clientPhone)?.phoneCountryCode ?? '')?.code
     }));
-    exportToCSV(pedidosConCodigo);
+    exportToCSV(ordersWithCode);
     showToast(t('dashboard.exportSuccess'), 'success');
   };
 
@@ -147,7 +147,7 @@ const Dashboard = () => {
             <button
               onClick={handleExport}
               className="btn btn--secondary"
-              disabled={pedidos.length === 0}
+              disabled={orders.length === 0}
             >
               <PiDownloadSimpleBold size={18} />
               {t('dashboard.exportCsv')}
@@ -161,7 +161,7 @@ const Dashboard = () => {
               <PiCloudArrowUpBold size={18} />
               {uploadingDrive ? t('dashboard.uploading') : t('dashboard.googleDrive')}
             </button>
-            <Link to={ROUTES.NEW_PEDIDO} className="btn btn--primary">
+            <Link to={ROUTES.NEW_ORDER} className="btn btn--primary">
               <PiPlusBold size={18} />
               {t('dashboard.newOrder')}
             </Link>
@@ -175,7 +175,7 @@ const Dashboard = () => {
               </div>
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.ordersToday')}</span>
-                <span className="dashboard__summary-value">{todaySummary.cantidadPedidos}</span>
+                <span className="dashboard__summary-value">{todaySummary.orderCount}</span>
               </div>
             </div>
             <div className="dashboard__summary-card">
@@ -185,7 +185,7 @@ const Dashboard = () => {
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.salesToday')}</span>
                 <span className="dashboard__summary-value">
-                  {format(todaySummary.totalVentas)}
+                  {format(todaySummary.totalSales)}
                 </span>
               </div>
             </div>
@@ -196,7 +196,7 @@ const Dashboard = () => {
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.delivered')}</span>
                 <span className="dashboard__summary-value">
-                  {format(todaySummary.ventasEntregadas)}
+                  {format(todaySummary.deliveredSales)}
                 </span>
               </div>
             </div>
@@ -247,9 +247,9 @@ const Dashboard = () => {
             onClick={() => handleFilterChange('todos')}
           >
             {t('dashboard.allOrders')}
-            <span className="dashboard__filter-count">{allPedidos.length}</span>
+            <span className="dashboard__filter-count">{allOrders.length}</span>
           </button>
-          {PEDIDO_STATUS_KEYS.map((status) => (
+          {ORDER_STATUS_KEYS.map((status) => (
             <button
               key={status}
               className={`dashboard__filter ${filterStatus === status ? 'dashboard__filter--active' : ''}`}
@@ -257,7 +257,7 @@ const Dashboard = () => {
             >
               <span
                 className="dashboard__filter-dot"
-                style={{ backgroundColor: PEDIDO_STATUS_COLORS[status] }}
+                style={{ backgroundColor: ORDER_STATUS_COLORS[status] }}
               />
               {t(`orders.status.${status}`)}
               <span className="dashboard__filter-count">{statusCounts[status]}</span>
@@ -265,8 +265,8 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <PedidosTable
-          pedidos={filteredAndSortedPedidos}
+        <OrdersTable
+          orders={filteredAndSortedOrders}
           loading={loading}
           error={error}
           searchTerm={searchTerm}

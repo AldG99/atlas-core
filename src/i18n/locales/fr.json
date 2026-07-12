@@ -241,9 +241,9 @@
   },
   "orders": {
     "status": {
-      "pendiente": "En attente",
-      "en_preparacion": "En préparation",
-      "entregado": "Livré"
+      "pending": "En attente",
+      "preparing": "En préparation",
+      "delivered": "Livré"
     },
     "newTitle": "Nouvelle Commande",
     "client": "Client",

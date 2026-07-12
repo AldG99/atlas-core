@@ -11,47 +11,47 @@ import {
   PiStarBold,
   PiXBold,
 } from 'react-icons/pi';
-import type { Cliente, ClienteFormData } from '../types/Cliente';
-import type { Pedido } from '../types/Pedido';
-import { getClienteById, deleteCliente, updateCliente, toggleClienteFavorito, uploadClienteImage } from '../services/clienteService';
+import type { Client, ClientFormData } from '../types/Client';
+import type { Order } from '../types/Order';
+import { getClientById, deleteClient, updateClient, toggleClientFavorite, uploadClientImage } from '../services/clientService';
 import ImageCropper from '../components/ui/ImageCropper';
 import Avatar from '../components/ui/Avatar';
-import PhoneInput from '../components/clientes/PhoneInput';
-import ClienteHistorialPedidos from '../components/clientes/ClienteHistorialPedidos';
-import { getPedidosByClientPhone } from '../services/pedidoService';
-import { getCodigoPais } from '../data/codigosPais';
-import { formatTelefono } from '../utils/formatters';
+import PhoneInput from '../components/clients/PhoneInput';
+import ClientOrderHistory from '../components/clients/ClientOrderHistory';
+import { getOrdersByClientPhone } from '../services/orderService';
+import { getCountryCode } from '../data/countryCodes';
+import { formatPhone } from '../utils/formatters';
 import { useCurrency } from '../hooks/useCurrency';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { useProductos } from '../hooks/useProductos';
-import { useEtiquetas } from '../hooks/useEtiquetas';
+import { useProducts } from '../hooks/useProducts';
+import { useLabels } from '../hooks/useLabels';
 import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
-import './ClienteDetail.scss';
+import './ClientDetail.scss';
 
-const ClienteDetail = () => {
+const ClientDetail = () => {
   const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { user, role } = useAuth();
   const { format } = useCurrency();
-  const { productos: catalogoProductos } = useProductos();
-  const { etiquetas: todasEtiquetas } = useEtiquetas();
+  const { products: productCatalog } = useProducts();
+  const { labels: allLabels } = useLabels();
 
-  const [cliente, setCliente] = useState<Cliente | null>(null);
+  const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [deleteCode, setDeleteCode] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<ClienteFormData | null>(null);
+  const [editData, setEditData] = useState<ClientFormData | null>(null);
   const [saving, setSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [pedidos, setPedidos] = useState<Pedido[]>([]);
-  const [pedidosLoading, setPedidosLoading] = useState(false);
-  const [pedidosError, setPedidosError] = useState(false);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const selectedBlobRef = useRef<Blob | null>(null);
@@ -70,52 +70,52 @@ const ClienteDetail = () => {
     selectedBlobRef.current = blob;
     const reader = new FileReader();
     reader.onloadend = () => {
-      setEditData(prev => prev ? { ...prev, fotoPerfil: reader.result as string } : prev);
+      setEditData(prev => prev ? { ...prev, profilePhoto: reader.result as string } : prev);
     };
     reader.readAsDataURL(blob);
     setCropSrc(null);
   };
 
-  const fetchCliente = useCallback(async () => {
+  const fetchClient = useCallback(async () => {
     if (!id) return;
     try {
       setLoading(true);
-      const data = await getClienteById(id);
+      const data = await getClientById(id);
       if (!data) {
         showToast(t('clients.detail.notFound'), 'error');
-        navigate(ROUTES.CLIENTES);
+        navigate(ROUTES.CLIENTS);
         return;
       }
-      setCliente(data);
+      setClient(data);
     } catch {
       showToast(t('clients.detail.loadError'), 'error');
-      navigate(ROUTES.CLIENTES);
+      navigate(ROUTES.CLIENTS);
     } finally {
       setLoading(false);
     }
   }, [id, navigate, showToast, t]);
 
   useEffect(() => {
-    fetchCliente();
-  }, [fetchCliente]);
+    fetchClient();
+  }, [fetchClient]);
 
-  const fetchPedidos = useCallback(async (telefono: string) => {
+  const fetchOrders = useCallback(async (phone: string) => {
     if (!user) return;
     try {
-      setPedidosLoading(true);
-      setPedidosError(false);
-      const data = await getPedidosByClientPhone(user.uid, telefono);
-      setPedidos(data);
+      setOrdersLoading(true);
+      setOrdersError(false);
+      const data = await getOrdersByClientPhone(user.uid, phone);
+      setOrders(data);
     } catch {
-      setPedidosError(true);
+      setOrdersError(true);
     } finally {
-      setPedidosLoading(false);
+      setOrdersLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
-    if (cliente) fetchPedidos(cliente.telefono);
-  }, [cliente, fetchPedidos]);
+    if (client) fetchOrders(client.phone);
+  }, [client, fetchOrders]);
 
 
   const formatDate = (date: Date) =>
@@ -125,23 +125,23 @@ const ClienteDetail = () => {
       year: 'numeric'
     }).format(new Date(date));
 
-  const getPostalAddress = (c: Cliente) => {
-    const numInterior = c.numeroInterior ? `, Int. ${c.numeroInterior}` : '';
+  const getPostalAddress = (c: Client) => {
+    const interiorNumber = c.interiorNumber ? `, Int. ${c.interiorNumber}` : '';
     return {
-      line1: `${c.calle} ${c.numeroExterior}${numInterior}`,
-      line2: c.colonia,
-      line3: c.ciudad,
-      line4: `CP ${c.codigoPostal}`,
-      line5: c.estado,
-      line6: c.pais
+      line1: `${c.street} ${c.exteriorNumber}${interiorNumber}`,
+      line2: c.neighborhood,
+      line3: c.city,
+      line4: `CP ${c.postalCode}`,
+      line5: c.state,
+      line6: c.country
     };
   };
 
   const handleWhatsApp = () => {
-    if (!cliente) return;
-    const cleanPhone = cliente.telefono.replace(/\D/g, '');
-    const dialCode = cliente.telefonoCodigoPais
-      ? (getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? '').replace('+', '')
+    if (!client) return;
+    const cleanPhone = client.phone.replace(/\D/g, '');
+    const dialCode = client.phoneCountryCode
+      ? (getCountryCode(client.phoneCountryCode)?.code ?? '').replace('+', '')
       : '';
     window.open(`https://wa.me/${dialCode}${cleanPhone}`, '_blank');
   };
@@ -150,54 +150,54 @@ const ClienteDetail = () => {
     Array.from({ length: 10 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
 
   const handleDelete = () => {
-    if (!cliente) return;
+    if (!client) return;
     setDeleteConfirmText('');
     setDeleteCode(generateDeleteCode());
     setShowDeleteModal(true);
   };
 
   const confirmDelete = async () => {
-    if (!cliente) return;
+    if (!client) return;
     if (deleteConfirmText !== deleteCode) return;
     setShowDeleteModal(false);
     try {
-      await deleteCliente(cliente.id);
+      await deleteClient(client.id);
       showToast(t('clients.detail.deleted'), 'success');
-      navigate(ROUTES.CLIENTES);
+      navigate(ROUTES.CLIENTS);
     } catch {
       showToast(t('clients.detail.deleteError'), 'error');
     }
   };
 
-  const handleToggleFavorito = async () => {
-    if (!cliente) return;
-    const nuevoValor = !cliente.favorito;
+  const handleToggleFavorite = async () => {
+    if (!client) return;
+    const newValue = !client.favorite;
     try {
-      await toggleClienteFavorito(cliente.id, nuevoValor);
-      setCliente({ ...cliente, favorito: nuevoValor });
+      await toggleClientFavorite(client.id, newValue);
+      setClient({ ...client, favorite: newValue });
     } catch {
       showToast(t('clients.detail.favoriteError'), 'error');
     }
   };
 
   const startEditing = () => {
-    if (!cliente) return;
+    if (!client) return;
     setEditData({
-      fotoPerfil: cliente.fotoPerfil,
-      nombre: cliente.nombre,
-      apellido: cliente.apellido,
-      telefono: cliente.telefono,
-      telefonoCodigoPais: cliente.telefonoCodigoPais ?? 'MX',
-      correo: cliente.correo,
-      calle: cliente.calle,
-      numeroExterior: cliente.numeroExterior,
-      numeroInterior: cliente.numeroInterior,
-      colonia: cliente.colonia,
-      ciudad: cliente.ciudad,
-      estado: cliente.estado,
-      codigoPostal: cliente.codigoPostal,
-      pais: cliente.pais,
-      referencia: cliente.referencia
+      profilePhoto: client.profilePhoto,
+      firstName: client.firstName,
+      lastName: client.lastName,
+      phone: client.phone,
+      phoneCountryCode: client.phoneCountryCode ?? 'MX',
+      email: client.email,
+      street: client.street,
+      exteriorNumber: client.exteriorNumber,
+      interiorNumber: client.interiorNumber,
+      neighborhood: client.neighborhood,
+      city: client.city,
+      state: client.state,
+      postalCode: client.postalCode,
+      country: client.country,
+      reference: client.reference
     });
     setIsEditing(true);
   };
@@ -208,15 +208,15 @@ const ClienteDetail = () => {
   };
 
   const handleSave = async () => {
-    if (!cliente || !editData || !user) return;
+    if (!client || !editData || !user) return;
     try {
-      let finalFoto = editData.fotoPerfil;
+      let finalPhoto = editData.profilePhoto;
 
       if (selectedBlobRef.current) {
         setIsUploading(true);
         try {
           const blobFile = new File([selectedBlobRef.current], 'foto.jpg', { type: 'image/jpeg' });
-          finalFoto = await uploadClienteImage(blobFile, user.uid);
+          finalPhoto = await uploadClientImage(blobFile, user.uid);
           selectedBlobRef.current = null;
         } catch (error) {
           const msg = error instanceof Error ? error.message : '';
@@ -230,20 +230,20 @@ const ClienteDetail = () => {
       }
 
       setSaving(true);
-      const dataToSave: ClienteFormData = {
+      const dataToSave: ClientFormData = {
         ...editData,
-        fotoPerfil: finalFoto,
-        calle: editData.calle?.toUpperCase() ?? editData.calle,
-        numeroExterior: editData.numeroExterior?.toUpperCase() ?? editData.numeroExterior,
-        numeroInterior: editData.numeroInterior?.toUpperCase() ?? editData.numeroInterior,
-        colonia: editData.colonia?.toUpperCase() ?? editData.colonia,
-        ciudad: editData.ciudad?.toUpperCase() ?? editData.ciudad,
-        estado: editData.estado?.toUpperCase() ?? editData.estado,
-        codigoPostal: editData.codigoPostal?.toUpperCase() ?? editData.codigoPostal,
-        pais: editData.pais?.toUpperCase() ?? editData.pais,
+        profilePhoto: finalPhoto,
+        street: editData.street?.toUpperCase() ?? editData.street,
+        exteriorNumber: editData.exteriorNumber?.toUpperCase() ?? editData.exteriorNumber,
+        interiorNumber: editData.interiorNumber?.toUpperCase() ?? editData.interiorNumber,
+        neighborhood: editData.neighborhood?.toUpperCase() ?? editData.neighborhood,
+        city: editData.city?.toUpperCase() ?? editData.city,
+        state: editData.state?.toUpperCase() ?? editData.state,
+        postalCode: editData.postalCode?.toUpperCase() ?? editData.postalCode,
+        country: editData.country?.toUpperCase() ?? editData.country,
       };
-      await updateCliente(cliente.id, dataToSave);
-      setCliente({ ...cliente, ...dataToSave });
+      await updateClient(client.id, dataToSave);
+      setClient({ ...client, ...dataToSave });
       setEditData(null);
       setIsEditing(false);
       showToast(t('clients.detail.updateSuccess'), 'success');
@@ -254,14 +254,14 @@ const ClienteDetail = () => {
     }
   };
 
-  const updateField = (field: keyof ClienteFormData, value: string | boolean) => {
+  const updateField = (field: keyof ClientFormData, value: string | boolean) => {
     if (!editData) return;
     setEditData({ ...editData, [field]: value });
   };
 
-  const handlePhoneChange = (numero: string, iso: string) => {
+  const handlePhoneChange = (number: string, iso: string) => {
     if (!editData) return;
-    setEditData({ ...editData, telefono: numero, telefonoCodigoPais: iso });
+    setEditData({ ...editData, phone: number, phoneCountryCode: iso });
   };
 
   if (loading) {
@@ -274,9 +274,9 @@ const ClienteDetail = () => {
     );
   }
 
-  if (!cliente) return null;
+  if (!client) return null;
 
-  const addr = getPostalAddress(cliente);
+  const addr = getPostalAddress(client);
 
   return (
     <>
@@ -287,7 +287,7 @@ const ClienteDetail = () => {
           <div className="cliente-detail__top-bar-inner">
             <button
               className="cliente-detail__icon-btn cliente-detail__icon-btn--back"
-              onClick={() => navigate(ROUTES.CLIENTES)}
+              onClick={() => navigate(ROUTES.CLIENTS)}
               title={t('common.back')}
             >
               <PiArrowLeftBold size={20} />
@@ -310,11 +310,11 @@ const ClienteDetail = () => {
                   <>
                     <span className="cliente-detail__top-divider" />
                     <button
-                      onClick={handleToggleFavorito}
-                      className={`cliente-detail__icon-btn ${cliente.favorito ? 'cliente-detail__icon-btn--fav-active' : ''}`}
-                      title={cliente.favorito ? t('clients.detail.removeFavorite') : t('clients.detail.addFavorite')}
+                      onClick={handleToggleFavorite}
+                      className={`cliente-detail__icon-btn ${client.favorite ? 'cliente-detail__icon-btn--fav-active' : ''}`}
+                      title={client.favorite ? t('clients.detail.removeFavorite') : t('clients.detail.addFavorite')}
                     >
-                      {cliente.favorito ? <PiStarFill size={20} /> : <PiStarBold size={20} />}
+                      {client.favorite ? <PiStarFill size={20} /> : <PiStarBold size={20} />}
                     </button>
                   </>
                 )}
@@ -346,9 +346,9 @@ const ClienteDetail = () => {
                   onClick={() => isEditing && fileInputRef.current?.click()}
                 >
                   <Avatar
-                    src={isEditing ? editData?.fotoPerfil : cliente.fotoPerfil}
-                    initials={`${(editData?.nombre || cliente.nombre)[0]}${(editData?.apellido || cliente.apellido)?.[0] ?? ''}`}
-                    alt={cliente.nombre}
+                    src={isEditing ? editData?.profilePhoto : client.profilePhoto}
+                    initials={`${(editData?.firstName || client.firstName)[0]}${(editData?.lastName || client.lastName)?.[0] ?? ''}`}
+                    alt={client.firstName}
                   />
                   {isEditing && (
                     <div className="cliente-detail__avatar-overlay"><PiCameraBold size={20} /></div>
@@ -360,13 +360,13 @@ const ClienteDetail = () => {
                     <div className="cliente-detail__client-name-group">
                       {isEditing ? (
                         <div className="cliente-detail__name-edit">
-                          <input type="text" value={editData?.nombre || ''} onChange={(e) => updateField('nombre', e.target.value)} placeholder="Nombre *" className="cliente-detail__input" />
-                          <input type="text" value={editData?.apellido || ''} onChange={(e) => updateField('apellido', e.target.value)} placeholder="Apellido *" className="cliente-detail__input" />
+                          <input type="text" value={editData?.firstName || ''} onChange={(e) => updateField('firstName', e.target.value)} placeholder="Nombre *" className="cliente-detail__input" />
+                          <input type="text" value={editData?.lastName || ''} onChange={(e) => updateField('lastName', e.target.value)} placeholder="Apellido *" className="cliente-detail__input" />
                         </div>
                       ) : (
-                        <h1 className="cliente-detail__name">{cliente.nombre} {cliente.apellido}</h1>
+                        <h1 className="cliente-detail__name">{client.firstName} {client.lastName}</h1>
                       )}
-                      <span className="cliente-detail__date">{t('clients.detail.clientSince')} {formatDate(cliente.fechaCreacion)}</span>
+                      <span className="cliente-detail__date">{t('clients.detail.clientSince')} {formatDate(client.createdAt)}</span>
                     </div>
                   </div>
 
@@ -379,17 +379,17 @@ const ClienteDetail = () => {
                   {isEditing ? (
                     <>
                       <div className="cliente-detail__address-row">
-                        <input type="text" value={editData?.calle || ''} onChange={(e) => updateField('calle', e.target.value)} placeholder="Calle" className="cliente-detail__input cliente-detail__input--flex" />
-                        <input type="text" value={editData?.numeroExterior || ''} onChange={(e) => updateField('numeroExterior', e.target.value)} placeholder="No. Ext" className="cliente-detail__input cliente-detail__input--small" />
-                        <input type="text" value={editData?.numeroInterior || ''} onChange={(e) => updateField('numeroInterior', e.target.value)} placeholder="No. Int" className="cliente-detail__input cliente-detail__input--small" />
+                        <input type="text" value={editData?.street || ''} onChange={(e) => updateField('street', e.target.value)} placeholder="Calle" className="cliente-detail__input cliente-detail__input--flex" />
+                        <input type="text" value={editData?.exteriorNumber || ''} onChange={(e) => updateField('exteriorNumber', e.target.value)} placeholder="No. Ext" className="cliente-detail__input cliente-detail__input--small" />
+                        <input type="text" value={editData?.interiorNumber || ''} onChange={(e) => updateField('interiorNumber', e.target.value)} placeholder="No. Int" className="cliente-detail__input cliente-detail__input--small" />
                       </div>
-                      <input type="text" value={editData?.colonia || ''} onChange={(e) => updateField('colonia', e.target.value)} placeholder="Colonia" className="cliente-detail__input" />
+                      <input type="text" value={editData?.neighborhood || ''} onChange={(e) => updateField('neighborhood', e.target.value)} placeholder="Colonia" className="cliente-detail__input" />
                       <div className="cliente-detail__address-row">
-                        <input type="text" value={editData?.pais || ''} onChange={(e) => updateField('pais', e.target.value)} placeholder="País" className="cliente-detail__input cliente-detail__input--flex" />
-                        <input type="text" value={editData?.estado || ''} onChange={(e) => updateField('estado', e.target.value)} placeholder="Estado" className="cliente-detail__input cliente-detail__input--flex" />
-                        <input type="text" value={editData?.ciudad || ''} onChange={(e) => updateField('ciudad', e.target.value)} placeholder="Ciudad" className="cliente-detail__input cliente-detail__input--flex" />
+                        <input type="text" value={editData?.country || ''} onChange={(e) => updateField('country', e.target.value)} placeholder="País" className="cliente-detail__input cliente-detail__input--flex" />
+                        <input type="text" value={editData?.state || ''} onChange={(e) => updateField('state', e.target.value)} placeholder="Estado" className="cliente-detail__input cliente-detail__input--flex" />
+                        <input type="text" value={editData?.city || ''} onChange={(e) => updateField('city', e.target.value)} placeholder="Ciudad" className="cliente-detail__input cliente-detail__input--flex" />
                       </div>
-                      <input type="text" value={editData?.codigoPostal || ''} onChange={(e) => updateField('codigoPostal', e.target.value)} placeholder="CP" className="cliente-detail__input cliente-detail__input--small" />
+                      <input type="text" value={editData?.postalCode || ''} onChange={(e) => updateField('postalCode', e.target.value)} placeholder="CP" className="cliente-detail__input cliente-detail__input--small" />
                     </>
                   ) : (
                     <>
@@ -405,26 +405,26 @@ const ClienteDetail = () => {
                     <span className="cliente-detail__info-label">{t('clients.detail.phone')}</span>
                     {isEditing ? (
                       <PhoneInput
-                        value={editData?.telefono || ''}
-                        codigoPais={editData?.telefonoCodigoPais ?? 'MX'}
+                        value={editData?.phone || ''}
+                        countryCode={editData?.phoneCountryCode ?? 'MX'}
                         onChange={handlePhoneChange}
                         placeholder="Teléfono"
                       />
                     ) : (
                       <span className="cliente-detail__info-value">
-                        {cliente.telefonoCodigoPais
-                          ? `${getCodigoPais(cliente.telefonoCodigoPais)?.codigo ?? ''} ${formatTelefono(cliente.telefono)}`
-                          : formatTelefono(cliente.telefono)}
+                        {client.phoneCountryCode
+                          ? `${getCountryCode(client.phoneCountryCode)?.code ?? ''} ${formatPhone(client.phone)}`
+                          : formatPhone(client.phone)}
                       </span>
                     )}
                   </div>
                   <div className="cliente-detail__header-field">
                     <span className="cliente-detail__info-label">{t('clients.detail.email')}</span>
                     {isEditing ? (
-                      <input type="email" value={editData?.correo || ''} onChange={(e) => updateField('correo', e.target.value)} placeholder="Correo electrónico" className="cliente-detail__input" />
+                      <input type="email" value={editData?.email || ''} onChange={(e) => updateField('email', e.target.value)} placeholder="Correo electrónico" className="cliente-detail__input" />
                     ) : (
-                      <span className={`cliente-detail__info-value ${!cliente.correo ? 'cliente-detail__info-value--empty' : ''}`}>
-                        {cliente.correo || t('clients.detail.noEmail')}
+                      <span className={`cliente-detail__info-value ${!client.email ? 'cliente-detail__info-value--empty' : ''}`}>
+                        {client.email || t('clients.detail.noEmail')}
                       </span>
                     )}
                   </div>
@@ -432,12 +432,12 @@ const ClienteDetail = () => {
                     <span className="cliente-detail__info-label">{t('clients.detail.reference')}</span>
                     {isEditing ? (
                       <>
-                        <textarea value={editData?.referencia || ''} onChange={(e) => updateField('referencia', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} maxLength={140} style={{ resize: 'none' }} />
-                        <span className="cliente-detail__char-count">{(editData?.referencia || '').length}/140</span>
+                        <textarea value={editData?.reference || ''} onChange={(e) => updateField('reference', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} maxLength={140} style={{ resize: 'none' }} />
+                        <span className="cliente-detail__char-count">{(editData?.reference || '').length}/140</span>
                       </>
                     ) : (
-                      <span className={`cliente-detail__info-value ${!cliente.referencia ? 'cliente-detail__info-value--empty' : ''}`}>
-                        {cliente.referencia || t('clients.detail.noReference')}
+                      <span className={`cliente-detail__info-value ${!client.reference ? 'cliente-detail__info-value--empty' : ''}`}>
+                        {client.reference || t('clients.detail.noReference')}
                       </span>
                     )}
                   </div>
@@ -446,13 +446,13 @@ const ClienteDetail = () => {
             </div>
 
             {/* Tabla de pedidos: ocupa el resto del card */}
-            <ClienteHistorialPedidos
-              clienteId={id!}
-              pedidos={pedidos}
-              pedidosLoading={pedidosLoading}
-              pedidosError={pedidosError}
-              catalogoProductos={catalogoProductos}
-              todasEtiquetas={todasEtiquetas}
+            <ClientOrderHistory
+              clientId={id!}
+              orders={orders}
+              ordersLoading={ordersLoading}
+              ordersError={ordersError}
+              productCatalog={productCatalog}
+              allLabels={allLabels}
               format={format}
             />
 
@@ -509,4 +509,4 @@ const ClienteDetail = () => {
   );
 };
 
-export default ClienteDetail;
+export default ClientDetail;

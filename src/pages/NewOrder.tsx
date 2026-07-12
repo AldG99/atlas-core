@@ -1,45 +1,45 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { usePedidos } from '../hooks/usePedidos';
+import { useOrders } from '../hooks/useOrders';
 import { useToast } from '../hooks/useToast';
-import type { PedidoFormData, ProductoItem } from '../types/Pedido';
-import type { Cliente } from '../types/Cliente';
+import type { OrderFormData, OrderItem } from '../types/Order';
+import type { Client } from '../types/Client';
 import { PiShoppingBagBold } from 'react-icons/pi';
 import { ROUTES } from '../config/routes';
-import { PEDIDO_MESSAGES } from '../constants/messages';
+import { ORDER_MESSAGES } from '../constants/messages';
 import MainLayout from '../layouts/MainLayout';
-import PedidoForm from '../components/pedidos/PedidoForm';
-import './NewPedido.scss';
+import OrderForm from '../components/orders/OrderForm';
+import './NewOrder.scss';
 
 interface LocationState {
-  cliente?: Cliente;
-  productos?: ProductoItem[];
+  client?: Client;
+  items?: OrderItem[];
 }
 
-const NewPedido = () => {
+const NewOrder = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { t } = useTranslation();
-  const { addPedido } = usePedidos();
+  const { addOrder } = useOrders();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
   const locationState = location.state as LocationState | null;
-  const defaultCliente = locationState?.cliente;
-  const defaultProductos = locationState?.productos;
+  const defaultClient = locationState?.client;
+  const defaultItems = locationState?.items;
 
-  const handleSubmit = async (data: PedidoFormData) => {
+  const handleSubmit = async (data: OrderFormData) => {
     setLoading(true);
     setError('');
 
     try {
-      await addPedido(data);
+      await addOrder(data);
       showToast(t('orders.createSuccess'), 'success');
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : PEDIDO_MESSAGES.CREATE_ERROR;
+      const msg = err instanceof Error ? err.message : ORDER_MESSAGES.CREATE_ERROR;
       setError(msg);
       showToast(msg, 'error');
     } finally {
@@ -59,12 +59,12 @@ const NewPedido = () => {
           {error && <div className="new-pedido__error">{error}</div>}
 
           <div className="new-pedido__form">
-            <PedidoForm
+            <OrderForm
               onSubmit={handleSubmit}
               onCancel={() => navigate(-1)}
               loading={loading}
-              defaultCliente={defaultCliente}
-              defaultProductos={defaultProductos}
+              defaultClient={defaultClient}
+              defaultItems={defaultItems}
             />
           </div>
         </div>
@@ -73,4 +73,4 @@ const NewPedido = () => {
   );
 };
 
-export default NewPedido;
+export default NewOrder;

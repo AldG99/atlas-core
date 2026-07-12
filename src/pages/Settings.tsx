@@ -23,17 +23,17 @@ import type { User } from '../types/User';
 import { usePWA } from '../hooks/usePWA';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { useEquipo } from '../hooks/useEquipo';
-import { salirDelNegocio, getAdminPorUid, getMiembros } from '../services/equipoService';
+import { useTeam } from '../hooks/useTeam';
+import { leaveBusiness, getAdminByUid, getMembers } from '../services/teamService';
 import Avatar from '../components/ui/Avatar';
 import LanguageSwitcher from '../components/ui/LanguageSwitcher';
-import DangerModal from '../components/configuracion/DangerModal';
-import CrearMiembroModal from '../components/configuracion/CrearMiembroModal';
-import MiembroPerfilModal from '../components/configuracion/MiembroPerfilModal';
-import RespaldoPanel from '../components/configuracion/RespaldoPanel';
-import PlantillasPanel from '../components/configuracion/PlantillasPanel';
+import DangerModal from '../components/settings/DangerModal';
+import CreateMemberModal from '../components/settings/CreateMemberModal';
+import MemberProfileModal from '../components/settings/MemberProfileModal';
+import BackupPanel from '../components/settings/BackupPanel';
+import TemplatesPanel from '../components/settings/TemplatesPanel';
 import { getPlanLimits } from '../constants/planLimits';
-import './Configuracion.scss';
+import './Settings.scss';
 
 type Section = 'moneda' | 'notificaciones' | 'instalar' | 'plantillas' | 'equipo' | 'respaldo' | 'gestion' | 'membresia' | 'idioma';
 
@@ -42,7 +42,7 @@ const SIMBOLOS_MONEDA = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
 type NavItem = { id: Section; icon: React.ReactNode; title: string; color: string };
 type NavGroup = { label: string; items: NavItem[] };
 
-const Configuracion = () => {
+const Settings = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, updateProfile, deleteAllData, deleteAccount, role } = useAuth();
@@ -69,9 +69,9 @@ const Configuracion = () => {
   const LEGACY_MAP: Record<string, string> = {
     MXN: '$', USD: '$', EUR: '€', COP: '$', ARS: '$', CLP: '$', PEN: 'S/', BRL: 'R$', GTQ: 'Q',
   };
-  const rawMoneda = user?.moneda ?? '$';
-  const [moneda, setMoneda] = useState(LEGACY_MAP[rawMoneda] ?? rawMoneda);
-  const [savingMoneda, setSavingMoneda] = useState(false);
+  const rawCurrency = user?.currency ?? '$';
+  const [currency, setCurrency] = useState(LEGACY_MAP[rawCurrency] ?? rawCurrency);
+  const [savingCurrency, setSavingCurrency] = useState(false);
 
   // PWA
   const { canInstall, promptInstall, notifPermission, requestNotifPermission, sendNotification } = usePWA();
@@ -84,55 +84,55 @@ const Configuracion = () => {
   const [dangerModal, setDangerModal] = useState<'deleteData' | 'deleteAccount' | null>(null);
 
   // Equipo
-  const { miembros, loading: equipoLoading, crearMiembro, remover, actualizar, actualizarContrasena } = useEquipo();
-  const [showCrearMiembro, setShowCrearMiembro] = useState(false);
-  const planPermiteMiembros = getPlanLimits(user?.plan).miembros > 0;
+  const { members, loading: teamLoading, createMember, remove, update, updatePassword } = useTeam();
+  const [showCreateMember, setShowCreateMember] = useState(false);
+  const planAllowsMembers = getPlanLimits(user?.plan).members > 0;
 
   // Perfil de miembro
-  const [selectedMiembro, setSelectedMiembro] = useState<User | null>(null);
+  const [selectedMember, setSelectedMember] = useState<User | null>(null);
 
   // Membresía (datos del negocio para miembros)
-  const [salirLoading, setSalirLoading] = useState(false);
-  const [adminNegocio, setAdminNegocio] = useState<User | null>(null);
-  const [companeros, setCompaneros] = useState<User[]>([]);
+  const [leaveLoading, setLeaveLoading] = useState(false);
+  const [businessAdmin, setBusinessAdmin] = useState<User | null>(null);
+  const [teammates, setTeammates] = useState<User[]>([]);
 
   useEffect(() => {
-    if (role !== 'miembro' || !user?.negocioUid) return;
-    getAdminPorUid(user.negocioUid).then(setAdminNegocio);
-    getMiembros(user.negocioUid).then(data =>
-      setCompaneros(data.filter(m => m.uid !== user.uid))
+    if (role !== 'member' || !user?.businessUid) return;
+    getAdminByUid(user.businessUid).then(setBusinessAdmin);
+    getMembers(user.businessUid).then(data =>
+      setTeammates(data.filter(m => m.uid !== user.uid))
     );
-  }, [role, user?.negocioUid, user?.uid]);
+  }, [role, user?.businessUid, user?.uid]);
 
   // ── Moneda ──────────────────────────────────────────
-  const handleSaveMoneda = async () => {
-    setSavingMoneda(true);
+  const handleSaveCurrency = async () => {
+    setSavingCurrency(true);
     try {
-      await updateProfile({ moneda });
+      await updateProfile({ currency });
       showToast(t('settings.currency.saveSuccess'), 'success');
     } catch {
       showToast(t('settings.currency.saveError'), 'error');
     } finally {
-      setSavingMoneda(false);
+      setSavingCurrency(false);
     }
   };
 
   // ── Equipo ──────────────────────────────────────────
-  const handleCrearMiembro = async (form: { nombre: string; apellido: string; fechaNacimiento: string; telefono: string; telefonoCodigoPais: string; password: string }) => {
-    await crearMiembro(form);
+  const handleCreateMember = async (form: { firstName: string; lastName: string; birthDate: string; phone: string; phoneCountryCode: string; password: string }) => {
+    await createMember(form);
     showToast(t('settings.team.created'), 'success');
   };
 
   // ── Membresía ────────────────────────────────────────
-  const handleSalirNegocio = async () => {
+  const handleLeaveBusiness = async () => {
     if (!user) return;
-    setSalirLoading(true);
+    setLeaveLoading(true);
     try {
-      await salirDelNegocio(user.uid);
+      await leaveBusiness(user.uid);
       window.location.reload();
     } catch {
       showToast(t('settings.membership.leaveError'), 'error');
-      setSalirLoading(false);
+      setLeaveLoading(false);
     }
   };
 
@@ -149,13 +149,13 @@ const Configuracion = () => {
 
   // ── Nav groups ───────────────────────────────────────
   const preferenciasItems: NavItem[] = [
-    ...(role !== 'miembro' ? [{ id: 'moneda' as Section, icon: <PiCurrencyDollarBold size={16} />, title: t('settings.sections.currency'), color: 'yellow' }] : []),
+    ...(role !== 'member' ? [{ id: 'moneda' as Section, icon: <PiCurrencyDollarBold size={16} />, title: t('settings.sections.currency'), color: 'yellow' }] : []),
     { id: 'notificaciones' as Section, icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: t('settings.sections.notifications'), color: notifPermission === 'granted' ? 'green' : 'gray' },
     { id: 'idioma' as Section, icon: <PiTranslateBold size={16} />, title: t('settings.sections.language'), color: 'blue' },
     ...(canInstall ? [{ id: 'instalar' as Section, icon: <PiDownloadBold size={16} />, title: t('settings.sections.install'), color: 'teal' }] : []),
   ];
 
-  const navGroups: NavGroup[] = role === 'miembro'
+  const navGroups: NavGroup[] = role === 'member'
     ? [
         { label: t('settings.groups.preferences'), items: preferenciasItems },
         { label: t('settings.groups.business'), items: [{ id: 'plantillas', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' }] },
@@ -178,7 +178,7 @@ const Configuracion = () => {
   const renderPanel = () => {
     switch (activeSection) {
       case 'moneda':
-        if (role === 'miembro') return (
+        if (role === 'member') return (
           <p className="configuracion__desc">{t('settings.currency.adminOnly')}</p>
         );
         return (
@@ -189,8 +189,8 @@ const Configuracion = () => {
             <div className="configuracion__field-row">
               <select
                 className="configuracion__select"
-                value={moneda}
-                onChange={e => setMoneda(e.target.value)}
+                value={currency}
+                onChange={e => setCurrency(e.target.value)}
               >
                 {SIMBOLOS_MONEDA.map(s => (
                   <option key={s} value={s}>{s}</option>
@@ -198,10 +198,10 @@ const Configuracion = () => {
               </select>
               <button
                 className="btn btn--primary btn--sm"
-                onClick={handleSaveMoneda}
-                disabled={savingMoneda || moneda === (LEGACY_MAP[rawMoneda] ?? rawMoneda)}
+                onClick={handleSaveCurrency}
+                disabled={savingCurrency || currency === (LEGACY_MAP[rawCurrency] ?? rawCurrency)}
               >
-                {savingMoneda ? t('common.saving') : t('common.save')}
+                {savingCurrency ? t('common.saving') : t('common.save')}
               </button>
             </div>
           </>
@@ -255,7 +255,7 @@ const Configuracion = () => {
         );
 
       case 'plantillas':
-        return <PlantillasPanel />;
+        return <TemplatesPanel />;
 
       case 'equipo':
         return (
@@ -265,31 +265,31 @@ const Configuracion = () => {
             </p>
 
             {/* Member list */}
-            {equipoLoading ? (
+            {teamLoading ? (
               <p className="configuracion__desc">{t('settings.team.loading')}</p>
-            ) : miembros.length === 0 ? (
+            ) : members.length === 0 ? (
               <p className="configuracion__empty-list">{t('settings.team.empty')}</p>
             ) : (
               <div className="configuracion__equipo-list">
-                {miembros.map(m => (
+                {members.map(m => (
                   <div
                     key={m.uid}
                     className="configuracion__equipo-item configuracion__equipo-item--clickable"
-                    onClick={() => setSelectedMiembro(m)}
+                    onClick={() => setSelectedMember(m)}
                   >
                     <div className="configuracion__equipo-avatar">
                       <Avatar
-                        src={m.fotoPerfil}
-                        initials={`${(m.nombre?.[0] ?? '?').toUpperCase()}${(m.apellido?.[0] ?? '').toUpperCase()}`}
-                        alt={m.nombre}
+                        src={m.profilePhoto}
+                        initials={`${(m.firstName?.[0] ?? '?').toUpperCase()}${(m.lastName?.[0] ?? '').toUpperCase()}`}
+                        alt={m.firstName}
                       />
                     </div>
                     <div className="configuracion__equipo-info">
                       <div className="configuracion__equipo-name-row">
-                        <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
+                        <span className="configuracion__equipo-name">{m.firstName} {m.lastName}</span>
                         <PiUserBold size={11} color="#2368C4" />
                       </div>
-                      <span className="configuracion__equipo-email">{m.username}{m.numeroMiembro ? ` · Nº ${m.numeroMiembro}` : ''}</span>
+                      <span className="configuracion__equipo-email">{m.username}{m.memberNumber ? ` · Nº ${m.memberNumber}` : ''}</span>
                     </div>
                   </div>
                 ))}
@@ -298,9 +298,9 @@ const Configuracion = () => {
 
             <button
               className="btn btn--primary btn--sm"
-              onClick={() => setShowCrearMiembro(true)}
-              disabled={!planPermiteMiembros}
-              title={!planPermiteMiembros ? t('settings.team.upgradePlanToAdd') : undefined}
+              onClick={() => setShowCreateMember(true)}
+              disabled={!planAllowsMembers}
+              title={!planAllowsMembers ? t('settings.team.upgradePlanToAdd') : undefined}
             >
               {t('settings.team.newMember')}
             </button>
@@ -308,7 +308,7 @@ const Configuracion = () => {
         );
 
       case 'respaldo':
-        return <RespaldoPanel />;
+        return <BackupPanel />;
 
       case 'gestion':
         return (
@@ -347,47 +347,47 @@ const Configuracion = () => {
               {t('settings.membership.desc')}
             </p>
 
-            {adminNegocio && (
+            {businessAdmin && (
               <div className="configuracion__membresia-section">
                 <p className="configuracion__membresia-label">{t('settings.membership.admin')}</p>
                 <div className="configuracion__equipo-item">
                   <div className="configuracion__equipo-avatar">
                     <Avatar
-                      src={adminNegocio.fotoPerfil}
-                      initials={`${(adminNegocio.nombre?.[0] ?? '?').toUpperCase()}${(adminNegocio.apellido?.[0] ?? '').toUpperCase()}`}
-                      alt={adminNegocio.nombre}
+                      src={businessAdmin.profilePhoto}
+                      initials={`${(businessAdmin.firstName?.[0] ?? '?').toUpperCase()}${(businessAdmin.lastName?.[0] ?? '').toUpperCase()}`}
+                      alt={businessAdmin.firstName}
                     />
                   </div>
                   <div className="configuracion__equipo-info">
                     <div className="configuracion__equipo-name-row">
-                      <span className="configuracion__equipo-name">{adminNegocio.nombre} {adminNegocio.apellido}</span>
+                      <span className="configuracion__equipo-name">{businessAdmin.firstName} {businessAdmin.lastName}</span>
                       <PiShieldCheckBold size={11} color="#F8A800" />
                     </div>
-                    <span className="configuracion__equipo-email">{adminNegocio.nombreNegocio}</span>
+                    <span className="configuracion__equipo-email">{businessAdmin.businessName}</span>
                   </div>
                 </div>
               </div>
             )}
 
-            {companeros.length > 0 && (
+            {teammates.length > 0 && (
               <div className="configuracion__membresia-section">
                 <p className="configuracion__membresia-label">{t('settings.membership.teammates')}</p>
                 <div className="configuracion__equipo-list">
-                  {companeros.map(m => (
+                  {teammates.map(m => (
                     <div key={m.uid} className="configuracion__equipo-item">
                       <div className="configuracion__equipo-avatar">
                         <Avatar
-                          src={m.fotoPerfil}
-                          initials={`${(m.nombre?.[0] ?? '?').toUpperCase()}${(m.apellido?.[0] ?? '').toUpperCase()}`}
-                          alt={m.nombre}
+                          src={m.profilePhoto}
+                          initials={`${(m.firstName?.[0] ?? '?').toUpperCase()}${(m.lastName?.[0] ?? '').toUpperCase()}`}
+                          alt={m.firstName}
                         />
                       </div>
                       <div className="configuracion__equipo-info">
                         <div className="configuracion__equipo-name-row">
-                          <span className="configuracion__equipo-name">{m.nombre} {m.apellido}</span>
+                          <span className="configuracion__equipo-name">{m.firstName} {m.lastName}</span>
                           <PiUserBold size={11} color="#2368C4" />
                         </div>
-                        <span className="configuracion__equipo-email">{m.username}{m.numeroMiembro ? ` · Nº ${m.numeroMiembro}` : ''}</span>
+                        <span className="configuracion__equipo-email">{m.username}{m.memberNumber ? ` · Nº ${m.memberNumber}` : ''}</span>
                       </div>
                     </div>
                   ))}
@@ -398,11 +398,11 @@ const Configuracion = () => {
             <div className="configuracion__actions">
               <button
                 className="btn btn--danger btn--sm"
-                onClick={handleSalirNegocio}
-                disabled={salirLoading}
+                onClick={handleLeaveBusiness}
+                disabled={leaveLoading}
               >
                 <PiUserMinusBold size={15} />
-                {salirLoading ? t('settings.membership.leaving') : t('settings.membership.leave')}
+                {leaveLoading ? t('settings.membership.leaving') : t('settings.membership.leave')}
               </button>
             </div>
           </>
@@ -486,24 +486,24 @@ const Configuracion = () => {
         />
       )}
 
-      {showCrearMiembro && (
-        <CrearMiembroModal
-          onClose={() => setShowCrearMiembro(false)}
-          onSubmit={handleCrearMiembro}
+      {showCreateMember && (
+        <CreateMemberModal
+          onClose={() => setShowCreateMember(false)}
+          onSubmit={handleCreateMember}
         />
       )}
 
-      {selectedMiembro && (
-        <MiembroPerfilModal
-          miembro={selectedMiembro}
-          onClose={() => setSelectedMiembro(null)}
-          onRemover={(uid) => { remover(uid); setSelectedMiembro(null); }}
-          onActualizar={actualizar}
-          onActualizarContrasena={actualizarContrasena}
+      {selectedMember && (
+        <MemberProfileModal
+          member={selectedMember}
+          onClose={() => setSelectedMember(null)}
+          onRemove={(uid) => { remove(uid); setSelectedMember(null); }}
+          onUpdate={update}
+          onUpdatePassword={updatePassword}
         />
       )}
     </div>
   );
 };
 
-export default Configuracion;
+export default Settings;

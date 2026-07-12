@@ -1,44 +1,44 @@
 import { useTranslation } from 'react-i18next';
-import { useReportes } from '../hooks/useReportes';
+import { useReports } from '../hooks/useReports';
 import { useToast } from '../hooks/useToast';
-import { useClientes } from '../hooks/useClientes';
-import { getCodigoPais } from '../data/codigosPais';
+import { useClients } from '../hooks/useClients';
+import { getCountryCode } from '../data/countryCodes';
 import { PiDownloadSimpleBold } from 'react-icons/pi';
 import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
-import KPICards from '../components/reportes/KPICards';
-import PeriodFilter from '../components/reportes/PeriodFilter';
-import SalesChart from '../components/reportes/SalesChart';
-import StatusBreakdown from '../components/reportes/StatusBreakdown';
-import TopClientes from '../components/reportes/TopClientes';
-import TopProductos from '../components/reportes/TopProductos';
-import InventarioStatus from '../components/reportes/InventarioStatus';
-import './Reportes.scss';
+import KPICards from '../components/reports/KPICards';
+import PeriodFilter from '../components/reports/PeriodFilter';
+import SalesChart from '../components/reports/SalesChart';
+import StatusBreakdown from '../components/reports/StatusBreakdown';
+import TopClients from '../components/reports/TopClients';
+import TopProducts from '../components/reports/TopProducts';
+import InventoryStatus from '../components/reports/InventoryStatus';
+import './Reports.scss';
 
-const Reportes = () => {
+const Reports = () => {
   const { t } = useTranslation();
   const {
-    reporteData,
-    filteredPedidos,
+    reportData,
+    filteredOrders,
     period,
     loading,
     error,
     hasMore,
     setPeriod
-  } = useReportes();
+  } = useReports();
   const { showToast } = useToast();
-  const { clientes } = useClientes();
+  const { clients } = useClients();
 
   const handleExport = () => {
-    if (filteredPedidos.length === 0) {
+    if (filteredOrders.length === 0) {
       showToast(t('reports.noDataExport'), 'warning');
       return;
     }
-    const pedidosConCodigo = filteredPedidos.map(p => ({
-      ...p,
-      clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
+    const ordersWithCode = filteredOrders.map(o => ({
+      ...o,
+      clientCountryCode: getCountryCode(clients.find(c => c.phone === o.clientPhone)?.phoneCountryCode ?? '')?.code
     }));
-    exportToCSV(pedidosConCodigo, `reporte_${period}`);
+    exportToCSV(ordersWithCode, `reporte_${period}`);
     showToast(t('reports.export'), 'success');
   };
 
@@ -50,7 +50,7 @@ const Reportes = () => {
           <button
             onClick={handleExport}
             className="btn btn--secondary"
-            disabled={filteredPedidos.length === 0}
+            disabled={filteredOrders.length === 0}
           >
             <PiDownloadSimpleBold size={18} />
             {t('reports.export')}
@@ -84,21 +84,21 @@ const Reportes = () => {
 
           {!loading && !error && (
             <div className="reportes__layout">
-              <KPICards kpis={reporteData.kpis} comparisonKPIs={reporteData.comparisonKPIs} variant="main" />
-              <KPICards kpis={reporteData.kpis} comparisonKPIs={reporteData.comparisonKPIs} variant="side" />
+              <KPICards kpis={reportData.kpis} comparisonKPIs={reportData.comparisonKPIs} variant="main" />
+              <KPICards kpis={reportData.kpis} comparisonKPIs={reportData.comparisonKPIs} variant="side" />
               <div className="reportes__chart">
                 <SalesChart
-                  data={reporteData.chartData}
-                  totalVentas={reporteData.kpis.ventasTotales}
-                  totalPedidos={reporteData.kpis.totalPedidos}
+                  data={reportData.chartData}
+                  totalSales={reportData.kpis.totalSales}
+                  totalOrders={reportData.kpis.totalOrders}
                 />
               </div>
-              <StatusBreakdown breakdown={reporteData.statusBreakdown} />
+              <StatusBreakdown breakdown={reportData.statusBreakdown} />
               <div className="reportes__bottom-left">
-                <TopClientes clientes={reporteData.topClientes} />
-                <TopProductos productos={reporteData.topProductos} />
+                <TopClients clients={reportData.topClients} />
+                <TopProducts products={reportData.topProducts} />
               </div>
-              <InventarioStatus inventario={reporteData.inventario} />
+              <InventoryStatus inventory={reportData.inventory} />
             </div>
           )}
         </div>
@@ -107,4 +107,4 @@ const Reportes = () => {
   );
 };
 
-export default Reportes;
+export default Reports;

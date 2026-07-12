@@ -17,7 +17,7 @@ const NotFound = () => {
             <PiArrowLeftBold size={16} />
             {t('notFound.home')}
           </Link>
-          <Link to={ROUTES.SOPORTE} className="btn btn--outline">
+          <Link to={ROUTES.SUPPORT} className="btn btn--outline">
             <PiMagnifyingGlassBold size={16} />
             {t('notFound.support')}
           </Link>

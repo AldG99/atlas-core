@@ -8,7 +8,7 @@ import { ROUTES } from '../config/routes';
 import AuthLayout from '../layouts/AuthLayout';
 import './Login.scss';
 
-type LoginMode = 'admin' | 'miembro';
+type LoginMode = 'admin' | 'member';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ const Login = () => {
   const [resetSent, setResetSent] = useState(false);
   const [resetError, setResetError] = useState('');
 
-  const { login, loginMiembro, sendPasswordReset, user, loading: authLoading } = useAuth();
+  const { login, loginMember, sendPasswordReset, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const Login = () => {
       if (mode === 'admin') {
         await login({ email, password });
       } else {
-        await loginMiembro(username, password);
+        await loginMember(username, password);
       }
       setFailedAttempts(0);
       setLockedUntil(null);
@@ -178,8 +178,8 @@ const Login = () => {
           </button>
           <button
             type="button"
-            className={`login-form__tab${mode === 'miembro' ? ' login-form__tab--active' : ''}`}
-            onClick={() => { setMode('miembro'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
+            className={`login-form__tab${mode === 'member' ? ' login-form__tab--active' : ''}`}
+            onClick={() => { setMode('member'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
           >
             <PiUsers size={17} />
             {t('auth.login.memberTab')}

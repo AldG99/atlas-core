@@ -7,37 +7,37 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { ROUTES } from '../config/routes';
 import AuthLayout from '../layouts/AuthLayout';
-import PhoneInput from '../components/clientes/PhoneInput';
+import PhoneInput from '../components/clients/PhoneInput';
 import './Register.scss';
 
-const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s-]+$/;
+const LETTERS_ONLY = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s-]+$/;
 
-const esTelefonoFicticio = (tel: string): boolean => {
-  if (/^(\d)\1+$/.test(tel)) return true;
-  let esAscendente = true;
-  let esDescendente = true;
-  for (let i = 1; i < tel.length; i++) {
-    if (parseInt(tel[i]) - parseInt(tel[i - 1]) !== 1) esAscendente = false;
-    if (parseInt(tel[i - 1]) - parseInt(tel[i]) !== 1) esDescendente = false;
+const isFakePhone = (phone: string): boolean => {
+  if (/^(\d)\1+$/.test(phone)) return true;
+  let isAscending = true;
+  let isDescending = true;
+  for (let i = 1; i < phone.length; i++) {
+    if (parseInt(phone[i]) - parseInt(phone[i - 1]) !== 1) isAscending = false;
+    if (parseInt(phone[i - 1]) - parseInt(phone[i]) !== 1) isDescending = false;
   }
-  return esAscendente || esDescendente;
+  return isAscending || isDescending;
 };
 
-const getEdad = (fechaNacimiento: string): number => {
-  const hoy = new Date();
-  const nacimiento = new Date(fechaNacimiento);
-  let edad = hoy.getFullYear() - nacimiento.getFullYear();
-  const mes = hoy.getMonth() - nacimiento.getMonth();
-  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
-  return edad;
+const getAge = (birthDate: string): number => {
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const month = today.getMonth() - birth.getMonth();
+  if (month < 0 || (month === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
 };
 
 interface FormErrors {
-  nombreNegocio?: string;
-  nombre?: string;
-  apellido?: string;
-  fechaNacimiento?: string;
-  telefono?: string;
+  businessName?: string;
+  firstName?: string;
+  lastName?: string;
+  birthDate?: string;
+  phone?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -46,12 +46,12 @@ interface FormErrors {
 const Register = () => {
   const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1);
-  const [nombreNegocio, setNombreNegocio] = useState('');
-  const [nombre, setNombre] = useState('');
-  const [apellido, setApellido] = useState('');
-  const [fechaNacimiento, setFechaNacimiento] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [telefonoCodigoPais, setTelefonoCodigoPais] = useState('MX');
+  const [businessName, setBusinessName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [phone, setPhone] = useState('');
+  const [phoneCountryCode, setPhoneCountryCode] = useState('MX');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -79,45 +79,45 @@ const Register = () => {
   const validateStep1 = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!nombreNegocio.trim()) {
-      newErrors.nombreNegocio = t('auth.register.errors.businessNameRequired');
-    } else if (nombreNegocio.trim().length < 2) {
-      newErrors.nombreNegocio = t('auth.register.businessNameShort');
+    if (!businessName.trim()) {
+      newErrors.businessName = t('auth.register.errors.businessNameRequired');
+    } else if (businessName.trim().length < 2) {
+      newErrors.businessName = t('auth.register.businessNameShort');
     }
 
-    if (!nombre.trim()) {
-      newErrors.nombre = t('auth.register.errors.firstNameRequired');
-    } else if (nombre.trim().length < 2) {
-      newErrors.nombre = t('auth.register.firstNameShort');
-    } else if (!SOLO_LETRAS.test(nombre.trim())) {
-      newErrors.nombre = t('auth.register.firstNameLetters');
+    if (!firstName.trim()) {
+      newErrors.firstName = t('auth.register.errors.firstNameRequired');
+    } else if (firstName.trim().length < 2) {
+      newErrors.firstName = t('auth.register.firstNameShort');
+    } else if (!LETTERS_ONLY.test(firstName.trim())) {
+      newErrors.firstName = t('auth.register.firstNameLetters');
     }
 
-    if (!apellido.trim()) {
-      newErrors.apellido = t('auth.register.errors.lastNameRequired');
-    } else if (apellido.trim().length < 2) {
-      newErrors.apellido = t('auth.register.lastNameShort');
-    } else if (!SOLO_LETRAS.test(apellido.trim())) {
-      newErrors.apellido = t('auth.register.lastNameLetters');
+    if (!lastName.trim()) {
+      newErrors.lastName = t('auth.register.errors.lastNameRequired');
+    } else if (lastName.trim().length < 2) {
+      newErrors.lastName = t('auth.register.lastNameShort');
+    } else if (!LETTERS_ONLY.test(lastName.trim())) {
+      newErrors.lastName = t('auth.register.lastNameLetters');
     }
 
-    if (!fechaNacimiento) {
-      newErrors.fechaNacimiento = t('auth.register.errors.dobRequired');
+    if (!birthDate) {
+      newErrors.birthDate = t('auth.register.errors.dobRequired');
     } else {
-      const edad = getEdad(fechaNacimiento);
-      if (edad < 18) {
-        newErrors.fechaNacimiento = t('auth.register.dobAgeMin');
-      } else if (edad > 100) {
-        newErrors.fechaNacimiento = t('auth.register.dobAgeMax');
+      const age = getAge(birthDate);
+      if (age < 18) {
+        newErrors.birthDate = t('auth.register.dobAgeMin');
+      } else if (age > 100) {
+        newErrors.birthDate = t('auth.register.dobAgeMax');
       }
     }
 
-    if (!telefono.trim()) {
-      newErrors.telefono = t('auth.register.errors.phoneRequired');
-    } else if (telefono.length < 10) {
-      newErrors.telefono = t('auth.register.phoneShort');
-    } else if (esTelefonoFicticio(telefono)) {
-      newErrors.telefono = t('auth.register.phoneFictitious');
+    if (!phone.trim()) {
+      newErrors.phone = t('auth.register.errors.phoneRequired');
+    } else if (phone.length < 10) {
+      newErrors.phone = t('auth.register.phoneShort');
+    } else if (isFakePhone(phone)) {
+      newErrors.phone = t('auth.register.phoneFictitious');
     }
 
     setErrors(newErrors);
@@ -169,14 +169,14 @@ const Register = () => {
       await register({
         email,
         password,
-        nombreNegocio: nombreNegocio.trim(),
-        nombre: nombre.trim(),
-        apellido: apellido.trim(),
-        fechaNacimiento,
-        telefono,
-        telefonoCodigoPais,
+        businessName: businessName.trim(),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        birthDate,
+        phone,
+        phoneCountryCode,
       });
-      showToast(t('auth.register.welcome', { businessName: nombreNegocio.trim() }), 'success');
+      showToast(t('auth.register.welcome', { businessName: businessName.trim() }), 'success');
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
       const code = (err as { code?: string }).code ?? '';
@@ -186,10 +186,10 @@ const Register = () => {
     }
   };
 
-  const hoy = new Date().toISOString().split('T')[0];
-  const minFecha = new Date();
-  minFecha.setFullYear(minFecha.getFullYear() - 100);
-  const minFechaStr = minFecha.toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
+  const minDate = new Date();
+  minDate.setFullYear(minDate.getFullYear() - 100);
+  const minDateStr = minDate.toISOString().split('T')[0];
 
   return (
     <AuthLayout showSubtitle={false} fullWidth>
@@ -215,76 +215,76 @@ const Register = () => {
             {...(step !== 1 ? { inert: true } : {})}
           >
             <div className="form-group">
-              <label htmlFor="nombreNegocio">{t('auth.register.businessName')}</label>
+              <label htmlFor="businessName">{t('auth.register.businessName')}</label>
               <input
                 type="text"
-                id="nombreNegocio"
-                value={nombreNegocio}
-                onChange={(e) => setNombreNegocio(e.target.value)}
-                className={`input${errors.nombreNegocio ? ' input--error' : ''}`}
+                id="businessName"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                className={`input${errors.businessName ? ' input--error' : ''}`}
                 placeholder={t('auth.register.businessNamePlaceholder')}
                 maxLength={60}
               />
-              {errors.nombreNegocio && <span className="register-form__field-error">{errors.nombreNegocio}</span>}
+              {errors.businessName && <span className="register-form__field-error">{errors.businessName}</span>}
             </div>
 
             <div className="register-form__grid">
               <div className="form-group">
-                <label htmlFor="nombre">{t('auth.register.firstName')}</label>
+                <label htmlFor="firstName">{t('auth.register.firstName')}</label>
                 <input
                   type="text"
-                  id="nombre"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  className={`input${errors.nombre ? ' input--error' : ''}`}
+                  id="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className={`input${errors.firstName ? ' input--error' : ''}`}
                   placeholder={t('auth.register.firstNamePlaceholder')}
                   maxLength={40}
                 />
-                {errors.nombre && <span className="register-form__field-error">{errors.nombre}</span>}
+                {errors.firstName && <span className="register-form__field-error">{errors.firstName}</span>}
               </div>
               <div className="form-group">
-                <label htmlFor="apellido">{t('auth.register.lastName')}</label>
+                <label htmlFor="lastName">{t('auth.register.lastName')}</label>
                 <input
                   type="text"
-                  id="apellido"
-                  value={apellido}
-                  onChange={(e) => setApellido(e.target.value)}
-                  className={`input${errors.apellido ? ' input--error' : ''}`}
+                  id="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className={`input${errors.lastName ? ' input--error' : ''}`}
                   placeholder={t('auth.register.lastNamePlaceholder')}
                   maxLength={40}
                 />
-                {errors.apellido && <span className="register-form__field-error">{errors.apellido}</span>}
+                {errors.lastName && <span className="register-form__field-error">{errors.lastName}</span>}
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="fechaNacimiento">{t('auth.register.dob')}</label>
+              <label htmlFor="birthDate">{t('auth.register.dob')}</label>
               <input
                 type="date"
-                id="fechaNacimiento"
-                value={fechaNacimiento}
-                onChange={(e) => setFechaNacimiento(e.target.value)}
-                className={`input${errors.fechaNacimiento ? ' input--error' : ''}`}
-                max={hoy}
-                min={minFechaStr}
+                id="birthDate"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                className={`input${errors.birthDate ? ' input--error' : ''}`}
+                max={today}
+                min={minDateStr}
               />
-              {errors.fechaNacimiento && <span className="register-form__field-error">{errors.fechaNacimiento}</span>}
+              {errors.birthDate && <span className="register-form__field-error">{errors.birthDate}</span>}
             </div>
 
             <div className="form-group">
-              <label htmlFor="telefono">{t('auth.register.phone')}</label>
+              <label htmlFor="phone">{t('auth.register.phone')}</label>
               <PhoneInput
-                id="telefono"
-                value={telefono}
-                codigoPais={telefonoCodigoPais}
-                onChange={(numero, iso) => {
-                  setTelefono(numero);
-                  setTelefonoCodigoPais(iso);
+                id="phone"
+                value={phone}
+                countryCode={phoneCountryCode}
+                onChange={(number, iso) => {
+                  setPhone(number);
+                  setPhoneCountryCode(iso);
                 }}
-                hasError={!!errors.telefono}
+                hasError={!!errors.phone}
                 placeholder={t('auth.register.phonePlaceholder')}
               />
-              {errors.telefono && <span className="register-form__field-error">{errors.telefono}</span>}
+              {errors.phone && <span className="register-form__field-error">{errors.phone}</span>}
             </div>
 
             <button type="submit" className="btn btn--primary btn--full">
@@ -385,9 +385,9 @@ const Register = () => {
         {step === 2 && (
           <p className="register-form__legal">
             {t('auth.register.termsText')}{' '}
-            <a href={ROUTES.TERMINOS} target="_blank" rel="noopener noreferrer">{t('auth.register.terms')}</a>
+            <a href={ROUTES.TERMS} target="_blank" rel="noopener noreferrer">{t('auth.register.terms')}</a>
             {' '}{t('common.of').toLowerCase()}{' '}
-            <a href={ROUTES.PRIVACIDAD} target="_blank" rel="noopener noreferrer">{t('auth.register.privacy')}</a>.
+            <a href={ROUTES.PRIVACY} target="_blank" rel="noopener noreferrer">{t('auth.register.privacy')}</a>.
           </p>
         )}
       </div>

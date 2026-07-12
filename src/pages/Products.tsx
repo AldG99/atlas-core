@@ -4,21 +4,21 @@ import { useTranslation } from 'react-i18next';
 type SortOption = 'nombre_asc' | 'nombre_desc' | 'precio_asc' | 'precio_desc' | 'registro_desc' | 'registro_asc';
 import { useLocation } from 'react-router-dom';
 import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPlusBold, PiDownloadSimpleBold } from 'react-icons/pi';
-import { useProductos } from '../hooks/useProductos';
-import { useEtiquetas } from '../hooks/useEtiquetas';
+import { useProducts } from '../hooks/useProducts';
+import { useLabels } from '../hooks/useLabels';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
-import type { ProductoFormData } from '../types/Producto';
-import { exportProductosCSV } from '../utils/formatters';
+import type { ProductFormData } from '../types/Product';
+import { exportProductsCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
-import ProductosTable from '../components/productos/ProductosTable';
-import ProductoModal from '../components/productos/ProductoModal';
-import HistorialDescuentosModal from '../components/productos/HistorialDescuentosModal';
-import './Productos.scss';
+import ProductsTable from '../components/products/ProductsTable';
+import ProductModal from '../components/products/ProductModal';
+import DiscountHistoryModal from '../components/products/DiscountHistoryModal';
+import './Products.scss';
 
 const PAGE_SIZE = 50;
 
-const Productos = () => {
+const Products = () => {
   const { t } = useTranslation();
 
   const PRECIO_OPTIONS: Partial<Record<SortOption, string>> = {
@@ -35,64 +35,64 @@ const Productos = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
-  const [filterVenciendo, setFilterVenciendo] = useState(false);
+  const [filterExpiring, setFilterExpiring] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
   const location = useLocation();
 
   useEffect(() => {
     const state = location.state as Record<string, unknown> | null;
-    if (state?.filterDescuento) setFilterVenciendo(true);
+    if (state?.filterDescuento) setFilterExpiring(true);
   }, [location.state]);
-  const [showHistorial, setShowHistorial] = useState(false);
-  const [editingProducto, setEditingProducto] = useState<{ id: string; data: ProductoFormData } | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<{ id: string; data: ProductFormData } | null>(null);
 
-  const { productos, loading, error, addProducto, editProducto } = useProductos();
-  const { etiquetas } = useEtiquetas();
+  const { products, loading, error, addProduct, editProduct } = useProducts();
+  const { labels } = useLabels();
   const { showToast } = useToast();
   const { role } = useAuth();
 
-  const filteredProductos = useMemo(() => {
-    let resultado = searchTerm.trim()
-      ? productos.filter(p =>
-          p.clave.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.descripcion?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = useMemo(() => {
+    let result = searchTerm.trim()
+      ? products.filter(p =>
+          p.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.description?.toLowerCase().includes(searchTerm.toLowerCase())
         )
-      : [...productos];
+      : [...products];
 
-    if (filterVenciendo) {
+    if (filterExpiring) {
       // eslint-disable-next-line react-hooks/purity
-      const ahora = Date.now();
-      resultado = resultado.filter(p => {
-        if (!p.descuento || !p.fechaFinDescuento) return false;
-        const msRestantes = new Date(p.fechaFinDescuento).getTime() - ahora;
-        const diasRestantes = Math.ceil(msRestantes / (1000 * 60 * 60 * 24));
-        return diasRestantes >= 0 && diasRestantes <= 7;
+      const now = Date.now();
+      result = result.filter(p => {
+        if (!p.discount || !p.discountEndDate) return false;
+        const msLeft = new Date(p.discountEndDate).getTime() - now;
+        const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+        return daysLeft >= 0 && daysLeft <= 7;
       });
     }
 
-    resultado.sort((a, b) => {
+    result.sort((a, b) => {
       switch (sortBy) {
-        case 'nombre_asc': return a.nombre.localeCompare(b.nombre);
-        case 'nombre_desc': return b.nombre.localeCompare(a.nombre);
-        case 'precio_asc': return a.precio - b.precio;
-        case 'precio_desc': return b.precio - a.precio;
-        case 'registro_desc': return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
-        case 'registro_asc': return new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
+        case 'nombre_asc': return a.name.localeCompare(b.name);
+        case 'nombre_desc': return b.name.localeCompare(a.name);
+        case 'precio_asc': return a.price - b.price;
+        case 'precio_desc': return b.price - a.price;
+        case 'registro_desc': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'registro_asc': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         default: return 0;
       }
     });
 
-    return resultado;
-  }, [productos, searchTerm, sortBy, filterVenciendo]);
+    return result;
+  }, [products, searchTerm, sortBy, filterExpiring]);
 
-  const productosPaginados = filteredProductos.slice(0, displayLimit);
-  const hayMas = filteredProductos.length > displayLimit;
+  const paginatedProducts = filteredProducts.slice(0, displayLimit);
+  const hasMore = filteredProducts.length > displayLimit;
 
-  const handleAdd = async (data: ProductoFormData) => {
+  const handleAdd = async (data: ProductFormData) => {
     try {
-      await addProducto(data);
+      await addProduct(data);
       showToast(t('products.addSuccess'), 'success');
       setIsModalOpen(false);
     } catch (err) {
@@ -101,22 +101,22 @@ const Productos = () => {
   };
 
   const handleExport = () => {
-    if (filteredProductos.length === 0) {
+    if (filteredProducts.length === 0) {
       showToast(t('products.noProductsExport'), 'warning');
       return;
     }
-    const etiquetaMap = new Map(etiquetas.map(e => [e.id, e.nombre]));
-    exportProductosCSV(filteredProductos, (ids) => ids.map(id => etiquetaMap.get(id) ?? id).join(' | '));
+    const labelMap = new Map(labels.map(l => [l.id, l.name]));
+    exportProductsCSV(filteredProducts, (ids) => ids.map(id => labelMap.get(id) ?? id).join(' | '));
     showToast(t('products.exportSuccess'), 'success');
   };
 
-  const handleEdit = async (data: ProductoFormData) => {
-    if (!editingProducto) return;
+  const handleEdit = async (data: ProductFormData) => {
+    if (!editingProduct) return;
 
     try {
-      await editProducto(editingProducto.id, data);
+      await editProduct(editingProduct.id, data);
       showToast(t('products.updateSuccess'), 'success');
-      setEditingProducto(null);
+      setEditingProduct(null);
     } catch {
       showToast(t('products.updateError'), 'error');
     }
@@ -131,13 +131,13 @@ const Productos = () => {
             <button
               onClick={handleExport}
               className="btn btn--secondary"
-              disabled={productos.length === 0}
+              disabled={products.length === 0}
             >
               <PiDownloadSimpleBold size={18} />
               {t('common.exportCsv')}
             </button>
             <button
-              onClick={() => setShowHistorial(true)}
+              onClick={() => setShowHistory(true)}
               className="btn btn--outline"
             >
               <PiClockCounterClockwiseBold size={18} />
@@ -190,51 +190,51 @@ const Productos = () => {
           </div>
         </div>
 
-        {filterVenciendo && (
+        {filterExpiring && (
           <div className="productos__filter-banner">
             <PiWarningBold size={16} />
             <span>{t('products.filterDiscounting')}</span>
-            <button onClick={() => setFilterVenciendo(false)}>{t('products.removeFilter')}</button>
+            <button onClick={() => setFilterExpiring(false)}>{t('products.removeFilter')}</button>
           </div>
         )}
-        <ProductosTable
-          productos={productosPaginados}
-          etiquetas={etiquetas}
+        <ProductsTable
+          products={paginatedProducts}
+          labels={labels}
           loading={loading}
           error={error}
           searchTerm={searchTerm}
         />
 
-        {hayMas && (
+        {hasMore && (
           <div className="productos__load-more">
             <button
               className="btn btn--outline btn--sm"
               onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
             >
-              {t('products.showMore', { count: filteredProductos.length - displayLimit })}
+              {t('products.showMore', { count: filteredProducts.length - displayLimit })}
             </button>
           </div>
         )}
 
         {isModalOpen && (
-          <ProductoModal
+          <ProductModal
             onClose={() => setIsModalOpen(false)}
             onSave={handleAdd}
           />
         )}
 
-        {editingProducto && (
-          <ProductoModal
-            producto={editingProducto.data}
-            onClose={() => setEditingProducto(null)}
+        {editingProduct && (
+          <ProductModal
+            product={editingProduct.data}
+            onClose={() => setEditingProduct(null)}
             onSave={handleEdit}
           />
         )}
 
-        {showHistorial && (
-          <HistorialDescuentosModal
-            productos={productos}
-            onClose={() => setShowHistorial(false)}
+        {showHistory && (
+          <DiscountHistoryModal
+            products={products}
+            onClose={() => setShowHistory(false)}
           />
         )}
       </div>
@@ -242,4 +242,4 @@ const Productos = () => {
   );
 };
 
-export default Productos;
+export default Products;

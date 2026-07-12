@@ -17,54 +17,54 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { uploadProfileImage } from '../services/authService';
 import { useToast } from '../hooks/useToast';
-import { useClientes } from '../hooks/useClientes';
-import { useProductos } from '../hooks/useProductos';
-import { usePedidos } from '../hooks/usePedidos';
-import PhoneInput from '../components/clientes/PhoneInput';
-import { formatTelefono } from '../utils/formatters';
-import { getCodigoPais } from '../data/codigosPais';
+import { useClients } from '../hooks/useClients';
+import { useProducts } from '../hooks/useProducts';
+import { useOrders } from '../hooks/useOrders';
+import PhoneInput from '../components/clients/PhoneInput';
+import { formatPhone } from '../utils/formatters';
+import { getCountryCode } from '../data/countryCodes';
 import ImageCropper from '../components/ui/ImageCropper';
 import Avatar from '../components/ui/Avatar';
-import './Perfil.scss';
+import './Profile.scss';
 
-const SOLO_LETRAS = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s-]+$/;
+const LETTERS_ONLY = /^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s-]+$/;
 
-const esTelefonoFicticio = (tel: string): boolean => {
-  if (/^(\d)\1+$/.test(tel)) return true;
-  let esAscendente = true;
-  let esDescendente = true;
-  for (let i = 1; i < tel.length; i++) {
-    if (parseInt(tel[i]) - parseInt(tel[i - 1]) !== 1) esAscendente = false;
-    if (parseInt(tel[i - 1]) - parseInt(tel[i]) !== 1) esDescendente = false;
+const isFakePhone = (phone: string): boolean => {
+  if (/^(\d)\1+$/.test(phone)) return true;
+  let ascending = true;
+  let descending = true;
+  for (let i = 1; i < phone.length; i++) {
+    if (parseInt(phone[i]) - parseInt(phone[i - 1]) !== 1) ascending = false;
+    if (parseInt(phone[i - 1]) - parseInt(phone[i]) !== 1) descending = false;
   }
-  return esAscendente || esDescendente;
+  return ascending || descending;
 };
 
-const getEdad = (fechaNacimiento: string): number => {
-  const hoy = new Date();
-  const nacimiento = new Date(fechaNacimiento);
-  let edad = hoy.getFullYear() - nacimiento.getFullYear();
-  const mes = hoy.getMonth() - nacimiento.getMonth();
-  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
-  return edad;
+const getAge = (birthDate: string): number => {
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const month = today.getMonth() - birth.getMonth();
+  if (month < 0 || (month === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
 };
 
 interface FormErrors {
-  nombreNegocio?: string;
-  nombre?: string;
-  apellido?: string;
-  fechaNacimiento?: string;
-  telefono?: string;
+  businessName?: string;
+  firstName?: string;
+  lastName?: string;
+  birthDate?: string;
+  phone?: string;
 }
 
-const Perfil = () => {
+const Profile = () => {
   const { t } = useTranslation();
   const { user, updateProfile, changePassword, role } = useAuth();
-  const isMiembro = role === 'miembro';
+  const isMember = role === 'member';
   const { showToast } = useToast();
-  const { clientes } = useClientes();
-  const { productos } = useProductos();
-  const { pedidos } = usePedidos();
+  const { clients } = useClients();
+  const { products } = useProducts();
+  const { orders } = useOrders();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -79,27 +79,27 @@ const Perfil = () => {
   const [showCurrentPwd, setShowCurrentPwd] = useState(false);
   const [showNewPwd, setShowNewPwd] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(user?.fotoPerfil ?? null);
+  const [previewImage, setPreviewImage] = useState<string | null>(user?.profilePhoto ?? null);
   const [photoRemoved, setPhotoRemoved] = useState(false);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isEditing) {
-      setPreviewImage(user?.fotoPerfil ?? null);
+      setPreviewImage(user?.profilePhoto ?? null);
     }
-  }, [user?.fotoPerfil, isEditing]);
+  }, [user?.profilePhoto, isEditing]);
 
   const [formData, setFormData] = useState({
-    nombreNegocio: user?.nombreNegocio ?? '',
-    nombre: user?.nombre ?? '',
-    apellido: user?.apellido ?? '',
-    fechaNacimiento: user?.fechaNacimiento ?? '',
-    telefono: user?.telefono ?? '',
-    telefonoCodigoPais: user?.telefonoCodigoPais ?? 'MX',
+    businessName: user?.businessName ?? '',
+    firstName: user?.firstName ?? '',
+    lastName: user?.lastName ?? '',
+    birthDate: user?.birthDate ?? '',
+    phone: user?.phone ?? '',
+    phoneCountryCode: user?.phoneCountryCode ?? 'MX',
   });
 
   const getInitials = () => {
-    const name = user?.nombreNegocio;
+    const name = user?.businessName;
     if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
@@ -139,39 +139,39 @@ const Perfil = () => {
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.nombreNegocio.trim()) {
-      newErrors.nombreNegocio = t('profile.errors.firstNameShort');
-    } else if (formData.nombreNegocio.trim().length < 2) {
-      newErrors.nombreNegocio = t('profile.errors.firstNameShort');
+    if (!formData.businessName.trim()) {
+      newErrors.businessName = t('profile.errors.firstNameShort');
+    } else if (formData.businessName.trim().length < 2) {
+      newErrors.businessName = t('profile.errors.firstNameShort');
     }
 
-    if (!formData.nombre.trim()) {
-      newErrors.nombre = t('profile.errors.firstNameShort');
-    } else if (formData.nombre.trim().length < 2) {
-      newErrors.nombre = t('profile.errors.firstNameShort');
-    } else if (!SOLO_LETRAS.test(formData.nombre.trim())) {
-      newErrors.nombre = t('profile.errors.firstNameLetters');
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = t('profile.errors.firstNameShort');
+    } else if (formData.firstName.trim().length < 2) {
+      newErrors.firstName = t('profile.errors.firstNameShort');
+    } else if (!LETTERS_ONLY.test(formData.firstName.trim())) {
+      newErrors.firstName = t('profile.errors.firstNameLetters');
     }
 
-    if (!formData.apellido.trim()) {
-      newErrors.apellido = t('profile.errors.lastNameShort');
-    } else if (formData.apellido.trim().length < 2) {
-      newErrors.apellido = t('profile.errors.lastNameShort');
-    } else if (!SOLO_LETRAS.test(formData.apellido.trim())) {
-      newErrors.apellido = t('profile.errors.lastNameLetters');
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = t('profile.errors.lastNameShort');
+    } else if (formData.lastName.trim().length < 2) {
+      newErrors.lastName = t('profile.errors.lastNameShort');
+    } else if (!LETTERS_ONLY.test(formData.lastName.trim())) {
+      newErrors.lastName = t('profile.errors.lastNameLetters');
     }
 
-    if (formData.fechaNacimiento) {
-      const edad = getEdad(formData.fechaNacimiento);
-      if (edad < 18) newErrors.fechaNacimiento = t('profile.errors.dobAgeMin');
-      else if (edad > 100) newErrors.fechaNacimiento = t('profile.errors.dobAgeMax');
+    if (formData.birthDate) {
+      const age = getAge(formData.birthDate);
+      if (age < 18) newErrors.birthDate = t('profile.errors.dobAgeMin');
+      else if (age > 100) newErrors.birthDate = t('profile.errors.dobAgeMax');
     }
 
-    if (formData.telefono) {
-      if (formData.telefono.length < 10) {
-        newErrors.telefono = t('profile.errors.phoneShort');
-      } else if (esTelefonoFicticio(formData.telefono)) {
-        newErrors.telefono = t('profile.errors.phoneInvalid');
+    if (formData.phone) {
+      if (formData.phone.length < 10) {
+        newErrors.phone = t('profile.errors.phoneShort');
+      } else if (isFakePhone(formData.phone)) {
+        newErrors.phone = t('profile.errors.phoneInvalid');
       }
     }
 
@@ -180,8 +180,8 @@ const Perfil = () => {
   };
 
   const handleSave = async () => {
-    if (!isMiembro && !validate()) return;
-    const removePhotoData = photoRemoved && !imageFile ? { fotoPerfil: '' } : {};
+    if (!isMember && !validate()) return;
+    const removePhotoData = photoRemoved && !imageFile ? { profilePhoto: '' } : {};
 
     let uploadedPhotoUrl: string | undefined;
     if (imageFile && user) {
@@ -200,19 +200,19 @@ const Perfil = () => {
     }
 
     setSaving(true);
-    const photoData = uploadedPhotoUrl ? { fotoPerfil: uploadedPhotoUrl } : removePhotoData;
+    const photoData = uploadedPhotoUrl ? { profilePhoto: uploadedPhotoUrl } : removePhotoData;
     try {
-      if (isMiembro) {
+      if (isMember) {
         await updateProfile(photoData);
       } else {
         await updateProfile({
           ...photoData,
-          nombreNegocio: formData.nombreNegocio.trim(),
-          nombre: formData.nombre.trim(),
-          apellido: formData.apellido.trim(),
-          fechaNacimiento: formData.fechaNacimiento,
-          telefono: formData.telefono,
-          telefonoCodigoPais: formData.telefonoCodigoPais,
+          businessName: formData.businessName.trim(),
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          birthDate: formData.birthDate,
+          phone: formData.phone,
+          phoneCountryCode: formData.phoneCountryCode,
         });
       }
       setIsEditing(false);
@@ -228,14 +228,14 @@ const Perfil = () => {
 
   const handleCancel = () => {
     setFormData({
-      nombreNegocio: user?.nombreNegocio ?? '',
-      nombre: user?.nombre ?? '',
-      apellido: user?.apellido ?? '',
-      fechaNacimiento: user?.fechaNacimiento ?? '',
-      telefono: user?.telefono ?? '',
-      telefonoCodigoPais: user?.telefonoCodigoPais ?? 'MX',
+      businessName: user?.businessName ?? '',
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+      birthDate: user?.birthDate ?? '',
+      phone: user?.phone ?? '',
+      phoneCountryCode: user?.phoneCountryCode ?? 'MX',
     });
-    setPreviewImage(user?.fotoPerfil ?? null);
+    setPreviewImage(user?.profilePhoto ?? null);
     setImageFile(null);
     setPhotoRemoved(false);
     setErrors({});
@@ -260,10 +260,10 @@ const Perfil = () => {
     }
   };
 
-  const hoy = new Date().toISOString().split('T')[0];
-  const minFecha = new Date();
-  minFecha.setFullYear(minFecha.getFullYear() - 100);
-  const minFechaStr = minFecha.toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
+  const minDate = new Date();
+  minDate.setFullYear(minDate.getFullYear() - 100);
+  const minDateStr = minDate.toISOString().split('T')[0];
 
   return (
     <div className="perfil-page">
@@ -308,16 +308,16 @@ const Perfil = () => {
               )}
               {!isEditing && (
                 <div className="perfil__avatar-name">
-                  <span className="perfil__negocio">{user?.nombreNegocio}</span>
-                  <span className="perfil__email">{isMiembro ? user?.username : user?.email}</span>
+                  <span className="perfil__negocio">{user?.businessName}</span>
+                  <span className="perfil__email">{isMember ? user?.username : user?.email}</span>
                 </div>
               )}
             </div>
 
             <div className="perfil__card-header">
               <PiUserBold size={16} />
-              <span>{isMiembro ? t('profile.memberInfo') : t('profile.adminInfo')}</span>
-              {!isMiembro && (
+              <span>{isMember ? t('profile.memberInfo') : t('profile.adminInfo')}</span>
+              {!isMember && (
                 <div className="perfil__card-header-actions">
                   {isEditing ? (
                     <>
@@ -341,85 +341,85 @@ const Perfil = () => {
               {/* Nombre del negocio */}
               <div className="perfil__field perfil__field--full">
                 <label>{t('profile.businessName')}</label>
-                {isEditing && !isMiembro ? (
+                {isEditing && !isMember ? (
                   <>
                     <input
                       type="text"
-                      name="nombreNegocio"
-                      value={formData.nombreNegocio}
+                      name="businessName"
+                      value={formData.businessName}
                       onChange={handleChange}
-                      className={`input${errors.nombreNegocio ? ' input--error' : ''}`}
+                      className={`input${errors.businessName ? ' input--error' : ''}`}
                       placeholder={t('profile.businessNamePlaceholder')}
                       maxLength={60}
                     />
-                    {errors.nombreNegocio && <span className="perfil__field-error">{errors.nombreNegocio}</span>}
+                    {errors.businessName && <span className="perfil__field-error">{errors.businessName}</span>}
                   </>
                 ) : (
-                  <p>{user?.nombreNegocio || '—'}</p>
+                  <p>{user?.businessName || '—'}</p>
                 )}
               </div>
 
               {/* Nombre y Apellido */}
               <div className="perfil__field">
                 <label>{t('profile.firstName')}</label>
-                {isEditing && !isMiembro ? (
+                {isEditing && !isMember ? (
                   <>
                     <input
                       type="text"
-                      name="nombre"
-                      value={formData.nombre}
+                      name="firstName"
+                      value={formData.firstName}
                       onChange={handleChange}
-                      className={`input${errors.nombre ? ' input--error' : ''}`}
+                      className={`input${errors.firstName ? ' input--error' : ''}`}
                       placeholder={t('profile.firstName')}
                       maxLength={40}
                     />
-                    {errors.nombre && <span className="perfil__field-error">{errors.nombre}</span>}
+                    {errors.firstName && <span className="perfil__field-error">{errors.firstName}</span>}
                   </>
                 ) : (
-                  <p>{user?.nombre || '—'}</p>
+                  <p>{user?.firstName || '—'}</p>
                 )}
               </div>
 
               <div className="perfil__field">
                 <label>{t('profile.lastName')}</label>
-                {isEditing && !isMiembro ? (
+                {isEditing && !isMember ? (
                   <>
                     <input
                       type="text"
-                      name="apellido"
-                      value={formData.apellido}
+                      name="lastName"
+                      value={formData.lastName}
                       onChange={handleChange}
-                      className={`input${errors.apellido ? ' input--error' : ''}`}
+                      className={`input${errors.lastName ? ' input--error' : ''}`}
                       placeholder={t('profile.lastName')}
                       maxLength={40}
                     />
-                    {errors.apellido && <span className="perfil__field-error">{errors.apellido}</span>}
+                    {errors.lastName && <span className="perfil__field-error">{errors.lastName}</span>}
                   </>
                 ) : (
-                  <p>{user?.apellido || '—'}</p>
+                  <p>{user?.lastName || '—'}</p>
                 )}
               </div>
 
               {/* Fecha de nacimiento */}
               <div className="perfil__field">
                 <label>{t('profile.dob')}</label>
-                {isEditing && !isMiembro ? (
+                {isEditing && !isMember ? (
                   <>
                     <input
                       type="date"
-                      name="fechaNacimiento"
-                      value={formData.fechaNacimiento}
+                      name="birthDate"
+                      value={formData.birthDate}
                       onChange={handleChange}
-                      className={`input${errors.fechaNacimiento ? ' input--error' : ''}`}
-                      max={hoy}
-                      min={minFechaStr}
+                      className={`input${errors.birthDate ? ' input--error' : ''}`}
+                      max={today}
+                      min={minDateStr}
                     />
-                    {errors.fechaNacimiento && <span className="perfil__field-error">{errors.fechaNacimiento}</span>}
+                    {errors.birthDate && <span className="perfil__field-error">{errors.birthDate}</span>}
                   </>
                 ) : (
                   <p>
-                    {user?.fechaNacimiento
-                      ? new Date(user.fechaNacimiento + 'T00:00:00').toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })
+                    {user?.birthDate
+                      ? new Date(user.birthDate + 'T00:00:00').toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })
                       : '—'}
                   </p>
                 )}
@@ -428,21 +428,21 @@ const Perfil = () => {
               {/* Teléfono */}
               <div className="perfil__field">
                 <label>{t('profile.phone')}</label>
-                {isEditing && !isMiembro ? (
+                {isEditing && !isMember ? (
                   <>
                     <PhoneInput
-                      value={formData.telefono}
-                      codigoPais={formData.telefonoCodigoPais}
-                      onChange={(numero, iso) => setFormData(prev => ({ ...prev, telefono: numero, telefonoCodigoPais: iso }))}
-                      hasError={!!errors.telefono}
+                      value={formData.phone}
+                      countryCode={formData.phoneCountryCode}
+                      onChange={(number, iso) => setFormData(prev => ({ ...prev, phone: number, phoneCountryCode: iso }))}
+                      hasError={!!errors.phone}
                       placeholder={t('profile.phonePlaceholder')}
                     />
-                    {errors.telefono && <span className="perfil__field-error">{errors.telefono}</span>}
+                    {errors.phone && <span className="perfil__field-error">{errors.phone}</span>}
                   </>
                 ) : (
                   <p>
-                    {user?.telefono
-                      ? `${user.telefonoCodigoPais ? `${getCodigoPais(user.telefonoCodigoPais)?.codigo ?? ''} ` : ''}${formatTelefono(user.telefono)}`
+                    {user?.phone
+                      ? `${user.phoneCountryCode ? `${getCountryCode(user.phoneCountryCode)?.code ?? ''} ` : ''}${formatPhone(user.phone)}`
                       : '—'}
                   </p>
                 )}
@@ -450,16 +450,16 @@ const Perfil = () => {
 
               {/* Email — solo lectura */}
               <div className="perfil__field perfil__field--full">
-                <label>{isMiembro ? t('profile.username') : t('profile.email')} <span className="perfil__readonly-badge">{t('common.readOnly')}</span></label>
-                <p className="perfil__readonly">{isMiembro ? user?.username : user?.email || '—'}</p>
+                <label>{isMember ? t('profile.username') : t('profile.email')} <span className="perfil__readonly-badge">{t('common.readOnly')}</span></label>
+                <p className="perfil__readonly">{isMember ? user?.username : user?.email || '—'}</p>
               </div>
 
               {/* Fecha de registro — solo lectura */}
               <div className="perfil__field perfil__field--full">
                 <label>{t('profile.memberSince')} <span className="perfil__readonly-badge">{t('common.readOnly')}</span></label>
                 <p className="perfil__readonly">
-                  {user?.fechaRegistro
-                    ? new Date(user.fechaRegistro).toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })
+                  {user?.registeredAt
+                    ? new Date(user.registeredAt).toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })
                     : '—'}
                 </p>
               </div>
@@ -467,7 +467,7 @@ const Perfil = () => {
           </div>
 
           {/* Cambiar contraseña — solo admin */}
-          {!isMiembro && <div className="perfil__card">
+          {!isMember && <div className="perfil__card">
             <div className="perfil__card-header">
               <PiLockKeyBold size={16} />
               <span>{t('profile.security')}</span>
@@ -546,7 +546,7 @@ const Perfil = () => {
                 <PiReceiptBold size={20} />
               </div>
               <div className="perfil__stat-info">
-                <span className="perfil__stat-value">{pedidos.length}</span>
+                <span className="perfil__stat-value">{orders.length}</span>
                 <span className="perfil__stat-label">{t('profile.statsOrders')}</span>
               </div>
             </div>
@@ -555,7 +555,7 @@ const Perfil = () => {
                 <PiUsersBold size={20} />
               </div>
               <div className="perfil__stat-info">
-                <span className="perfil__stat-value">{clientes.length}</span>
+                <span className="perfil__stat-value">{clients.length}</span>
                 <span className="perfil__stat-label">{t('profile.statsClients')}</span>
               </div>
             </div>
@@ -564,7 +564,7 @@ const Perfil = () => {
                 <PiShoppingBagBold size={20} />
               </div>
               <div className="perfil__stat-info">
-                <span className="perfil__stat-value">{productos.length}</span>
+                <span className="perfil__stat-value">{products.length}</span>
                 <span className="perfil__stat-label">{t('profile.statsProducts')}</span>
               </div>
             </div>
@@ -582,4 +582,4 @@ const Perfil = () => {
   );
 };
 
-export default Perfil;
+export default Profile;

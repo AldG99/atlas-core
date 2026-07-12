@@ -10,10 +10,10 @@ const Maintenance = () => {
           <div className="maintenance__icon">
             <PiWrenchBold size={40} />
           </div>
-          <h1 className="maintenance__title">Mantenimiento en progreso</h1>
+          <h1 className="maintenance__title">Maintenance in progress</h1>
           <p className="maintenance__desc">
-            Estamos optimizando el sistema para mejorar el rendimiento{' '}
-            y reforzando la infraestructura para garantizar mayor estabilidad.
+            We are optimizing the system to improve performance{' '}
+            and reinforcing the infrastructure to ensure greater stability.
           </p>
         </div>
       </div>

@@ -1,26 +1,26 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PiMagnifyingGlassBold, PiDownloadSimpleBold } from 'react-icons/pi';
-import type { Pedido } from '../types/Pedido';
+import type { Order } from '../types/Order';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { useClientes } from '../hooks/useClientes';
-import { getCodigoPais } from '../data/codigosPais';
-import { getArchivedPedidos } from '../services/pedidoService';
+import { useClients } from '../hooks/useClients';
+import { getCountryCode } from '../data/countryCodes';
+import { getArchivedOrders } from '../services/orderService';
 import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
-import PedidosTable from '../components/pedidos/PedidosTable';
-import './Archivo.scss';
+import OrdersTable from '../components/orders/OrdersTable';
+import './Archive.scss';
 
 type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc';
 type DateFilter = 'todos' | 'semana' | 'mes' | 'trimestre';
 
-const Archivo = () => {
+const Archive = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { clientes } = useClientes();
-  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const { clients } = useClients();
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,8 +48,8 @@ const Archivo = () => {
     try {
       setLoading(true);
       setError(null);
-      const result = await getArchivedPedidos(user.uid);
-      setPedidos(result.pedidos);
+      const result = await getArchivedOrders(user.uid);
+      setOrders(result.orders);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar pedidos archivados');
     } finally {
@@ -61,31 +61,31 @@ const Archivo = () => {
     fetchArchived();
   }, [fetchArchived]);
 
-  const filteredAndSortedPedidos = useMemo(() => {
-    let result = [...pedidos];
+  const filteredAndSortedOrders = useMemo(() => {
+    let result = [...orders];
 
     if (dateFilter !== 'todos') {
       const now = new Date();
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-      result = result.filter((pedido) => {
-        const pedidoDate = new Date(pedido.fechaCreacion);
+      result = result.filter((order) => {
+        const orderDate = new Date(order.createdAt);
 
         switch (dateFilter) {
           case 'semana': {
             const weekAgo = new Date(startOfDay);
             weekAgo.setDate(weekAgo.getDate() - 7);
-            return pedidoDate >= weekAgo;
+            return orderDate >= weekAgo;
           }
           case 'mes': {
             const monthAgo = new Date(startOfDay);
             monthAgo.setMonth(monthAgo.getMonth() - 1);
-            return pedidoDate >= monthAgo;
+            return orderDate >= monthAgo;
           }
           case 'trimestre': {
             const quarterAgo = new Date(startOfDay);
             quarterAgo.setMonth(quarterAgo.getMonth() - 3);
-            return pedidoDate >= quarterAgo;
+            return orderDate >= quarterAgo;
           }
           default:
             return true;
@@ -96,43 +96,43 @@ const Archivo = () => {
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
-        (pedido) =>
-          pedido.clienteNombre.toLowerCase().includes(term) ||
-          pedido.clienteTelefono.toLowerCase().includes(term) ||
-          (pedido.folio?.toLowerCase().includes(term) ?? false)
+        (order) =>
+          order.clientName.toLowerCase().includes(term) ||
+          order.clientPhone.toLowerCase().includes(term) ||
+          (order.orderNumber?.toLowerCase().includes(term) ?? false)
       );
     }
 
     result.sort((a, b) => {
       switch (sortBy) {
         case 'fecha_desc':
-          return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         case 'fecha_asc':
-          return new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case 'total_desc':
           return b.total - a.total;
         case 'total_asc':
           return a.total - b.total;
         case 'nombre_asc':
-          return a.clienteNombre.localeCompare(b.clienteNombre);
+          return a.clientName.localeCompare(b.clientName);
         default:
           return 0;
       }
     });
 
     return result;
-  }, [pedidos, searchTerm, sortBy, dateFilter]);
+  }, [orders, searchTerm, sortBy, dateFilter]);
 
   const handleExport = () => {
-    if (filteredAndSortedPedidos.length === 0) {
+    if (filteredAndSortedOrders.length === 0) {
       showToast(t('archive.noExport'), 'warning');
       return;
     }
-    const pedidosConCodigo = filteredAndSortedPedidos.map(p => ({
-      ...p,
-      clienteCodigoPais: getCodigoPais(clientes.find(c => c.telefono === p.clienteTelefono)?.telefonoCodigoPais ?? '')?.codigo
+    const ordersWithCode = filteredAndSortedOrders.map(o => ({
+      ...o,
+      clientCountryCode: getCountryCode(clients.find(c => c.phone === o.clientPhone)?.phoneCountryCode ?? '')?.code
     }));
-    exportToCSV(pedidosConCodigo, 'pedidos_archivados');
+    exportToCSV(ordersWithCode, 'archived_orders');
     showToast(t('archive.exportSuccess'), 'success');
   };
 
@@ -145,7 +145,7 @@ const Archivo = () => {
             <button
               onClick={handleExport}
               className="btn btn--secondary"
-              disabled={pedidos.length === 0}
+              disabled={orders.length === 0}
             >
               <PiDownloadSimpleBold size={18} />
               {t('common.exportCsv')}
@@ -192,8 +192,8 @@ const Archivo = () => {
           </div>
         </div>
 
-        <PedidosTable
-          pedidos={filteredAndSortedPedidos}
+        <OrdersTable
+          orders={filteredAndSortedOrders}
           loading={loading}
           error={error}
           searchTerm={searchTerm}
@@ -203,4 +203,4 @@ const Archivo = () => {
   );
 };
 
-export default Archivo;
+export default Archive;

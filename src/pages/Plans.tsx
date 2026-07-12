@@ -12,49 +12,49 @@ import {
   PiSpinnerBold,
 } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
-import { useSubscripcion } from '../hooks/useSubscripcion';
+import { useSubscription } from '../hooks/useSubscription';
 import { useToast } from '../hooks/useToast';
 import { STRIPE_PRICES } from '../services/stripeService';
-import './Planes.scss';
+import './Plans.scss';
 
-const PLANES_CONFIG = [
+const PLANS_CONFIG = [
   {
-    id: 'gratuito',
+    id: 'free',
     tier: 'free',
-    precio: null,
+    price: null,
     stripePrice: null,
-    icono: <PiStorefrontBold size={22} />,
-    incluidos: [true, true, true, true, true, false, false],
+    icon: <PiStorefrontBold size={22} />,
+    included: [true, true, true, true, true, false, false],
   },
   {
     id: 'pro',
     tier: 'pro',
-    precio: '$4',
+    price: '$4',
     stripePrice: STRIPE_PRICES.pro,
-    icono: <PiDiamondBold size={22} />,
-    destacado: true,
-    incluidos: [true, true, true, true, true, true, true],
+    icon: <PiDiamondBold size={22} />,
+    featured: true,
+    included: [true, true, true, true, true, true, true],
   },
   {
     id: 'enterprise',
     tier: 'business',
-    precio: '$6',
+    price: '$6',
     stripePrice: STRIPE_PRICES.enterprise,
-    icono: <PiDiamondsFourBold size={22} />,
-    incluidos: [true, true, true, true, true, true, true],
+    icon: <PiDiamondsFourBold size={22} />,
+    included: [true, true, true, true, true, true, true],
   },
 ];
 
-const Planes = () => {
+const Plans = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { subscribe, manage, loading } = useSubscripcion();
+  const { subscribe, manage, loading } = useSubscription();
   const { showToast } = useToast();
 
-  const planActual = user?.plan ?? 'gratuito';
-  const tienePlanPago = planActual !== 'gratuito';
+  const currentPlan = user?.plan ?? 'free';
+  const hasPaidPlan = currentPlan !== 'free';
 
   // Resultado de vuelta desde Stripe Checkout
   useEffect(() => {
@@ -70,10 +70,10 @@ const Planes = () => {
     setSearchParams({}, { replace: true });
   }, [searchParams, setSearchParams, showToast, t]);
 
-  const handlePlanAction = (plan: (typeof PLANES_CONFIG)[number]) => {
-    if (plan.id === 'gratuito' || !plan.stripePrice) return;
+  const handlePlanAction = (plan: (typeof PLANS_CONFIG)[number]) => {
+    if (plan.id === 'free' || !plan.stripePrice) return;
     // Si ya tiene suscripción de pago, el cambio se hace desde el portal de Stripe
-    if (tienePlanPago) {
+    if (hasPaidPlan) {
       manage();
     } else {
       subscribe(plan.stripePrice);
@@ -98,7 +98,7 @@ const Planes = () => {
           <p>{t('plans.subtitle')}</p>
         </div>
 
-        {tienePlanPago && (
+        {hasPaidPlan && (
           <div className="planes__manage-bar">
             <button
               className="btn btn--outline btn--sm"
@@ -116,68 +116,68 @@ const Planes = () => {
         )}
 
         <div className="planes__grid">
-          {PLANES_CONFIG.map(plan => {
-            const esActual = planActual === plan.id;
-            const nombre = t(`plans.tiers.${plan.tier}.name`);
-            const descripcion = t(`plans.tiers.${plan.tier}.description`);
+          {PLANS_CONFIG.map(plan => {
+            const isCurrent = currentPlan === plan.id;
+            const name = t(`plans.tiers.${plan.tier}.name`);
+            const description = t(`plans.tiers.${plan.tier}.description`);
             const features = t(`plans.tiers.${plan.tier}.features`, { returnObjects: true }) as string[];
             return (
               <div
                 key={plan.id}
-                className={`planes__card${plan.destacado ? ' planes__card--destacado' : ''}${esActual ? ' planes__card--actual' : ''}`}
+                className={`planes__card${plan.featured ? ' planes__card--destacado' : ''}${isCurrent ? ' planes__card--actual' : ''}`}
               >
-                {esActual && (
+                {isCurrent && (
                   <div className="planes__badge planes__badge--actual">
                     {t('plans.currentPlan')}
                   </div>
                 )}
 
                 <div className="planes__card-header">
-                  <div className="planes__card-icon">{plan.icono}</div>
-                  <h2 className="planes__card-nombre">{nombre}</h2>
+                  <div className="planes__card-icon">{plan.icon}</div>
+                  <h2 className="planes__card-nombre">{name}</h2>
                   <div
                     className="planes__card-precio"
-                    aria-label={plan.precio ? `${plan.precio} USD / ${t('plans.perMonth')}` : t('plans.free')}
+                    aria-label={plan.price ? `${plan.price} USD / ${t('plans.perMonth')}` : t('plans.free')}
                   >
-                    {plan.precio ? (
+                    {plan.price ? (
                       <>
-                        <span className="planes__precio-monto" aria-hidden="true">{plan.precio}</span>
+                        <span className="planes__precio-monto" aria-hidden="true">{plan.price}</span>
                         <span className="planes__precio-periodo" aria-hidden="true">USD / {t('plans.perMonth')}</span>
                       </>
                     ) : (
                       <span className="planes__precio-monto" aria-hidden="true">{t('plans.free')}</span>
                     )}
                   </div>
-                  <p className="planes__card-desc">{descripcion}</p>
+                  <p className="planes__card-desc">{description}</p>
                 </div>
 
                 <ul className="planes__features">
-                  {features.map((texto, i) => (
+                  {features.map((text, i) => (
                     <li
                       key={i}
-                      className={`planes__feature${plan.incluidos[i] ? '' : ' planes__feature--no'}`}
+                      className={`planes__feature${plan.included[i] ? '' : ' planes__feature--no'}`}
                     >
                       <span className="planes__feature-icon" aria-hidden="true">
-                        {plan.incluidos[i] ? <PiCheckBold size={14} /> : <PiXBold size={14} />}
+                        {plan.included[i] ? <PiCheckBold size={14} /> : <PiXBold size={14} />}
                       </span>
-                      <span>{texto}</span>
+                      <span>{text}</span>
                     </li>
                   ))}
                 </ul>
 
                 <div className="planes__card-footer">
-                  {esActual ? (
+                  {isCurrent ? (
                     <button className="btn btn--outline btn--sm planes__btn" disabled>
                       {t('plans.currentPlan')}
                     </button>
-                  ) : plan.id === 'gratuito' ? (
+                  ) : plan.id === 'free' ? (
                     <button
                       className="btn btn--outline btn--sm planes__btn"
                       onClick={manage}
-                      disabled={loading || !tienePlanPago}
+                      disabled={loading || !hasPaidPlan}
                     >
                       {loading ? <PiSpinnerBold size={14} className="spin" aria-hidden="true" /> : null}
-                      {tienePlanPago ? `${t('plans.changeTo')} ${nombre}` : t('plans.free')}
+                      {hasPaidPlan ? `${t('plans.changeTo')} ${name}` : t('plans.free')}
                     </button>
                   ) : (
                     <button
@@ -186,7 +186,7 @@ const Planes = () => {
                       disabled={loading}
                     >
                       {loading ? <PiSpinnerBold size={14} className="spin" aria-hidden="true" /> : null}
-                      {tienePlanPago ? `${t('plans.changeTo')} ${nombre}` : `${t('plans.subscribe')} ${nombre}`}
+                      {hasPaidPlan ? `${t('plans.changeTo')} ${name}` : `${t('plans.subscribe')} ${name}`}
                     </button>
                   )}
                 </div>
@@ -199,4 +199,4 @@ const Planes = () => {
   );
 };
 
-export default Planes;
+export default Plans;

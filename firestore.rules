@@ -12,11 +12,11 @@ service cloud.firestore {
       return getUserData().role == 'admin';
     }
 
-    // Retorna el UID del negocio: para admin es su propio UID, para empleado es negocioUid
+    // Retorna el UID del negocio: para admin es su propio UID, para empleado es businessUid
     function getBusinessUid() {
       let u = getUserData();
-      return (u.keys().hasAll(['negocioUid']) && u.negocioUid != null)
-        ? u.negocioUid
+      return (u.keys().hasAll(['businessUid']) && u.businessUid != null)
+        ? u.businessUid
         : request.auth.uid;
     }
 
@@ -30,48 +30,48 @@ service cloud.firestore {
       // Lectura: propio documento, o admin (rol verificado) leyendo a sus empleados
       allow read: if request.auth != null && (
         request.auth.uid == userId ||
-        (isAdmin() && get(/databases/$(database)/documents/users/$(userId)).data.negocioUid == request.auth.uid)
+        (isAdmin() && get(/databases/$(database)/documents/users/$(userId)).data.businessUid == request.auth.uid)
       );
       // Escritura: solo el propio documento, con campos protegidos
       allow write: if request.auth != null && request.auth.uid == userId
         && !request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(['plan', 'role', 'negocioUid', 'uid', 'email', 'username', 'numeroEmpleado', 'stripeCustomerId']);
+            .hasAny(['plan', 'role', 'businessUid', 'uid', 'email', 'username', 'memberNumber', 'stripeCustomerId']);
       // Creación inicial (registro): el usuario solo puede crear su propio doc.
-      // Se bloquea negocioUid y role para que nadie pueda auto-asignarse acceso
+      // Se bloquea businessUid y role para que nadie pueda auto-asignarse acceso
       // a otro negocio ni elevarse permisos en el momento del registro.
       // Los miembros son creados por Cloud Functions (Admin SDK), que bypasea estas reglas.
       allow create: if request.auth != null && request.auth.uid == userId
-        && !request.resource.data.keys().hasAny(['negocioUid', 'stripeCustomerId', 'numeroEmpleado', 'username'])
+        && !request.resource.data.keys().hasAny(['businessUid', 'stripeCustomerId', 'memberNumber', 'username'])
         && (!request.resource.data.keys().hasAll(['role']) || request.resource.data.role == 'admin')
         && (!request.resource.data.keys().hasAll(['plan']) || request.resource.data.plan == 'free');
     }
 
     // ── Pedidos ───────────────────────────────────────────────────────────────
-    match /pedidos/{pedidoId} {
+    match /orders/{orderId} {
       allow read, update, delete: if canAccessBusiness(resource.data.userId);
       allow create: if canAccessBusiness(request.resource.data.userId);
     }
 
     // ── Clientes ──────────────────────────────────────────────────────────────
-    match /clientes/{clienteId} {
+    match /clients/{clientId} {
       allow read, update, delete: if canAccessBusiness(resource.data.userId);
       allow create: if canAccessBusiness(request.resource.data.userId);
     }
 
     // ── Productos ─────────────────────────────────────────────────────────────
-    match /productos/{productoId} {
+    match /products/{productId} {
       allow read, update, delete: if canAccessBusiness(resource.data.userId);
       allow create: if canAccessBusiness(request.resource.data.userId);
     }
 
     // ── Etiquetas ─────────────────────────────────────────────────────────────
-    match /etiquetas/{etiquetaId} {
+    match /labels/{labelId} {
       allow read, update, delete: if canAccessBusiness(resource.data.userId);
       allow create: if canAccessBusiness(request.resource.data.userId);
     }
 
     // ── Contadores de folios ───────────────────────────────────────────────────
-    match /pedidoCounters/{counterId} {
+    match /orderCounters/{counterId} {
       allow read, write: if request.auth != null &&
         counterId.matches(getBusinessUid() + '_.*');
     }
@@ -79,7 +79,7 @@ service cloud.firestore {
     // ── Resultados de moderación de imágenes ──────────────────────────────────
     // Solo el Admin SDK (Cloud Function) puede crear/actualizar.
     // El propietario puede leer (incluso antes de que exista el doc) y borrar su resultado.
-    match /imagenModerada/{docId} {
+    match /moderatedImages/{docId} {
       allow read: if request.auth != null &&
         (resource == null || resource.data.userId == request.auth.uid);
       allow delete: if request.auth != null &&
@@ -88,7 +88,7 @@ service cloud.firestore {
     }
 
     // ── Mensajes de soporte ────────────────────────────────────────────────────
-    match /soporte/{msgId} {
+    match /supportMessages/{msgId} {
       allow create: if request.auth != null &&
         request.resource.data.userId == request.auth.uid;
       allow read: if request.auth != null &&
@@ -97,7 +97,7 @@ service cloud.firestore {
     }
 
     // ── Rate limit de soporte ─────────────────────────────────────────────────
-    match /soporteRateLimit/{docId} {
+    match /supportRateLimits/{docId} {
       allow read, write: if request.auth != null &&
         docId.matches(request.auth.uid + '_.*');
     }

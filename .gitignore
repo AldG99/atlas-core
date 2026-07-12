@@ -23,6 +23,7 @@ fase-1-gestor-pedidos.md
 fase-2-escalabilidad-saas.md
 fase-3-produccion.md
 fase-4-configuracion-firebase-stripe.md
+ATLAS-CORE_ENGINEERING.md
 
 # functions (solo servidor, no necesario para Vercel)
 functions

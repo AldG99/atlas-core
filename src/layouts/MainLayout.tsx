@@ -3,7 +3,7 @@ import Sidebar from '../components/ui/Sidebar';
 import Header from '../components/ui/Header';
 import BottomNav from '../components/ui/BottomNav';
 import InstallBanner from '../components/ui/InstallBanner';
-import { useNotificaciones } from '../hooks/useNotificaciones';
+import { useNotifications } from '../hooks/useNotifications';
 import { usePWA } from '../hooks/usePWA';
 import './MainLayout.scss';
 
@@ -13,21 +13,21 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { notificaciones } = useNotificaciones();
+  const { notifications } = useNotifications();
   const { notifPermission, sendNotification } = usePWA();
-  const prevCountRef = useRef(notificaciones.length);
+  const prevCountRef = useRef(notifications.length);
 
   // Enviar notificación del sistema cuando aparecen nuevas alertas
   useEffect(() => {
     if (notifPermission !== 'granted') return;
     const prev = prevCountRef.current;
-    const curr = notificaciones.length;
+    const curr = notifications.length;
     if (curr > prev) {
-      const nueva = notificaciones[0];
-      sendNotification(nueva.titulo, { body: nueva.descripcion });
+      const newest = notifications[0];
+      sendNotification(newest.title, { body: newest.description });
     }
     prevCountRef.current = curr;
-  }, [notificaciones, notifPermission, sendNotification]);
+  }, [notifications, notifPermission, sendNotification]);
 
   return (
     <div className="main-layout">
@@ -37,7 +37,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         onClose={() => setIsSidebarOpen(false)}
       />
       <div className="main-layout__header">
-        <Header notificaciones={notificaciones} />
+        <Header notifications={notifications} />
       </div>
       <div className="main-layout__wrapper">
         <main className="main-layout__content">

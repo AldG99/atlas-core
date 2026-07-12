@@ -8,19 +8,19 @@ import {
   PiPlusBold,
   PiDownloadSimpleBold,
 } from 'react-icons/pi';
-import { useClientes } from '../hooks/useClientes';
+import { useClients } from '../hooks/useClients';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
-import type { ClienteFormData } from '../types/Cliente';
-import { exportClientesCSV } from '../utils/formatters';
+import type { ClientFormData } from '../types/Client';
+import { exportClientsCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
-import ClientesTable from '../components/clientes/ClientesTable';
-import ClienteModal from '../components/clientes/ClienteModal';
-import './Clientes.scss';
+import ClientsTable from '../components/clients/ClientsTable';
+import ClientModal from '../components/clients/ClientModal';
+import './Clients.scss';
 
 const PAGE_SIZE = 50;
 
-const Clientes = () => {
+const Clients = () => {
   const { t } = useTranslation();
 
   const CP_OPTIONS: Partial<Record<SortOption, string>> = {
@@ -39,45 +39,45 @@ const Clientes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
 
-  const { clientes, loading, error, addCliente } = useClientes();
+  const { clients, loading, error, addClient } = useClients();
   const { showToast } = useToast();
   const { role } = useAuth();
 
-  const filteredClientes = useMemo(() => {
-    let resultado = clientes;
+  const filteredClients = useMemo(() => {
+    let result = clients;
 
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
-      resultado = resultado.filter(
-        cliente =>
-          cliente.nombre.toLowerCase().includes(term) ||
-          cliente.apellido.toLowerCase().includes(term) ||
-          `${cliente.nombre} ${cliente.apellido}`.toLowerCase().includes(term) ||
-          cliente.telefono.toLowerCase().includes(term)
+      result = result.filter(
+        client =>
+          client.firstName.toLowerCase().includes(term) ||
+          client.lastName.toLowerCase().includes(term) ||
+          `${client.firstName} ${client.lastName}`.toLowerCase().includes(term) ||
+          client.phone.toLowerCase().includes(term)
       );
     }
 
-    resultado.sort((a, b) => {
+    result.sort((a, b) => {
       switch (sortBy) {
-        case 'nombre_asc': return a.nombre.localeCompare(b.nombre);
-        case 'nombre_desc': return b.nombre.localeCompare(a.nombre);
-        case 'cp_asc': return (a.codigoPostal || '').localeCompare(b.codigoPostal || '', undefined, { numeric: true });
-        case 'cp_desc': return (b.codigoPostal || '').localeCompare(a.codigoPostal || '', undefined, { numeric: true });
-        case 'registro_desc': return new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime();
-        case 'registro_asc': return new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime();
+        case 'nombre_asc': return a.firstName.localeCompare(b.firstName);
+        case 'nombre_desc': return b.firstName.localeCompare(a.firstName);
+        case 'cp_asc': return (a.postalCode || '').localeCompare(b.postalCode || '', undefined, { numeric: true });
+        case 'cp_desc': return (b.postalCode || '').localeCompare(a.postalCode || '', undefined, { numeric: true });
+        case 'registro_desc': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'registro_asc': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         default: return 0;
       }
     });
 
-    return resultado;
-  }, [clientes, searchTerm, sortBy]);
+    return result;
+  }, [clients, searchTerm, sortBy]);
 
-  const clientesPaginados = filteredClientes.slice(0, displayLimit);
-  const hayMas = filteredClientes.length > displayLimit;
+  const paginatedClients = filteredClients.slice(0, displayLimit);
+  const hasMore = filteredClients.length > displayLimit;
 
-  const handleAdd = async (data: ClienteFormData) => {
+  const handleAdd = async (data: ClientFormData) => {
     try {
-      await addCliente(data);
+      await addClient(data);
       showToast(t('clients.addSuccess'), 'success');
       setIsModalOpen(false);
     } catch (err) {
@@ -86,11 +86,11 @@ const Clientes = () => {
   };
 
   const handleExport = () => {
-    if (filteredClientes.length === 0) {
+    if (filteredClients.length === 0) {
       showToast(t('clients.noClientsExport'), 'warning');
       return;
     }
-    exportClientesCSV(filteredClientes);
+    exportClientsCSV(filteredClients);
     showToast(t('clients.exportSuccess'), 'success');
   };
 
@@ -108,7 +108,7 @@ const Clientes = () => {
             <button
               onClick={handleExport}
               className="btn btn--secondary"
-              disabled={clientes.length === 0}
+              disabled={clients.length === 0}
             >
               <PiDownloadSimpleBold size={18} />
               {t('common.exportCsv')}
@@ -160,29 +160,29 @@ const Clientes = () => {
           </div>
         </div>
 
-        <ClientesTable
-          clientes={clientesPaginados}
+        <ClientsTable
+          clients={paginatedClients}
           loading={loading}
           error={error}
           searchTerm={searchTerm}
         />
 
-        {hayMas && (
+        {hasMore && (
           <div className="clientes__load-more">
             <button
               className="btn btn--outline btn--sm"
               onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
             >
-              {t('clients.showMore', { count: filteredClientes.length - displayLimit })}
+              {t('clients.showMore', { count: filteredClients.length - displayLimit })}
             </button>
           </div>
         )}
 
         {isModalOpen && (
-          <ClienteModal
+          <ClientModal
             onClose={() => setIsModalOpen(false)}
             onSave={handleAdd}
-            telefonosExistentes={clientes.map(c => c.telefono)}
+            existingPhones={clients.map(c => c.phone)}
           />
         )}
       </div>
@@ -190,4 +190,4 @@ const Clientes = () => {
   );
 };
 
-export default Clientes;
+export default Clients;

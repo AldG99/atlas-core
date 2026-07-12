@@ -6,38 +6,38 @@ import {
   PiCalendarBold,
   PiCameraBold,
 } from 'react-icons/pi';
-import type { Producto, ProductoFormData } from '../types/Producto';
-import { getProductoById, updateProducto, uploadProductoImage } from '../services/productoService';
-import type { CancelDescuentoInfo } from '../services/productoService';
-import { useEtiquetas } from '../hooks/useEtiquetas';
+import type { Product, ProductFormData } from '../types/Product';
+import { getProductById, updateProduct, uploadProductImage } from '../services/productService';
+import type { CancelDiscountInfo } from '../services/productService';
+import { useLabels } from '../hooks/useLabels';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useCurrency } from '../hooks/useCurrency';
 import { ROUTES } from '../config/routes';
-import { ETIQUETA_ICONS } from '../constants/etiquetaIcons';
+import { LABEL_ICONS } from '../constants/labelIcons';
 import { compressImage } from '../utils/imageUtils';
 import ProductImage from '../components/ui/ProductImage';
-import ProductoDeleteModal from '../components/pedidos/ProductoDeleteModal';
-import ProductoTopBar from '../components/productos/ProductoTopBar';
-import EtiquetaEditSection from '../components/productos/EtiquetaEditSection';
+import ProductDeleteModal from '../components/orders/ProductDeleteModal';
+import ProductTopBar from '../components/products/ProductTopBar';
+import LabelEditSection from '../components/products/LabelEditSection';
 import MainLayout from '../layouts/MainLayout';
-import './ProductoDetail.scss';
+import './ProductDetail.scss';
 
-const ProductoDetail = () => {
+const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { user, role } = useAuth();
   const { showToast } = useToast();
-  const { etiquetas, addEtiqueta, removeEtiqueta } = useEtiquetas();
+  const { labels, addLabel, removeLabel } = useLabels();
   const { format } = useCurrency();
 
-  const [producto, setProducto] = useState<Producto | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [confirmDeleteEtiquetaId, setConfirmDeleteEtiquetaId] = useState<string | null>(null);
-  const [editData, setEditData] = useState<ProductoFormData | null>(null);
+  const [confirmDeleteLabelId, setConfirmDeleteLabelId] = useState<string | null>(null);
+  const [editData, setEditData] = useState<ProductFormData | null>(null);
   const [saving, setSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,42 +51,42 @@ const ProductoDetail = () => {
         selectedImageFile.current = compressed;
         const reader = new FileReader();
         reader.onloadend = () => {
-          setEditData({ ...editData, imagen: reader.result as string });
+          setEditData({ ...editData, image: reader.result as string });
         };
         reader.readAsDataURL(compressed);
       } catch {
         selectedImageFile.current = file;
         const reader = new FileReader();
         reader.onloadend = () => {
-          setEditData({ ...editData, imagen: reader.result as string });
+          setEditData({ ...editData, image: reader.result as string });
         };
         reader.readAsDataURL(file);
       }
     }
   };
 
-  const fetchProducto = useCallback(async () => {
+  const fetchProduct = useCallback(async () => {
     if (!id) return;
     try {
       setLoading(true);
-      const data = await getProductoById(id);
+      const data = await getProductById(id);
       if (!data) {
         showToast(t('products.detail.notFound'), 'error');
-        navigate(ROUTES.PRODUCTOS);
+        navigate(ROUTES.PRODUCTS);
         return;
       }
-      setProducto(data);
+      setProduct(data);
     } catch {
       showToast(t('products.detail.loadError'), 'error');
-      navigate(ROUTES.PRODUCTOS);
+      navigate(ROUTES.PRODUCTS);
     } finally {
       setLoading(false);
     }
   }, [id, navigate, showToast, t]);
 
   useEffect(() => {
-    fetchProducto();
-  }, [fetchProducto]);
+    fetchProduct();
+  }, [fetchProduct]);
 
   const formatDate = (date: Date) =>
     new Intl.DateTimeFormat(i18n.language, {
@@ -95,34 +95,34 @@ const ProductoDetail = () => {
       year: 'numeric'
     }).format(new Date(date));
 
-  const getEtiquetasForProducto = (p: Producto) => {
-    return (p.etiquetas || [])
-      .map(id => etiquetas.find(e => e.id === id))
-      .filter((e): e is NonNullable<typeof e> => !!e);
+  const getLabelsForProduct = (p: Product) => {
+    return (p.labels || [])
+      .map(id => labels.find(l => l.id === id))
+      .filter((l): l is NonNullable<typeof l> => !!l);
   };
 
   const handleDelete = () => {
-    if (!producto) return;
+    if (!product) return;
     setShowDeleteModal(true);
   };
 
   const startEditing = () => {
-    if (!producto) return;
+    if (!product) return;
     setEditData({
-      clave: producto.clave,
-      nombre: producto.nombre,
-      precio: producto.precio,
-      descripcion: producto.descripcion,
-      imagen: producto.imagen,
-      etiquetas: producto.etiquetas,
-      descuento: producto.descuento || 0,
-      fechaFinDescuento: producto.fechaFinDescuento
-        ? new Date(producto.fechaFinDescuento).toISOString().split('T')[0]
+      sku: product.sku,
+      name: product.name,
+      price: product.price,
+      description: product.description,
+      image: product.image,
+      labels: product.labels,
+      discount: product.discount || 0,
+      discountEndDate: product.discountEndDate
+        ? new Date(product.discountEndDate).toISOString().split('T')[0]
         : '',
-      controlStock: producto.controlStock ?? false,
-      stock: producto.stock ?? 0,
-      unidad: producto.unidad ?? '',
-      unidadCantidad: producto.unidadCantidad ?? 1,
+      trackStock: product.trackStock ?? false,
+      stock: product.stock ?? 0,
+      unit: product.unit ?? '',
+      unitQuantity: product.unitQuantity ?? 1,
     });
     setIsEditing(true);
   };
@@ -133,32 +133,32 @@ const ProductoDetail = () => {
     selectedImageFile.current = null;
   };
 
-  const handleDeleteEtiqueta = async (id: string) => {
-    await removeEtiqueta(id);
+  const handleDeleteLabel = async (id: string) => {
+    await removeLabel(id);
     if (editData) {
-      setEditData({ ...editData, etiquetas: (editData.etiquetas || []).filter(eid => eid !== id) });
+      setEditData({ ...editData, labels: (editData.labels || []).filter(lid => lid !== id) });
     }
-    setConfirmDeleteEtiquetaId(null);
+    setConfirmDeleteLabelId(null);
   };
 
-  const handleCrearEtiqueta = async (nombre: string, color: string, icono: string) => {
+  const handleCreateLabel = async (name: string, color: string, icon: string) => {
     if (!editData) return;
-    const nueva = await addEtiqueta(nombre, color, icono);
-    if (nueva && (editData.etiquetas || []).length < MAX_ETIQUETAS) {
-      setEditData({ ...editData, etiquetas: [...(editData.etiquetas || []), nueva.id] });
+    const created = await addLabel(name, color, icon);
+    if (created && (editData.labels || []).length < MAX_LABELS) {
+      setEditData({ ...editData, labels: [...(editData.labels || []), created.id] });
     }
   };
 
   const handleSave = async () => {
-    if (!producto || !editData || !user) return;
+    if (!product || !editData || !user) return;
     try {
       const dataToSave = { ...editData };
 
       if (selectedImageFile.current) {
         setIsUploading(true);
         try {
-          const url = await uploadProductoImage(selectedImageFile.current, user.uid);
-          dataToSave.imagen = url;
+          const url = await uploadProductImage(selectedImageFile.current, user.uid);
+          dataToSave.image = url;
           selectedImageFile.current = null;
         } catch (error) {
           const msg = error instanceof Error ? error.message : '';
@@ -173,32 +173,32 @@ const ProductoDetail = () => {
 
       setSaving(true);
 
-      let cancelledDescuento: CancelDescuentoInfo | undefined;
-      const hadDescuento = producto.descuento && producto.descuento > 0 && producto.fechaFinDescuento;
-      const removingDescuento = !dataToSave.descuento || dataToSave.descuento <= 0;
+      let cancelledDiscount: CancelDiscountInfo | undefined;
+      const hadDiscount = product.discount && product.discount > 0 && product.discountEndDate;
+      const removingDiscount = !dataToSave.discount || dataToSave.discount <= 0;
 
-      if (hadDescuento && removingDescuento) {
-        cancelledDescuento = {
-          porcentaje: producto.descuento!,
-          fechaFin: producto.fechaFinDescuento!
+      if (hadDiscount && removingDiscount) {
+        cancelledDiscount = {
+          percentage: product.discount!,
+          endDate: product.discountEndDate!
         };
       }
 
-      if (removingDescuento) {
-        dataToSave.descuento = 0;
-        dataToSave.fechaFinDescuento = '';
+      if (removingDiscount) {
+        dataToSave.discount = 0;
+        dataToSave.discountEndDate = '';
       }
 
-      await updateProducto(producto.id, dataToSave, cancelledDescuento);
+      await updateProduct(product.id, dataToSave, cancelledDiscount);
 
-      if (cancelledDescuento) {
-        await fetchProducto();
+      if (cancelledDiscount) {
+        await fetchProduct();
       } else {
-        setProducto({
-          ...producto,
+        setProduct({
+          ...product,
           ...dataToSave,
-          fechaFinDescuento: dataToSave.fechaFinDescuento
-            ? new Date(dataToSave.fechaFinDescuento + 'T00:00:00')
+          discountEndDate: dataToSave.discountEndDate
+            ? new Date(dataToSave.discountEndDate + 'T00:00:00')
             : undefined
         });
       }
@@ -216,34 +216,34 @@ const ProductoDetail = () => {
     }
   };
 
-  const isDescuentoActivo = (p: Producto): boolean => {
-    if (!p.descuento || p.descuento <= 0) return false;
-    if (!p.fechaFinDescuento) return false;
-    return new Date(p.fechaFinDescuento) >= new Date(new Date().toDateString());
+  const isDiscountActive = (p: Product): boolean => {
+    if (!p.discount || p.discount <= 0) return false;
+    if (!p.discountEndDate) return false;
+    return new Date(p.discountEndDate) >= new Date(new Date().toDateString());
   };
 
-  const getPrecioConDescuento = (precio: number, descuento: number): number => {
-    return precio * (1 - descuento / 100);
+  const getDiscountedPrice = (price: number, discount: number): number => {
+    return price * (1 - discount / 100);
   };
 
-  const updateField = (field: keyof ProductoFormData, value: string | number | string[]) => {
+  const updateField = (field: keyof ProductFormData, value: string | number | string[]) => {
     if (!editData) return;
     setEditData({ ...editData, [field]: value });
   };
 
-  const MAX_ETIQUETAS = 4;
+  const MAX_LABELS = 4;
 
-  const toggleEtiqueta = (etiquetaId: string) => {
+  const toggleLabel = (labelId: string) => {
     if (!editData) return;
-    const current = editData.etiquetas || [];
-    if (current.includes(etiquetaId)) {
-      setEditData({ ...editData, etiquetas: current.filter(id => id !== etiquetaId) });
-    } else if (current.length < MAX_ETIQUETAS) {
-      setEditData({ ...editData, etiquetas: [...current, etiquetaId] });
+    const current = editData.labels || [];
+    if (current.includes(labelId)) {
+      setEditData({ ...editData, labels: current.filter(id => id !== labelId) });
+    } else if (current.length < MAX_LABELS) {
+      setEditData({ ...editData, labels: [...current, labelId] });
     }
   };
 
-  const limiteAlcanzado = isEditing && (editData?.etiquetas || []).length >= MAX_ETIQUETAS;
+  const limitReached = isEditing && (editData?.labels || []).length >= MAX_LABELS;
 
   if (loading) {
     return (
@@ -255,19 +255,19 @@ const ProductoDetail = () => {
     );
   }
 
-  if (!producto) return null;
+  if (!product) return null;
 
-  const productoEtiquetas = getEtiquetasForProducto(producto);
+  const productLabels = getLabelsForProduct(product);
 
   return (
     <MainLayout>
       <div className="producto-detail">
-        <ProductoTopBar
+        <ProductTopBar
           isEditing={isEditing}
           role={role}
           saving={saving}
           isUploading={isUploading}
-          onBack={() => navigate(ROUTES.PRODUCTOS)}
+          onBack={() => navigate(ROUTES.PRODUCTS)}
           onStartEdit={startEditing}
           onDelete={handleDelete}
           onSave={handleSave}
@@ -286,8 +286,8 @@ const ProductoDetail = () => {
                 onClick={() => isEditing && fileInputRef.current?.click()}
               >
                 <ProductImage
-                  src={isEditing ? editData?.imagen : producto.imagen}
-                  alt={producto.nombre}
+                  src={isEditing ? editData?.image : product.image}
+                  alt={product.name}
                   placeholderClassName="producto-detail__image-placeholder"
                 />
                 {isEditing && (
@@ -312,15 +312,15 @@ const ProductoDetail = () => {
                     <>
                       <input
                         type="text"
-                        value={editData?.clave || ''}
-                        onChange={(e) => updateField('clave', e.target.value)}
+                        value={editData?.sku || ''}
+                        onChange={(e) => updateField('sku', e.target.value)}
                         placeholder={t('products.detail.codePlaceholder')}
                         className="producto-detail__input producto-detail__input--clave"
                       />
                       <input
                         type="text"
-                        value={editData?.nombre || ''}
-                        onChange={(e) => updateField('nombre', e.target.value)}
+                        value={editData?.name || ''}
+                        onChange={(e) => updateField('name', e.target.value)}
                         placeholder={t('products.detail.namePlaceholder')}
                         className="producto-detail__input producto-detail__input--name"
                       />
@@ -328,33 +328,33 @@ const ProductoDetail = () => {
                         <label className="producto-detail__stock-toggle">
                           <input
                             type="checkbox"
-                            checked={!!editData?.unidad}
+                            checked={!!editData?.unit}
                             onChange={(e) => {
                               if (!editData) return;
-                              setEditData({ ...editData, unidad: e.target.checked ? 'kg' : '' });
+                              setEditData({ ...editData, unit: e.target.checked ? 'kg' : '' });
                             }}
                           />
                           <span>{t('products.detail.specifyUnit')}</span>
                           <input
                             type="number"
-                            value={editData?.unidadCantidad ?? 1}
+                            value={editData?.unitQuantity ?? 1}
                             onChange={(e) => {
                               if (!editData) return;
-                              setEditData({ ...editData, unidadCantidad: Math.max(0, parseFloat(e.target.value) || 0) });
+                              setEditData({ ...editData, unitQuantity: Math.max(0, parseFloat(e.target.value) || 0) });
                             }}
                             className="producto-detail__input producto-detail__input--unidad-cantidad"
                             min="0"
                             step="0.1"
-                            disabled={!editData?.unidad}
+                            disabled={!editData?.unit}
                           />
                           <select
-                            value={editData?.unidad || 'kg'}
+                            value={editData?.unit || 'kg'}
                             onChange={(e) => {
                               if (!editData) return;
-                              setEditData({ ...editData, unidad: e.target.value });
+                              setEditData({ ...editData, unit: e.target.value });
                             }}
                             className="producto-detail__input producto-detail__input--unidad"
-                            disabled={!editData?.unidad}
+                            disabled={!editData?.unit}
                           >
                             <option value="kg">kg</option>
                             <option value="g">g</option>
@@ -366,11 +366,11 @@ const ProductoDetail = () => {
                     </>
                   ) : (
                     <>
-                      <span className="producto-detail__clave">{producto.clave}</span>
-                      <h1 className="producto-detail__name">{producto.nombre}</h1>
+                      <span className="producto-detail__clave">{product.sku}</span>
+                      <h1 className="producto-detail__name">{product.name}</h1>
                       <span className="producto-detail__unidad-display">
-                        {producto.unidad
-                          ? `${producto.unidadCantidad ?? ''} ${producto.unidad}`.trim()
+                        {product.unit
+                          ? `${product.unitQuantity ?? ''} ${product.unit}`.trim()
                           : '---'}
                       </span>
                     </>
@@ -382,8 +382,8 @@ const ProductoDetail = () => {
                     <div className="producto-detail__price-edit">
                       <input
                         type="number"
-                        value={editData?.precio || 0}
-                        onChange={(e) => updateField('precio', parseFloat(e.target.value) || 0)}
+                        value={editData?.price || 0}
+                        onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
                         placeholder="Precio"
                         className="producto-detail__input producto-detail__input--price"
                         step="0.01"
@@ -394,10 +394,10 @@ const ProductoDetail = () => {
                           <div className="producto-detail__descuento-input-wrapper">
                             <input
                               type="number"
-                              value={editData?.descuento || ''}
+                              value={editData?.discount || ''}
                               onChange={(e) => {
                                 const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
-                                updateField('descuento', val);
+                                updateField('discount', val);
                               }}
                               placeholder="0"
                               className="producto-detail__input producto-detail__input--discount"
@@ -409,50 +409,50 @@ const ProductoDetail = () => {
                           </div>
                           <input
                             type="date"
-                            value={editData?.fechaFinDescuento as string || ''}
-                            onChange={(e) => updateField('fechaFinDescuento', e.target.value)}
+                            value={editData?.discountEndDate as string || ''}
+                            onChange={(e) => updateField('discountEndDate', e.target.value)}
                             className="producto-detail__input producto-detail__input--date"
                           />
-                          {editData?.descuento && editData.descuento > 0 && (
+                          {editData?.discount && editData.discount > 0 && (
                             <button
                               type="button"
                               className="producto-detail__cancel-descuento"
                               onClick={() => {
                                 if (!editData) return;
-                                setEditData({ ...editData, descuento: 0, fechaFinDescuento: '' });
+                                setEditData({ ...editData, discount: 0, discountEndDate: '' });
                               }}
                             >
                               {t('products.detail.cancelDiscount')}
                             </button>
                           )}
                         </div>
-                        {editData?.descuento && editData.descuento > 0 && (
+                        {editData?.discount && editData.discount > 0 && (
                           <div className="producto-detail__price-edit-preview">
                             <span className="producto-detail__price-original">
-                              {format(editData?.precio || producto.precio)}
+                              {format(editData?.price || product.price)}
                             </span>
                             <span className="producto-detail__price-final">
-                              {format(getPrecioConDescuento(editData?.precio || producto.precio, editData.descuento))}
+                              {format(getDiscountedPrice(editData?.price || product.price, editData.discount))}
                             </span>
                           </div>
                         )}
                       </div>
                     </div>
-                  ) : isDescuentoActivo(producto) ? (
+                  ) : isDiscountActive(product) ? (
                     <div className="producto-detail__price-discount">
-                      <span className="producto-detail__price-badge">-{producto.descuento}%</span>
-                      <span className="producto-detail__price-original">{format(producto.precio)}</span>
+                      <span className="producto-detail__price-badge">-{product.discount}%</span>
+                      <span className="producto-detail__price-original">{format(product.price)}</span>
                       <span className="producto-detail__price-final">
-                        {format(getPrecioConDescuento(producto.precio, producto.descuento!))}
+                        {format(getDiscountedPrice(product.price, product.discount!))}
                       </span>
-                      {producto.fechaFinDescuento && (
+                      {product.discountEndDate && (
                         <span className="producto-detail__price-expiry">
-                          {t('products.detail.validUntil', { date: formatDate(producto.fechaFinDescuento) })}
+                          {t('products.detail.validUntil', { date: formatDate(product.discountEndDate) })}
                         </span>
                       )}
                     </div>
                   ) : (
-                    format(producto.precio)
+                    format(product.price)
                   )}
                 </div>
 
@@ -460,28 +460,28 @@ const ProductoDetail = () => {
                 <div className="producto-detail__header-etiquetas">
                   <div className="producto-detail__header-etiquetas-row">
                     {isEditing ? (
-                      <EtiquetaEditSection
-                        etiquetas={etiquetas}
-                        selectedIds={editData?.etiquetas || []}
-                        limiteAlcanzado={limiteAlcanzado}
-                        confirmDeleteId={confirmDeleteEtiquetaId}
-                        maxEtiquetas={MAX_ETIQUETAS}
-                        onToggle={toggleEtiqueta}
-                        onDeleteRequest={setConfirmDeleteEtiquetaId}
-                        onDeleteConfirm={handleDeleteEtiqueta}
-                        onDeleteCancel={() => setConfirmDeleteEtiquetaId(null)}
-                        onCrear={handleCrearEtiqueta}
+                      <LabelEditSection
+                        labels={labels}
+                        selectedIds={editData?.labels || []}
+                        limitReached={limitReached}
+                        confirmDeleteId={confirmDeleteLabelId}
+                        maxLabels={MAX_LABELS}
+                        onToggle={toggleLabel}
+                        onDeleteRequest={setConfirmDeleteLabelId}
+                        onDeleteConfirm={handleDeleteLabel}
+                        onDeleteCancel={() => setConfirmDeleteLabelId(null)}
+                        onCreate={handleCreateLabel}
                       />
-                    ) : productoEtiquetas.length > 0 ? (
-                      productoEtiquetas.map(et => {
-                        const iconData = ETIQUETA_ICONS[et.icono];
+                    ) : productLabels.length > 0 ? (
+                      productLabels.map(l => {
+                        const iconData = LABEL_ICONS[l.icon];
                         const Icon = iconData?.icon;
                         return (
                           <span
-                            key={et.id}
+                            key={l.id}
                             className="producto-detail__etiqueta"
-                            style={{ backgroundColor: et.color }}
-                            title={et.nombre}
+                            style={{ backgroundColor: l.color }}
+                            title={l.name}
                           >
                             {Icon && <Icon size={12} />}
                           </span>
@@ -499,12 +499,12 @@ const ProductoDetail = () => {
                     <label className="producto-detail__stock-toggle">
                       <input
                         type="checkbox"
-                        checked={!!editData?.controlStock}
+                        checked={!!editData?.trackStock}
                         onChange={(e) => {
                           if (!editData) return;
                           setEditData({
                             ...editData,
-                            controlStock: e.target.checked,
+                            trackStock: e.target.checked,
                             stock: e.target.checked ? (editData.stock ?? 0) : 0,
                           });
                         }}
@@ -524,18 +524,18 @@ const ProductoDetail = () => {
                         className="producto-detail__input producto-detail__input--stock"
                         min="0"
                         step="1"
-                        disabled={!editData?.controlStock}
+                        disabled={!editData?.trackStock}
                       />
                     </div>
                   </div>
                 ) : (
                   <div className="producto-detail__stock-display">
                     <PiPackageBold size={15} className="producto-detail__header-meta-icon" />
-                    {producto.controlStock ? (
+                    {product.trackStock ? (
                       <span className="producto-detail__stock-badge">
-                        {(producto.stock ?? 0) === 0
+                        {(product.stock ?? 0) === 0
                           ? t('products.detail.noStock')
-                          : t('products.detail.stockUnits', { count: producto.stock })}
+                          : t('products.detail.stockUnits', { count: product.stock })}
                       </span>
                     ) : (
                       <span className="producto-detail__stock-untracked">
@@ -556,19 +556,19 @@ const ProductoDetail = () => {
               {isEditing ? (
                 <>
                   <textarea
-                    value={editData?.descripcion || ''}
-                    onChange={(e) => updateField('descripcion', e.target.value)}
+                    value={editData?.description || ''}
+                    onChange={(e) => updateField('description', e.target.value)}
                     placeholder={t('products.modal.descriptionPlaceholder')}
                     className="producto-detail__textarea"
                     maxLength={240}
                   />
                   <span className="producto-detail__char-count">
-                    {(editData?.descripcion || '').length}/240
+                    {(editData?.description || '').length}/240
                   </span>
                 </>
               ) : (
-                <p className={`producto-detail__description ${!producto.descripcion ? 'producto-detail__description--empty' : ''}`}>
-                  {producto.descripcion || t('products.detail.noDescription')}
+                <p className={`producto-detail__description ${!product.description ? 'producto-detail__description--empty' : ''}`}>
+                  {product.description || t('products.detail.noDescription')}
                 </p>
               )}
             </div>
@@ -576,21 +576,21 @@ const ProductoDetail = () => {
             <div className="producto-detail__footer-meta">
               <PiCalendarBold size={13} className="producto-detail__header-meta-icon" />
               <span className="producto-detail__info-label">{t('products.detail.addedOn')}</span>
-              <span className="producto-detail__info-value">{formatDate(producto.fechaCreacion)}</span>
+              <span className="producto-detail__info-value">{formatDate(product.createdAt)}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {showDeleteModal && producto && (
-        <ProductoDeleteModal
-          producto={producto}
+      {showDeleteModal && product && (
+        <ProductDeleteModal
+          product={product}
           onClose={() => setShowDeleteModal(false)}
-          onDeleted={() => navigate(ROUTES.PRODUCTOS)}
+          onDeleted={() => navigate(ROUTES.PRODUCTS)}
         />
       )}
     </MainLayout>
   );
 };
 
-export default ProductoDetail;
+export default ProductDetail;
