@@ -19,10 +19,10 @@ const ProductTopBar = ({
 }: Props) => {
   const { t } = useTranslation();
   return (
-    <div className="producto-detail__top-bar">
-      <div className="producto-detail__top-bar-inner">
+    <div className="product-detail__top-bar">
+      <div className="product-detail__top-bar-inner">
         <button
-          className="producto-detail__icon-btn producto-detail__icon-btn--back"
+          className="product-detail__icon-btn product-detail__icon-btn--back"
           onClick={onBack}
           title={t('products.detail.back')}
         >
@@ -30,7 +30,7 @@ const ProductTopBar = ({
         </button>
         {role === 'admin' && (
           isEditing ? (
-            <div className="producto-detail__top-bar-actions">
+            <div className="product-detail__top-bar-actions">
               <button
                 onClick={onCancel}
                 className="btn btn--outline btn--sm"
@@ -52,17 +52,17 @@ const ProductTopBar = ({
             </div>
           ) : (
             <>
-              <span className="producto-detail__top-divider" />
+              <span className="product-detail__top-divider" />
               <button
                 onClick={onStartEdit}
-                className="producto-detail__icon-btn producto-detail__icon-btn--primary"
+                className="product-detail__icon-btn product-detail__icon-btn--primary"
                 title={t('products.detail.editProduct')}
               >
                 <PiPencilBold size={20} />
               </button>
               <button
                 onClick={onDelete}
-                className="producto-detail__icon-btn producto-detail__icon-btn--danger"
+                className="product-detail__icon-btn product-detail__icon-btn--danger"
                 title={t('products.detail.deleteProduct')}
               >
                 <PiTrashBold size={20} />

@@ -36,20 +36,20 @@ const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalP
   };
 
   return (
-    <div className="producto-detail__modal-overlay" onClick={onClose}>
-      <div className="producto-detail__modal" onClick={e => e.stopPropagation()}>
-        <div className="producto-detail__modal-header">
+    <div className="product-detail__modal-overlay" onClick={onClose}>
+      <div className="product-detail__modal" onClick={e => e.stopPropagation()}>
+        <div className="product-detail__modal-header">
           <h3>{t('products.detail.deleteModal.title')}</h3>
-          <button className="producto-detail__modal-close" onClick={onClose}>
+          <button className="product-detail__modal-close" onClick={onClose}>
             <PiXBold size={18} />
           </button>
         </div>
-        <div className="producto-detail__modal-body">
+        <div className="product-detail__modal-body">
           <p>{t('products.detail.deleteModal.warning')}</p>
-          <p className="producto-detail__delete-label">
+          <p className="product-detail__delete-label">
             {t('products.detail.deleteModal.instruction')}
           </p>
-          <code className="producto-detail__delete-code">{deleteCode}</code>
+          <code className="product-detail__delete-code">{deleteCode}</code>
           <input
             type="text"
             className="input"
@@ -59,7 +59,7 @@ const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalP
             autoComplete="off"
           />
         </div>
-        <div className="producto-detail__modal-footer">
+        <div className="product-detail__modal-footer">
           <button className="btn btn--secondary btn--sm" onClick={onClose}>
             {t('products.detail.deleteModal.cancel')}
           </button>

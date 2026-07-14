@@ -1,7 +1,7 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
-.productos-table-wrapper {
+.products-table-wrapper {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -9,7 +9,7 @@
   border: 1px solid $color-gray-200;
 }
 
-.productos-table-header {
+.products-table-header {
   flex-shrink: 0;
   background-color: $color-gray-100;
   overflow: hidden;
@@ -17,7 +17,7 @@
   box-shadow: inset 0 -1px 0 $color-gray-200;
 }
 
-.productos-table-container {
+.products-table-container {
   background-color: $color-white;
   overflow-x: auto;
   overflow-y: auto;
@@ -45,7 +45,7 @@
   }
 }
 
-.productos-table {
+.products-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
@@ -97,7 +97,7 @@
     &:hover {
       background-color: $color-gray-50;
 
-      .productos-table__name {
+      .products-table__name {
         color: $color-primary;
       }
     }
@@ -105,13 +105,13 @@
     &--focused {
       background-color: rgba($color-primary, 0.06);
 
-      .productos-table__name {
+      .products-table__name {
         color: $color-primary;
       }
     }
   }
 
-  &__clave {
+  &__sku {
     display: inline-flex;
     align-items: center;
     padding: 2px 8px;
@@ -171,13 +171,13 @@
     display: block;
   }
 
-  &__etiquetas {
+  &__labels {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
   }
 
-  &__etiqueta {
+  &__label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -187,7 +187,7 @@
     color: $color-white;
   }
 
-  &__no-etiquetas {
+  &__no-labels {
     color: $color-gray-400;
   }
 
@@ -218,7 +218,7 @@
     font-weight: 600;
   }
 
-  &__unidad {
+  &__unit {
     font-size: $font-size-sm;
     color: $color-gray-600;
   }

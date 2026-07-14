@@ -4,7 +4,7 @@
 
 $topbar-height: 52px;
 
-.producto-detail {
+.product-detail {
   width: 100%;
   margin: 0 auto;
   padding-top: $topbar-height;
@@ -190,7 +190,7 @@ $topbar-height: 52px;
     &--editable {
       cursor: pointer;
 
-      &:hover .producto-detail__image-overlay {
+      &:hover .product-detail__image-overlay {
         opacity: 1;
       }
     }
@@ -235,7 +235,7 @@ $topbar-height: 52px;
     gap: $spacing-sm;
   }
 
-  &__clave {
+  &__sku {
     display: inline-block;
     padding: 2px 8px;
     font-size: $font-size-sm;
@@ -294,7 +294,7 @@ $topbar-height: 52px;
     gap: $spacing-xs;
   }
 
-  &__cancel-descuento {
+  &__cancel-discount {
     border: 1px solid $color-gray-300;
     background-color: $color-white;
     color: $color-gray-600;
@@ -379,33 +379,33 @@ $topbar-height: 52px;
   }
 
   // Etiquetas en header (encima de fecha de creación)
-  &__header-etiquetas {
+  &__header-labels {
     margin-top: auto;
     padding-top: $spacing-sm;
     border-top: 1px solid $color-gray-100;
   }
 
-  &__header-etiquetas-row {
+  &__header-labels-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: $spacing-xs;
   }
 
-  &__etiquetas-empty {
+  &__labels-empty {
     font-size: $font-size-sm;
     color: $color-gray-400;
     font-style: italic;
   }
 
   // Etiquetas en sección separada (modo vista sin edición)
-  &__etiquetas {
+  &__labels {
     display: flex;
     flex-wrap: wrap;
     gap: $spacing-sm;
   }
 
-  &__etiqueta {
+  &__label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -438,23 +438,23 @@ $topbar-height: 52px;
     }
   }
 
-  &__etiquetas-limite {
+  &__labels-limite {
     font-size: $font-size-xs;
     color: $color-gray-500;
     font-style: italic;
     font-weight: 400;
   }
 
-  &__etiqueta-wrapper {
+  &__label-wrapper {
     position: relative;
     display: inline-flex;
 
-    &:hover .producto-detail__etiqueta-delete {
+    &:hover .product-detail__label-delete {
       opacity: 1;
     }
   }
 
-  &__etiqueta-delete {
+  &__label-delete {
     position: absolute;
     bottom: -5px;
     right: -5px;
@@ -473,7 +473,7 @@ $topbar-height: 52px;
     transition: opacity $transition-fast;
   }
 
-  &__etiqueta-confirm {
+  &__label-confirm {
     position: absolute;
     bottom: calc(100% + 4px);
     left: 50%;
@@ -490,7 +490,7 @@ $topbar-height: 52px;
     z-index: 10;
   }
 
-  &__etiqueta-confirm-yes {
+  &__label-confirm-yes {
     font-size: 10px;
     padding: 1px 5px;
     border-radius: $border-radius-sm;
@@ -502,7 +502,7 @@ $topbar-height: 52px;
     &:hover { background: color.adjust($color-danger, $lightness: -8%); }
   }
 
-  &__etiqueta-confirm-no {
+  &__label-confirm-no {
     font-size: 10px;
     padding: 1px 5px;
     border-radius: $border-radius-sm;
@@ -514,7 +514,7 @@ $topbar-height: 52px;
     &:hover { background: $color-gray-200; }
   }
 
-  &__etiqueta-form {
+  &__label-form {
     width: 100%;
     margin-top: $spacing-xs;
   }
@@ -549,7 +549,7 @@ $topbar-height: 52px;
       box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
     }
 
-    &--clave {
+    &--sku {
       font-family: monospace;
       width: 120px;
       font-weight: 600;
@@ -610,13 +610,13 @@ $topbar-height: 52px;
     margin-top: 2px;
   }
 
-  &__descuento-input-wrapper {
+  &__discount-input-wrapper {
     display: flex;
     align-items: center;
     gap: $spacing-xs;
   }
 
-  &__descuento-percent {
+  &__discount-percent {
     font-size: $font-size-sm;
     font-weight: 600;
     color: $color-gray-500;
@@ -684,19 +684,19 @@ $topbar-height: 52px;
     }
   }
 
-  &__unidad-display {
+  &__unit-display {
     font-size: $font-size-sm;
     color: $color-gray-500;
     font-weight: 500;
   }
 
-  &__unidad-edit {
+  &__unit-edit {
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
   }
 
-  &__input--unidad-cantidad {
+  &__input--unit-quantity {
     width: 70px;
     text-align: center;
     font-weight: 600;
@@ -708,7 +708,7 @@ $topbar-height: 52px;
     }
   }
 
-  &__input--unidad {
+  &__input--unit {
     width: 80px;
     cursor: pointer;
 
@@ -720,7 +720,7 @@ $topbar-height: 52px;
   }
 }
 
-.producto-detail__modal-overlay {
+.product-detail__modal-overlay {
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
@@ -730,7 +730,7 @@ $topbar-height: 52px;
   justify-content: center;
 }
 
-.producto-detail__modal {
+.product-detail__modal {
   background-color: $color-white;
   width: 100%;
   max-width: 320px;
@@ -739,7 +739,7 @@ $topbar-height: 52px;
   overflow: hidden;
 }
 
-.producto-detail__modal-header {
+.product-detail__modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -753,7 +753,7 @@ $topbar-height: 52px;
   }
 }
 
-.producto-detail__modal-close {
+.product-detail__modal-close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -767,7 +767,7 @@ $topbar-height: 52px;
   &:hover { color: $color-gray-700; }
 }
 
-.producto-detail__modal-body {
+.product-detail__modal-body {
   padding: $spacing-lg;
   display: flex;
   flex-direction: column;
@@ -780,18 +780,18 @@ $topbar-height: 52px;
   }
 }
 
-.producto-detail__delete-label {
+.product-detail__delete-label {
   margin: 0;
   font-size: $font-size-sm;
   color: $color-gray-700;
 }
 
-.producto-detail__modal-body .input {
+.product-detail__modal-body .input {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.producto-detail__delete-code {
+.product-detail__delete-code {
   display: block;
   text-align: center;
   font-family: monospace;
@@ -805,16 +805,16 @@ $topbar-height: 52px;
   user-select: all;
 }
 
-.producto-detail__modal-footer {
+.product-detail__modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: $spacing-sm;
   padding: $spacing-sm $spacing-lg $spacing-md;
 }
 
-// ── Etiqueta form (crear nueva etiqueta desde el detalle) ────────────────────
+// ── Formulario de etiqueta (crear nueva etiqueta desde el detalle) ────────────────────
 
-.etiqueta-add-btn {
+.label-add-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -833,7 +833,7 @@ $topbar-height: 52px;
   }
 }
 
-.etiqueta-new-form {
+.label-new-form {
   display: flex;
   flex-direction: column;
   gap: $spacing-sm;
@@ -849,13 +849,13 @@ $topbar-height: 52px;
   }
 }
 
-.etiqueta-picker-row {
+.label-picker-row {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.etiqueta-picker-label {
+.label-picker-label {
   font-size: $font-size-xs;
   font-weight: 500;
   color: $color-gray-500;
@@ -863,13 +863,13 @@ $topbar-height: 52px;
   letter-spacing: 0.3px;
 }
 
-.etiqueta-icon-picker {
+.label-icon-picker {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
 }
 
-.etiqueta-icon-swatch {
+.label-icon-swatch {
   width: 32px;
   height: 32px;
   border-radius: $border-radius-md;
@@ -893,13 +893,13 @@ $topbar-height: 52px;
   }
 }
 
-.etiqueta-color-picker {
+.label-color-picker {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
 
-.etiqueta-color-swatch {
+.label-color-swatch {
   width: 24px;
   height: 24px;
   border: 2px solid transparent;
@@ -916,14 +916,14 @@ $topbar-height: 52px;
   }
 }
 
-.etiqueta-new-preview {
+.label-new-preview {
   display: flex;
   align-items: center;
   gap: $spacing-sm;
   padding: $spacing-xs 0;
 }
 
-.etiqueta-chip {
+.label-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -938,7 +938,7 @@ $topbar-height: 52px;
   }
 }
 
-.etiqueta-nombre-input {
+.label-name-input {
   padding: $spacing-xs $spacing-sm;
   font-size: $font-size-sm;
 }

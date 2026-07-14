@@ -198,12 +198,12 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
           {/* Imagen */}
           <div className="form-section">
             <h3 className="form-section__title">{t('products.modal.image')}</h3>
-            <div className="producto-image-upload">
-              <div className="producto-image-preview" onClick={handleImageClick}>
+            <div className="product-image-upload">
+              <div className="product-image-preview" onClick={handleImageClick}>
                 {previewImage ? (
                   <img src={previewImage} alt="Preview" />
                 ) : (
-                  <div className="producto-image-placeholder">
+                  <div className="product-image-placeholder">
                     <PiImageBold size={24} />
                   </div>
                 )}
@@ -215,8 +215,8 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                 onChange={handleImageChange}
                 style={{ display: 'none' }}
               />
-              <div className="producto-image-info">
-                <span className="producto-image-hint">
+              <div className="product-image-info">
+                <span className="product-image-hint">
                   {previewImage ? t('products.modal.imageHintChange') : t('products.modal.imageHintAdd')}
                 </span>
                 {previewImage && (
@@ -357,11 +357,11 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
             <h3 className="form-section__title">{t('products.modal.labels')}</h3>
             <div className="form-group">
               {assignedLabels.length > 0 ? (
-                <div className="etiquetas-chips">
+                <div className="labels-chips">
                   {assignedLabels.map(label => (
-                    <div key={label.id} className="etiqueta-chip-wrapper">
+                    <div key={label.id} className="label-chip-wrapper">
                       <span
-                        className="etiqueta-chip etiqueta-chip--removable"
+                        className="label-chip label-chip--removable"
                         style={{ backgroundColor: label.color }}
                         title={label.name}
                       >
@@ -371,22 +371,22 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                         })()}
                         <button
                           type="button"
-                          className="etiqueta-chip__remove"
+                          className="label-chip__remove"
                           onClick={() => toggleLabel(label.id)}
                         >
                           <PiXBold size={10} />
                         </button>
                       </span>
                       {confirmDeleteId === label.id ? (
-                        <div className="etiqueta-chip__confirm">
+                        <div className="label-chip__confirm">
                           <span>{t('common.confirmDelete')}</span>
-                          <button type="button" className="etiqueta-chip__confirm-yes" onClick={() => { handleDeleteLabel(label.id); setConfirmDeleteId(null); }}>{t('common.yes')}</button>
-                          <button type="button" className="etiqueta-chip__confirm-no" onClick={() => setConfirmDeleteId(null)}>{t('common.no')}</button>
+                          <button type="button" className="label-chip__confirm-yes" onClick={() => { handleDeleteLabel(label.id); setConfirmDeleteId(null); }}>{t('common.yes')}</button>
+                          <button type="button" className="label-chip__confirm-no" onClick={() => setConfirmDeleteId(null)}>{t('common.no')}</button>
                         </div>
                       ) : (
                         <button
                           type="button"
-                          className="etiqueta-chip__delete"
+                          className="label-chip__delete"
                           onClick={() => setConfirmDeleteId(label.id)}
                           title={t('products.modal.labelDelete')}
                         >
@@ -397,10 +397,10 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                   ))}
                 </div>
               ) : (
-                <span className="etiquetas-vacio">{t('products.modal.labelsNone')}</span>
+                <span className="labels-empty">{t('products.modal.labelsNone')}</span>
               )}
               {limitReached && (
-                <span className="etiquetas-limite">{t('products.modal.labelsLimit', { max: MAX_LABELS })}</span>
+                <span className="labels-limit">{t('products.modal.labelsLimit', { max: MAX_LABELS })}</span>
               )}
             </div>
           </div>
@@ -410,33 +410,33 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
             <h3 className="form-section__title">{t('products.modal.labels')}</h3>
             <div className="form-group">
               {availableLabels.length > 0 && (
-                <div className="etiquetas-disponibles">
+                <div className="labels-available">
                   {availableLabels.map(label => {
                     const iconData = LABEL_ICONS[label.icon];
                     const Icon = iconData?.icon;
                     return (
-                      <div key={label.id} className="etiqueta-chip-wrapper">
+                      <div key={label.id} className="label-chip-wrapper">
                         <button
                           type="button"
-                          className="etiqueta-option"
+                          className="label-option"
                           onClick={() => !limitReached && toggleLabel(label.id)}
                           title={limitReached ? t('products.modal.labelsLimit', { max: MAX_LABELS }) : label.name}
                           style={{ opacity: limitReached ? 0.5 : 1, cursor: limitReached ? 'not-allowed' : 'pointer' }}
                         >
-                          <span className="etiqueta-option__icon" style={{ color: label.color }}>
+                          <span className="label-option__icon" style={{ color: label.color }}>
                             {Icon && <Icon size={14} />}
                           </span>
                         </button>
                         {confirmDeleteId === label.id ? (
-                          <div className="etiqueta-chip__confirm">
+                          <div className="label-chip__confirm">
                             <span>{t('common.confirmDelete')}</span>
-                            <button type="button" className="etiqueta-chip__confirm-yes" onClick={() => { handleDeleteLabel(label.id); setConfirmDeleteId(null); }}>{t('common.yes')}</button>
-                            <button type="button" className="etiqueta-chip__confirm-no" onClick={() => setConfirmDeleteId(null)}>{t('common.no')}</button>
+                            <button type="button" className="label-chip__confirm-yes" onClick={() => { handleDeleteLabel(label.id); setConfirmDeleteId(null); }}>{t('common.yes')}</button>
+                            <button type="button" className="label-chip__confirm-no" onClick={() => setConfirmDeleteId(null)}>{t('common.no')}</button>
                           </div>
                         ) : (
                           <button
                             type="button"
-                            className="etiqueta-chip__delete"
+                            className="label-chip__delete"
                             onClick={() => setConfirmDeleteId(label.id)}
                             title={t('products.modal.labelDelete')}
                           >
@@ -452,33 +452,33 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
               {!showNewLabel ? (
                 <button
                   type="button"
-                  className="etiqueta-add-btn"
+                  className="label-add-btn"
                   onClick={() => setShowNewLabel(true)}
                 >
                   <PiPlusBold size={14} />
                   {t('products.modal.labelNew')}
                 </button>
               ) : (
-                <div className="etiqueta-new-form">
-                  <div className="etiqueta-picker-row">
-                    <span className="etiqueta-picker-label">{t('products.modal.labelName')}</span>
+                <div className="label-new-form">
+                  <div className="label-picker-row">
+                    <span className="label-picker-label">{t('products.modal.labelName')}</span>
                     <input
                       type="text"
-                      className="input etiqueta-nombre-input"
+                      className="input label-name-input"
                       placeholder={t('products.modal.labelNamePlaceholder')}
                       value={newLabelName}
                       onChange={(e) => setNewLabelName(e.target.value)}
                     />
                   </div>
 
-                  <div className="etiqueta-picker-row">
-                    <span className="etiqueta-picker-label">{t('products.modal.labelIcon')}</span>
-                    <div className="etiqueta-icon-picker">
+                  <div className="label-picker-row">
+                    <span className="label-picker-label">{t('products.modal.labelIcon')}</span>
+                    <div className="label-icon-picker">
                       {Object.entries(LABEL_ICONS).map(([key, { icon: Icon, label }]) => (
                         <button
                           key={key}
                           type="button"
-                          className={`etiqueta-icon-swatch ${newLabelIcon === key ? 'etiqueta-icon-swatch--active' : ''}`}
+                          className={`label-icon-swatch ${newLabelIcon === key ? 'label-icon-swatch--active' : ''}`}
                           style={{ color: newLabelColor }}
                           onClick={() => setNewLabelIcon(key)}
                           title={label}
@@ -489,14 +489,14 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                     </div>
                   </div>
 
-                  <div className="etiqueta-picker-row">
-                    <span className="etiqueta-picker-label">{t('products.modal.labelColor')}</span>
-                    <div className="etiqueta-color-picker">
+                  <div className="label-picker-row">
+                    <span className="label-picker-label">{t('products.modal.labelColor')}</span>
+                    <div className="label-color-picker">
                       {LABEL_COLORS.map(color => (
                         <button
                           key={color}
                           type="button"
-                          className={`etiqueta-color-swatch ${newLabelColor === color ? 'etiqueta-color-swatch--active' : ''}`}
+                          className={`label-color-swatch ${newLabelColor === color ? 'label-color-swatch--active' : ''}`}
                           style={{ backgroundColor: color }}
                           onClick={() => setNewLabelColor(color)}
                         />
@@ -504,24 +504,24 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                     </div>
                   </div>
 
-                  <div className="etiqueta-new-preview">
+                  <div className="label-new-preview">
                     {(() => {
                       const Icon = LABEL_ICONS[newLabelIcon]?.icon;
                       const previewName = newLabelName.trim() || LABEL_ICONS[newLabelIcon]?.label;
                       return (
                         <span
-                          className="etiqueta-chip"
+                          className="label-chip"
                           style={{ backgroundColor: newLabelColor }}
                           title={t('products.modal.labelPreview')}
                         >
                           {Icon && <Icon size={12} />}
-                          <span className="etiqueta-chip__label">{previewName}</span>
+                          <span className="label-chip__label">{previewName}</span>
                         </span>
                       );
                     })()}
                   </div>
 
-                  <div className="etiqueta-new-form__actions">
+                  <div className="label-new-form__actions">
                     <button
                       type="button"
                       className="btn btn--sm btn--secondary"

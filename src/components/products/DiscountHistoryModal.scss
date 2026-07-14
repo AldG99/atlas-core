@@ -6,7 +6,7 @@
   gap: $spacing-sm;
 }
 
-.historial-modal {
+.history-modal {
   &__empty {
     text-align: center;
     color: $color-gray-500;
@@ -50,7 +50,7 @@
     }
   }
 
-  &__clave {
+  &__sku {
     display: inline-block;
     padding: 1px 6px;
     font-size: $font-size-xs;
@@ -62,17 +62,17 @@
     border-radius: 0;
   }
 
-  &__nombre {
+  &__name {
     color: $color-gray-800;
     font-weight: 500;
   }
 
-  &__porcentaje {
+  &__percentage {
     font-weight: 700;
     color: $color-gray-800;
   }
 
-  &__motivo {
+  &__reason {
     display: inline-flex;
     align-items: center;
     padding: 2px 10px;

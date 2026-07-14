@@ -101,7 +101,7 @@ const DiscountHistoryModal = ({ products, onClose }: DiscountHistoryModalProps) 
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal modal--large historial-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal modal--large history-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
           <h2>{t('products.discountModal.title')}</h2>
           <div className="modal__header-actions">
@@ -121,10 +121,10 @@ const DiscountHistoryModal = ({ products, onClose }: DiscountHistoryModalProps) 
 
         <div className="modal__body">
           {rows.length === 0 ? (
-            <p className="historial-modal__empty">{t('products.discountModal.empty')}</p>
+            <p className="history-modal__empty">{t('products.discountModal.empty')}</p>
           ) : (
-            <div className="historial-modal__table-wrapper">
-              <table className="historial-modal__table">
+            <div className="history-modal__table-wrapper">
+              <table className="history-modal__table">
                 <thead>
                   <tr>
                     <th>{t('products.discountModal.table.product')}</th>
@@ -138,14 +138,14 @@ const DiscountHistoryModal = ({ products, onClose }: DiscountHistoryModalProps) 
                   {rows.map((row, idx) => (
                     <tr key={idx}>
                       <td>
-                        <span className="historial-modal__clave">{row.sku}</span>
-                        <span className="historial-modal__nombre">{row.name}</span>
+                        <span className="history-modal__sku">{row.sku}</span>
+                        <span className="history-modal__name">{row.name}</span>
                       </td>
-                      <td className="historial-modal__porcentaje">-{row.percentage}%</td>
+                      <td className="history-modal__percentage">-{row.percentage}%</td>
                       <td>{formatDate(row.endDate)}</td>
                       <td>{row.closedAt ? formatDate(row.closedAt) : '—'}</td>
                       <td>
-                        <span className={`historial-modal__motivo historial-modal__motivo--${row.reason}`}>
+                        <span className={`history-modal__reason history-modal__reason--${row.reason}`}>
                           {REASON_LABEL[row.reason]}
                         </span>
                       </td>

@@ -44,9 +44,9 @@ const LabelEditSection = ({
         const isSelected = selectedIds.includes(label.id);
         const isDisabled = !isSelected && limitReached;
         return (
-          <div key={label.id} className="producto-detail__etiqueta-wrapper">
+          <div key={label.id} className="product-detail__label-wrapper">
             <span
-              className={`producto-detail__etiqueta producto-detail__etiqueta--selectable ${isSelected ? '' : 'producto-detail__etiqueta--unselected'} ${isDisabled ? 'producto-detail__etiqueta--disabled' : ''}`}
+              className={`product-detail__label product-detail__label--selectable ${isSelected ? '' : 'product-detail__label--unselected'} ${isDisabled ? 'product-detail__label--disabled' : ''}`}
               style={{ backgroundColor: isSelected ? label.color : undefined }}
               onClick={() => !isDisabled && onToggle(label.id)}
               title={label.name}
@@ -54,17 +54,17 @@ const LabelEditSection = ({
               {Icon && <Icon size={12} />}
             </span>
             {confirmDeleteId === label.id ? (
-              <div className="producto-detail__etiqueta-confirm">
+              <div className="product-detail__label-confirm">
                 <button
                   type="button"
-                  className="producto-detail__etiqueta-confirm-yes"
+                  className="product-detail__label-confirm-yes"
                   onClick={() => onDeleteConfirm(label.id)}
                 >
                   {t('common.yes')}
                 </button>
                 <button
                   type="button"
-                  className="producto-detail__etiqueta-confirm-no"
+                  className="product-detail__label-confirm-no"
                   onClick={onDeleteCancel}
                 >
                   {t('common.no')}
@@ -73,7 +73,7 @@ const LabelEditSection = ({
             ) : (
               <button
                 type="button"
-                className="producto-detail__etiqueta-delete"
+                className="product-detail__label-delete"
                 onClick={() => onDeleteRequest(label.id)}
                 title={t('products.modal.labelDelete')}
               >
@@ -84,39 +84,39 @@ const LabelEditSection = ({
         );
       })}
       {limitReached && (
-        <span className="producto-detail__etiquetas-limite">
+        <span className="product-detail__labels-limite">
           {t('products.detail.labelsLimit', { max: maxLabels })}
         </span>
       )}
       {!showNewForm ? (
         <button
           type="button"
-          className="etiqueta-add-btn"
+          className="label-add-btn"
           onClick={() => setShowNewForm(true)}
         >
           <PiPlusBold size={12} />
           {t('products.modal.labelNew')}
         </button>
       ) : (
-        <div className="etiqueta-new-form producto-detail__etiqueta-form">
-          <div className="etiqueta-picker-row">
-            <span className="etiqueta-picker-label">{t('products.modal.labelName')}</span>
+        <div className="label-new-form product-detail__label-form">
+          <div className="label-picker-row">
+            <span className="label-picker-label">{t('products.modal.labelName')}</span>
             <input
               type="text"
-              className="input etiqueta-nombre-input"
+              className="input label-name-input"
               placeholder={t('products.modal.labelNamePlaceholder')}
               value={name}
               onChange={e => setName(e.target.value)}
             />
           </div>
-          <div className="etiqueta-picker-row">
-            <span className="etiqueta-picker-label">{t('products.modal.labelIcon')}</span>
-            <div className="etiqueta-icon-picker">
+          <div className="label-picker-row">
+            <span className="label-picker-label">{t('products.modal.labelIcon')}</span>
+            <div className="label-icon-picker">
               {Object.entries(LABEL_ICONS).map(([key, { icon: Icon, label }]) => (
                 <button
                   key={key}
                   type="button"
-                  className={`etiqueta-icon-swatch ${icon === key ? 'etiqueta-icon-swatch--active' : ''}`}
+                  className={`label-icon-swatch ${icon === key ? 'label-icon-swatch--active' : ''}`}
                   style={{ color }}
                   onClick={() => setIcon(key)}
                   title={label}
@@ -126,33 +126,33 @@ const LabelEditSection = ({
               ))}
             </div>
           </div>
-          <div className="etiqueta-picker-row">
-            <span className="etiqueta-picker-label">{t('products.modal.labelColor')}</span>
-            <div className="etiqueta-color-picker">
+          <div className="label-picker-row">
+            <span className="label-picker-label">{t('products.modal.labelColor')}</span>
+            <div className="label-color-picker">
               {LABEL_COLORS.map(c => (
                 <button
                   key={c}
                   type="button"
-                  className={`etiqueta-color-swatch ${color === c ? 'etiqueta-color-swatch--active' : ''}`}
+                  className={`label-color-swatch ${color === c ? 'label-color-swatch--active' : ''}`}
                   style={{ backgroundColor: c }}
                   onClick={() => setColor(c)}
                 />
               ))}
             </div>
           </div>
-          <div className="etiqueta-new-preview">
+          <div className="label-new-preview">
             {(() => {
               const Icon = LABEL_ICONS[icon]?.icon;
               const previewName = name.trim() || LABEL_ICONS[icon]?.label;
               return (
-                <span className="etiqueta-chip" style={{ backgroundColor: color }}>
+                <span className="label-chip" style={{ backgroundColor: color }}>
                   {Icon && <Icon size={12} />}
-                  <span className="etiqueta-chip__label">{previewName}</span>
+                  <span className="label-chip__label">{previewName}</span>
                 </span>
               );
             })()}
           </div>
-          <div className="etiqueta-new-form__actions">
+          <div className="label-new-form__actions">
             <button
               type="button"
               className="btn btn--sm btn--secondary"

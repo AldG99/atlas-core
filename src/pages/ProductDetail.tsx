@@ -19,7 +19,7 @@ import { compressImage } from '../utils/imageUtils';
 import ProductImage from '../components/ui/ProductImage';
 import ProductDeleteModal from '../components/orders/ProductDeleteModal';
 import ProductTopBar from '../components/products/ProductTopBar';
-import LabelEditSection from '../components/products/LabelEditSection';
+import LabelEditSection from '../components/labels/LabelEditSection';
 import MainLayout from '../layouts/MainLayout';
 import './ProductDetail.scss';
 
@@ -248,8 +248,8 @@ const ProductDetail = () => {
   if (loading) {
     return (
       <MainLayout>
-        <div className="producto-detail">
-          <p className="producto-detail__loading">{t('products.detail.loading')}</p>
+        <div className="product-detail">
+          <p className="product-detail__loading">{t('products.detail.loading')}</p>
         </div>
       </MainLayout>
     );
@@ -261,7 +261,7 @@ const ProductDetail = () => {
 
   return (
     <MainLayout>
-      <div className="producto-detail">
+      <div className="product-detail">
         <ProductTopBar
           isEditing={isEditing}
           role={role}
@@ -275,23 +275,23 @@ const ProductDetail = () => {
         />
 
         {/* Content */}
-        <div className="producto-detail__content">
-          <div className="producto-detail__card">
+        <div className="product-detail__content">
+          <div className="product-detail__card">
 
             {/* Header: Image + Info */}
-            <div className="producto-detail__header">
+            <div className="product-detail__header">
               {/* Image Section */}
               <div
-                className={`producto-detail__image-section ${isEditing ? 'producto-detail__image-section--editable' : ''}`}
+                className={`product-detail__image-section ${isEditing ? 'product-detail__image-section--editable' : ''}`}
                 onClick={() => isEditing && fileInputRef.current?.click()}
               >
                 <ProductImage
                   src={isEditing ? editData?.image : product.image}
                   alt={product.name}
-                  placeholderClassName="producto-detail__image-placeholder"
+                  placeholderClassName="product-detail__image-placeholder"
                 />
                 {isEditing && (
-                  <div className="producto-detail__image-overlay">
+                  <div className="product-detail__image-overlay">
                     <PiCameraBold size={28} />
                     <span>{t('products.detail.changeImage')}</span>
                   </div>
@@ -306,8 +306,8 @@ const ProductDetail = () => {
               </div>
 
               {/* Info Side */}
-              <div className="producto-detail__header-info">
-                <div className="producto-detail__title-section">
+              <div className="product-detail__header-info">
+                <div className="product-detail__title-section">
                   {isEditing ? (
                     <>
                       <input
@@ -315,17 +315,17 @@ const ProductDetail = () => {
                         value={editData?.sku || ''}
                         onChange={(e) => updateField('sku', e.target.value)}
                         placeholder={t('products.detail.codePlaceholder')}
-                        className="producto-detail__input producto-detail__input--clave"
+                        className="product-detail__input product-detail__input--sku"
                       />
                       <input
                         type="text"
                         value={editData?.name || ''}
                         onChange={(e) => updateField('name', e.target.value)}
                         placeholder={t('products.detail.namePlaceholder')}
-                        className="producto-detail__input producto-detail__input--name"
+                        className="product-detail__input product-detail__input--name"
                       />
-                      <div className="producto-detail__unidad-edit">
-                        <label className="producto-detail__stock-toggle">
+                      <div className="product-detail__unit-edit">
+                        <label className="product-detail__stock-toggle">
                           <input
                             type="checkbox"
                             checked={!!editData?.unit}
@@ -342,7 +342,7 @@ const ProductDetail = () => {
                               if (!editData) return;
                               setEditData({ ...editData, unitQuantity: Math.max(0, parseFloat(e.target.value) || 0) });
                             }}
-                            className="producto-detail__input producto-detail__input--unidad-cantidad"
+                            className="product-detail__input product-detail__input--unit-quantity"
                             min="0"
                             step="0.1"
                             disabled={!editData?.unit}
@@ -353,7 +353,7 @@ const ProductDetail = () => {
                               if (!editData) return;
                               setEditData({ ...editData, unit: e.target.value });
                             }}
-                            className="producto-detail__input producto-detail__input--unidad"
+                            className="product-detail__input product-detail__input--unit"
                             disabled={!editData?.unit}
                           >
                             <option value="kg">kg</option>
@@ -366,9 +366,9 @@ const ProductDetail = () => {
                     </>
                   ) : (
                     <>
-                      <span className="producto-detail__clave">{product.sku}</span>
-                      <h1 className="producto-detail__name">{product.name}</h1>
-                      <span className="producto-detail__unidad-display">
+                      <span className="product-detail__sku">{product.sku}</span>
+                      <h1 className="product-detail__name">{product.name}</h1>
+                      <span className="product-detail__unit-display">
                         {product.unit
                           ? `${product.unitQuantity ?? ''} ${product.unit}`.trim()
                           : '---'}
@@ -377,21 +377,21 @@ const ProductDetail = () => {
                   )}
                 </div>
 
-                <div className="producto-detail__price">
+                <div className="product-detail__price">
                   {isEditing ? (
-                    <div className="producto-detail__price-edit">
+                    <div className="product-detail__price-edit">
                       <input
                         type="number"
                         value={editData?.price || 0}
                         onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
                         placeholder="Precio"
-                        className="producto-detail__input producto-detail__input--price"
+                        className="product-detail__input product-detail__input--price"
                         step="0.01"
                         min="0"
                       />
-                      <div className="producto-detail__price-edit-discount">
-                        <div className="producto-detail__price-edit-row">
-                          <div className="producto-detail__descuento-input-wrapper">
+                      <div className="product-detail__price-edit-discount">
+                        <div className="product-detail__price-edit-row">
+                          <div className="product-detail__discount-input-wrapper">
                             <input
                               type="number"
                               value={editData?.discount || ''}
@@ -400,23 +400,23 @@ const ProductDetail = () => {
                                 updateField('discount', val);
                               }}
                               placeholder="0"
-                              className="producto-detail__input producto-detail__input--discount"
+                              className="product-detail__input product-detail__input--discount"
                               min="0"
                               max="100"
                               step="1"
                             />
-                            <span className="producto-detail__descuento-percent">%</span>
+                            <span className="product-detail__discount-percent">%</span>
                           </div>
                           <input
                             type="date"
                             value={editData?.discountEndDate as string || ''}
                             onChange={(e) => updateField('discountEndDate', e.target.value)}
-                            className="producto-detail__input producto-detail__input--date"
+                            className="product-detail__input product-detail__input--date"
                           />
                           {editData?.discount && editData.discount > 0 && (
                             <button
                               type="button"
-                              className="producto-detail__cancel-descuento"
+                              className="product-detail__cancel-discount"
                               onClick={() => {
                                 if (!editData) return;
                                 setEditData({ ...editData, discount: 0, discountEndDate: '' });
@@ -427,11 +427,11 @@ const ProductDetail = () => {
                           )}
                         </div>
                         {editData?.discount && editData.discount > 0 && (
-                          <div className="producto-detail__price-edit-preview">
-                            <span className="producto-detail__price-original">
+                          <div className="product-detail__price-edit-preview">
+                            <span className="product-detail__price-original">
                               {format(editData?.price || product.price)}
                             </span>
-                            <span className="producto-detail__price-final">
+                            <span className="product-detail__price-final">
                               {format(getDiscountedPrice(editData?.price || product.price, editData.discount))}
                             </span>
                           </div>
@@ -439,14 +439,14 @@ const ProductDetail = () => {
                       </div>
                     </div>
                   ) : isDiscountActive(product) ? (
-                    <div className="producto-detail__price-discount">
-                      <span className="producto-detail__price-badge">-{product.discount}%</span>
-                      <span className="producto-detail__price-original">{format(product.price)}</span>
-                      <span className="producto-detail__price-final">
+                    <div className="product-detail__price-discount">
+                      <span className="product-detail__price-badge">-{product.discount}%</span>
+                      <span className="product-detail__price-original">{format(product.price)}</span>
+                      <span className="product-detail__price-final">
                         {format(getDiscountedPrice(product.price, product.discount!))}
                       </span>
                       {product.discountEndDate && (
-                        <span className="producto-detail__price-expiry">
+                        <span className="product-detail__price-expiry">
                           {t('products.detail.validUntil', { date: formatDate(product.discountEndDate) })}
                         </span>
                       )}
@@ -457,8 +457,8 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Etiquetas */}
-                <div className="producto-detail__header-etiquetas">
-                  <div className="producto-detail__header-etiquetas-row">
+                <div className="product-detail__header-labels">
+                  <div className="product-detail__header-labels-row">
                     {isEditing ? (
                       <LabelEditSection
                         labels={labels}
@@ -479,7 +479,7 @@ const ProductDetail = () => {
                         return (
                           <span
                             key={l.id}
-                            className="producto-detail__etiqueta"
+                            className="product-detail__label"
                             style={{ backgroundColor: l.color }}
                             title={l.name}
                           >
@@ -488,15 +488,15 @@ const ProductDetail = () => {
                         );
                       })
                     ) : (
-                      <span className="producto-detail__etiquetas-empty">{t('products.detail.noLabels')}</span>
+                      <span className="product-detail__labels-empty">{t('products.detail.noLabels')}</span>
                     )}
                   </div>
                 </div>
 
                 {/* Almacén */}
                 {isEditing ? (
-                  <div className="producto-detail__stock-edit">
-                    <label className="producto-detail__stock-toggle">
+                  <div className="product-detail__stock-edit">
+                    <label className="product-detail__stock-toggle">
                       <input
                         type="checkbox"
                         checked={!!editData?.trackStock}
@@ -512,8 +512,8 @@ const ProductDetail = () => {
                       <PiPackageBold size={15} />
                       <span>{t('products.detail.manageStock')}</span>
                     </label>
-                    <div className="producto-detail__stock-input-row">
-                      <span className="producto-detail__info-label">{t('products.detail.inWarehouse')}</span>
+                    <div className="product-detail__stock-input-row">
+                      <span className="product-detail__info-label">{t('products.detail.inWarehouse')}</span>
                       <input
                         type="number"
                         value={editData?.stock ?? 0}
@@ -521,7 +521,7 @@ const ProductDetail = () => {
                           if (!editData) return;
                           setEditData({ ...editData, stock: Math.max(0, parseInt(e.target.value) || 0) });
                         }}
-                        className="producto-detail__input producto-detail__input--stock"
+                        className="product-detail__input product-detail__input--stock"
                         min="0"
                         step="1"
                         disabled={!editData?.trackStock}
@@ -529,16 +529,16 @@ const ProductDetail = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="producto-detail__stock-display">
-                    <PiPackageBold size={15} className="producto-detail__header-meta-icon" />
+                  <div className="product-detail__stock-display">
+                    <PiPackageBold size={15} className="product-detail__header-meta-icon" />
                     {product.trackStock ? (
-                      <span className="producto-detail__stock-badge">
+                      <span className="product-detail__stock-badge">
                         {(product.stock ?? 0) === 0
                           ? t('products.detail.noStock')
                           : t('products.detail.stockUnits', { count: product.stock })}
                       </span>
                     ) : (
-                      <span className="producto-detail__stock-untracked">
+                      <span className="product-detail__stock-untracked">
                         {t('products.detail.noStockControl')}
                       </span>
                     )}
@@ -549,8 +549,8 @@ const ProductDetail = () => {
             </div>
 
             {/* Description Section */}
-            <div className="producto-detail__section producto-detail__section--grow">
-              <div className="producto-detail__section-header">
+            <div className="product-detail__section product-detail__section--grow">
+              <div className="product-detail__section-header">
                 <strong>{t('products.detail.description')}</strong>
               </div>
               {isEditing ? (
@@ -559,24 +559,24 @@ const ProductDetail = () => {
                     value={editData?.description || ''}
                     onChange={(e) => updateField('description', e.target.value)}
                     placeholder={t('products.modal.descriptionPlaceholder')}
-                    className="producto-detail__textarea"
+                    className="product-detail__textarea"
                     maxLength={240}
                   />
-                  <span className="producto-detail__char-count">
+                  <span className="product-detail__char-count">
                     {(editData?.description || '').length}/240
                   </span>
                 </>
               ) : (
-                <p className={`producto-detail__description ${!product.description ? 'producto-detail__description--empty' : ''}`}>
+                <p className={`product-detail__description ${!product.description ? 'product-detail__description--empty' : ''}`}>
                   {product.description || t('products.detail.noDescription')}
                 </p>
               )}
             </div>
 
-            <div className="producto-detail__footer-meta">
-              <PiCalendarBold size={13} className="producto-detail__header-meta-icon" />
-              <span className="producto-detail__info-label">{t('products.detail.addedOn')}</span>
-              <span className="producto-detail__info-value">{formatDate(product.createdAt)}</span>
+            <div className="product-detail__footer-meta">
+              <PiCalendarBold size={13} className="product-detail__header-meta-icon" />
+              <span className="product-detail__info-label">{t('products.detail.addedOn')}</span>
+              <span className="product-detail__info-value">{formatDate(product.createdAt)}</span>
             </div>
           </div>
         </div>

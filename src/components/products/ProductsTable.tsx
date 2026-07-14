@@ -92,9 +92,9 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
   );
 
   return (
-    <div className="productos-table-wrapper">
-      <div className="productos-table-header">
-        <table className="productos-table">
+    <div className="products-table-wrapper">
+      <div className="products-table-header">
+        <table className="products-table">
           {colgroup}
           <thead>
             <tr>
@@ -104,30 +104,30 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
               <th>{t('products.table.price')}</th>
               <th>{t('products.table.labels')}</th>
               <th>{t('products.table.stock')}</th>
-              <th className="productos-table__col--right">{t('products.table.registration')}</th>
+              <th className="products-table__col--right">{t('products.table.registration')}</th>
             </tr>
           </thead>
         </table>
       </div>
-      <div ref={tableContainerRef} className="productos-table-container">
-        <table className="productos-table">
+      <div ref={tableContainerRef} className="products-table-container">
+        <table className="products-table">
           {colgroup}
           <tbody>
           {loading ? (
             <tr>
-              <td colSpan={7} className="productos-table__empty">
+              <td colSpan={7} className="products-table__empty">
                 {t('products.loadingProducts')}
               </td>
             </tr>
           ) : error ? (
             <tr>
-              <td colSpan={7} className="productos-table__empty productos-table__empty--error">
+              <td colSpan={7} className="products-table__empty products-table__empty--error">
                 {error}
               </td>
             </tr>
           ) : products.length === 0 ? (
             <tr>
-              <td colSpan={7} className="productos-table__empty">
+              <td colSpan={7} className="products-table__empty">
                 {searchTerm?.trim() ? t('products.noProductsSearch', { term: searchTerm }) : t('products.noProducts')}
               </td>
             </tr>
@@ -136,18 +136,18 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
             return (
               <tr
                 key={product.id}
-                className={`productos-table__row${focusedRow === index ? ' productos-table__row--focused' : ''}`}
+                className={`products-table__row${focusedRow === index ? ' products-table__row--focused' : ''}`}
                 onClick={() => navigate(`/products/${product.id}`, { state: { from: location.pathname } })}
                 onMouseEnter={() => setFocusedRow(index)}
               >
                 <td>
-                  <span className="productos-table__clave">{product.sku}</span>
+                  <span className="products-table__sku">{product.sku}</span>
                 </td>
                 <td>
-                  <span className="productos-table__name">{product.name}</span>
+                  <span className="products-table__name">{product.name}</span>
                 </td>
                 <td>
-                  <span className="productos-table__unidad">
+                  <span className="products-table__unit">
                     {product.unit
                       ? `${product.unitQuantity ?? ''} ${product.unit}`.trim()
                       : '—'}
@@ -155,21 +155,21 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
                 </td>
                 <td>
                   {isDiscountActive(product) ? (
-                    <div className="productos-table__price-cell">
-                      <span className="productos-table__price-badge">-{product.discount}%</span>
-                      <span className="productos-table__price-original">{formatPrice(product.price)}</span>
-                      <span className="productos-table__price">{formatPrice(getDiscountedPrice(product.price, product.discount!))}</span>
+                    <div className="products-table__price-cell">
+                      <span className="products-table__price-badge">-{product.discount}%</span>
+                      <span className="products-table__price-original">{formatPrice(product.price)}</span>
+                      <span className="products-table__price">{formatPrice(getDiscountedPrice(product.price, product.discount!))}</span>
                     </div>
                   ) : (
-                    <span className="productos-table__price">{formatPrice(product.price)}</span>
+                    <span className="products-table__price">{formatPrice(product.price)}</span>
                   )}
                 </td>
                 <td>
-                  <div className="productos-table__etiquetas">
+                  <div className="products-table__labels">
                     {productLabels.map(label => (
                       <span
                         key={label.id}
-                        className="productos-table__etiqueta"
+                        className="products-table__label"
                         style={{ backgroundColor: label.color }}
                         title={label.name}
                       >
@@ -180,21 +180,21 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
                       </span>
                     ))}
                     {productLabels.length === 0 && (
-                      <span className="productos-table__no-etiquetas">—</span>
+                      <span className="products-table__no-labels">—</span>
                     )}
                   </div>
                 </td>
                 <td>
                   {product.trackStock ? (
-                    <span className={(product.stock ?? 0) === 0 ? 'productos-table__stock--empty' : 'productos-table__stock'}>
+                    <span className={(product.stock ?? 0) === 0 ? 'products-table__stock--empty' : 'products-table__stock'}>
                       {(product.stock ?? 0) === 0 ? t('products.stockEmpty') : product.stock}
                     </span>
                   ) : (
-                    <span className="productos-table__no-etiquetas">—</span>
+                    <span className="products-table__no-labels">—</span>
                   )}
                 </td>
-                <td className="productos-table__col--right">
-                  <span className="productos-table__date">{formatDate(product.createdAt)}</span>
+                <td className="products-table__col--right">
+                  <span className="products-table__date">{formatDate(product.createdAt)}</span>
                 </td>
               </tr>
             );
@@ -204,8 +204,8 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
       </div>
 
       {products.length > 0 && (
-        <div className="productos-table__pagination">
-          <span className="productos-table__page-info">
+        <div className="products-table__pagination">
+          <span className="products-table__page-info">
             {t('products.count', { count: products.length })}
           </span>
         </div>

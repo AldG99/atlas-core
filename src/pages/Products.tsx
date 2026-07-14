@@ -124,10 +124,10 @@ const Products = () => {
 
   return (
     <MainLayout>
-      <div className="productos">
-        <div className="productos__header">
+      <div className="products">
+        <div className="products__header">
           <h1>{t('products.title')}</h1>
-          <div className="productos__header-actions">
+          <div className="products__header-actions">
             <button
               onClick={handleExport}
               className="btn btn--secondary"
@@ -155,9 +155,9 @@ const Products = () => {
           </div>
         </div>
 
-        <div className="productos__controls">
-          <div className="productos__search">
-            <PiMagnifyingGlassBold size={16} className="productos__search-icon" />
+        <div className="products__controls">
+          <div className="products__search">
+            <PiMagnifyingGlassBold size={16} className="products__search-icon" />
             <input
               type="text"
               placeholder={t('products.searchPlaceholder')}
@@ -166,7 +166,7 @@ const Products = () => {
               className="input"
             />
           </div>
-          <div className="productos__selects">
+          <div className="products__selects">
             <select
               value={sortBy in PRECIO_OPTIONS ? sortBy : ''}
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
@@ -191,7 +191,7 @@ const Products = () => {
         </div>
 
         {filterExpiring && (
-          <div className="productos__filter-banner">
+          <div className="products__filter-banner">
             <PiWarningBold size={16} />
             <span>{t('products.filterDiscounting')}</span>
             <button onClick={() => setFilterExpiring(false)}>{t('products.removeFilter')}</button>
@@ -206,7 +206,7 @@ const Products = () => {
         />
 
         {hasMore && (
-          <div className="productos__load-more">
+          <div className="products__load-more">
             <button
               className="btn btn--outline btn--sm"
               onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
