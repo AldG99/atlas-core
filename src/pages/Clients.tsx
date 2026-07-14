@@ -99,12 +99,12 @@ const Clients = () => {
 
   return (
     <MainLayout>
-      <div className="clientes">
-        <div className="clientes__header">
-          <div className="clientes__header-title">
+      <div className="clients">
+        <div className="clients__header">
+          <div className="clients__header-title">
             <h1>{t('clients.title')}</h1>
           </div>
-          <div className="clientes__header-actions">
+          <div className="clients__header-actions">
             <button
               onClick={handleExport}
               className="btn btn--secondary"
@@ -125,9 +125,9 @@ const Clients = () => {
           </div>
         </div>
 
-        <div className="clientes__controls">
-          <div className="clientes__search">
-            <PiMagnifyingGlassBold size={16} className="clientes__search-icon" />
+        <div className="clients__controls">
+          <div className="clients__search">
+            <PiMagnifyingGlassBold size={16} className="clients__search-icon" />
             <input
               type="text"
               placeholder={t('clients.searchPlaceholder')}
@@ -136,7 +136,7 @@ const Clients = () => {
               className="input"
             />
           </div>
-          <div className="clientes__selects">
+          <div className="clients__selects">
             <select
               value={cpValue}
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
@@ -168,7 +168,7 @@ const Clients = () => {
         />
 
         {hasMore && (
-          <div className="clientes__load-more">
+          <div className="clients__load-more">
             <button
               className="btn btn--outline btn--sm"
               onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}

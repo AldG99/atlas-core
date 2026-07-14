@@ -59,9 +59,9 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
   }, [focusedRow]);
 
   return (
-    <div className="clientes-table-wrapper">
-      <div className="clientes-table-header">
-        <table className="clientes-table">
+    <div className="clients-table-wrapper">
+      <div className="clients-table-header">
+        <table className="clients-table">
           <colgroup>
             <col style={{ width: '22%' }} />
             <col style={{ width: '14%' }} />
@@ -82,8 +82,8 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
           </thead>
         </table>
       </div>
-      <div ref={tableContainerRef} className="clientes-table-container">
-        <table className="clientes-table">
+      <div ref={tableContainerRef} className="clients-table-container">
+        <table className="clients-table">
           <colgroup>
             <col style={{ width: '22%' }} />
             <col style={{ width: '14%' }} />
@@ -95,66 +95,66 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
           <tbody>
           {loading ? (
             <tr>
-              <td colSpan={6} className="clientes-table__empty">
+              <td colSpan={6} className="clients-table__empty">
                 {t('clients.loadingClients')}
               </td>
             </tr>
           ) : error ? (
             <tr>
-              <td colSpan={6} className="clientes-table__empty clientes-table__empty--error">
+              <td colSpan={6} className="clients-table__empty clients-table__empty--error">
                 {error}
               </td>
             </tr>
           ) : clients.length === 0 ? (
             <tr>
-              <td colSpan={6} className="clientes-table__empty">
+              <td colSpan={6} className="clients-table__empty">
                 {searchTerm?.trim() ? t('clients.noClientsSearch', { term: searchTerm }) : t('clients.noClients')}
               </td>
             </tr>
           ) : clients.map((client, index) => (
             <tr
               key={client.id}
-              className={`clientes-table__row${focusedRow === index ? ' clientes-table__row--focused' : ''}`}
+              className={`clients-table__row${focusedRow === index ? ' clients-table__row--focused' : ''}`}
               onClick={() => navigate(`/clients/${client.id}`, { state: { from: location.pathname } })}
               onMouseEnter={() => setFocusedRow(index)}
             >
               <td>
-                <div className="clientes-table__client">
-                  <div className="clientes-table__avatar">
+                <div className="clients-table__client">
+                  <div className="clients-table__avatar">
                     <Avatar
                       src={client.profilePhoto}
                       initials={`${client.firstName[0]}${client.lastName[0]}`}
                       alt={client.firstName}
                     />
                   </div>
-                  <span className="clientes-table__name" title={`${client.firstName} ${client.lastName}`}>
+                  <span className="clients-table__name" title={`${client.firstName} ${client.lastName}`}>
                     {client.firstName} {client.lastName}
                   </span>
-                  {client.favorite && <PiStarFill size={14} className="clientes-table__fav-icon" />}
+                  {client.favorite && <PiStarFill size={14} className="clients-table__fav-icon" />}
                 </div>
               </td>
               <td>
-                <span className="clientes-table__phone">
+                <span className="clients-table__phone">
                   {client.phoneCountryCode
                     ? `${getCountryCode(client.phoneCountryCode)?.code ?? ''} ${formatPhone(client.phone)}`
                     : formatPhone(client.phone)}
                 </span>
               </td>
               <td>
-                <span className="clientes-table__address" title={`${client.street} ${client.exteriorNumber}`}>
+                <span className="clients-table__address" title={`${client.street} ${client.exteriorNumber}`}>
                   {client.street} {client.exteriorNumber}
                 </span>
               </td>
               <td>
-                <span className="clientes-table__address" title={`${client.neighborhood}, ${client.city}`}>
+                <span className="clients-table__address" title={`${client.neighborhood}, ${client.city}`}>
                   {client.neighborhood}, {client.city}
                 </span>
               </td>
               <td>
-                <span className="clientes-table__cp">{client.postalCode}</span>
+                <span className="clients-table__postal">{client.postalCode}</span>
               </td>
               <td>
-                <span className="clientes-table__date">
+                <span className="clients-table__date">
                   {formatDate(client.createdAt)}
                 </span>
               </td>
@@ -165,8 +165,8 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
     </div>
 
       {clients.length > 0 && (
-        <div className="clientes-table__pagination">
-          <span className="clientes-table__page-info">
+        <div className="clients-table__pagination">
+          <span className="clients-table__page-info">
             {t('clients.count', { count: clients.length })}
           </span>
         </div>

@@ -137,10 +137,10 @@ const ClientOrderHistory: React.FC<Props> = ({
   const totalAccumulated = orders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0);
 
   return (
-    <div className="cliente-detail__main">
+    <div className="client-detail__main">
       {/* Filtros */}
-      <div className="cliente-detail__pedidos-filters">
-        <div className="cliente-detail__pedidos-search">
+      <div className="client-detail__orders-filters">
+        <div className="client-detail__orders-search">
           <PiMagnifyingGlassBold size={16} />
           <input
             type="text"
@@ -158,9 +158,9 @@ const ClientOrderHistory: React.FC<Props> = ({
       </div>
 
       {/* Tabla */}
-      <div className="cliente-detail__pedidos-table-wrapper">
-        <div className="cliente-detail__pedidos-table-head">
-          <table className="cliente-detail__pedidos-table">
+      <div className="client-detail__orders-table-wrapper">
+        <div className="client-detail__orders-table-head">
+          <table className="client-detail__orders-table">
             <colgroup>
               <col style={{ width: '10%' }} />
               <col style={{ width: '8%' }} />
@@ -181,8 +181,8 @@ const ClientOrderHistory: React.FC<Props> = ({
             </thead>
           </table>
         </div>
-        <div ref={tableBodyRef} className="cliente-detail__pedidos-table-body">
-          <table className="cliente-detail__pedidos-table">
+        <div ref={tableBodyRef} className="client-detail__orders-table-body">
+          <table className="client-detail__orders-table">
             <colgroup>
               <col style={{ width: '10%' }} />
               <col style={{ width: '8%' }} />
@@ -194,15 +194,15 @@ const ClientOrderHistory: React.FC<Props> = ({
             <tbody>
               {ordersLoading ? (
                 <tr>
-                  <td colSpan={6} className="cliente-detail__pedidos-table-empty">{t('clients.detail.orderHistoryLoading')}</td>
+                  <td colSpan={6} className="client-detail__orders-table-empty">{t('clients.detail.orderHistoryLoading')}</td>
                 </tr>
               ) : ordersError ? (
                 <tr>
-                  <td colSpan={6} className="cliente-detail__pedidos-table-empty cliente-detail__pedidos-table-empty--error">{t('clients.detail.orderHistoryError')}</td>
+                  <td colSpan={6} className="client-detail__orders-table-empty client-detail__orders-table-empty--error">{t('clients.detail.orderHistoryError')}</td>
                 </tr>
               ) : filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="cliente-detail__pedidos-table-empty">
+                  <td colSpan={6} className="client-detail__orders-table-empty">
                     {orders.length === 0 ? t('clients.detail.orderHistoryEmpty') : t('clients.detail.orderHistoryNotFound')}
                   </td>
                 </tr>
@@ -216,25 +216,25 @@ const ClientOrderHistory: React.FC<Props> = ({
                     <React.Fragment key={order.id}>
                       {/* Fila de fecha del pedido */}
                       <tr
-                        className={`cliente-detail__pedidos-date-row${focusedRow === dateIdx ? ' cliente-detail__pedidos-date-row--focused' : ''}`}
+                        className={`client-detail__orders-date-row${focusedRow === dateIdx ? ' client-detail__orders-date-row--focused' : ''}`}
                         onMouseEnter={() => setFocusedRow(dateIdx)}
                       >
                         <td colSpan={6}>
-                          <div className="cliente-detail__pedidos-date-row-inner">
+                          <div className="client-detail__orders-date-row-inner">
                             {order.orderNumber && (
-                              <span className="cliente-detail__pedidos-folio">{order.orderNumber}</span>
+                              <span className="client-detail__orders-order-number">{order.orderNumber}</span>
                             )}
-                            <span className="cliente-detail__pedidos-date-main">{formatOrderDate(order.createdAt)}</span>
+                            <span className="client-detail__orders-date-main">{formatOrderDate(order.createdAt)}</span>
                             {order.deliveredAt && (
-                              <PiArrowRightBold size={12} className="cliente-detail__pedidos-date-arrow" />
+                              <PiArrowRightBold size={12} className="client-detail__orders-date-arrow" />
                             )}
                             {order.deliveredAt && (
-                              <span className="cliente-detail__pedidos-date-entrega">
+                              <span className="client-detail__orders-date-delivery">
                                 {formatOrderDate(order.deliveredAt)}
                               </span>
                             )}
                             <button
-                              className="cliente-detail__pedidos-detail-btn"
+                              className="client-detail__orders-detail-btn"
                               onClick={() => navigate(ROUTES.ORDER_DETAIL.replace(':id', order.id), { state: { from: `/clients/${clientId}` } })}
                               title={t('clients.detail.viewOrderDetail')}
                             >
@@ -247,23 +247,23 @@ const ClientOrderHistory: React.FC<Props> = ({
                       {order.items.map((item, i) => (
                         <tr
                           key={i}
-                          className={`cliente-detail__pedidos-product-row${focusedRow === productIndices[i] ? ' cliente-detail__pedidos-product-row--focused' : ''}`}
+                          className={`client-detail__orders-product-row${focusedRow === productIndices[i] ? ' client-detail__orders-product-row--focused' : ''}`}
                           onMouseEnter={() => setFocusedRow(productIndices[i])}
                         >
                           <td>
                             {item.sku
-                              ? <span className="cliente-detail__clave">{item.sku}</span>
+                              ? <span className="client-detail__sku">{item.sku}</span>
                               : '—'}
                           </td>
                           <td>{item.quantity}</td>
                           <td>{item.name}</td>
                           <td>
-                            <div className="cliente-detail__pedidos-etiquetas">
+                            <div className="client-detail__orders-labels">
                               {getLabelsForSku(item.sku).map(label => {
                                 const iconData = LABEL_ICONS[label.icon];
                                 const Icon = iconData?.icon;
                                 return (
-                                  <span key={label.id} className="cliente-detail__pedidos-etiqueta" style={{ backgroundColor: label.color }} title={label.name}>
+                                  <span key={label.id} className="client-detail__orders-label" style={{ backgroundColor: label.color }} title={label.name}>
                                     {Icon && <Icon size={12} />}
                                   </span>
                                 );
@@ -276,12 +276,12 @@ const ClientOrderHistory: React.FC<Props> = ({
                       ))}
                       {/* Fila de total */}
                       <tr
-                        className={`cliente-detail__pedidos-total-row${focusedRow === totalIdx ? ' cliente-detail__pedidos-total-row--focused' : ''}`}
+                        className={`client-detail__orders-total-row${focusedRow === totalIdx ? ' client-detail__orders-total-row--focused' : ''}`}
                         onMouseEnter={() => setFocusedRow(totalIdx)}
                       >
-                        <td colSpan={4} className="cliente-detail__pedidos-total-label">{t('clients.detail.historyTotal')}</td>
-                        <td className="cliente-detail__pedidos-total-value">{format(order.total)}</td>
-                        <td className="cliente-detail__pedidos-acumulado-value">{format(accumulatedMap.get(order.id) ?? 0)}</td>
+                        <td colSpan={4} className="client-detail__orders-total-label">{t('clients.detail.historyTotal')}</td>
+                        <td className="client-detail__orders-total-value">{format(order.total)}</td>
+                        <td className="client-detail__orders-accumulated-value">{format(accumulatedMap.get(order.id) ?? 0)}</td>
                       </tr>
                     </React.Fragment>
                   );
@@ -290,8 +290,8 @@ const ClientOrderHistory: React.FC<Props> = ({
             </tbody>
           </table>
         </div>
-        <div className="cliente-detail__pedidos-table-total">
-          <table className="cliente-detail__pedidos-table">
+        <div className="client-detail__orders-table-total">
+          <table className="client-detail__orders-table">
             <colgroup>
               <col style={{ width: '10%' }} />
               <col style={{ width: '8%' }} />
@@ -302,8 +302,8 @@ const ClientOrderHistory: React.FC<Props> = ({
             </colgroup>
             <tfoot>
               <tr>
-                <td colSpan={5} className="cliente-detail__pedidos-table-total-label">{t('clients.detail.historyAccumulated')}</td>
-                <td className="cliente-detail__pedidos-table-total-value">{format(totalAccumulated)}</td>
+                <td colSpan={5} className="client-detail__orders-table-total-label">{t('clients.detail.historyAccumulated')}</td>
+                <td className="client-detail__orders-table-total-value">{format(totalAccumulated)}</td>
               </tr>
             </tfoot>
           </table>

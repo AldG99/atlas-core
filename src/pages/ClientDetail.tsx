@@ -267,8 +267,8 @@ const ClientDetail = () => {
   if (loading) {
     return (
       <MainLayout>
-        <div className="cliente-detail">
-          <p className="cliente-detail__loading">{t('clients.detail.loading')}</p>
+        <div className="client-detail">
+          <p className="client-detail__loading">{t('clients.detail.loading')}</p>
         </div>
       </MainLayout>
     );
@@ -281,19 +281,19 @@ const ClientDetail = () => {
   return (
     <>
     <MainLayout>
-      <div className="cliente-detail">
+      <div className="client-detail">
         {/* Fixed Top Bar */}
-        <div className="cliente-detail__top-bar">
-          <div className="cliente-detail__top-bar-inner">
+        <div className="client-detail__top-bar">
+          <div className="client-detail__top-bar-inner">
             <button
-              className="cliente-detail__icon-btn cliente-detail__icon-btn--back"
+              className="client-detail__icon-btn client-detail__icon-btn--back"
               onClick={() => navigate(ROUTES.CLIENTS)}
               title={t('common.back')}
             >
               <PiArrowLeftBold size={20} />
             </button>
             {role === 'admin' && isEditing ? (
-              <div className="cliente-detail__top-bar-actions">
+              <div className="client-detail__top-bar-actions">
                 <button onClick={cancelEditing} className="btn btn--outline btn--sm" disabled={saving || isUploading}>
                   {t('common.cancel')}
                 </button>
@@ -303,15 +303,15 @@ const ClientDetail = () => {
               </div>
             ) : (
               <>
-                <button onClick={handleWhatsApp} className="cliente-detail__icon-btn cliente-detail__icon-btn--whatsapp" title={t('orders.detail.whatsapp')}>
+                <button onClick={handleWhatsApp} className="client-detail__icon-btn client-detail__icon-btn--whatsapp" title={t('orders.detail.whatsapp')}>
                   <PiWhatsappLogoBold size={20} />
                 </button>
                 {role === 'admin' && (
                   <>
-                    <span className="cliente-detail__top-divider" />
+                    <span className="client-detail__top-divider" />
                     <button
                       onClick={handleToggleFavorite}
-                      className={`cliente-detail__icon-btn ${client.favorite ? 'cliente-detail__icon-btn--fav-active' : ''}`}
+                      className={`client-detail__icon-btn ${client.favorite ? 'client-detail__icon-btn--fav-active' : ''}`}
                       title={client.favorite ? t('clients.detail.removeFavorite') : t('clients.detail.addFavorite')}
                     >
                       {client.favorite ? <PiStarFill size={20} /> : <PiStarBold size={20} />}
@@ -320,10 +320,10 @@ const ClientDetail = () => {
                 )}
                 {role === 'admin' && (
                   <>
-                    <button onClick={startEditing} className="cliente-detail__icon-btn cliente-detail__icon-btn--primary" title={t('common.edit')}>
+                    <button onClick={startEditing} className="client-detail__icon-btn client-detail__icon-btn--primary" title={t('common.edit')}>
                       <PiPencilBold size={20} />
                     </button>
-                    <button onClick={handleDelete} className="cliente-detail__icon-btn cliente-detail__icon-btn--danger" title={t('common.delete')}>
+                    <button onClick={handleDelete} className="client-detail__icon-btn client-detail__icon-btn--danger" title={t('common.delete')}>
                       <PiTrashBold size={20} />
                     </button>
                   </>
@@ -334,15 +334,15 @@ const ClientDetail = () => {
         </div>
 
         {/* Content */}
-        <div className="cliente-detail__content">
-          <div className="cliente-detail__card">
+        <div className="client-detail__content">
+          <div className="client-detail__card">
 
             {/* Header: avatar + nombre + info del cliente */}
-            <div className="cliente-detail__header">
+            <div className="client-detail__header">
               {/* Avatar + nombre + fecha + info */}
-              <div className="cliente-detail__client">
+              <div className="client-detail__client">
                 <div
-                  className={`cliente-detail__avatar ${isEditing ? 'cliente-detail__avatar--editable' : ''}`}
+                  className={`client-detail__avatar ${isEditing ? 'client-detail__avatar--editable' : ''}`}
                   onClick={() => isEditing && fileInputRef.current?.click()}
                 >
                   <Avatar
@@ -351,58 +351,58 @@ const ClientDetail = () => {
                     alt={client.firstName}
                   />
                   {isEditing && (
-                    <div className="cliente-detail__avatar-overlay"><PiCameraBold size={20} /></div>
+                    <div className="client-detail__avatar-overlay"><PiCameraBold size={20} /></div>
                   )}
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
                 </div>
-                <div className="cliente-detail__client-info">
-                  <div className="cliente-detail__client-name-row">
-                    <div className="cliente-detail__client-name-group">
+                <div className="client-detail__client-info">
+                  <div className="client-detail__client-name-row">
+                    <div className="client-detail__client-name-group">
                       {isEditing ? (
-                        <div className="cliente-detail__name-edit">
-                          <input type="text" value={editData?.firstName || ''} onChange={(e) => updateField('firstName', e.target.value)} placeholder="Nombre *" className="cliente-detail__input" />
-                          <input type="text" value={editData?.lastName || ''} onChange={(e) => updateField('lastName', e.target.value)} placeholder="Apellido *" className="cliente-detail__input" />
+                        <div className="client-detail__name-edit">
+                          <input type="text" value={editData?.firstName || ''} onChange={(e) => updateField('firstName', e.target.value)} placeholder="Nombre *" className="client-detail__input" />
+                          <input type="text" value={editData?.lastName || ''} onChange={(e) => updateField('lastName', e.target.value)} placeholder="Apellido *" className="client-detail__input" />
                         </div>
                       ) : (
-                        <h1 className="cliente-detail__name">{client.firstName} {client.lastName}</h1>
+                        <h1 className="client-detail__name">{client.firstName} {client.lastName}</h1>
                       )}
-                      <span className="cliente-detail__date">{t('clients.detail.clientSince')} {formatDate(client.createdAt)}</span>
+                      <span className="client-detail__date">{t('clients.detail.clientSince')} {formatDate(client.createdAt)}</span>
                     </div>
                   </div>
 
                 </div>
               </div>
 
-              <div className="cliente-detail__header-fields">
-                <div className="cliente-detail__header-field">
-                  <span className="cliente-detail__info-label">{t('clients.detail.address')}</span>
+              <div className="client-detail__header-fields">
+                <div className="client-detail__header-field">
+                  <span className="client-detail__info-label">{t('clients.detail.address')}</span>
                   {isEditing ? (
                     <>
-                      <div className="cliente-detail__address-row">
-                        <input type="text" value={editData?.street || ''} onChange={(e) => updateField('street', e.target.value)} placeholder="Calle" className="cliente-detail__input cliente-detail__input--flex" />
-                        <input type="text" value={editData?.exteriorNumber || ''} onChange={(e) => updateField('exteriorNumber', e.target.value)} placeholder="No. Ext" className="cliente-detail__input cliente-detail__input--small" />
-                        <input type="text" value={editData?.interiorNumber || ''} onChange={(e) => updateField('interiorNumber', e.target.value)} placeholder="No. Int" className="cliente-detail__input cliente-detail__input--small" />
+                      <div className="client-detail__address-row">
+                        <input type="text" value={editData?.street || ''} onChange={(e) => updateField('street', e.target.value)} placeholder="Calle" className="client-detail__input client-detail__input--flex" />
+                        <input type="text" value={editData?.exteriorNumber || ''} onChange={(e) => updateField('exteriorNumber', e.target.value)} placeholder="No. Ext" className="client-detail__input client-detail__input--small" />
+                        <input type="text" value={editData?.interiorNumber || ''} onChange={(e) => updateField('interiorNumber', e.target.value)} placeholder="No. Int" className="client-detail__input client-detail__input--small" />
                       </div>
-                      <input type="text" value={editData?.neighborhood || ''} onChange={(e) => updateField('neighborhood', e.target.value)} placeholder="Colonia" className="cliente-detail__input" />
-                      <div className="cliente-detail__address-row">
-                        <input type="text" value={editData?.country || ''} onChange={(e) => updateField('country', e.target.value)} placeholder="País" className="cliente-detail__input cliente-detail__input--flex" />
-                        <input type="text" value={editData?.state || ''} onChange={(e) => updateField('state', e.target.value)} placeholder="Estado" className="cliente-detail__input cliente-detail__input--flex" />
-                        <input type="text" value={editData?.city || ''} onChange={(e) => updateField('city', e.target.value)} placeholder="Ciudad" className="cliente-detail__input cliente-detail__input--flex" />
+                      <input type="text" value={editData?.neighborhood || ''} onChange={(e) => updateField('neighborhood', e.target.value)} placeholder="Colonia" className="client-detail__input" />
+                      <div className="client-detail__address-row">
+                        <input type="text" value={editData?.country || ''} onChange={(e) => updateField('country', e.target.value)} placeholder="País" className="client-detail__input client-detail__input--flex" />
+                        <input type="text" value={editData?.state || ''} onChange={(e) => updateField('state', e.target.value)} placeholder="Estado" className="client-detail__input client-detail__input--flex" />
+                        <input type="text" value={editData?.city || ''} onChange={(e) => updateField('city', e.target.value)} placeholder="Ciudad" className="client-detail__input client-detail__input--flex" />
                       </div>
-                      <input type="text" value={editData?.postalCode || ''} onChange={(e) => updateField('postalCode', e.target.value)} placeholder="CP" className="cliente-detail__input cliente-detail__input--small" />
+                      <input type="text" value={editData?.postalCode || ''} onChange={(e) => updateField('postalCode', e.target.value)} placeholder="CP" className="client-detail__input client-detail__input--small" />
                     </>
                   ) : (
                     <>
-                      <span className="cliente-detail__info-value">{addr.line1}</span>
-                      <span className="cliente-detail__info-value">{addr.line2}</span>
-                      <span className="cliente-detail__info-value">{addr.line3}{addr.line5 ? `, ${addr.line5}` : ''}{addr.line6 ? `, ${addr.line6}` : ''}</span>
-                      <span className="cliente-detail__info-value">{addr.line4}</span>
+                      <span className="client-detail__info-value">{addr.line1}</span>
+                      <span className="client-detail__info-value">{addr.line2}</span>
+                      <span className="client-detail__info-value">{addr.line3}{addr.line5 ? `, ${addr.line5}` : ''}{addr.line6 ? `, ${addr.line6}` : ''}</span>
+                      <span className="client-detail__info-value">{addr.line4}</span>
                     </>
                   )}
                 </div>
-                <div className="cliente-detail__header-contact">
-                  <div className="cliente-detail__header-field">
-                    <span className="cliente-detail__info-label">{t('clients.detail.phone')}</span>
+                <div className="client-detail__header-contact">
+                  <div className="client-detail__header-field">
+                    <span className="client-detail__info-label">{t('clients.detail.phone')}</span>
                     {isEditing ? (
                       <PhoneInput
                         value={editData?.phone || ''}
@@ -411,32 +411,32 @@ const ClientDetail = () => {
                         placeholder="Teléfono"
                       />
                     ) : (
-                      <span className="cliente-detail__info-value">
+                      <span className="client-detail__info-value">
                         {client.phoneCountryCode
                           ? `${getCountryCode(client.phoneCountryCode)?.code ?? ''} ${formatPhone(client.phone)}`
                           : formatPhone(client.phone)}
                       </span>
                     )}
                   </div>
-                  <div className="cliente-detail__header-field">
-                    <span className="cliente-detail__info-label">{t('clients.detail.email')}</span>
+                  <div className="client-detail__header-field">
+                    <span className="client-detail__info-label">{t('clients.detail.email')}</span>
                     {isEditing ? (
-                      <input type="email" value={editData?.email || ''} onChange={(e) => updateField('email', e.target.value)} placeholder="Correo electrónico" className="cliente-detail__input" />
+                      <input type="email" value={editData?.email || ''} onChange={(e) => updateField('email', e.target.value)} placeholder="Correo electrónico" className="client-detail__input" />
                     ) : (
-                      <span className={`cliente-detail__info-value ${!client.email ? 'cliente-detail__info-value--empty' : ''}`}>
+                      <span className={`client-detail__info-value ${!client.email ? 'client-detail__info-value--empty' : ''}`}>
                         {client.email || t('clients.detail.noEmail')}
                       </span>
                     )}
                   </div>
-                  <div className="cliente-detail__header-field cliente-detail__header-field--full">
-                    <span className="cliente-detail__info-label">{t('clients.detail.reference')}</span>
+                  <div className="client-detail__header-field client-detail__header-field--full">
+                    <span className="client-detail__info-label">{t('clients.detail.reference')}</span>
                     {isEditing ? (
                       <>
-                        <textarea value={editData?.reference || ''} onChange={(e) => updateField('reference', e.target.value)} placeholder="Referencia..." className="cliente-detail__textarea cliente-detail__textarea--small" rows={2} maxLength={140} style={{ resize: 'none' }} />
-                        <span className="cliente-detail__char-count">{(editData?.reference || '').length}/140</span>
+                        <textarea value={editData?.reference || ''} onChange={(e) => updateField('reference', e.target.value)} placeholder="Referencia..." className="client-detail__textarea client-detail__textarea--small" rows={2} maxLength={140} style={{ resize: 'none' }} />
+                        <span className="client-detail__char-count">{(editData?.reference || '').length}/140</span>
                       </>
                     ) : (
-                      <span className={`cliente-detail__info-value ${!client.reference ? 'cliente-detail__info-value--empty' : ''}`}>
+                      <span className={`client-detail__info-value ${!client.reference ? 'client-detail__info-value--empty' : ''}`}>
                         {client.reference || t('clients.detail.noReference')}
                       </span>
                     )}
@@ -461,20 +461,20 @@ const ClientDetail = () => {
       </div>
 
       {showDeleteModal && (
-        <div className="cliente-detail__modal-overlay" onClick={() => setShowDeleteModal(false)}>
-          <div className="cliente-detail__modal" onClick={e => e.stopPropagation()}>
-            <div className="cliente-detail__modal-header">
+        <div className="client-detail__modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="client-detail__modal" onClick={e => e.stopPropagation()}>
+            <div className="client-detail__modal-header">
               <h3>{t('clients.detail.deleteModal.title')}</h3>
-              <button className="cliente-detail__modal-close" onClick={() => setShowDeleteModal(false)}>
+              <button className="client-detail__modal-close" onClick={() => setShowDeleteModal(false)}>
                 <PiXBold size={18} />
               </button>
             </div>
-            <div className="cliente-detail__modal-body">
+            <div className="client-detail__modal-body">
               <p>{t('clients.detail.deleteModal.warning')}</p>
-              <p className="cliente-detail__delete-label">
+              <p className="client-detail__delete-label">
                 {t('clients.detail.deleteModal.instruction')}
               </p>
-              <code className="cliente-detail__delete-code">{deleteCode}</code>
+              <code className="client-detail__delete-code">{deleteCode}</code>
               <input
                 type="text"
                 className="input"
@@ -484,7 +484,7 @@ const ClientDetail = () => {
                 autoComplete="off"
               />
             </div>
-            <div className="cliente-detail__modal-footer">
+            <div className="client-detail__modal-footer">
               <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>{t('clients.detail.deleteModal.cancel')}</button>
               <button
                 className="btn btn--danger btn--sm"

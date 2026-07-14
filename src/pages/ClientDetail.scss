@@ -4,7 +4,7 @@
 
 $topbar-height: 52px;
 
-.cliente-detail {
+.client-detail {
   width: 100%;
   margin: 0 auto;
   padding-top: $topbar-height;
@@ -176,7 +176,7 @@ $topbar-height: 52px;
     &--editable {
       cursor: pointer;
 
-      &:hover .cliente-detail__avatar-overlay {
+      &:hover .client-detail__avatar-overlay {
         opacity: 1;
       }
     }
@@ -552,8 +552,8 @@ $topbar-height: 52px;
     overflow: hidden;
   }
 
-  // Tabla de pedidos (columna derecha)
-  &__pedidos-filters {
+  // Tabla de orders (columna derecha)
+  &__orders-filters {
     display: flex;
     flex-wrap: wrap;
     gap: $spacing-sm;
@@ -581,7 +581,7 @@ $topbar-height: 52px;
     }
   }
 
-  &__pedidos-search {
+  &__orders-search {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -613,14 +613,14 @@ $topbar-height: 52px;
     }
   }
 
-  &__pedidos-table-wrapper {
+  &__orders-table-wrapper {
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
   }
 
-  &__pedidos-table-head {
+  &__orders-table-head {
     flex-shrink: 0;
     background-color: $color-gray-100;
     overflow-y: scroll;
@@ -632,7 +632,7 @@ $topbar-height: 52px;
     &::-webkit-scrollbar-thumb { background: transparent; }
   }
 
-  &__pedidos-table-body {
+  &__orders-table-body {
     flex: 1;
     min-height: 0;
     overflow-x: auto;
@@ -656,7 +656,7 @@ $topbar-height: 52px;
     }
   }
 
-  &__pedidos-table {
+  &__orders-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
@@ -703,7 +703,7 @@ $topbar-height: 52px;
     }
   }
 
-  &__pedidos-table-empty {
+  &__orders-table-empty {
     text-align: center;
     padding: $spacing-xl $spacing-md;
     color: $color-gray-500;
@@ -714,7 +714,7 @@ $topbar-height: 52px;
     }
   }
 
-  &__pedidos-date-row {
+  &__orders-date-row {
     background-color: $color-gray-100;
 
     > td {
@@ -724,14 +724,14 @@ $topbar-height: 52px;
     &--focused {
       background-color: rgba($color-primary, 0.06);
 
-      .cliente-detail__pedidos-detail-btn {
+      .client-detail__orders-detail-btn {
         border-color: $color-primary;
         color: $color-primary;
       }
     }
   }
 
-  &__pedidos-date-row-inner {
+  &__orders-date-row-inner {
     position: relative;
     display: flex;
     align-items: center;
@@ -740,14 +740,14 @@ $topbar-height: 52px;
     padding-left: calc(18% + #{$spacing-sm});
   }
 
-  &__pedidos-date-main {
+  &__orders-date-main {
     font-weight: 600;
     font-size: $font-size-sm;
     color: $color-gray-600;
     white-space: nowrap;
   }
 
-  &__pedidos-folio {
+  &__orders-order-number {
     position: absolute;
     left: $spacing-md;
     font-size: $font-size-sm;
@@ -757,19 +757,19 @@ $topbar-height: 52px;
     letter-spacing: 0.3px;
   }
 
-  &__pedidos-date-arrow {
+  &__orders-date-arrow {
     color: $color-success;
     flex-shrink: 0;
   }
 
-  &__pedidos-date-entrega {
+  &__orders-date-delivery {
     font-size: $font-size-sm;
     font-weight: 500;
     color: $color-success;
     white-space: nowrap;
   }
 
-  &__pedidos-detail-btn {
+  &__orders-detail-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -790,7 +790,7 @@ $topbar-height: 52px;
     }
   }
 
-  &__clave {
+  &__sku {
     display: inline-block;
     padding: 1px 5px;
     font-size: $font-size-xs;
@@ -801,7 +801,7 @@ $topbar-height: 52px;
     border-radius: 4px;
   }
 
-  &__pedidos-product-row {
+  &__orders-product-row {
     border-bottom: 1px solid $color-gray-200;
 
     &--focused {
@@ -809,13 +809,13 @@ $topbar-height: 52px;
     }
   }
 
-  &__pedidos-etiquetas {
+  &__orders-labels {
     display: inline-flex;
     gap: 2px;
     justify-content: center;
   }
 
-  &__pedidos-etiqueta {
+  &__orders-label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -825,7 +825,7 @@ $topbar-height: 52px;
     color: $color-white;
   }
 
-  &__pedidos-total-row {
+  &__orders-total-row {
     background-color: $color-white;
 
     &--focused {
@@ -837,21 +837,21 @@ $topbar-height: 52px;
     }
   }
 
-  &__pedidos-total-label {
+  &__orders-total-label {
     text-align: left;
     font-size: $font-size-sm;
     font-weight: 600;
     color: $color-gray-500;
   }
 
-  &__pedidos-total-value {
+  &__orders-total-value {
     text-align: right;
     font-size: $font-size-sm;
     font-weight: 700;
     color: $color-gray-800;
   }
 
-  &__pedidos-acumulado-value {
+  &__orders-accumulated-value {
     text-align: right;
     padding-right: $spacing-md;
     font-size: $font-size-sm;
@@ -859,7 +859,7 @@ $topbar-height: 52px;
     color: $color-primary;
   }
 
-&__pedidos-table-total {
+&__orders-table-total {
     flex-shrink: 0;
     background-color: $color-gray-100;
     overflow-y: scroll;
@@ -871,7 +871,7 @@ $topbar-height: 52px;
     &::-webkit-scrollbar-thumb { background: transparent; }
   }
 
-  &__pedidos-table-total-label {
+  &__orders-table-total-label {
     padding: $spacing-xs $spacing-sm;
     padding-left: $spacing-md;
     font-size: $font-size-sm;
@@ -880,7 +880,7 @@ $topbar-height: 52px;
     text-align: left;
   }
 
-  &__pedidos-table-total-value {
+  &__orders-table-total-value {
     padding: $spacing-xs $spacing-sm;
     font-size: $font-size-sm;
     font-weight: 700;
@@ -1036,7 +1036,7 @@ $topbar-height: 52px;
   }
 }
 
-.cliente-detail__modal-overlay {
+.client-detail__modal-overlay {
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
@@ -1046,7 +1046,7 @@ $topbar-height: 52px;
   justify-content: center;
 }
 
-.cliente-detail__modal {
+.client-detail__modal {
   background-color: $color-white;
   width: 100%;
   max-width: 320px;
@@ -1055,7 +1055,7 @@ $topbar-height: 52px;
   overflow: hidden;
 }
 
-.cliente-detail__modal-header {
+.client-detail__modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1069,7 +1069,7 @@ $topbar-height: 52px;
   }
 }
 
-.cliente-detail__modal-close {
+.client-detail__modal-close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1083,7 +1083,7 @@ $topbar-height: 52px;
   &:hover { color: $color-gray-700; }
 }
 
-.cliente-detail__modal-body {
+.client-detail__modal-body {
   padding: $spacing-lg;
   display: flex;
   flex-direction: column;
@@ -1096,18 +1096,18 @@ $topbar-height: 52px;
   }
 }
 
-.cliente-detail__delete-label {
+.client-detail__delete-label {
   margin: 0;
   font-size: $font-size-sm;
   color: $color-gray-700;
 }
 
-.cliente-detail__modal-body .input {
+.client-detail__modal-body .input {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.cliente-detail__delete-code {
+.client-detail__delete-code {
   display: block;
   text-align: center;
   font-family: monospace;
@@ -1121,7 +1121,7 @@ $topbar-height: 52px;
   user-select: all;
 }
 
-.cliente-detail__modal-footer {
+.client-detail__modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: $spacing-sm;
