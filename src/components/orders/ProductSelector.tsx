@@ -85,14 +85,14 @@ const ProductSelector = ({
       e.preventDefault();
       setFocusedIndex(prev => {
         const next = Math.min(prev + 1, filteredProducts.length - 1);
-        dropdownRef.current?.querySelectorAll<HTMLElement>('.producto-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
+        dropdownRef.current?.querySelectorAll<HTMLElement>('.product-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
         return next;
       });
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setFocusedIndex(prev => {
         const next = Math.max(prev - 1, 0);
-        dropdownRef.current?.querySelectorAll<HTMLElement>('.producto-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
+        dropdownRef.current?.querySelectorAll<HTMLElement>('.product-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
         return next;
       });
     } else if (e.key === 'Enter' && focusedIndex >= 0) {
@@ -181,15 +181,15 @@ const ProductSelector = ({
   }, []);
 
   return (
-    <div className={`producto-selector${disabled ? ' producto-selector--disabled' : ''}`}>
-      <label className="producto-selector__label">
+    <div className={`product-selector${disabled ? ' product-selector--disabled' : ''}`}>
+      <label className="product-selector__label">
         {t('orders.products')}
-        {disabled && <span className="producto-selector__label-hint">{t('orders.selectClientFirst')}</span>}
+        {disabled && <span className="product-selector__label-hint">{t('orders.selectClientFirst')}</span>}
       </label>
 
-      <div className="producto-selector__search-row" ref={wrapperRef}>
-        <div className="producto-selector__search-wrapper">
-          <PiMagnifyingGlassBold size={16} className="producto-selector__search-icon" />
+      <div className="product-selector__search-row" ref={wrapperRef}>
+        <div className="product-selector__search-wrapper">
+          <PiMagnifyingGlassBold size={16} className="product-selector__search-icon" />
           <input
             type="text"
             placeholder={t('orders.searchProductPlaceholder')}
@@ -197,39 +197,39 @@ const ProductSelector = ({
             onChange={(e) => handleSearch(e.target.value)}
             onFocus={() => searchTerm && setShowDropdown(true)}
             onKeyDown={handleKeyDown}
-            className="input producto-selector__search"
+            className="input product-selector__search"
             disabled={disabled}
           />
-          {loading && <span className="producto-selector__spinner" />}
+          {loading && <span className="product-selector__spinner" />}
 
           {showDropdown && (
-            <div className="producto-selector__dropdown" ref={dropdownRef}>
+            <div className="product-selector__dropdown" ref={dropdownRef}>
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product, index) => (
                   <button
                     key={product.id}
                     type="button"
-                    className={`producto-selector__dropdown-item${focusedIndex === index ? ' producto-selector__dropdown-item--focused' : ''}`}
+                    className={`product-selector__dropdown-item${focusedIndex === index ? ' product-selector__dropdown-item--focused' : ''}`}
                     onClick={() => handleSelectProduct(product)}
                     onMouseEnter={() => setFocusedIndex(index)}
                   >
-                    <span className={`producto-selector__dropdown-clave${product.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ? ' producto-selector__dropdown-clave--match' : ''}`}>
+                    <span className={`product-selector__dropdown-sku${product.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ? ' product-selector__dropdown-sku--match' : ''}`}>
                       {product.sku || ''}
                     </span>
-                    <span className="producto-selector__dropdown-name">
+                    <span className="product-selector__dropdown-name">
                       {product.name}
                       {product.unit && (
-                        <span className="producto-selector__dropdown-unidad">
+                        <span className="product-selector__dropdown-unit">
                           {product.unitQuantity ? `${product.unitQuantity} ` : ''}{product.unit}
                         </span>
                       )}
                     </span>
-                    <span className={`producto-selector__dropdown-stock ${!product.trackStock ? 'producto-selector__dropdown-stock--hidden' : (product.stock ?? 0) === 0 ? 'producto-selector__dropdown-stock--empty' : ''}`}>
+                    <span className={`product-selector__dropdown-stock ${!product.trackStock ? 'product-selector__dropdown-stock--hidden' : (product.stock ?? 0) === 0 ? 'product-selector__dropdown-stock--empty' : ''}`}>
                       {product.trackStock
                         ? (product.stock ?? 0) === 0 ? t('products.detail.noStock') : t('orders.stockInWarehouse', { count: product.stock })
                         : ''}
                     </span>
-                    <div className="producto-selector__dropdown-etiquetas">
+                    <div className="product-selector__dropdown-labels">
                       {(product.labels || []).map(labelId => {
                         const label = allLabels.find(l => l.id === labelId);
                         if (!label) return null;
@@ -238,7 +238,7 @@ const ProductSelector = ({
                         return (
                           <span
                             key={label.id}
-                            className="producto-selector__dropdown-etiqueta"
+                            className="product-selector__dropdown-label"
                             style={{ backgroundColor: label.color }}
                           >
                             {Icon && <Icon size={10} />}
@@ -247,20 +247,20 @@ const ProductSelector = ({
                       })}
                     </div>
                     {isDiscountActive(product) ? (
-                      <span className="producto-selector__dropdown-discount">
-                        <span className="producto-selector__dropdown-badge">-{product.discount}%</span>
-                        <span className="producto-selector__dropdown-original">{format(product.price)}</span>
-                        <span className="producto-selector__dropdown-final">{format(getEffectivePrice(product))}</span>
+                      <span className="product-selector__dropdown-discount">
+                        <span className="product-selector__dropdown-badge">-{product.discount}%</span>
+                        <span className="product-selector__dropdown-original">{format(product.price)}</span>
+                        <span className="product-selector__dropdown-final">{format(getEffectivePrice(product))}</span>
                       </span>
                     ) : (
-                      <span className="producto-selector__dropdown-price">
+                      <span className="product-selector__dropdown-price">
                         {format(product.price)}
                       </span>
                     )}
                   </button>
                 ))
               ) : (
-                <div className="producto-selector__dropdown-empty">
+                <div className="product-selector__dropdown-empty">
                   {t('orders.noProductsFound')}
                 </div>
               )}
@@ -269,7 +269,7 @@ const ProductSelector = ({
         </div>
         <button
           type="button"
-          className="btn btn--primary producto-selector__add-btn"
+          className="btn btn--primary product-selector__add-btn"
           onClick={() => setShowModal(true)}
           title={t('orders.addProductTitle')}
           disabled={disabled}
@@ -287,14 +287,14 @@ const ProductSelector = ({
       )}
 
       {error && (
-        <span className="error-message producto-selector__error">{error}</span>
+        <span className="error-message product-selector__error">{error}</span>
       )}
 
-      <div className="producto-selector__items">
-        <div className="producto-selector__table-wrapper">
+      <div className="product-selector__items">
+        <div className="product-selector__table-wrapper">
           {/* Header fijo */}
-          <div className="producto-selector__table-head">
-            <table className="producto-selector__table">
+          <div className="product-selector__table-head">
+            <table className="product-selector__table">
               <colgroup>
                 <col style={{ width: '8%' }} />
                 <col style={{ width: '10%' }} />
@@ -314,7 +314,7 @@ const ProductSelector = ({
                   <th>{t('orders.unit')}</th>
                   <th>{t('orders.labels')}</th>
                   <th>{t('orders.stock')}</th>
-                  <th className="producto-selector__col--right">{t('orders.price')}</th>
+                  <th className="product-selector__col--right">{t('orders.price')}</th>
                   <th>{t('orders.subtotal')}</th>
                   <th></th>
                 </tr>
@@ -322,8 +322,8 @@ const ProductSelector = ({
             </table>
           </div>
           {/* Cuerpo scrolleable */}
-          <div className="producto-selector__table-scroll" ref={tableScrollRef}>
-            <table className="producto-selector__table">
+          <div className="product-selector__table-scroll" ref={tableScrollRef}>
+            <table className="product-selector__table">
               <colgroup>
                 <col style={{ width: '8%' }} />
                 <col style={{ width: '10%' }} />
@@ -338,7 +338,7 @@ const ProductSelector = ({
               <tbody>
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="producto-selector__empty-row">
+                    <td colSpan={9} className="product-selector__empty-row">
                       {t('orders.emptyProducts')}
                     </td>
                   </tr>
@@ -346,33 +346,33 @@ const ProductSelector = ({
                 {items.map((item, index) => (
                   <tr
                     key={item.product.id}
-                    className={focusedRow === index ? 'producto-selector__product-row--focused' : undefined}
+                    className={focusedRow === index ? 'product-selector__product-row--focused' : undefined}
                     onClick={() => setFocusedRow(index)}
                   >
                     <td>
                       {item.product.sku && (
-                        <span className="producto-selector__table-clave">
+                        <span className="product-selector__table-sku">
                           {item.product.sku}
                         </span>
                       )}
                     </td>
                     <td>
-                      <div className="producto-selector__cantidad">
+                      <div className="product-selector__quantity">
                         <button
                           type="button"
-                          className="producto-selector__cantidad-btn"
+                          className="product-selector__quantity-btn"
                           onClick={() =>
                             onUpdateQuantity(item.product.id, item.quantity - 1)
                           }
                         >
                           <PiMinusBold size={10} />
                         </button>
-                        <span className="producto-selector__cantidad-value">
+                        <span className="product-selector__quantity-value">
                           {item.quantity}
                         </span>
                         <button
                           type="button"
-                          className="producto-selector__cantidad-btn"
+                          className="product-selector__quantity-btn"
                           onClick={() =>
                             onUpdateQuantity(item.product.id, item.quantity + 1)
                           }
@@ -383,19 +383,19 @@ const ProductSelector = ({
                       </div>
                     </td>
                     <td>
-                      <span className="producto-selector__table-name-text">
+                      <span className="product-selector__table-name-text">
                         {item.product.name}
                       </span>
                     </td>
                     <td>
-                      <span className="producto-selector__table-unidad">
+                      <span className="product-selector__table-unit">
                         {item.product.unit
                           ? `${item.product.unitQuantity ? `${item.product.unitQuantity} ` : ''}${item.product.unit}`
                           : '—'}
                       </span>
                     </td>
                     <td>
-                      <div className="producto-selector__table-etiquetas">
+                      <div className="product-selector__table-labels">
                         {(item.product.labels || []).map(labelId => {
                           const label = allLabels.find(l => l.id === labelId);
                           if (!label) return null;
@@ -404,7 +404,7 @@ const ProductSelector = ({
                           return (
                             <span
                               key={label.id}
-                              className="producto-selector__table-etiqueta"
+                              className="product-selector__table-label"
                               style={{ backgroundColor: label.color }}
                               title={label.name}
                             >
@@ -418,30 +418,30 @@ const ProductSelector = ({
                       {item.product.trackStock ? (() => {
                         const remaining = (item.product.stock ?? 0) - item.quantity;
                         return (
-                          <span className={`producto-selector__table-stock ${remaining < 0 ? 'producto-selector__table-stock--over' : remaining === 0 ? 'producto-selector__table-stock--zero' : ''}`}>
+                          <span className={`product-selector__table-stock ${remaining < 0 ? 'product-selector__table-stock--over' : remaining === 0 ? 'product-selector__table-stock--zero' : ''}`}>
                             {remaining < 0 ? `−${Math.abs(remaining)}` : remaining === 0 ? '0' : remaining}
                           </span>
                         );
-                      })() : <span className="producto-selector__table-stock-none">—</span>}
+                      })() : <span className="product-selector__table-stock-none">—</span>}
                     </td>
-                    <td className="producto-selector__col--right">
+                    <td className="product-selector__col--right">
                       {isDiscountActive(item.product) ? (
-                        <div className="producto-selector__table-price-discount">
-                          <span className="producto-selector__table-price-badge">-{item.product.discount}%</span>
-                          <span className="producto-selector__table-price-original">{format(item.product.price)}</span>
+                        <div className="product-selector__table-price-discount">
+                          <span className="product-selector__table-price-badge">-{item.product.discount}%</span>
+                          <span className="product-selector__table-price-original">{format(item.product.price)}</span>
                           <span>{format(getEffectivePrice(item.product))}</span>
                         </div>
                       ) : (
                         <span>{format(item.product.price)}</span>
                       )}
                     </td>
-                    <td className="producto-selector__table-subtotal">
+                    <td className="product-selector__table-subtotal">
                       {format(item.subtotal)}
                     </td>
                     <td>
                       <button
                         type="button"
-                        className="producto-selector__remove-btn"
+                        className="product-selector__remove-btn"
                         onClick={() => onRemoveItem(item.product.id)}
                         title={t('common.delete')}
                       >
@@ -454,8 +454,8 @@ const ProductSelector = ({
             </table>
           </div>
           {/* Pie fijo (total) */}
-          <div className="producto-selector__table-foot">
-            <table className="producto-selector__table">
+          <div className="product-selector__table-foot">
+            <table className="product-selector__table">
               <colgroup>
                 <col style={{ width: '8%' }} />
                 <col style={{ width: '10%' }} />
@@ -467,16 +467,16 @@ const ProductSelector = ({
                 <col style={{ width: '12%' }} />
                 <col style={{ width: '4%' }} />
               </colgroup>
-              <tfoot className="producto-selector__tfoot">
+              <tfoot className="product-selector__tfoot">
                 <tr>
-                  <td className="producto-selector__total-label">{t('orders.total')}</td>
+                  <td className="product-selector__total-label">{t('orders.total')}</td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td className="producto-selector__total-value">{format(total)}</td>
+                  <td className="product-selector__total-value">{format(total)}</td>
                   <td></td>
                 </tr>
               </tfoot>

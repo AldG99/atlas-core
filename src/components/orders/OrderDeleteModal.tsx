@@ -12,20 +12,20 @@ interface Props {
 const OrderDeleteModal = ({ orderNumber, confirmText, onConfirmTextChange, onConfirm, onClose }: Props) => {
   const { t } = useTranslation();
   return (
-    <div className="pedido-detail__modal-overlay" onClick={onClose}>
+    <div className="order-detail__modal-overlay" onClick={onClose}>
       <div
-        className="pedido-detail__modal pedido-detail__modal--confirm"
+        className="order-detail__modal order-detail__modal--confirm"
         onClick={e => e.stopPropagation()}
       >
-        <div className="pedido-detail__modal-header">
+        <div className="order-detail__modal-header">
           <h3>{t('orders.deleteModal.title')}</h3>
-          <button className="pedido-detail__modal-close" onClick={onClose}>
+          <button className="order-detail__modal-close" onClick={onClose}>
             <PiXBold size={18} />
           </button>
         </div>
-        <div className="pedido-detail__modal-body pedido-detail__modal-body--confirm">
+        <div className="order-detail__modal-body order-detail__modal-body--confirm">
           <p>{t('orders.deleteModal.warning')}</p>
-          <p className="pedido-detail__delete-label">
+          <p className="order-detail__delete-label">
             {t('orders.deleteModal.instruction')} <strong>{orderNumber}</strong>
           </p>
           <input
@@ -37,7 +37,7 @@ const OrderDeleteModal = ({ orderNumber, confirmText, onConfirmTextChange, onCon
             autoComplete="off"
           />
         </div>
-        <div className="pedido-detail__modal-footer">
+        <div className="order-detail__modal-footer">
           <button className="btn btn--secondary btn--sm" onClick={onClose}>
             {t('orders.deleteModal.cancel')}
           </button>

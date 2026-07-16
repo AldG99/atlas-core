@@ -58,11 +58,11 @@ const OrderItemsTable: React.FC<Props> = ({
     sku ? (labelsBySku.get(sku) ?? []) : [];
 
   return (
-    <div className="pedido-detail__section pedido-detail__section--grow">
-      <div className="pedido-detail__table-wrapper">
+    <div className="order-detail__section order-detail__section--grow">
+      <div className="order-detail__table-wrapper">
         {/* Header fijo */}
-        <div className="pedido-detail__table-head">
-          <table className="pedido-detail__products-table">
+        <div className="order-detail__table-head">
+          <table className="order-detail__products-table">
             <Colgroup />
             <thead>
               <tr>
@@ -72,7 +72,7 @@ const OrderItemsTable: React.FC<Props> = ({
                 <th>{t('orders.labels')}</th>
                 <th>{t('orders.price')}</th>
                 <th>{t('orders.paid')}</th>
-                <th className="pedido-detail__col--right">{t('orders.subtotal')}</th>
+                <th className="order-detail__col--right">{t('orders.subtotal')}</th>
                 <th>{t('orders.status_col')}</th>
               </tr>
             </thead>
@@ -80,8 +80,8 @@ const OrderItemsTable: React.FC<Props> = ({
         </div>
 
         {/* Cuerpo scrolleable */}
-        <div ref={tableScrollRef} className="pedido-detail__table-scroll pedido-detail__table-scroll--grow">
-          <table className="pedido-detail__products-table">
+        <div ref={tableScrollRef} className="order-detail__table-scroll order-detail__table-scroll--grow">
+          <table className="order-detail__products-table">
             <Colgroup />
             <tbody>
               {items.map((p, index) => {
@@ -91,23 +91,23 @@ const OrderItemsTable: React.FC<Props> = ({
                 return (
                   <tr
                     key={index}
-                    className={`pedido-detail__product-row--${status}${focusedRow === index ? ' pedido-detail__product-row--focused' : ''}`}
+                    className={`order-detail__product-row--${status}${focusedRow === index ? ' order-detail__product-row--focused' : ''}`}
                     onClick={() => onRowClick(index)}
                   >
                     <td>
-                      {p.sku ? <span className="pedido-detail__clave">{p.sku}</span> : '-'}
+                      {p.sku ? <span className="order-detail__sku">{p.sku}</span> : '-'}
                     </td>
                     <td>{p.quantity}</td>
                     <td title={p.name}>
-                      <span className="pedido-detail__product-name">{p.name}</span>
+                      <span className="order-detail__product-name">{p.name}</span>
                     </td>
                     <td>
-                      <div className="pedido-detail__etiquetas">
+                      <div className="order-detail__labels">
                         {getLabelsForSku(p.sku).map(label => {
                           const iconData = LABEL_ICONS[label.icon];
                           const Icon = iconData?.icon;
                           return (
-                            <span key={label.id} className="pedido-detail__etiqueta" style={{ backgroundColor: label.color }} title={label.name}>
+                            <span key={label.id} className="order-detail__label" style={{ backgroundColor: label.color }} title={label.name}>
                               {Icon && <Icon size={12} />}
                             </span>
                           );
@@ -116,8 +116,8 @@ const OrderItemsTable: React.FC<Props> = ({
                     </td>
                     <td>
                       {p.originalPrice && p.discount ? (
-                        <div className="pedido-detail__product-subtotal-discount">
-                          <span className="pedido-detail__product-subtotal-original">{format(p.originalPrice)}</span>
+                        <div className="order-detail__product-subtotal-discount">
+                          <span className="order-detail__product-subtotal-original">{format(p.originalPrice)}</span>
                           <span>{format(p.unitPrice)}</span>
                         </div>
                       ) : (
@@ -125,15 +125,15 @@ const OrderItemsTable: React.FC<Props> = ({
                       )}
                     </td>
                     <td>
-                      <div className="pedido-detail__product-paid-cell">
+                      <div className="order-detail__product-paid-cell">
                         <span>{format(covered)}</span>
                       </div>
                     </td>
-                    <td className="pedido-detail__col--right">
+                    <td className="order-detail__col--right">
                       {p.originalPrice && p.discount ? (
-                        <div className="pedido-detail__product-subtotal-discount">
-                          <span className="pedido-detail__product-discount-badge">-{p.discount}%</span>
-                          <span className="pedido-detail__product-subtotal-original">{format(p.originalPrice * p.quantity)}</span>
+                        <div className="order-detail__product-subtotal-discount">
+                          <span className="order-detail__product-discount-badge">-{p.discount}%</span>
+                          <span className="order-detail__product-subtotal-original">{format(p.originalPrice * p.quantity)}</span>
                           <span>{format(p.subtotal)}</span>
                         </div>
                       ) : (
@@ -141,7 +141,7 @@ const OrderItemsTable: React.FC<Props> = ({
                       )}
                     </td>
                     <td>
-                      <span className={`pedido-detail__product-status pedido-detail__product-status--${status}`}>
+                      <span className={`order-detail__product-status order-detail__product-status--${status}`}>
                         {status === 'paid' ? t('orders.detail.statusPaid') : status === 'partial' ? `${Math.round(percentage)}%` : t('orders.detail.statusPending')}
                       </span>
                     </td>
@@ -153,18 +153,18 @@ const OrderItemsTable: React.FC<Props> = ({
         </div>
 
         {/* Pie fijo (total) */}
-        <div className="pedido-detail__table-foot">
-          <table className="pedido-detail__products-table">
+        <div className="order-detail__table-foot">
+          <table className="order-detail__products-table">
             <Colgroup />
-            <tfoot className="pedido-detail__products-tfoot">
-              <tr className="pedido-detail__product-total-row">
+            <tfoot className="order-detail__products-tfoot">
+              <tr className="order-detail__product-total-row">
                 <td><strong>{t('common.total')}</strong></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td>
-                  <div className="pedido-detail__product-paid-cell">
+                  <div className="order-detail__product-paid-cell">
                     <strong>{format(paid)}</strong>
                   </div>
                 </td>
@@ -172,10 +172,10 @@ const OrderItemsTable: React.FC<Props> = ({
                 <td>
                   <strong className={
                     paid >= total
-                      ? 'pedido-detail__product-status--paid'
+                      ? 'order-detail__product-status--paid'
                       : paid > 0
-                        ? 'pedido-detail__product-status--partial'
-                        : 'pedido-detail__product-status--pending'
+                        ? 'order-detail__product-status--partial'
+                        : 'order-detail__product-status--pending'
                   }>
                     {paid >= total ? t('orders.detail.statusLiquidated') : format(total - paid)}
                   </strong>

@@ -1,4 +1,4 @@
-.pedido-captura {
+.order-capture {
   width: 380px;
   background: #fff;
   color: #000;
@@ -30,14 +30,14 @@
     padding-bottom: 10px;
   }
 
-  &__negocio {
+  &__business {
     font-size: 14px;
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 3px;
   }
 
-  &__folio {
+  &__order-number {
     font-size: 11px;
     margin-top: 4px;
     letter-spacing: 1px;
@@ -56,7 +56,7 @@
     gap: 8px;
   }
 
-  &__estado {
+  &__status {
     text-transform: uppercase;
     font-weight: bold;
     font-size: 11px;
@@ -87,7 +87,7 @@
     font-size: 11px;
   }
 
-  &__clave {
+  &__sku {
     font-size: 10px;
     font-weight: normal;
     letter-spacing: 0.5px;
@@ -113,14 +113,14 @@
     }
   }
 
-  &__notas {
+  &__notes {
     font-size: 11px;
     font-style: italic;
     padding-left: 4px;
     word-break: break-word;
   }
 
-  &__abono-row {
+  &__payment-row {
     display: flex;
     justify-content: space-between;
     gap: 8px;
@@ -128,14 +128,14 @@
     padding: 1px 0;
   }
 
-  &__abono-left {
+  &__payment-left {
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  &__abono-right {
+  &__payment-right {
     white-space: nowrap;
     text-align: right;
     flex-shrink: 0;

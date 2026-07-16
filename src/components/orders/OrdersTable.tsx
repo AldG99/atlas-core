@@ -86,9 +86,9 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
   }, [focusedRow]);
 
   return (
-    <div className="pedidos-table-wrapper">
-      <div className="pedidos-table-header">
-        <table className="pedidos-table">
+    <div className="orders-table-wrapper">
+      <div className="orders-table-header">
+        <table className="orders-table">
           <colgroup>
             <col style={{ width: '20%' }} />
             <col style={{ width: '7%' }} />
@@ -113,8 +113,8 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
           </thead>
         </table>
       </div>
-      <div ref={tableContainerRef} className="pedidos-table-container">
-        <table className="pedidos-table">
+      <div ref={tableContainerRef} className="orders-table-container">
+        <table className="orders-table">
           <colgroup>
             <col style={{ width: '20%' }} />
             <col style={{ width: '7%' }} />
@@ -128,26 +128,26 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
           <tbody>
           {loading ? (
             Array.from({ length: 10 }).map((_, i) => (
-              <tr key={i} className="pedidos-table__skeleton-row">
-                <td><span className="pedidos-table__skeleton pedidos-table__skeleton--name" /></td>
-                <td><span className="pedidos-table__skeleton pedidos-table__skeleton--short" /></td>
-                <td><span className="pedidos-table__skeleton pedidos-table__skeleton--folio" /></td>
-                <td style={{ textAlign: 'center' }}><span className="pedidos-table__skeleton pedidos-table__skeleton--short" /></td>
-                <td style={{ textAlign: 'right' }}><span className="pedidos-table__skeleton pedidos-table__skeleton--medium" /></td>
-                <td style={{ textAlign: 'right' }}><span className="pedidos-table__skeleton pedidos-table__skeleton--medium" /></td>
-                <td style={{ textAlign: 'center' }}><span className="pedidos-table__skeleton pedidos-table__skeleton--status" /></td>
-                <td><span className="pedidos-table__skeleton pedidos-table__skeleton--medium" /></td>
+              <tr key={i} className="orders-table__skeleton-row">
+                <td><span className="orders-table__skeleton orders-table__skeleton--name" /></td>
+                <td><span className="orders-table__skeleton orders-table__skeleton--short" /></td>
+                <td><span className="orders-table__skeleton orders-table__skeleton--order-number" /></td>
+                <td style={{ textAlign: 'center' }}><span className="orders-table__skeleton orders-table__skeleton--short" /></td>
+                <td style={{ textAlign: 'right' }}><span className="orders-table__skeleton orders-table__skeleton--medium" /></td>
+                <td style={{ textAlign: 'right' }}><span className="orders-table__skeleton orders-table__skeleton--medium" /></td>
+                <td style={{ textAlign: 'center' }}><span className="orders-table__skeleton orders-table__skeleton--status" /></td>
+                <td><span className="orders-table__skeleton orders-table__skeleton--medium" /></td>
               </tr>
             ))
           ) : error ? (
             <tr>
-              <td colSpan={8} className="pedidos-table__empty pedidos-table__empty--error">
+              <td colSpan={8} className="orders-table__empty orders-table__empty--error">
                 {error}
               </td>
             </tr>
           ) : orders.length === 0 ? (
             <tr>
-              <td colSpan={8} className="pedidos-table__empty">
+              <td colSpan={8} className="orders-table__empty">
                 {searchTerm?.trim() ? t('orders.table.emptySearch', { term: searchTerm }) : t('orders.table.empty')}
               </td>
             </tr>
@@ -157,40 +157,40 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
             return (
             <tr
               key={order.id}
-              className={`pedidos-table__row${focusedRow === index ? ' pedidos-table__row--focused' : ''}`}
+              className={`orders-table__row${focusedRow === index ? ' orders-table__row--focused' : ''}`}
               onClick={() => navigate(`/orders/${order.id}`, { state: { from: location.pathname } })}
               onMouseEnter={() => setFocusedRow(index)}
             >
               <td>
-                <div className="pedidos-table__client">
-                  <div className="pedidos-table__avatar">
+                <div className="orders-table__client">
+                  <div className="orders-table__avatar">
                     <Avatar
                       src={photo}
                       initials={(() => { const c = clientMap.get(order.clientPhone); return c ? `${c.firstName[0]}${c.lastName?.[0] ?? ''}`.toUpperCase() : order.clientName[0].toUpperCase(); })()}
                       alt={order.clientName}
                     />
                   </div>
-                  <span className="pedidos-table__name" title={order.clientName}>
+                  <span className="orders-table__name" title={order.clientName}>
                     {order.clientName}
                   </span>
-                  {favorite && <PiStarFill size={14} className="pedidos-table__fav-icon" />}
+                  {favorite && <PiStarFill size={14} className="orders-table__fav-icon" />}
                 </div>
               </td>
               <td>
-                <span className="pedidos-table__cp">{order.clientPostalCode || '-'}</span>
+                <span className="orders-table__postal">{order.clientPostalCode || '-'}</span>
               </td>
               <td>
-                <span className="pedidos-table__folio">
+                <span className="orders-table__order-number">
                   {order.orderNumber || '-'}
                 </span>
               </td>
               <td>
-                <div className="pedidos-table__product-cell">
-                  <span className="pedidos-table__product-count">
+                <div className="orders-table__product-cell">
+                  <span className="orders-table__product-count">
                     {order.items.reduce((sum, p) => sum + p.quantity, 0)}
                   </span>
                   {order.items.some(p => p.discount && p.discount > 0) && (
-                    <span className="pedidos-table__discount-indicator" title={t('orders.table.hasDiscount')}>%</span>
+                    <span className="orders-table__discount-indicator" title={t('orders.table.hasDiscount')}>%</span>
                   )}
                 </div>
               </td>
@@ -200,9 +200,9 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
                   const percentage = order.total > 0 ? Math.round((paid / order.total) * 100) : 0;
                   const status = paid >= order.total ? 'paid' : paid > 0 ? 'partial' : 'pending';
                   return (
-                    <div className={`pedidos-table__paid pedidos-table__paid--${status}`}>
-                      <span className="pedidos-table__paid-amount">{format(paid)}</span>
-                      <span className="pedidos-table__paid-percent">{percentage}%</span>
+                    <div className={`orders-table__paid orders-table__paid--${status}`}>
+                      <span className="orders-table__paid-amount">{format(paid)}</span>
+                      <span className="orders-table__paid-percent">{percentage}%</span>
                     </div>
                   );
                 })()}
@@ -211,12 +211,12 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
                 {(() => {
                   const paid = getTotalPaid(order);
                   const totalClass = paid >= order.total
-                    ? 'pedidos-table__total--paid'
+                    ? 'orders-table__total--paid'
                     : paid > 0
-                      ? 'pedidos-table__total--pending'
+                      ? 'orders-table__total--pending'
                       : '';
                   return (
-                    <span className={`pedidos-table__total ${totalClass}`}>
+                    <span className={`orders-table__total ${totalClass}`}>
                       {format(order.total)}
                     </span>
                   );
@@ -231,7 +231,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
                 <span className="sr-only">{t(`orders.status.${order.status}`)}</span>
               </td>
               <td>
-                <span className="pedidos-table__date">{formatShortDate(order.createdAt)}</span>
+                <span className="orders-table__date">{formatShortDate(order.createdAt)}</span>
               </td>
             </tr>
             );
@@ -241,24 +241,24 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
       </div>
 
       {!loading && (
-        <div className="pedidos-table__pagination">
-          <span className="pedidos-table__page-info pedidos-table__page-info--total">
+        <div className="orders-table__pagination">
+          <span className="orders-table__page-info orders-table__page-info--total">
             {orders.length} {t('nav.orders').toLowerCase()}
           </span>
           {totalPages > 1 && (
             <>
               <button
-                className="pedidos-table__page-btn"
+                className="orders-table__page-btn"
                 onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
                 disabled={page === 0}
               >
                 <PiCaretLeftBold size={14} />
               </button>
-              <span className="pedidos-table__page-info">
+              <span className="orders-table__page-info">
                 {page + 1} / {totalPages}
               </span>
               <button
-                className="pedidos-table__page-btn"
+                className="orders-table__page-btn"
                 onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
                 disabled={page === totalPages - 1}
               >

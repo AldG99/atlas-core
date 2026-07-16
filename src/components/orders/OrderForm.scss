@@ -1,6 +1,6 @@
 @use '../../styles/abstracts/variables' as *;
 
-.pedido-form {
+.order-form {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -20,7 +20,7 @@
     }
   }
 
-&__notas-counter {
+&__notes-counter {
     display: block;
     text-align: right;
     font-size: $font-size-xs;

@@ -37,86 +37,86 @@ const ProductDetailModal = ({ product, labels, onClose }: ProductDetailModalProp
     .filter((l): l is Label => !!l);
 
   return (
-    <div className="pedido-detail__modal-overlay" onClick={onClose}>
+    <div className="order-detail__modal-overlay" onClick={onClose}>
       <div
-        className="pedido-detail__modal pedido-detail__modal--product"
+        className="order-detail__modal order-detail__modal--product"
         onClick={e => e.stopPropagation()}
       >
-        <div className="pedido-detail__modal-header">
+        <div className="order-detail__modal-header">
           <h3>{t('products.detailModal.title')}</h3>
-          <button className="pedido-detail__modal-close" onClick={onClose}>
+          <button className="order-detail__modal-close" onClick={onClose}>
             <PiXBold size={18} />
           </button>
         </div>
-        <div className="pedido-detail__modal-body">
-          <div className="pedido-detail__modal-image">
+        <div className="order-detail__modal-body">
+          <div className="order-detail__modal-image">
             <ProductImage
               src={product.image}
               alt={product.name}
-              placeholderClassName="pedido-detail__modal-placeholder"
+              placeholderClassName="order-detail__modal-placeholder"
             />
           </div>
-          <div className="pedido-detail__modal-right">
-            <div className="pedido-detail__modal-section">
+          <div className="order-detail__modal-right">
+            <div className="order-detail__modal-section">
               <h4>{t('products.detailModal.info')}</h4>
-              <div className="pedido-detail__modal-info">
+              <div className="order-detail__modal-info">
                 {product.sku && (
-                  <div className="pedido-detail__modal-row">
-                    <span className="pedido-detail__modal-label">{t('products.detailModal.code')}</span>
-                    <span className="pedido-detail__modal-value">{product.sku}</span>
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.code')}</span>
+                    <span className="order-detail__modal-value">{product.sku}</span>
                   </div>
                 )}
-                <div className="pedido-detail__modal-row">
-                  <span className="pedido-detail__modal-label">{t('products.detailModal.name')}</span>
-                  <span className="pedido-detail__modal-value">{product.name}</span>
+                <div className="order-detail__modal-row">
+                  <span className="order-detail__modal-label">{t('products.detailModal.name')}</span>
+                  <span className="order-detail__modal-value">{product.name}</span>
                 </div>
-                <div className="pedido-detail__modal-row">
-                  <span className="pedido-detail__modal-label">{t('products.detailModal.unit')}</span>
-                  <span className="pedido-detail__modal-value">
+                <div className="order-detail__modal-row">
+                  <span className="order-detail__modal-label">{t('products.detailModal.unit')}</span>
+                  <span className="order-detail__modal-value">
                     {product.unit
                       ? `${product.unitQuantity ? `${product.unitQuantity} ` : ''}${product.unit}`
                       : '—'}
                   </span>
                 </div>
-                <div className="pedido-detail__modal-row">
-                  <span className="pedido-detail__modal-label">{t('products.detailModal.price')}</span>
+                <div className="order-detail__modal-row">
+                  <span className="order-detail__modal-label">{t('products.detailModal.price')}</span>
                   {isDiscountActive(product) ? (
-                    <span className="pedido-detail__modal-price-discount">
-                      <span className="pedido-detail__modal-price-badge">
+                    <span className="order-detail__modal-price-discount">
+                      <span className="order-detail__modal-price-badge">
                         -{product.discount}%
                       </span>
-                      <span className="pedido-detail__modal-price-original">
+                      <span className="order-detail__modal-price-original">
                         {format(product.price)}
                       </span>
-                      <span className="pedido-detail__modal-value">
+                      <span className="order-detail__modal-value">
                         {format(getDiscountedPrice(product.price, product.discount!))}
                       </span>
                     </span>
                   ) : (
-                    <span className="pedido-detail__modal-value">{format(product.price)}</span>
+                    <span className="order-detail__modal-value">{format(product.price)}</span>
                   )}
                 </div>
                 {isDiscountActive(product) && product.discountEndDate && (
-                  <div className="pedido-detail__modal-row">
-                    <span className="pedido-detail__modal-label">{t('products.detailModal.discountValidUntil')}</span>
-                    <span className="pedido-detail__modal-value">
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.discountValidUntil')}</span>
+                    <span className="order-detail__modal-value">
                       {formatDate(product.discountEndDate)}
                     </span>
                   </div>
                 )}
-                <div className="pedido-detail__modal-row">
-                  <span className="pedido-detail__modal-label">{t('products.detailModal.labels')}</span>
+                <div className="order-detail__modal-row">
+                  <span className="order-detail__modal-label">{t('products.detailModal.labels')}</span>
                   {productLabels.length === 0 ? (
-                    <span className="pedido-detail__modal-empty">{t('products.detailModal.noLabels')}</span>
+                    <span className="order-detail__modal-empty">{t('products.detailModal.noLabels')}</span>
                   ) : (
-                    <div className="pedido-detail__etiquetas">
+                    <div className="order-detail__labels">
                       {productLabels.map(label => {
                         const iconData = LABEL_ICONS[label.icon];
                         const Icon = iconData?.icon;
                         return (
                           <span
                             key={label.id}
-                            className="pedido-detail__etiqueta"
+                            className="order-detail__label"
                             style={{ backgroundColor: label.color }}
                             title={label.name}
                           >
@@ -127,21 +127,21 @@ const ProductDetailModal = ({ product, labels, onClose }: ProductDetailModalProp
                     </div>
                   )}
                 </div>
-                <div className="pedido-detail__modal-row">
-                  <span className="pedido-detail__modal-label">{t('products.detailModal.warehouse')}</span>
+                <div className="order-detail__modal-row">
+                  <span className="order-detail__modal-label">{t('products.detailModal.warehouse')}</span>
                   {product.trackStock ? (
-                    <span className="pedido-detail__modal-stock-badge">
+                    <span className="order-detail__modal-stock-badge">
                       {(product.stock ?? 0) === 0
                         ? t('products.detailModal.noStock')
                         : t('products.detailModal.stockUnits', { count: product.stock })}
                     </span>
                   ) : (
-                    <span className="pedido-detail__modal-empty">{t('products.detailModal.noStockControl')}</span>
+                    <span className="order-detail__modal-empty">{t('products.detailModal.noStockControl')}</span>
                   )}
                 </div>
               </div>
             </div>
-            <div className="pedido-detail__modal-section">
+            <div className="order-detail__modal-section">
               <h4>{t('products.detailModal.description')}</h4>
               <p>{product.description || t('products.detailModal.noDescription')}</p>
             </div>

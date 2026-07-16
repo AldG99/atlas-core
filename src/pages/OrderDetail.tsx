@@ -359,8 +359,8 @@ const OrderDetail = () => {
   if (loading) {
     return (
       <MainLayout>
-        <div className="pedido-detail">
-          <p className="pedido-detail__loading">{t('orders.detail.loading')}</p>
+        <div className="order-detail">
+          <p className="order-detail__loading">{t('orders.detail.loading')}</p>
         </div>
       </MainLayout>
     );
@@ -378,7 +378,7 @@ const OrderDetail = () => {
 
   return (
     <MainLayout>
-      <div className="pedido-detail">
+      <div className="order-detail">
         <OrderTopBar
           order={order}
           copiedId={copiedId}
@@ -402,56 +402,56 @@ const OrderDetail = () => {
         />
 
         {/* Scrollable Content */}
-        <div className="pedido-detail__content">
-          <div className="pedido-detail__card">
-          <div className="pedido-detail__header">
-            <div className="pedido-detail__client">
-              <div className="pedido-detail__avatar">
+        <div className="order-detail__content">
+          <div className="order-detail__card">
+          <div className="order-detail__header">
+            <div className="order-detail__client">
+              <div className="order-detail__avatar">
                 <Avatar
                   src={clientPhoto}
                   initials={clientData ? `${clientData.firstName[0]}${clientData.lastName?.[0] ?? ''}`.toUpperCase() : order.clientName[0].toUpperCase()}
                   alt={order.clientName}
                 />
               </div>
-              <div className="pedido-detail__client-info">
-                <div className="pedido-detail__name-row">
-                  <h1 className="pedido-detail__name">{order.clientName}</h1>
-                  {clientFavorite && <PiStarFill size={14} className="pedido-detail__fav-icon" />}
+              <div className="order-detail__client-info">
+                <div className="order-detail__name-row">
+                  <h1 className="order-detail__name">{order.clientName}</h1>
+                  {clientFavorite && <PiStarFill size={14} className="order-detail__fav-icon" />}
                 </div>
-                <span className="pedido-detail__phone">
+                <span className="order-detail__phone">
                   {clientData?.phoneCountryCode
                     ? `${getCountryCode(clientData.phoneCountryCode)?.code ?? ''} ${formatPhone(order.clientPhone)}`
                     : formatPhone(order.clientPhone)}
                 </span>
               </div>
             </div>
-            <div className="pedido-detail__header-right">
-              <div className="pedido-detail__header-top-row">
+            <div className="order-detail__header-right">
+              <div className="order-detail__header-top-row">
                 {order.orderNumber && (
                   <>
-                    <span className="pedido-detail__folio">{order.orderNumber}</span>
-                    <PiCaretRightBold size={12} className="pedido-detail__folio-sep" />
+                    <span className="order-detail__order-number">{order.orderNumber}</span>
+                    <PiCaretRightBold size={12} className="order-detail__order-number-sep" />
                   </>
                 )}
                 <span
-                  className="pedido-detail__status-badge"
+                  className="order-detail__status-badge"
                   style={{ color: ORDER_STATUS_COLORS[order.status] }}
                 >
                   <span
-                    className="pedido-detail__status-dot"
+                    className="order-detail__status-dot"
                     style={{ backgroundColor: ORDER_STATUS_COLORS[order.status] }}
                   />
                   {t(`orders.status.${order.status}`)}
                 </span>
               </div>
-              <div className="pedido-detail__date-status-row">
-                <span className="pedido-detail__date">
+              <div className="order-detail__date-status-row">
+                <span className="order-detail__date">
                   {formatDate(order.createdAt)}
                 </span>
                 {order.deliveredAt && (
                   <>
-                    <PiArrowRightBold size={12} className="pedido-detail__date-arrow" />
-                    <span className="pedido-detail__date pedido-detail__date--entrega">
+                    <PiArrowRightBold size={12} className="order-detail__date-arrow" />
+                    <span className="order-detail__date order-detail__date--delivery">
                       {formatDate(order.deliveredAt)}
                     </span>
                   </>
@@ -473,10 +473,10 @@ const OrderDetail = () => {
             onRowClick={(index) => { setFocusedRow(index); setFocusedPaymentRow(null); }}
           />
 
-          <div className="pedido-detail__section pedido-detail__section--notes">
-            <div className="pedido-detail__notes">
+          <div className="order-detail__section order-detail__section--notes">
+            <div className="order-detail__notes">
               <strong>{t('orders.detail.notes')}</strong>{' '}
-              {order.notes ? order.notes : <span className="pedido-detail__notes--empty">{t('orders.detail.noNotes')}</span>}
+              {order.notes ? order.notes : <span className="order-detail__notes--empty">{t('orders.detail.noNotes')}</span>}
             </div>
           </div>
 

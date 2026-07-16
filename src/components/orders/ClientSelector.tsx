@@ -83,7 +83,7 @@ const ClientSelector = ({
 
   const scrollItemIntoView = (index: number) => {
     const items = dropdownRef.current?.querySelectorAll<HTMLElement>(
-      '.cliente-selector__dropdown-item'
+      '.client-selector__dropdown-item'
     );
     items?.[index]?.scrollIntoView({ block: 'nearest' });
   };
@@ -119,9 +119,9 @@ const ClientSelector = ({
 
   if (selectedClient) {
     return (
-      <div className="cliente-selector cliente-selector--selected">
-        <div className="cliente-selector__selected-row">
-          <div className="cliente-selector__avatar">
+      <div className="client-selector client-selector--selected">
+        <div className="client-selector__selected-row">
+          <div className="client-selector__avatar">
             {selectedClient.profilePhoto ? (
               <img
                 src={selectedClient.profilePhoto}
@@ -131,17 +131,17 @@ const ClientSelector = ({
               <span>{selectedClient.firstName.charAt(0).toUpperCase()}</span>
             )}
           </div>
-          <div className="cliente-selector__client-info">
-            <span className="cliente-selector__client-name">
+          <div className="client-selector__client-info">
+            <span className="client-selector__client-name">
               {selectedClient.firstName} {selectedClient.lastName}
               {selectedClient.favorite && (
                 <PiStarFill
                   size={12}
-                  className="cliente-selector__dropdown-fav"
+                  className="client-selector__dropdown-fav"
                 />
               )}
             </span>
-            <span className="cliente-selector__client-phone">
+            <span className="client-selector__client-phone">
               {selectedClient.phoneCountryCode
                 ? `${getCountryCode(selectedClient.phoneCountryCode)?.code ?? ''} ${formatPhone(selectedClient.phone)}`
                 : formatPhone(selectedClient.phone)}
@@ -160,14 +160,14 @@ const ClientSelector = ({
   }
 
   return (
-    <div className="cliente-selector" ref={wrapperRef}>
-      <label className="cliente-selector__label">{t('orders.client')}</label>
+    <div className="client-selector" ref={wrapperRef}>
+      <label className="client-selector__label">{t('orders.client')}</label>
 
-      <div className="cliente-selector__search-row">
-        <div className="cliente-selector__search-wrapper">
+      <div className="client-selector__search-row">
+        <div className="client-selector__search-wrapper">
           <PiMagnifyingGlassBold
             size={16}
-            className="cliente-selector__search-icon"
+            className="client-selector__search-icon"
           />
           <input
             type="text"
@@ -176,13 +176,13 @@ const ClientSelector = ({
             onChange={e => handleSearch(e.target.value)}
             onFocus={() => searchTerm && setShowDropdown(true)}
             onKeyDown={handleKeyDown}
-            className="input cliente-selector__search"
+            className="input client-selector__search"
           />
-          {loading && <span className="cliente-selector__spinner" />}
+          {loading && <span className="client-selector__spinner" />}
         </div>
         <button
           type="button"
-          className="btn btn--primary cliente-selector__add-btn"
+          className="btn btn--primary client-selector__add-btn"
           onClick={() => setShowModal(true)}
           title={t('orders.addClientTitle')}
         >
@@ -191,34 +191,34 @@ const ClientSelector = ({
       </div>
 
       {showDropdown && (
-        <div className="cliente-selector__dropdown" ref={dropdownRef}>
+        <div className="client-selector__dropdown" ref={dropdownRef}>
           {filteredClients.length > 0 ? (
             filteredClients.map((client, index) => (
               <button
                 key={client.id}
                 type="button"
-                className={`cliente-selector__dropdown-item${focusedIndex === index ? ' cliente-selector__dropdown-item--focused' : ''}`}
+                className={`client-selector__dropdown-item${focusedIndex === index ? ' client-selector__dropdown-item--focused' : ''}`}
                 onClick={() => handleSelectClient(client)}
                 onMouseEnter={() => setFocusedIndex(index)}
               >
-                <div className="cliente-selector__dropdown-avatar">
+                <div className="client-selector__dropdown-avatar">
                   <Avatar
                     src={client.profilePhoto}
                     initials={`${client.firstName[0]}${client.lastName?.[0] ?? ''}`.toUpperCase()}
                     alt={client.firstName}
                   />
                 </div>
-                <div className="cliente-selector__dropdown-info">
-                  <span className="cliente-selector__dropdown-name">
+                <div className="client-selector__dropdown-info">
+                  <span className="client-selector__dropdown-name">
                     {client.firstName} {client.lastName}
                     {client.favorite && (
                       <PiStarFill
                         size={12}
-                        className="cliente-selector__dropdown-fav"
+                        className="client-selector__dropdown-fav"
                       />
                     )}
                   </span>
-                  <span className="cliente-selector__dropdown-phone">
+                  <span className="client-selector__dropdown-phone">
                     {client.phoneCountryCode
                       ? `${getCountryCode(client.phoneCountryCode)?.code ?? ''} ${formatPhone(client.phone)}`
                       : formatPhone(client.phone)}
@@ -227,7 +227,7 @@ const ClientSelector = ({
               </button>
             ))
           ) : (
-            <div className="cliente-selector__dropdown-empty">
+            <div className="client-selector__dropdown-empty">
               {t('orders.noClientsFound')}
             </div>
           )}

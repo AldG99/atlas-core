@@ -55,10 +55,10 @@ const OrderTopBar = ({
 }: Props) => {
   const { t } = useTranslation();
   return (
-    <div className="pedido-detail__top-bar">
-      <div className="pedido-detail__top-bar-inner">
+    <div className="order-detail__top-bar">
+      <div className="order-detail__top-bar-inner">
         <button
-          className="pedido-detail__icon-btn pedido-detail__icon-btn--back"
+          className="order-detail__icon-btn order-detail__icon-btn--back"
           onClick={onBack}
           title={t('orders.detail.back')}
         >
@@ -66,21 +66,21 @@ const OrderTopBar = ({
         </button>
         <button
           onClick={onWhatsApp}
-          className="pedido-detail__icon-btn pedido-detail__icon-btn--whatsapp"
+          className="order-detail__icon-btn order-detail__icon-btn--whatsapp"
           title={t('orders.detail.whatsapp')}
         >
           <PiWhatsappLogoBold size={20} />
         </button>
         <button
           onClick={onCopy}
-          className={`pedido-detail__icon-btn ${copiedId ? 'pedido-detail__icon-btn--success' : ''}`}
+          className={`order-detail__icon-btn ${copiedId ? 'order-detail__icon-btn--success' : ''}`}
           title={copiedId ? t('orders.detail.copied') : t('orders.detail.copy')}
         >
           {copiedId ? <PiCheckBold size={20} /> : <PiCopyBold size={20} />}
         </button>
         <button
           onClick={onDownload}
-          className="pedido-detail__icon-btn"
+          className="order-detail__icon-btn"
           title={t('orders.detail.download')}
           disabled={downloading}
         >
@@ -88,10 +88,10 @@ const OrderTopBar = ({
         </button>
         {role === 'admin' && (
           <>
-            <span className="pedido-detail__top-divider" />
+            <span className="order-detail__top-divider" />
             <button
               onClick={onDelete}
-              className="pedido-detail__icon-btn pedido-detail__icon-btn--danger"
+              className="order-detail__icon-btn order-detail__icon-btn--danger"
               title={t('orders.detail.delete')}
             >
               <PiTrashBold size={20} />
@@ -100,8 +100,8 @@ const OrderTopBar = ({
         )}
         {!order.archived && (
           <>
-            <div className="pedido-detail__top-bar-abono-group">
-              <div className="pedido-detail__top-bar-abono">
+            <div className="order-detail__top-bar-payment-group">
+              <div className="order-detail__top-bar-payment">
                 <select
                   value={paymentProduct}
                   onChange={e => onPaymentProductChange(e.target.value)}
@@ -135,7 +135,7 @@ const OrderTopBar = ({
             </div>
             <button
               onClick={onDeliver}
-              className={`pedido-detail__btn-entregado ${canMarkDelivered ? 'pedido-detail__btn-entregado--active' : ''} ${order.status === 'delivered' ? 'pedido-detail__btn-entregado--done' : ''}`}
+              className={`order-detail__btn-delivered ${canMarkDelivered ? 'order-detail__btn-delivered--active' : ''} ${order.status === 'delivered' ? 'order-detail__btn-delivered--done' : ''}`}
               disabled={!canMarkDelivered || submitting}
             >
               {order.status === 'delivered'
@@ -144,7 +144,7 @@ const OrderTopBar = ({
               }
             </button>
             {paymentError && (
-              <span className="pedido-detail__top-bar-abono-error">{paymentError}</span>
+              <span className="order-detail__top-bar-payment-error">{paymentError}</span>
             )}
           </>
         )}

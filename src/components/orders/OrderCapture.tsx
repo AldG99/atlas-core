@@ -30,38 +30,38 @@ const OrderCapture = forwardRef<HTMLDivElement, OrderCaptureProps>(
       : formatPhone(order.clientPhone);
 
     return (
-      <div ref={ref} className="pedido-captura">
+      <div ref={ref} className="order-capture">
 
         {/* Header */}
-        <div className="pedido-captura__header">
+        <div className="order-capture__header">
           {businessName && (
-            <div className="pedido-captura__negocio">{businessName}</div>
+            <div className="order-capture__business">{businessName}</div>
           )}
           {order.orderNumber && (
-            <div className="pedido-captura__folio">{order.orderNumber}</div>
+            <div className="order-capture__order-number">{order.orderNumber}</div>
           )}
         </div>
 
-        <hr className="pedido-captura__sep pedido-captura__sep--double" />
+        <hr className="order-capture__sep order-capture__sep--double" />
 
         {/* Info del cliente */}
-        <div className="pedido-captura__info">
-          <div className="pedido-captura__info-row">
+        <div className="order-capture__info">
+          <div className="order-capture__info-row">
             <span>{order.clientName}</span>
-            <span className="pedido-captura__estado">
+            <span className="order-capture__status">
               {t(`orders.status.${order.status}`)}
             </span>
           </div>
-          <div className="pedido-captura__info-row">
+          <div className="order-capture__info-row">
             <span>{tel}</span>
             <span>{formatShortDate(order.createdAt)}</span>
           </div>
         </div>
 
-        <hr className="pedido-captura__sep pedido-captura__sep--dashed" />
+        <hr className="order-capture__sep order-capture__sep--dashed" />
 
         {/* Productos */}
-        <div className="pedido-captura__section-title">{t('orders.capture.products')}</div>
+        <div className="order-capture__section-title">{t('orders.capture.products')}</div>
         {order.items.map((p, idx) => {
           const covered = Math.min(coverage[idx] || 0, p.subtotal);
           const percentage = p.subtotal > 0 ? (covered / p.subtotal) * 100 : 0;
@@ -72,13 +72,13 @@ const OrderCapture = forwardRef<HTMLDivElement, OrderCaptureProps>(
                 ? `${Math.round(percentage)}%`
                 : t('orders.capture.statusPending');
           return (
-            <div key={idx} className="pedido-captura__product">
-              <div className="pedido-captura__product-name">
-                {p.sku && <span className="pedido-captura__clave">[{p.sku}] </span>}
+            <div key={idx} className="order-capture__product">
+              <div className="order-capture__product-name">
+                {p.sku && <span className="order-capture__sku">[{p.sku}] </span>}
                 {p.name}
                 {p.discount ? ` (-${p.discount}%)` : ''}
               </div>
-              <div className="pedido-captura__product-detail">
+              <div className="order-capture__product-detail">
                 <span>{p.quantity} × {format(p.unitPrice)}</span>
                 <span>{format(p.subtotal)} · {statusLabel}</span>
               </div>
@@ -86,19 +86,19 @@ const OrderCapture = forwardRef<HTMLDivElement, OrderCaptureProps>(
           );
         })}
 
-        <hr className="pedido-captura__sep pedido-captura__sep--double" />
+        <hr className="order-capture__sep order-capture__sep--double" />
 
         {/* Totales */}
-        <div className="pedido-captura__total-block">
-          <div className="pedido-captura__total-row">
+        <div className="order-capture__total-block">
+          <div className="order-capture__total-row">
             <span>{t('orders.capture.total')}</span>
             <span>{format(order.total)}</span>
           </div>
-          <div className="pedido-captura__total-row">
+          <div className="order-capture__total-row">
             <span>{t('orders.capture.paid')}</span>
             <span>{format(paid)}</span>
           </div>
-          <div className="pedido-captura__total-row pedido-captura__total-row--highlight">
+          <div className="order-capture__total-row order-capture__total-row--highlight">
             <span>{t('orders.capture.remaining')}</span>
             <span>{remaining <= 0 ? t('orders.capture.settled') : format(remaining)}</span>
           </div>
@@ -107,17 +107,17 @@ const OrderCapture = forwardRef<HTMLDivElement, OrderCaptureProps>(
         {/* Notas */}
         {order.notes && (
           <>
-            <hr className="pedido-captura__sep pedido-captura__sep--dashed" />
-            <div className="pedido-captura__section-title">{t('orders.capture.notes')}</div>
-            <div className="pedido-captura__notas">{order.notes}</div>
+            <hr className="order-capture__sep order-capture__sep--dashed" />
+            <div className="order-capture__section-title">{t('orders.capture.notes')}</div>
+            <div className="order-capture__notes">{order.notes}</div>
           </>
         )}
 
         {/* Abonos */}
         {payments.length > 0 && (
           <>
-            <hr className="pedido-captura__sep pedido-captura__sep--dashed" />
-            <div className="pedido-captura__section-title">{t('orders.capture.payments')}</div>
+            <hr className="order-capture__sep order-capture__sep--dashed" />
+            <div className="order-capture__section-title">{t('orders.capture.payments')}</div>
             {payments.map((payment, i) => {
               const prod =
                 typeof payment.itemIndex === 'number'
@@ -127,9 +127,9 @@ const OrderCapture = forwardRef<HTMLDivElement, OrderCaptureProps>(
                 ? `${prod.sku ? `[${prod.sku}] ` : ''}${prod.name}`
                 : t('orders.capture.general');
               return (
-                <div key={i} className="pedido-captura__abono-row">
-                  <span className="pedido-captura__abono-left">{label}</span>
-                  <span className="pedido-captura__abono-right">
+                <div key={i} className="order-capture__payment-row">
+                  <span className="order-capture__payment-left">{label}</span>
+                  <span className="order-capture__payment-right">
                     {format(payment.amount)}{'  '}{formatShortDate(payment.date)}
                   </span>
                 </div>
@@ -138,10 +138,10 @@ const OrderCapture = forwardRef<HTMLDivElement, OrderCaptureProps>(
           </>
         )}
 
-        <hr className="pedido-captura__sep pedido-captura__sep--double" />
+        <hr className="order-capture__sep order-capture__sep--double" />
 
         {/* Pie */}
-        <div className="pedido-captura__footer">
+        <div className="order-capture__footer">
           {downloadDate &&
             t('orders.capture.generatedOn', {
               date: downloadDate.toLocaleDateString(i18n.language, {

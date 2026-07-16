@@ -1,7 +1,7 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
-.producto-selector {
+.product-selector {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -136,7 +136,7 @@
     }
   }
 
-  &__dropdown-clave {
+  &__dropdown-sku {
     font-size: $font-size-xs;
     font-weight: 700;
     color: $color-primary;
@@ -147,7 +147,7 @@
     font-family: monospace;
   }
 
-  &__dropdown-unidad {
+  &__dropdown-unit {
     font-size: $font-size-sm;
     font-weight: 500;
     color: $color-gray-400;
@@ -183,14 +183,14 @@
     }
   }
 
-  &__dropdown-etiquetas {
+  &__dropdown-labels {
     display: flex;
     gap: 3px;
     min-width: 44px;
     justify-content: flex-end;
   }
 
-  &__dropdown-etiqueta {
+  &__dropdown-label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -437,12 +437,12 @@
     white-space: nowrap;
   }
 
-  &__table-unidad {
+  &__table-unit {
     font-size: $font-size-sm;
     color: $color-gray-500;
   }
 
-  &__table-clave {
+  &__table-sku {
     display: inline-block;
     padding: 1px 5px;
     font-size: $font-size-xs;
@@ -455,13 +455,13 @@
     flex-shrink: 0;
   }
 
-  &__table-etiquetas {
+  &__table-labels {
     display: inline-flex;
     gap: 2px;
     flex-wrap: wrap;
   }
 
-  &__table-etiqueta {
+  &__table-label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -526,14 +526,14 @@
     color: $color-gray-400;
   }
 
-  &__cantidad {
+  &__quantity {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: $spacing-xs;
   }
 
-  &__cantidad-btn {
+  &__quantity-btn {
     width: 20px;
     height: 20px;
     border: 1px solid $color-gray-300;
@@ -562,7 +562,7 @@
     }
   }
 
-  &__cantidad-value {
+  &__quantity-value {
     min-width: 20px;
     text-align: center;
     font-weight: 600;
@@ -645,7 +645,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: productoSelectorFadeIn 0.15s ease;
+    animation: productSelectorFadeIn 0.15s ease;
   }
 
   &__modal {
@@ -664,18 +664,18 @@
       display: flex;
       flex-direction: column;
 
-      .producto-selector__modal-header {
+      .product-selector__modal-header {
         flex-shrink: 0;
       }
 
-      .producto-selector__modal-body {
+      .product-selector__modal-body {
         flex-direction: row;
         padding: 0;
         overflow: hidden;
         gap: 0;
       }
 
-      .producto-selector__modal-image {
+      .product-selector__modal-image {
         width: 340px;
         height: 340px;
         aspect-ratio: unset;
@@ -693,7 +693,7 @@
         }
       }
 
-      .producto-selector__modal-footer {
+      .product-selector__modal-footer {
         flex-shrink: 0;
       }
     }
@@ -830,12 +830,12 @@
     font-style: italic;
   }
 
-  &__modal-etiquetas {
+  &__modal-labels {
     display: inline-flex;
     gap: 4px;
   }
 
-  &__modal-etiqueta {
+  &__modal-label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -907,7 +907,7 @@
   }
 }
 
-@keyframes productoSelectorFadeIn {
+@keyframes productSelectorFadeIn {
   from {
     opacity: 0;
     transform: translateY(-4px);

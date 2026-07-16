@@ -49,16 +49,16 @@ const NewOrder = () => {
 
   return (
     <MainLayout>
-      <div className="new-pedido">
-        <div className="new-pedido__card">
-          <div className="new-pedido__header">
+      <div className="new-order">
+        <div className="new-order__card">
+          <div className="new-order__header">
             <h1>{t('dashboard.newOrder')}</h1>
-            <PiShoppingBagBold className="new-pedido__header-icon" size={28} />
+            <PiShoppingBagBold className="new-order__header-icon" size={28} />
           </div>
 
-          {error && <div className="new-pedido__error">{error}</div>}
+          {error && <div className="new-order__error">{error}</div>}
 
-          <div className="new-pedido__form">
+          <div className="new-order__form">
             <OrderForm
               onSubmit={handleSubmit}
               onCancel={() => navigate(-1)}

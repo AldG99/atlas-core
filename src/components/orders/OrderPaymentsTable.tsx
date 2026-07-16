@@ -58,11 +58,11 @@ const OrderPaymentsTable: React.FC<Props> = ({
   const sorted = [...payments].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
-    <div className="pedido-detail__section pedido-detail__section--no-pad">
-      <div className="pedido-detail__table-wrapper">
+    <div className="order-detail__section order-detail__section--no-pad">
+      <div className="order-detail__table-wrapper">
         {/* Header fijo */}
-        <div className="pedido-detail__table-head">
-          <table className="pedido-detail__abonos-table">
+        <div className="order-detail__table-head">
+          <table className="order-detail__payments-table">
             <Colgroup />
             <thead>
               <tr>
@@ -79,13 +79,13 @@ const OrderPaymentsTable: React.FC<Props> = ({
         </div>
 
         {/* Cuerpo scrolleable */}
-        <div ref={paymentScrollRef} className="pedido-detail__table-scroll pedido-detail__table-scroll--fixed">
-          <table className="pedido-detail__abonos-table">
+        <div ref={paymentScrollRef} className="order-detail__table-scroll order-detail__table-scroll--fixed">
+          <table className="order-detail__payments-table">
             <Colgroup />
             <tbody>
               {payments.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="pedido-detail__abonos-empty">
+                  <td colSpan={6} className="order-detail__payments-empty">
                     {t('orders.detail.noPayments')}
                   </td>
                 </tr>
@@ -93,26 +93,26 @@ const OrderPaymentsTable: React.FC<Props> = ({
                 sorted.map((payment, i) => (
                   <tr
                     key={payment.id}
-                    className={focusedPaymentRow === i ? 'pedido-detail__product-row--focused' : ''}
+                    className={focusedPaymentRow === i ? 'order-detail__product-row--focused' : ''}
                     onClick={() => onRowClick(i)}
                   >
                     <td>
                       {typeof payment.itemIndex === 'number' && items[payment.itemIndex]?.sku ? (
-                        <span className="pedido-detail__clave">
+                        <span className="order-detail__sku">
                           {items[payment.itemIndex].sku}
                         </span>
                       ) : '-'}
                     </td>
                     <td title={typeof payment.itemIndex === 'number' && items[payment.itemIndex] ? items[payment.itemIndex].name : undefined}>
                       {typeof payment.itemIndex === 'number' && items[payment.itemIndex] ? (
-                        <span className="pedido-detail__abono-autor">{items[payment.itemIndex].name}</span>
+                        <span className="order-detail__payment-author">{items[payment.itemIndex].name}</span>
                       ) : (
-                        <span className="pedido-detail__general-label">{t('orders.detail.generalPayment')}</span>
+                        <span className="order-detail__general-label">{t('orders.detail.generalPayment')}</span>
                       )}
                     </td>
                     <td>
                       {editingPaymentId === payment.id ? (
-                        <div className="pedido-detail__abono-edit" onClick={e => e.stopPropagation()}>
+                        <div className="order-detail__payment-edit" onClick={e => e.stopPropagation()}>
                           <input
                             type="number"
                             min="0"
@@ -125,10 +125,10 @@ const OrderPaymentsTable: React.FC<Props> = ({
                               if (e.key === 'Escape') onEditCancel();
                             }}
                           />
-                          <button className="pedido-detail__abono-edit-confirm" onClick={() => onEditConfirm(payment.id)} title={t('common.confirm')}>
+                          <button className="order-detail__payment-edit-confirm" onClick={() => onEditConfirm(payment.id)} title={t('common.confirm')}>
                             <PiCheckBold size={14} />
                           </button>
-                          <button className="pedido-detail__abono-edit-cancel" onClick={onEditCancel} title={t('common.cancel')}>
+                          <button className="order-detail__payment-edit-cancel" onClick={onEditCancel} title={t('common.cancel')}>
                             <PiXBold size={14} />
                           </button>
                         </div>
@@ -139,7 +139,7 @@ const OrderPaymentsTable: React.FC<Props> = ({
                     <td>
                       {payment.originalAmount && (
                         <span
-                          className="pedido-detail__abono-editado"
+                          className="order-detail__payment-edited"
                           title={`${format(payment.originalAmount)}${payment.editedAt ? ` · ${formatDate(payment.editedAt)}` : ''}`}
                         >
                           {t('common.edit')}
@@ -149,7 +149,7 @@ const OrderPaymentsTable: React.FC<Props> = ({
                     <td onClick={e => e.stopPropagation()}>
                       {role === 'admin' && editingPaymentId !== payment.id && (
                         <button
-                          className="pedido-detail__abono-edit-btn"
+                          className="order-detail__payment-edit-btn"
                           title={t('common.edit')}
                           disabled={status === 'delivered' || archived}
                           onClick={() => onEditStart(payment.id, payment.amount)}
@@ -160,7 +160,7 @@ const OrderPaymentsTable: React.FC<Props> = ({
                     </td>
                     <td>
                       {payment.createdBy && (
-                        <span className="pedido-detail__abono-autor" title={payment.createdBy.name}>
+                        <span className="order-detail__payment-author" title={payment.createdBy.name}>
                           {payment.createdBy.name}
                         </span>
                       )}
@@ -175,12 +175,12 @@ const OrderPaymentsTable: React.FC<Props> = ({
       </div>
 
       {createdBy && (
-        <div className="pedido-detail__creado-por-row">
+        <div className="order-detail__created-by-row">
           {t('orders.detail.createdBy')} <span>{createdBy.name}</span>
         </div>
       )}
-      <hr className="pedido-detail__info-divider" />
-      <div className="pedido-detail__creado-por-row">
+      <hr className="order-detail__info-divider" />
+      <div className="order-detail__created-by-row">
         {t('orders.detail.deliveredBy')} <span>{deliveredBy ? deliveredBy.name : t('orders.detail.notDeliveredYet')}</span>
       </div>
     </div>

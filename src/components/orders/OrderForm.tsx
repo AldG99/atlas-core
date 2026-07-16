@@ -164,8 +164,8 @@ const OrderForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="pedido-form">
-      <div className="pedido-form__fields pedido-form__fields--client">
+    <form onSubmit={handleSubmit} className="order-form">
+      <div className="order-form__fields order-form__fields--client">
         <ClientSelector
           onSelect={handleClientSelect}
           selectedClient={selectedClient}
@@ -185,7 +185,7 @@ const OrderForm = ({
         error={errors.items}
       />
 
-      <div className="pedido-form__fields">
+      <div className="order-form__fields">
         <div className="form-group">
           <label htmlFor="notas">{t('orders.notes')}</label>
           <input
@@ -201,7 +201,7 @@ const OrderForm = ({
           />
         </div>
 
-        <div className="pedido-form__actions">
+        <div className="order-form__actions">
           {onCancel && (
             <button
               type="button"
