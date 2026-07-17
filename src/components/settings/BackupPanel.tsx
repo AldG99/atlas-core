@@ -80,13 +80,13 @@ const BackupPanel = () => {
   };
 
   return (
-    <div className="configuracion__backup-blocks">
+    <div className="settings__backup-blocks">
       {/* Exportar */}
-      <div className="configuracion__backup-block">
-        <p className="configuracion__backup-title">{t('settings.backup.exportTitle')}</p>
-        <p className="configuracion__desc">{t('settings.backup.exportDesc')}</p>
-        <p className="configuracion__note">{t('settings.backup.exportNote')}</p>
-        <div className="configuracion__actions">
+      <div className="settings__backup-block">
+        <p className="settings__backup-title">{t('settings.backup.exportTitle')}</p>
+        <p className="settings__desc">{t('settings.backup.exportDesc')}</p>
+        <p className="settings__note">{t('settings.backup.exportNote')}</p>
+        <div className="settings__actions">
           <button
             className="btn btn--primary btn--sm"
             onClick={handleExport}
@@ -100,21 +100,21 @@ const BackupPanel = () => {
       </div>
 
       {/* Importar */}
-      <div className="configuracion__backup-block">
-        <p className="configuracion__backup-title">{t('settings.backup.importTitle')}</p>
-        <p className="configuracion__desc">{t('settings.backup.importDesc')}</p>
-        <p className="configuracion__note">{t('settings.backup.importNote')}</p>
+      <div className="settings__backup-block">
+        <p className="settings__backup-title">{t('settings.backup.importTitle')}</p>
+        <p className="settings__desc">{t('settings.backup.importDesc')}</p>
+        <p className="settings__note">{t('settings.backup.importNote')}</p>
 
         <input
           ref={fileInputRef}
           type="file"
           accept=".json"
-          className="configuracion__file-input"
+          className="settings__file-input"
           onChange={handleFileChange}
         />
 
         {importStep === 'idle' && (
-          <div className="configuracion__actions">
+          <div className="settings__actions">
             <button
               className="btn btn--outline btn--sm"
               onClick={() => fileInputRef.current?.click()}
@@ -125,7 +125,7 @@ const BackupPanel = () => {
               {t('settings.backup.selectFile')}
             </button>
             {fileError && (
-              <div className="configuracion__file-error">
+              <div className="settings__file-error">
                 <PiWarningBold size={13} />
                 {fileError}
               </div>
@@ -134,31 +134,31 @@ const BackupPanel = () => {
         )}
 
         {importStep === 'preview' && backupData && (
-          <div className="configuracion__preview">
-            <p className="configuracion__preview-date">
+          <div className="settings__preview">
+            <p className="settings__preview-date">
               {new Date(backupData.exportedAt).toLocaleDateString(undefined, {
                 day: '2-digit', month: 'long', year: 'numeric',
               })}
             </p>
-            <div className="configuracion__preview-summary">
-              <div className="configuracion__preview-item">
-                <span className="configuracion__preview-count">{backupData.clients.length}</span>
+            <div className="settings__preview-summary">
+              <div className="settings__preview-item">
+                <span className="settings__preview-count">{backupData.clients.length}</span>
                 <span>{t('nav.clients')}</span>
               </div>
-              <div className="configuracion__preview-item">
-                <span className="configuracion__preview-count">{backupData.products.length}</span>
+              <div className="settings__preview-item">
+                <span className="settings__preview-count">{backupData.products.length}</span>
                 <span>{t('nav.products')}</span>
               </div>
-              <div className="configuracion__preview-item">
-                <span className="configuracion__preview-count">{backupData.orders.length}</span>
+              <div className="settings__preview-item">
+                <span className="settings__preview-count">{backupData.orders.length}</span>
                 <span>{t('nav.orders')}</span>
               </div>
-              <div className="configuracion__preview-item">
-                <span className="configuracion__preview-count">{backupData.labels?.length ?? 0}</span>
+              <div className="settings__preview-item">
+                <span className="settings__preview-count">{backupData.labels?.length ?? 0}</span>
                 <span>{t('settings.backup.labels')}</span>
               </div>
             </div>
-            <div className="configuracion__actions">
+            <div className="settings__actions">
               <button className="btn btn--ghost btn--sm" onClick={handleReset}>
                 <PiXBold size={13} />
                 {t('settings.backup.cancel')}
@@ -172,17 +172,17 @@ const BackupPanel = () => {
         )}
 
         {importStep === 'importing' && (
-          <div className="configuracion__importing">
-            <div className="configuracion__spinner" />
+          <div className="settings__importing">
+            <div className="settings__spinner" />
             <span>{t('settings.backup.importing')}</span>
           </div>
         )}
 
         {importStep === 'done' && importResult && (
-          <div className="configuracion__done">
-            <PiCheckCircleBold size={28} className="configuracion__done-icon" />
-            <p className="configuracion__done-title">{t('settings.backup.doneTitle')}</p>
-            <p className="configuracion__done-desc">
+          <div className="settings__done">
+            <PiCheckCircleBold size={28} className="settings__done-icon" />
+            <p className="settings__done-title">{t('settings.backup.doneTitle')}</p>
+            <p className="settings__done-desc">
               {t('settings.backup.doneDesc', {
                 clients: importResult.clients,
                 products: importResult.products,

@@ -36,26 +36,26 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
   };
 
   return (
-    <div className="configuracion__modal-overlay" onClick={onClose}>
-      <div className="configuracion__modal" onClick={e => e.stopPropagation()}>
-        <div className="configuracion__modal-header">
-          <PiWarningBold size={20} className="configuracion__modal-icon" />
+    <div className="settings__modal-overlay" onClick={onClose}>
+      <div className="settings__modal" onClick={e => e.stopPropagation()}>
+        <div className="settings__modal-header">
+          <PiWarningBold size={20} className="settings__modal-icon" />
           <h3>
             {type === 'deleteData' ? t('settings.dangerModal.deleteDataTitle') : t('settings.dangerModal.deleteAccountTitle')}
           </h3>
-          <button className="configuracion__modal-close" onClick={onClose}>
+          <button className="settings__modal-close" onClick={onClose}>
             <PiXBold size={16} />
           </button>
         </div>
-        <div className="configuracion__modal-body">
+        <div className="settings__modal-body">
           <p>
             {type === 'deleteData'
               ? t('settings.dangerModal.deleteDataText')
               : t('settings.dangerModal.deleteAccountText')}
           </p>
-          <div className="configuracion__modal-field">
+          <div className="settings__modal-field">
             <label>{t('settings.dangerModal.confirmPassword')}</label>
-            <div className="configuracion__modal-pwd">
+            <div className="settings__modal-pwd">
               <input
                 type={showPwd ? 'text' : 'password'}
                 className="input"
@@ -70,13 +70,13 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
             </div>
           </div>
           {error && (
-            <div className="configuracion__file-error">
+            <div className="settings__file-error">
               <PiWarningBold size={14} />
               {error}
             </div>
           )}
         </div>
-        <div className="configuracion__modal-actions">
+        <div className="settings__modal-actions">
           <button className="btn btn--outline btn--sm" onClick={onClose} disabled={loading}>
             {t('settings.dangerModal.cancel')}
           </button>

@@ -3,7 +3,7 @@
 
 $topbar-height: 52px;
 
-.perfil-page {
+.profile-page {
   position: fixed;
   inset: 0;
   background-color: $color-gray-50;
@@ -11,7 +11,7 @@ $topbar-height: 52px;
   overflow-y: auto;
 }
 
-.perfil {
+.profile {
   max-width: 720px;
   margin: 0 auto;
   padding-top: 48px;
@@ -141,7 +141,7 @@ $topbar-height: 52px;
 
     &--editable {
       cursor: pointer;
-      &:hover .perfil__avatar-overlay { opacity: 1; }
+      &:hover .profile__avatar-overlay { opacity: 1; }
     }
   }
 
@@ -165,7 +165,7 @@ $topbar-height: 52px;
     gap: 2px;
   }
 
-  &__negocio {
+  &__business {
     font-size: $font-size-lg;
     font-weight: 700;
     color: $color-gray-800;

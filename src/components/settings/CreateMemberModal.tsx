@@ -57,19 +57,19 @@ const CreateMemberModal = ({ onClose, onSubmit }: CreateMemberModalProps) => {
   };
 
   return (
-    <div className="configuracion__modal-overlay" onClick={onClose}>
-      <div className="configuracion__modal configuracion__modal--wide" onClick={e => e.stopPropagation()}>
-        <div className="configuracion__modal-header">
-          <PiUsersThreeBold size={20} className="configuracion__modal-icon" />
+    <div className="settings__modal-overlay" onClick={onClose}>
+      <div className="settings__modal settings__modal--wide" onClick={e => e.stopPropagation()}>
+        <div className="settings__modal-header">
+          <PiUsersThreeBold size={20} className="settings__modal-icon" />
           <h3>{t('settings.team.createModal.title')}</h3>
-          <button className="configuracion__modal-close" onClick={onClose}>
+          <button className="settings__modal-close" onClick={onClose}>
             <PiXBold size={16} />
           </button>
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="configuracion__modal-body">
-            <div className="configuracion__modal-row">
-              <div className="configuracion__modal-field">
+          <div className="settings__modal-body">
+            <div className="settings__modal-row">
+              <div className="settings__modal-field">
                 <label>{t('settings.team.createModal.firstName')}</label>
                 <input
                   type="text"
@@ -81,7 +81,7 @@ const CreateMemberModal = ({ onClose, onSubmit }: CreateMemberModalProps) => {
                   maxLength={40}
                 />
               </div>
-              <div className="configuracion__modal-field">
+              <div className="settings__modal-field">
                 <label>{t('settings.team.createModal.lastName')}</label>
                 <input
                   type="text"
@@ -94,7 +94,7 @@ const CreateMemberModal = ({ onClose, onSubmit }: CreateMemberModalProps) => {
                 />
               </div>
             </div>
-            <div className="configuracion__modal-field">
+            <div className="settings__modal-field">
               <label>{t('settings.team.createModal.dob')}</label>
               <input
                 type="date"
@@ -105,7 +105,7 @@ const CreateMemberModal = ({ onClose, onSubmit }: CreateMemberModalProps) => {
                 required
               />
             </div>
-            <div className="configuracion__modal-field">
+            <div className="settings__modal-field">
               <label>{t('settings.team.createModal.phone')}</label>
               <PhoneInput
                 value={form.phone}
@@ -114,8 +114,8 @@ const CreateMemberModal = ({ onClose, onSubmit }: CreateMemberModalProps) => {
                 placeholder={t('auth.register.phonePlaceholder')}
               />
             </div>
-            <div className="configuracion__modal-row">
-              <div className="configuracion__modal-field">
+            <div className="settings__modal-row">
+              <div className="settings__modal-field">
                 <label>{t('settings.team.createModal.password')}</label>
                 <input
                   type="password"
@@ -127,7 +127,7 @@ const CreateMemberModal = ({ onClose, onSubmit }: CreateMemberModalProps) => {
                   maxLength={32}
                 />
               </div>
-              <div className="configuracion__modal-field">
+              <div className="settings__modal-field">
                 <label>{t('settings.team.createModal.confirmPassword')}</label>
                 <input
                   type="password"
@@ -141,13 +141,13 @@ const CreateMemberModal = ({ onClose, onSubmit }: CreateMemberModalProps) => {
               </div>
             </div>
             {error && (
-              <div className="configuracion__file-error">
+              <div className="settings__file-error">
                 <PiWarningBold size={14} />
                 {error}
               </div>
             )}
           </div>
-          <div className="configuracion__modal-actions">
+          <div className="settings__modal-actions">
             <button
               type="button"
               className="btn btn--outline btn--sm"

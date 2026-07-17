@@ -25,14 +25,14 @@ const TemplatesPanel = () => {
   ];
 
   return (
-    <div className="configuracion__plantillas-panel">
-      <p className="configuracion__desc">{t('settings.templates.desc')}</p>
-      <p className="configuracion__note">{t('settings.templates.variables')}</p>
-      <div className="configuracion__tabs">
+    <div className="settings__templates-panel">
+      <p className="settings__desc">{t('settings.templates.desc')}</p>
+      <p className="settings__note">{t('settings.templates.variables')}</p>
+      <div className="settings__tabs">
         {TEMPLATE_TABS.map(tab => (
           <button
             key={tab.key}
-            className={`configuracion__tab${templateTab === tab.key ? ' configuracion__tab--active' : ''}`}
+            className={`settings__tab${templateTab === tab.key ? ' settings__tab--active' : ''}`}
             onClick={() => setTemplateTab(tab.key)}
           >
             {tab.label}
@@ -40,12 +40,12 @@ const TemplatesPanel = () => {
         ))}
       </div>
       <textarea
-        className="configuracion__textarea configuracion__textarea--grow"
+        className="settings__textarea settings__textarea--grow"
         value={templates[templateTab]}
         onChange={e => setTemplates(prev => ({ ...prev, [templateTab]: e.target.value }))}
         placeholder={t('settings.templates.placeholder')}
       />
-      <div className="configuracion__actions">
+      <div className="settings__actions">
         <button
           className="btn btn--outline btn--sm"
           onClick={resetToDefaults}

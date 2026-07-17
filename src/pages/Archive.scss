@@ -1,7 +1,7 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
-.archivo {
+.archive {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -144,7 +144,7 @@
     }
   }
 
-  // Table — same structure as PedidosTable
+  // Table — same structure as OrdersTable
   &__table-wrapper {
     display: flex;
     flex-direction: column;
@@ -271,7 +271,7 @@
     &:hover {
       background-color: $color-gray-50;
 
-      .archivo__name {
+      .archive__name {
         color: $color-primary;
       }
     }
@@ -279,7 +279,7 @@
     &--focused {
       background-color: rgba($color-primary, 0.06);
 
-      .archivo__name {
+      .archive__name {
         color: $color-primary;
       }
     }
@@ -331,7 +331,7 @@
     white-space: nowrap;
   }
 
-  &__cp {
+  &__postal {
     font-size: $font-size-xs;
     font-weight: 500;
     color: $color-gray-600;

@@ -138,10 +138,10 @@ const Archive = () => {
 
   return (
     <MainLayout>
-      <div className="archivo">
-        <div className="archivo__header">
+      <div className="archive">
+        <div className="archive__header">
           <h1>{t('archive.title')}</h1>
-          <div className="archivo__header-actions">
+          <div className="archive__header-actions">
             <button
               onClick={handleExport}
               className="btn btn--secondary"
@@ -153,9 +153,9 @@ const Archive = () => {
           </div>
         </div>
 
-        <div className="archivo__controls">
-          <div className="archivo__search">
-            <PiMagnifyingGlassBold size={16} className="archivo__search-icon" />
+        <div className="archive__controls">
+          <div className="archive__search">
+            <PiMagnifyingGlassBold size={16} className="archive__search-icon" />
             <input
               type="text"
               placeholder={t('archive.searchPlaceholder')}
@@ -165,7 +165,7 @@ const Archive = () => {
             />
           </div>
 
-          <div className="archivo__selects">
+          <div className="archive__selects">
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value as DateFilter)}

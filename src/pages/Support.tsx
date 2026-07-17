@@ -129,16 +129,16 @@ const Support = () => {
 
   return (
     <MainLayout>
-      <div className="soporte">
-        <div className="soporte__header">
+      <div className="support">
+        <div className="support__header">
           <h1>{t('support.title')}</h1>
           <p>{t('support.subtitle')}</p>
         </div>
 
-        <div className="soporte__body">
-          <section className="soporte__section">
-            <div className="soporte__contact-card">
-              <div className="soporte__contact-info">
+        <div className="support__body">
+          <section className="support__section">
+            <div className="support__contact-card">
+              <div className="support__contact-info">
                 <PiBookOpenBold size={24} />
                 <div>
                   <h3>{t('support.contactInfo')}</h3>
@@ -147,12 +147,12 @@ const Support = () => {
               </div>
 
               {limited ? (
-                <p className="soporte__limite-msg">
+                <p className="support__limit-msg">
                   {t('support.errors.dailyLimit', { limit: DAILY_LIMIT })}
                 </p>
               ) : (
-                <form className="soporte__form" onSubmit={handleSubmit}>
-                  <div className="soporte__form-group">
+                <form className="support__form" onSubmit={handleSubmit}>
+                  <div className="support__form-group">
                     <label htmlFor="asunto">{t('support.subject')}</label>
                     <input
                       type="text"
@@ -165,16 +165,16 @@ const Support = () => {
                       disabled={blocked}
                     />
                   </div>
-                  <div className="soporte__form-group soporte__form-group--grow">
+                  <div className="support__form-group support__form-group--grow">
                     <label htmlFor="mensaje">
                       {t('support.message')}
-                      <span className={`soporte__char-count ${messageValid ? 'soporte__char-count--ok' : ''} ${formData.message.length >= MAX_MESSAGE_LENGTH ? 'soporte__char-count--max' : ''}`}>
+                      <span className={`support__char-count ${messageValid ? 'support__char-count--ok' : ''} ${formData.message.length >= MAX_MESSAGE_LENGTH ? 'support__char-count--max' : ''}`}>
                         {formData.message.length}/{MAX_MESSAGE_LENGTH}
                       </span>
                     </label>
                     <textarea
                       id="mensaje"
-                      className="input soporte__textarea"
+                      className="input support__textarea"
                       placeholder={t('support.messagePlaceholder')}
                       value={formData.message}
                       maxLength={MAX_MESSAGE_LENGTH}

@@ -266,29 +266,29 @@ const Profile = () => {
   const minDateStr = minDate.toISOString().split('T')[0];
 
   return (
-    <div className="perfil-page">
-      <div className="perfil">
+    <div className="profile-page">
+      <div className="profile">
         {/* Controles flotantes */}
-        <div className="perfil__controls">
-          <button className="perfil__back-btn" onClick={() => navigate(-1)}>
+        <div className="profile__controls">
+          <button className="profile__back-btn" onClick={() => navigate(-1)}>
             <PiArrowLeftBold size={20} />
           </button>
-          <h1 className="perfil__title">{t('profile.title')}</h1>
+          <h1 className="profile__title">{t('profile.title')}</h1>
         </div>
 
-        <div className="perfil__body">
+        <div className="profile__body">
 
           {/* Formulario */}
-          <div className="perfil__card perfil__card--main">
+          <div className="profile__card profile__card--main">
             {/* Avatar dentro del card */}
-            <div className="perfil__avatar-section">
+            <div className="profile__avatar-section">
               <div
-                className={`perfil__avatar${isEditing ? ' perfil__avatar--editable' : ''}`}
+                className={`profile__avatar${isEditing ? ' profile__avatar--editable' : ''}`}
                 onClick={handleImageClick}
               >
                 <Avatar src={previewImage} initials={getInitials()} alt="Foto de perfil" />
                 {isEditing && (
-                  <div className="perfil__avatar-overlay">
+                  <div className="profile__avatar-overlay">
                     <PiCameraBold size={22} />
                   </div>
                 )}
@@ -301,24 +301,24 @@ const Profile = () => {
                 style={{ display: 'none' }}
               />
               {isEditing && previewImage && (
-                <button type="button" className="perfil__remove-photo" onClick={removeImage}>
+                <button type="button" className="profile__remove-photo" onClick={removeImage}>
                   <PiTrashBold size={14} />
                   {t('profile.removePhoto')}
                 </button>
               )}
               {!isEditing && (
-                <div className="perfil__avatar-name">
-                  <span className="perfil__negocio">{user?.businessName}</span>
-                  <span className="perfil__email">{isMember ? user?.username : user?.email}</span>
+                <div className="profile__avatar-name">
+                  <span className="profile__business">{user?.businessName}</span>
+                  <span className="profile__email">{isMember ? user?.username : user?.email}</span>
                 </div>
               )}
             </div>
 
-            <div className="perfil__card-header">
+            <div className="profile__card-header">
               <PiUserBold size={16} />
               <span>{isMember ? t('profile.memberInfo') : t('profile.adminInfo')}</span>
               {!isMember && (
-                <div className="perfil__card-header-actions">
+                <div className="profile__card-header-actions">
                   {isEditing ? (
                     <>
                       <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving || isUploading}>
@@ -329,7 +329,7 @@ const Profile = () => {
                       </button>
                     </>
                   ) : (
-                    <button className="perfil__action-btn perfil__action-btn--primary" onClick={() => setIsEditing(true)} title={t('profile.editButton')}>
+                    <button className="profile__action-btn profile__action-btn--primary" onClick={() => setIsEditing(true)} title={t('profile.editButton')}>
                       <PiPencilBold size={20} />
                     </button>
                   )}
@@ -337,9 +337,9 @@ const Profile = () => {
               )}
             </div>
 
-            <div className="perfil__fields">
+            <div className="profile__fields">
               {/* Nombre del negocio */}
-              <div className="perfil__field perfil__field--full">
+              <div className="profile__field profile__field--full">
                 <label>{t('profile.businessName')}</label>
                 {isEditing && !isMember ? (
                   <>
@@ -352,7 +352,7 @@ const Profile = () => {
                       placeholder={t('profile.businessNamePlaceholder')}
                       maxLength={60}
                     />
-                    {errors.businessName && <span className="perfil__field-error">{errors.businessName}</span>}
+                    {errors.businessName && <span className="profile__field-error">{errors.businessName}</span>}
                   </>
                 ) : (
                   <p>{user?.businessName || '—'}</p>
@@ -360,7 +360,7 @@ const Profile = () => {
               </div>
 
               {/* Nombre y Apellido */}
-              <div className="perfil__field">
+              <div className="profile__field">
                 <label>{t('profile.firstName')}</label>
                 {isEditing && !isMember ? (
                   <>
@@ -373,14 +373,14 @@ const Profile = () => {
                       placeholder={t('profile.firstName')}
                       maxLength={40}
                     />
-                    {errors.firstName && <span className="perfil__field-error">{errors.firstName}</span>}
+                    {errors.firstName && <span className="profile__field-error">{errors.firstName}</span>}
                   </>
                 ) : (
                   <p>{user?.firstName || '—'}</p>
                 )}
               </div>
 
-              <div className="perfil__field">
+              <div className="profile__field">
                 <label>{t('profile.lastName')}</label>
                 {isEditing && !isMember ? (
                   <>
@@ -393,7 +393,7 @@ const Profile = () => {
                       placeholder={t('profile.lastName')}
                       maxLength={40}
                     />
-                    {errors.lastName && <span className="perfil__field-error">{errors.lastName}</span>}
+                    {errors.lastName && <span className="profile__field-error">{errors.lastName}</span>}
                   </>
                 ) : (
                   <p>{user?.lastName || '—'}</p>
@@ -401,7 +401,7 @@ const Profile = () => {
               </div>
 
               {/* Fecha de nacimiento */}
-              <div className="perfil__field">
+              <div className="profile__field">
                 <label>{t('profile.dob')}</label>
                 {isEditing && !isMember ? (
                   <>
@@ -414,7 +414,7 @@ const Profile = () => {
                       max={today}
                       min={minDateStr}
                     />
-                    {errors.birthDate && <span className="perfil__field-error">{errors.birthDate}</span>}
+                    {errors.birthDate && <span className="profile__field-error">{errors.birthDate}</span>}
                   </>
                 ) : (
                   <p>
@@ -426,7 +426,7 @@ const Profile = () => {
               </div>
 
               {/* Teléfono */}
-              <div className="perfil__field">
+              <div className="profile__field">
                 <label>{t('profile.phone')}</label>
                 {isEditing && !isMember ? (
                   <>
@@ -437,7 +437,7 @@ const Profile = () => {
                       hasError={!!errors.phone}
                       placeholder={t('profile.phonePlaceholder')}
                     />
-                    {errors.phone && <span className="perfil__field-error">{errors.phone}</span>}
+                    {errors.phone && <span className="profile__field-error">{errors.phone}</span>}
                   </>
                 ) : (
                   <p>
@@ -449,15 +449,15 @@ const Profile = () => {
               </div>
 
               {/* Email — solo lectura */}
-              <div className="perfil__field perfil__field--full">
-                <label>{isMember ? t('profile.username') : t('profile.email')} <span className="perfil__readonly-badge">{t('common.readOnly')}</span></label>
-                <p className="perfil__readonly">{isMember ? user?.username : user?.email || '—'}</p>
+              <div className="profile__field profile__field--full">
+                <label>{isMember ? t('profile.username') : t('profile.email')} <span className="profile__readonly-badge">{t('common.readOnly')}</span></label>
+                <p className="profile__readonly">{isMember ? user?.username : user?.email || '—'}</p>
               </div>
 
               {/* Fecha de registro — solo lectura */}
-              <div className="perfil__field perfil__field--full">
-                <label>{t('profile.memberSince')} <span className="perfil__readonly-badge">{t('common.readOnly')}</span></label>
-                <p className="perfil__readonly">
+              <div className="profile__field profile__field--full">
+                <label>{t('profile.memberSince')} <span className="profile__readonly-badge">{t('common.readOnly')}</span></label>
+                <p className="profile__readonly">
                   {user?.registeredAt
                     ? new Date(user.registeredAt).toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })
                     : '—'}
@@ -467,23 +467,23 @@ const Profile = () => {
           </div>
 
           {/* Cambiar contraseña — solo admin */}
-          {!isMember && <div className="perfil__card">
-            <div className="perfil__card-header">
+          {!isMember && <div className="profile__card">
+            <div className="profile__card-header">
               <PiLockKeyBold size={16} />
               <span>{t('profile.security')}</span>
             </div>
             {!showPasswordForm ? (
-              <div className="perfil__password-trigger">
+              <div className="profile__password-trigger">
                 <span>{t('profile.password')}</span>
                 <button className="btn btn--outline btn--sm" onClick={() => setShowPasswordForm(true)}>
                   {t('profile.changePassword')}
                 </button>
               </div>
             ) : (
-              <div className="perfil__password-form">
-                <div className="perfil__password-field">
+              <div className="profile__password-form">
+                <div className="profile__password-field">
                   <label>{t('profile.currentPassword')}</label>
-                  <div className="perfil__password-input">
+                  <div className="profile__password-input">
                     <input
                       type={showCurrentPwd ? 'text' : 'password'}
                       className="input"
@@ -497,9 +497,9 @@ const Profile = () => {
                     </button>
                   </div>
                 </div>
-                <div className="perfil__password-field">
+                <div className="profile__password-field">
                   <label>{t('profile.newPassword')}</label>
-                  <div className="perfil__password-input">
+                  <div className="profile__password-input">
                     <input
                       type={showNewPwd ? 'text' : 'password'}
                       className="input"
@@ -513,9 +513,9 @@ const Profile = () => {
                     </button>
                   </div>
                 </div>
-                <div className="perfil__password-field">
+                <div className="profile__password-field">
                   <label>{t('profile.confirmNewPassword')}</label>
-                  <div className="perfil__password-input">
+                  <div className="profile__password-input">
                     <input
                       type="password"
                       className="input"
@@ -526,8 +526,8 @@ const Profile = () => {
                     />
                   </div>
                 </div>
-                {passwordError && <span className="perfil__field-error">{passwordError}</span>}
-                <div className="perfil__password-actions">
+                {passwordError && <span className="profile__field-error">{passwordError}</span>}
+                <div className="profile__password-actions">
                   <button className="btn btn--outline btn--sm" onClick={() => { setShowPasswordForm(false); setPasswordData({ current: '', new: '', confirm: '' }); setPasswordError(''); }}>
                     {t('common.cancel')}
                   </button>
@@ -540,32 +540,32 @@ const Profile = () => {
           </div>}
 
           {/* Estadísticas */}
-          <div className="perfil__stats">
-            <div className="perfil__stat">
-              <div className="perfil__stat-icon">
+          <div className="profile__stats">
+            <div className="profile__stat">
+              <div className="profile__stat-icon">
                 <PiReceiptBold size={20} />
               </div>
-              <div className="perfil__stat-info">
-                <span className="perfil__stat-value">{orders.length}</span>
-                <span className="perfil__stat-label">{t('profile.statsOrders')}</span>
+              <div className="profile__stat-info">
+                <span className="profile__stat-value">{orders.length}</span>
+                <span className="profile__stat-label">{t('profile.statsOrders')}</span>
               </div>
             </div>
-            <div className="perfil__stat">
-              <div className="perfil__stat-icon">
+            <div className="profile__stat">
+              <div className="profile__stat-icon">
                 <PiUsersBold size={20} />
               </div>
-              <div className="perfil__stat-info">
-                <span className="perfil__stat-value">{clients.length}</span>
-                <span className="perfil__stat-label">{t('profile.statsClients')}</span>
+              <div className="profile__stat-info">
+                <span className="profile__stat-value">{clients.length}</span>
+                <span className="profile__stat-label">{t('profile.statsClients')}</span>
               </div>
             </div>
-            <div className="perfil__stat">
-              <div className="perfil__stat-icon">
+            <div className="profile__stat">
+              <div className="profile__stat-icon">
                 <PiShoppingBagBold size={20} />
               </div>
-              <div className="perfil__stat-info">
-                <span className="perfil__stat-value">{products.length}</span>
-                <span className="perfil__stat-label">{t('profile.statsProducts')}</span>
+              <div className="profile__stat-info">
+                <span className="profile__stat-value">{products.length}</span>
+                <span className="profile__stat-label">{t('profile.statsProducts')}</span>
               </div>
             </div>
           </div>

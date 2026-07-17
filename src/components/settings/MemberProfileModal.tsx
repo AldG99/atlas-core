@@ -108,59 +108,59 @@ const MemberProfileModal = ({
   };
 
   return (
-    <div className="configuracion__modal-overlay" onClick={onClose}>
-      <div className="configuracion__modal configuracion__modal--wide" onClick={e => e.stopPropagation()}>
-        <div className="configuracion__modal-header">
-          <PiUserBold size={20} className="configuracion__modal-icon--user" />
+    <div className="settings__modal-overlay" onClick={onClose}>
+      <div className="settings__modal settings__modal--wide" onClick={e => e.stopPropagation()}>
+        <div className="settings__modal-header">
+          <PiUserBold size={20} className="settings__modal-icon--user" />
           <h3>{editing ? t('settings.team.profileModal.editTitle') : t('settings.team.profileModal.viewTitle')}</h3>
-          <button className="configuracion__modal-close" onClick={onClose}>
+          <button className="settings__modal-close" onClick={onClose}>
             <PiXBold size={16} />
           </button>
         </div>
-        <div className="configuracion__modal-body">
+        <div className="settings__modal-body">
           {!editing ? (
             <>
-              <div className="configuracion__miembro-profile">
-                <div className="configuracion__miembro-avatar">
+              <div className="settings__member-profile">
+                <div className="settings__member-avatar">
                   <Avatar src={member.profilePhoto} initials={initials || '?'} alt={fullName} />
                 </div>
-                <div className="configuracion__miembro-name">{fullName || '—'}</div>
+                <div className="settings__member-name">{fullName || '—'}</div>
                 {member.memberNumber && (
-                  <div className="configuracion__miembro-badge">#{member.memberNumber}</div>
+                  <div className="settings__member-badge">#{member.memberNumber}</div>
                 )}
               </div>
-              <div className="configuracion__miembro-fields">
-                <div className="configuracion__miembro-field">
-                  <PiIdentificationBadgeBold size={14} className="configuracion__miembro-field-icon" />
+              <div className="settings__member-fields">
+                <div className="settings__member-field">
+                  <PiIdentificationBadgeBold size={14} className="settings__member-field-icon" />
                   <div>
-                    <p className="configuracion__miembro-field-label">{t('settings.team.profileModal.username')}</p>
-                    <p className="configuracion__miembro-field-value">{member.username ?? '—'}</p>
+                    <p className="settings__member-field-label">{t('settings.team.profileModal.username')}</p>
+                    <p className="settings__member-field-value">{member.username ?? '—'}</p>
                   </div>
                 </div>
                 {formattedPhone && (
-                  <div className="configuracion__miembro-field">
-                    <PiPhoneBold size={14} className="configuracion__miembro-field-icon" />
+                  <div className="settings__member-field">
+                    <PiPhoneBold size={14} className="settings__member-field-icon" />
                     <div>
-                      <p className="configuracion__miembro-field-label">{t('settings.team.profileModal.phone')}</p>
-                      <p className="configuracion__miembro-field-value">{formattedPhone}</p>
+                      <p className="settings__member-field-label">{t('settings.team.profileModal.phone')}</p>
+                      <p className="settings__member-field-value">{formattedPhone}</p>
                     </div>
                   </div>
                 )}
                 {birthDateStr && (
-                  <div className="configuracion__miembro-field">
-                    <PiCalendarBold size={14} className="configuracion__miembro-field-icon" />
+                  <div className="settings__member-field">
+                    <PiCalendarBold size={14} className="settings__member-field-icon" />
                     <div>
-                      <p className="configuracion__miembro-field-label">{t('settings.team.profileModal.dob')}</p>
-                      <p className="configuracion__miembro-field-value">{birthDateStr}</p>
+                      <p className="settings__member-field-label">{t('settings.team.profileModal.dob')}</p>
+                      <p className="settings__member-field-value">{birthDateStr}</p>
                     </div>
                   </div>
                 )}
               </div>
             </>
           ) : (
-            <div className="configuracion__modal-row" style={{ gridTemplateColumns: '1fr' }}>
-              <div className="configuracion__modal-row">
-                <div className="configuracion__modal-field">
+            <div className="settings__modal-row" style={{ gridTemplateColumns: '1fr' }}>
+              <div className="settings__modal-row">
+                <div className="settings__modal-field">
                   <label>{t('settings.team.createModal.firstName')}</label>
                   <input
                     type="text"
@@ -170,7 +170,7 @@ const MemberProfileModal = ({
                     maxLength={40}
                   />
                 </div>
-                <div className="configuracion__modal-field">
+                <div className="settings__modal-field">
                   <label>{t('settings.team.createModal.lastName')}</label>
                   <input
                     type="text"
@@ -181,7 +181,7 @@ const MemberProfileModal = ({
                   />
                 </div>
               </div>
-              <div className="configuracion__modal-field">
+              <div className="settings__modal-field">
                 <label>{t('settings.team.profileModal.phone')}</label>
                 <PhoneInput
                   value={editForm.phone}
@@ -189,7 +189,7 @@ const MemberProfileModal = ({
                   onChange={(val, cod) => setEditForm(f => ({ ...f, phone: val, phoneCountryCode: cod }))}
                 />
               </div>
-              <div className="configuracion__modal-field">
+              <div className="settings__modal-field">
                 <label>{t('settings.team.profileModal.dob')}</label>
                 <input
                   type="date"
@@ -198,9 +198,9 @@ const MemberProfileModal = ({
                   onChange={e => setEditForm(f => ({ ...f, birthDate: e.target.value }))}
                 />
               </div>
-              <div className="configuracion__modal-field">
-                <label>{t('settings.team.profileModal.newPassword')} <span className="configuracion__modal-optional">{t('common.optional')}</span></label>
-                <div className="configuracion__modal-pwd">
+              <div className="settings__modal-field">
+                <label>{t('settings.team.profileModal.newPassword')} <span className="settings__modal-optional">{t('common.optional')}</span></label>
+                <div className="settings__modal-pwd">
                   <input
                     type={showPwd ? 'text' : 'password'}
                     className="input"
@@ -214,9 +214,9 @@ const MemberProfileModal = ({
                   </button>
                 </div>
               </div>
-              <div className="configuracion__modal-field">
+              <div className="settings__modal-field">
                 <label>{t('settings.team.profileModal.confirmPassword')}</label>
-                <div className="configuracion__modal-pwd">
+                <div className="settings__modal-pwd">
                   <input
                     type={showConfirmPwd ? 'text' : 'password'}
                     className="input"
@@ -233,7 +233,7 @@ const MemberProfileModal = ({
             </div>
           )}
         </div>
-        <div className="configuracion__modal-actions">
+        <div className="settings__modal-actions">
           {!editing ? (
             <>
               <button className="btn btn--danger btn--sm" onClick={() => { onRemove(member.uid); onClose(); }}>

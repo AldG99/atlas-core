@@ -1,7 +1,7 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
-.configuracion-page {
+.settings-page {
   position: fixed;
   inset: 0;
   background-color: $color-gray-50;
@@ -9,7 +9,7 @@
   overflow: hidden;
 }
 
-.configuracion {
+.settings {
   display: flex;
   height: 100%;
   overflow: hidden;
@@ -110,12 +110,12 @@
     &--active {
       background-color: rgba($color-primary, 0.06);
 
-      .configuracion__row-title {
+      .settings__row-title {
         color: $color-primary;
         font-weight: 600;
       }
 
-      .configuracion__row-chevron {
+      .settings__row-chevron {
         color: $color-primary;
       }
     }
@@ -214,7 +214,7 @@
     min-height: 0;
   }
 
-  &__plantillas-panel {
+  &__templates-panel {
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
@@ -489,7 +489,7 @@
     border: 2px solid $color-gray-200;
     border-top-color: $color-primary;
     border-radius: 50%;
-    animation: configuracionSpin 0.7s linear infinite;
+    animation: settingsSpin 0.7s linear infinite;
     flex-shrink: 0;
   }
 
@@ -549,11 +549,11 @@
   }
 
   // Membresía
-  &__membresia-section {
+  &__membership-section {
     margin-bottom: $spacing-lg;
   }
 
-  &__membresia-label {
+  &__membership-label {
     font-size: $font-size-xs;
     font-weight: 600;
     color: $color-gray-400;
@@ -563,7 +563,7 @@
   }
 
   // Equipo
-  &__equipo-list {
+  &__team-list {
     display: flex;
     flex-direction: column;
     gap: 1px;
@@ -572,7 +572,7 @@
     overflow: hidden;
   }
 
-  &__equipo-item {
+  &__team-item {
     display: flex;
     align-items: center;
     gap: $spacing-sm;
@@ -589,7 +589,7 @@
     }
   }
 
-  &__equipo-avatar {
+  &__team-avatar {
     width: 32px;
     height: 32px;
     border-radius: 8px;
@@ -610,7 +610,7 @@
     }
   }
 
-  &__equipo-info {
+  &__team-info {
     flex: 1;
     min-width: 0;
     display: flex;
@@ -618,19 +618,19 @@
     gap: 1px;
   }
 
-  &__equipo-name-row {
+  &__team-name-row {
     display: flex;
     align-items: center;
     gap: 4px;
   }
 
-  &__equipo-name {
+  &__team-name {
     font-size: $font-size-sm;
     font-weight: 600;
     color: $color-gray-800;
   }
 
-  &__equipo-email {
+  &__team-email {
     font-size: $font-size-xs;
     color: $color-gray-400;
     white-space: nowrap;
@@ -638,7 +638,7 @@
     text-overflow: ellipsis;
   }
 
-  &__equipo-badge {
+  &__team-badge {
     font-size: $font-size-xs;
     font-weight: 600;
     padding: 2px 8px;
@@ -689,7 +689,7 @@
     margin: 0 0 $spacing-xs;
   }
 
-  &__equipo-form {
+  &__team-form {
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
@@ -852,7 +852,7 @@
   }
 
   // Perfil de miembro modal
-  &__miembro-profile {
+  &__member-profile {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -861,7 +861,7 @@
     border-bottom: 1px solid $color-gray-100;
   }
 
-  &__miembro-avatar {
+  &__member-avatar {
     width: 96px;
     height: 96px;
     border-radius: 20px;
@@ -882,13 +882,13 @@
     }
   }
 
-  &__miembro-name {
+  &__member-name {
     font-size: $font-size-base;
     font-weight: 700;
     color: $color-gray-800;
   }
 
-  &__miembro-badge {
+  &__member-badge {
     font-size: $font-size-xs;
     font-weight: 600;
     color: $color-primary;
@@ -897,31 +897,31 @@
     border-radius: 999px;
   }
 
-  &__miembro-fields {
+  &__member-fields {
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
   }
 
-  &__miembro-field {
+  &__member-field {
     display: flex;
     align-items: flex-start;
     gap: $spacing-sm;
   }
 
-  &__miembro-field-icon {
+  &__member-field-icon {
     color: $color-gray-400;
     flex-shrink: 0;
     margin-top: 3px;
   }
 
-  &__miembro-field-label {
+  &__member-field-label {
     font-size: $font-size-xs;
     color: $color-gray-400;
     margin: 0;
   }
 
-  &__miembro-field-value {
+  &__member-field-value {
     font-size: $font-size-sm;
     color: $color-gray-800;
     font-weight: 500;
@@ -929,7 +929,7 @@
   }
 }
 
-@keyframes configuracionSpin {
+@keyframes settingsSpin {
   to {
     transform: rotate(360deg);
   }
