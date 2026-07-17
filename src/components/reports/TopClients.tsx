@@ -20,20 +20,20 @@ const TopClients = ({ clients }: TopClientsProps) => {
   };
 
   return (
-    <div className="top-clientes">
-      <h3 className="top-clientes__title">{t('reports.topClients.title')}</h3>
+    <div className="top-clients">
+      <h3 className="top-clients__title">{t('reports.topClients.title')}</h3>
 
       {clients.length === 0 ? (
-        <p className="top-clientes__empty">{t('reports.topClients.empty')}</p>
+        <p className="top-clients__empty">{t('reports.topClients.empty')}</p>
       ) : (
-        <ul className="top-clientes__list">
+        <ul className="top-clients__list">
           {clients.map((client, index) => (
-            <li key={client.phone || client.name} className="top-clientes__item">
-              <div className="top-clientes__rank">#{index + 1}</div>
-              <div className="top-clientes__info">
-                <span className="top-clientes__name">{client.name}</span>
+            <li key={client.phone || client.name} className="top-clients__item">
+              <div className="top-clients__rank">#{index + 1}</div>
+              <div className="top-clients__info">
+                <span className="top-clients__name">{client.name}</span>
               </div>
-              <span className="top-clientes__phone">
+              <span className="top-clients__phone">
                 {getDialCode(client.phone)}{getDialCode(client.phone) ? ' ' : ''}{formatPhone(client.phone)}
               </span>
             </li>

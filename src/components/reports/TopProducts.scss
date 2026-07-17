@@ -1,7 +1,7 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
-.top-productos {
+.top-products {
   background-color: $color-white;
   border: 1px solid $color-gray-200;
   padding: $spacing-md;
@@ -77,7 +77,7 @@
     gap: $spacing-xs;
   }
 
-  &__clave {
+  &__sku {
     font-size: $font-size-xs;
     font-weight: 700;
     color: $color-primary;
@@ -88,7 +88,7 @@
     flex-shrink: 0;
   }
 
-  &__unidades {
+  &__units {
     font-size: $font-size-sm;
     font-weight: 600;
     color: $color-gray-700;

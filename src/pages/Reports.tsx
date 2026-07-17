@@ -44,8 +44,8 @@ const Reports = () => {
 
   return (
     <MainLayout>
-      <div className="reportes">
-        <div className="reportes__header">
+      <div className="reports">
+        <div className="reports__header">
           <h1>{t('reports.title')}</h1>
           <button
             onClick={handleExport}
@@ -57,36 +57,36 @@ const Reports = () => {
           </button>
         </div>
 
-        <div className="reportes__filters">
+        <div className="reports__filters">
           <PeriodFilter
             period={period}
             onPeriodChange={setPeriod}
           />
           {hasMore && (
-            <p className="reportes__limit-warning">{t('reports.limitWarning')}</p>
+            <p className="reports__limit-warning">{t('reports.limitWarning')}</p>
           )}
         </div>
 
-        <div className="reportes__content">
+        <div className="reports__content">
           {loading && (
-            <div className="reportes__skeleton">
-              <div className="reportes__skeleton-kpis">
+            <div className="reports__skeleton">
+              <div className="reports__skeleton-kpis">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="reportes__skeleton-card" />
+                  <div key={i} className="reports__skeleton-card" />
                 ))}
               </div>
-              <div className="reportes__skeleton-card reportes__skeleton-card--tall" />
-              <div className="reportes__skeleton-card reportes__skeleton-card--tall" />
+              <div className="reports__skeleton-card reports__skeleton-card--tall" />
+              <div className="reports__skeleton-card reports__skeleton-card--tall" />
             </div>
           )}
 
-          {error && <p className="reportes__error">{error}</p>}
+          {error && <p className="reports__error">{error}</p>}
 
           {!loading && !error && (
-            <div className="reportes__layout">
+            <div className="reports__layout">
               <KPICards kpis={reportData.kpis} comparisonKPIs={reportData.comparisonKPIs} variant="main" />
               <KPICards kpis={reportData.kpis} comparisonKPIs={reportData.comparisonKPIs} variant="side" />
-              <div className="reportes__chart">
+              <div className="reports__chart">
                 <SalesChart
                   data={reportData.chartData}
                   totalSales={reportData.kpis.totalSales}
@@ -94,7 +94,7 @@ const Reports = () => {
                 />
               </div>
               <StatusBreakdown breakdown={reportData.statusBreakdown} />
-              <div className="reportes__bottom-left">
+              <div className="reports__bottom-left">
                 <TopClients clients={reportData.topClients} />
                 <TopProducts products={reportData.topProducts} />
               </div>

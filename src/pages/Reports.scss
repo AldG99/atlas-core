@@ -1,12 +1,12 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
-@keyframes reportes-shimmer {
+@keyframes reports-shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
-.reportes {
+.reports {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -103,7 +103,7 @@
     border-radius: $border-radius-md;
     background: linear-gradient(90deg, $color-gray-100 25%, $color-gray-200 50%, $color-gray-100 75%);
     background-size: 200% 100%;
-    animation: reportes-shimmer 1.4s ease infinite;
+    animation: reports-shimmer 1.4s ease infinite;
 
     &--tall {
       height: 220px;

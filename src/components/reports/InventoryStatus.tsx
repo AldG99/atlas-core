@@ -12,39 +12,39 @@ const InventoryStatus = ({ inventory }: InventoryStatusProps) => {
   const totalAlerts = outOfStock.length + lowStock.length;
 
   return (
-    <div className="inventario-status">
-      <h3 className="inventario-status__title">{t('reports.inventory.title')}</h3>
+    <div className="inventory-status">
+      <h3 className="inventory-status__title">{t('reports.inventory.title')}</h3>
 
-      <div className="inventario-status__kpis">
-        <div className="inventario-status__kpi">
-          <span className="inventario-status__kpi-value">{totalTracked}</span>
-          <span className="inventario-status__kpi-label">{t('reports.inventory.withControl')}</span>
+      <div className="inventory-status__kpis">
+        <div className="inventory-status__kpi">
+          <span className="inventory-status__kpi-value">{totalTracked}</span>
+          <span className="inventory-status__kpi-label">{t('reports.inventory.withControl')}</span>
         </div>
-        <div className="inventario-status__kpi inventario-status__kpi--danger">
-          <span className="inventario-status__kpi-value">{outOfStock.length}</span>
-          <span className="inventario-status__kpi-label">{t('reports.inventory.empty')}</span>
+        <div className="inventory-status__kpi inventory-status__kpi--danger">
+          <span className="inventory-status__kpi-value">{outOfStock.length}</span>
+          <span className="inventory-status__kpi-label">{t('reports.inventory.empty')}</span>
         </div>
-        <div className="inventario-status__kpi inventario-status__kpi--warning">
-          <span className="inventario-status__kpi-value">{lowStock.length}</span>
-          <span className="inventario-status__kpi-label">{t('reports.inventory.lowStock')}</span>
+        <div className="inventory-status__kpi inventory-status__kpi--warning">
+          <span className="inventory-status__kpi-value">{lowStock.length}</span>
+          <span className="inventory-status__kpi-label">{t('reports.inventory.lowStock')}</span>
         </div>
       </div>
 
       {totalAlerts > 0 && (
-        <div className="inventario-status__lists">
+        <div className="inventory-status__lists">
           {outOfStock.length > 0 && (
-            <div className="inventario-status__group">
-              <span className="inventario-status__group-label inventario-status__group-label--danger">
+            <div className="inventory-status__group">
+              <span className="inventory-status__group-label inventory-status__group-label--danger">
                 {t('reports.inventory.empty')}
               </span>
-              <ul className="inventario-status__list">
+              <ul className="inventory-status__list">
                 {outOfStock.map((item) => (
-                  <li key={item.id} className="inventario-status__item inventario-status__item--danger">
+                  <li key={item.id} className="inventory-status__item inventory-status__item--danger">
                     {item.sku && (
-                      <span className="inventario-status__clave">{item.sku}</span>
+                      <span className="inventory-status__sku">{item.sku}</span>
                     )}
-                    <span className="inventario-status__name">{item.name}</span>
-                    <span className="inventario-status__stock">0</span>
+                    <span className="inventory-status__name">{item.name}</span>
+                    <span className="inventory-status__stock">0</span>
                   </li>
                 ))}
               </ul>
@@ -52,18 +52,18 @@ const InventoryStatus = ({ inventory }: InventoryStatusProps) => {
           )}
 
           {lowStock.length > 0 && (
-            <div className="inventario-status__group">
-              <span className="inventario-status__group-label inventario-status__group-label--warning">
+            <div className="inventory-status__group">
+              <span className="inventory-status__group-label inventory-status__group-label--warning">
                 {t('reports.inventory.lowStockLabel')}
               </span>
-              <ul className="inventario-status__list">
+              <ul className="inventory-status__list">
                 {lowStock.map((item) => (
-                  <li key={item.id} className="inventario-status__item inventario-status__item--warning">
+                  <li key={item.id} className="inventory-status__item inventory-status__item--warning">
                     {item.sku && (
-                      <span className="inventario-status__clave">{item.sku}</span>
+                      <span className="inventory-status__sku">{item.sku}</span>
                     )}
-                    <span className="inventario-status__name">{item.name}</span>
-                    <span className="inventario-status__stock">{item.stock}</span>
+                    <span className="inventory-status__name">{item.name}</span>
+                    <span className="inventory-status__stock">{item.stock}</span>
                   </li>
                 ))}
               </ul>
