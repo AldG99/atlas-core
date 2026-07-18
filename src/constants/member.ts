@@ -1,4 +1,4 @@
-export const MEMBER_EMAIL_DOMAIN = 'skytla.miembro';
+export const MEMBER_EMAIL_DOMAIN = 'skytla.member';
 
 export const makeMemberEmail = (username: string) =>
   `${username}@${MEMBER_EMAIL_DOMAIN}`;

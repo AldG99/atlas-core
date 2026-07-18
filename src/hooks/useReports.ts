@@ -32,7 +32,7 @@ export const useReports = () => {
   const { businessUid } = useAuth();
   const { products } = useProducts();
   const { i18n } = useTranslation();
-  const [period, setPeriod] = useState<PeriodType>('semana');
+  const [period, setPeriod] = useState<PeriodType>('week');
   const [currentPeriodOrders, setCurrentPeriodOrders] = useState<Order[]>([]);
   const [previousPeriodOrders, setPreviousPeriodOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);

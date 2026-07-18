@@ -20,7 +20,7 @@ import OrdersTable from '../components/orders/OrdersTable';
 import './Dashboard.scss';
 
 const ORDER_STATUS_KEYS: OrderStatus[] = ['pending', 'preparing', 'delivered'];
-const FILTER_ORDER: StatusFilter[] = ['todos', ...ORDER_STATUS_KEYS];
+const FILTER_ORDER: StatusFilter[] = ['all', ...ORDER_STATUS_KEYS];
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -63,7 +63,7 @@ const Dashboard = () => {
     if (!state?.filterStatus) return;
     const status = state.filterStatus as StatusFilter;
     setFilterStatus(status);
-    if (status !== 'todos' && status !== 'abono_pendiente') {
+    if (status !== 'all' && status !== 'pendingPayment') {
       fetchByStatus(status as OrderStatus);
     }
   }, [location.state, setFilterStatus, fetchByStatus]);
@@ -243,8 +243,8 @@ const Dashboard = () => {
 
         <div className="dashboard__filters">
           <button
-            className={`dashboard__filter ${filterStatus === 'todos' ? 'dashboard__filter--active' : ''}`}
-            onClick={() => handleFilterChange('todos')}
+            className={`dashboard__filter ${filterStatus === 'all' ? 'dashboard__filter--active' : ''}`}
+            onClick={() => handleFilterChange('all')}
           >
             {t('dashboard.allOrders')}
             <span className="dashboard__filter-count">{allOrders.length}</span>
@@ -271,7 +271,7 @@ const Dashboard = () => {
           error={error}
           searchTerm={searchTerm}
         />
-        {hasMore && filterStatus === 'todos' && !searchTerm.trim() && (
+        {hasMore && filterStatus === 'all' && !searchTerm.trim() && (
           <div className="dashboard__load-more">
             <button
               className="btn btn--outline"

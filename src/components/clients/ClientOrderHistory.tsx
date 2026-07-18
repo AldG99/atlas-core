@@ -7,7 +7,7 @@ import type { Product, Label } from '../../types/Product';
 import { LABEL_ICONS } from '../../constants/labelIcons';
 import { ROUTES } from '../../config/routes';
 
-type DateFilter = 'todo' | 'semana' | 'mes' | '3meses';
+type DateFilter = 'all' | 'week' | 'month' | '3months';
 
 interface Props {
   clientId: string;
@@ -31,7 +31,7 @@ const ClientOrderHistory: React.FC<Props> = ({
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateFilter, setDateFilter] = useState<DateFilter>('todo');
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const tableBodyRef = useRef<HTMLDivElement>(null);
 
@@ -66,13 +66,13 @@ const ClientOrderHistory: React.FC<Props> = ({
 
     result = result.filter(o => o.status === 'delivered');
 
-    if (dateFilter !== 'todo') {
+    if (dateFilter !== 'all') {
       const now = new Date();
       let since: Date;
       switch (dateFilter) {
-        case 'semana': since = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); break;
-        case 'mes':    since = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); break;
-        case '3meses': since = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000); break;
+        case 'week': since = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); break;
+        case 'month':  since = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); break;
+        case '3months': since = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000); break;
       }
       result = result.filter(o => new Date(o.createdAt) >= since!);
     }
@@ -150,10 +150,10 @@ const ClientOrderHistory: React.FC<Props> = ({
           />
         </div>
         <select value={dateFilter} onChange={e => setDateFilter(e.target.value as DateFilter)}>
-          <option value="todo">{t('clients.detail.allTime')}</option>
-          <option value="semana">{t('clients.detail.lastWeek')}</option>
-          <option value="mes">{t('clients.detail.lastMonth')}</option>
-          <option value="3meses">{t('clients.detail.last3Months')}</option>
+          <option value="all">{t('clients.detail.allTime')}</option>
+          <option value="week">{t('clients.detail.lastWeek')}</option>
+          <option value="month">{t('clients.detail.lastMonth')}</option>
+          <option value="3months">{t('clients.detail.last3Months')}</option>
         </select>
       </div>
 

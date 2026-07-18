@@ -12,8 +12,8 @@ import MainLayout from '../layouts/MainLayout';
 import OrdersTable from '../components/orders/OrdersTable';
 import './Archive.scss';
 
-type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc';
-type DateFilter = 'todos' | 'semana' | 'mes' | 'trimestre';
+type SortOption = 'date_desc' | 'date_asc' | 'total_desc' | 'total_asc' | 'name_asc';
+type DateFilter = 'all' | 'week' | 'month' | 'quarter';
 
 const Archive = () => {
   const { t } = useTranslation();
@@ -24,22 +24,22 @@ const Archive = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
-  const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
+  const [sortBy, setSortBy] = useState<SortOption>('date_desc');
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
 
   const SORT_OPTIONS: Record<SortOption, string> = {
-    fecha_desc: t('archive.sortNewest'),
-    fecha_asc: t('archive.sortOldest'),
+    date_desc: t('archive.sortNewest'),
+    date_asc: t('archive.sortOldest'),
     total_desc: t('archive.sortTotalDesc'),
     total_asc: t('archive.sortTotalAsc'),
-    nombre_asc: t('archive.sortName'),
+    name_asc: t('archive.sortName'),
   };
 
   const DATE_FILTERS: Record<DateFilter, string> = {
-    todos: t('archive.allTime'),
-    semana: t('archive.lastWeek'),
-    mes: t('archive.lastMonth'),
-    trimestre: t('archive.lastQuarter'),
+    all: t('archive.allTime'),
+    week: t('archive.lastWeek'),
+    month: t('archive.lastMonth'),
+    quarter: t('archive.lastQuarter'),
   };
 
   const fetchArchived = useCallback(async () => {
@@ -64,7 +64,7 @@ const Archive = () => {
   const filteredAndSortedOrders = useMemo(() => {
     let result = [...orders];
 
-    if (dateFilter !== 'todos') {
+    if (dateFilter !== 'all') {
       const now = new Date();
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -72,17 +72,17 @@ const Archive = () => {
         const orderDate = new Date(order.createdAt);
 
         switch (dateFilter) {
-          case 'semana': {
+          case 'week': {
             const weekAgo = new Date(startOfDay);
             weekAgo.setDate(weekAgo.getDate() - 7);
             return orderDate >= weekAgo;
           }
-          case 'mes': {
+          case 'month': {
             const monthAgo = new Date(startOfDay);
             monthAgo.setMonth(monthAgo.getMonth() - 1);
             return orderDate >= monthAgo;
           }
-          case 'trimestre': {
+          case 'quarter': {
             const quarterAgo = new Date(startOfDay);
             quarterAgo.setMonth(quarterAgo.getMonth() - 3);
             return orderDate >= quarterAgo;
@@ -105,15 +105,15 @@ const Archive = () => {
 
     result.sort((a, b) => {
       switch (sortBy) {
-        case 'fecha_desc':
+        case 'date_desc':
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        case 'fecha_asc':
+        case 'date_asc':
           return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case 'total_desc':
           return b.total - a.total;
         case 'total_asc':
           return a.total - b.total;
-        case 'nombre_asc':
+        case 'name_asc':
           return a.clientName.localeCompare(b.clientName);
         default:
           return 0;

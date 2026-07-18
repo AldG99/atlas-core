@@ -8,15 +8,15 @@ interface PeriodFilterProps {
   onPeriodChange: (period: PeriodType) => void;
 }
 
-const PERIOD_VALUES: PeriodType[] = ['hoy', 'semana', 'mes'];
+const PERIOD_VALUES: PeriodType[] = ['today', 'week', 'month'];
 
 const PeriodFilter = ({ period, onPeriodChange }: PeriodFilterProps) => {
   const { t } = useTranslation();
 
   const PERIODS: { value: PeriodType; label: string }[] = [
-    { value: 'hoy',    label: t('reports.period.today') },
-    { value: 'semana', label: t('reports.period.week') },
-    { value: 'mes',    label: t('reports.period.month') },
+    { value: 'today',    label: t('reports.period.today') },
+    { value: 'week', label: t('reports.period.week') },
+    { value: 'month',    label: t('reports.period.month') },
   ];
 
   useEffect(() => {

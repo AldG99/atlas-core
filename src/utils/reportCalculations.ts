@@ -20,22 +20,22 @@ export const getDateRange = (period: PeriodType): DateRange => {
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
   switch (period) {
-    case 'hoy': {
+    case 'today': {
       const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
       return { start, end };
     }
-    case 'semana': {
+    case 'week': {
       const start = new Date(end);
       start.setDate(start.getDate() - 6);
       start.setHours(0, 0, 0, 0);
       return { start, end };
     }
-    case 'mes': {
+    case 'month': {
       const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
       return { start, end };
     }
     default:
-      return getDateRange('mes');
+      return getDateRange('month');
   }
 };
 
@@ -130,7 +130,7 @@ export const calculateChartData = (
   dateRange: DateRange,
   locale = 'es'
 ): ChartDataPoint[] => {
-  if (period === 'hoy') {
+  if (period === 'today') {
     return groupByHour(orders);
   }
   return groupByDay(orders, dateRange, locale);

@@ -2,12 +2,12 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Order, OrderStatus } from '../types/Order';
 
-// Nota: estos valores de sort/filtro son claves internas de UI (usadas también
-// como llaves de i18next en dashboard.sortOptions.*), no reflejan OrderStatus —
-// se mantienen en español intencionalmente.
+// Nota: los valores de SortOption son también las llaves de i18next en
+// dashboard.sortOptions.* (en los 4 locales) — se mantienen en español
+// intencionalmente para no tener que retocar las traducciones.
 export type SortOption = 'fecha_desc' | 'fecha_asc' | 'total_desc' | 'total_asc' | 'nombre_asc' | 'nombre_desc';
-export type DateFilter = 'todos' | 'hoy' | 'semana' | 'mes';
-export type StatusFilter = OrderStatus | 'todos' | 'abono_pendiente';
+export type DateFilter = 'all' | 'today' | 'week' | 'month';
+export type StatusFilter = OrderStatus | 'all' | 'pendingPayment';
 
 const DAYS_PAYMENT_NO_ACTIVITY = 3;
 
@@ -28,10 +28,10 @@ export const useDashboardFilters = ({
   fetchByStatus,
 }: UseDashboardFiltersOptions) => {
   const { t } = useTranslation();
-  const [filterStatus, setFilterStatus] = useState<StatusFilter>('todos');
+  const [filterStatus, setFilterStatus] = useState<StatusFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('fecha_desc');
-  const [dateFilter, setDateFilter] = useState<DateFilter>('todos');
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
 
   const SORT_OPTIONS: Record<SortOption, string> = {
     fecha_desc: t('dashboard.sortOptions.fecha_desc'),
@@ -43,10 +43,10 @@ export const useDashboardFilters = ({
   };
 
   const DATE_FILTERS: Record<DateFilter, string> = {
-    todos: t('dashboard.allDates'),
-    hoy: t('dashboard.today'),
-    semana: t('dashboard.thisWeek'),
-    mes: t('dashboard.thisMonth'),
+    all: t('dashboard.allDates'),
+    today: t('dashboard.today'),
+    week: t('dashboard.thisWeek'),
+    month: t('dashboard.thisMonth'),
   };
 
   const statusCounts = useMemo(() => ({
@@ -70,23 +70,23 @@ export const useDashboardFilters = ({
   }, [allOrders]);
 
   const filteredAndSortedOrders = useMemo(() => {
-    let result = filterStatus === 'abono_pendiente' ? [...allOrders] : [...orders];
+    let result = filterStatus === 'pendingPayment' ? [...allOrders] : [...orders];
 
     // Filtro por fecha
-    if (dateFilter !== 'todos') {
+    if (dateFilter !== 'all') {
       const now = new Date();
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       result = result.filter((order) => {
         const orderDate = new Date(order.createdAt);
         switch (dateFilter) {
-          case 'hoy':
+          case 'today':
             return orderDate >= startOfDay;
-          case 'semana': {
+          case 'week': {
             const startOfWeek = new Date(startOfDay);
             startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
             return orderDate >= startOfWeek;
           }
-          case 'mes': {
+          case 'month': {
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             return orderDate >= startOfMonth;
           }
@@ -97,7 +97,7 @@ export const useDashboardFilters = ({
     }
 
     // Filtro por abono pendiente
-    if (filterStatus === 'abono_pendiente') {
+    if (filterStatus === 'pendingPayment') {
       result = result.filter((o) => {
         const payments = o.payments || [];
         if (payments.length === 0) return false;
@@ -146,9 +146,9 @@ export const useDashboardFilters = ({
 
   const handleFilterChange = async (status: StatusFilter) => {
     setFilterStatus(status);
-    if (status === 'todos') {
+    if (status === 'all') {
       await fetchOrders();
-    } else if (status !== 'abono_pendiente') {
+    } else if (status !== 'pendingPayment') {
       await fetchByStatus(status as OrderStatus);
     }
   };

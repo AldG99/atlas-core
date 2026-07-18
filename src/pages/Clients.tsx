@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type SortOption = 'nombre_asc' | 'nombre_desc' | 'cp_asc' | 'cp_desc' | 'registro_desc' | 'registro_asc';
+type SortOption = 'name_asc' | 'name_desc' | 'postal_asc' | 'postal_desc' | 'registration_desc' | 'registration_asc';
 
 import {
   PiMagnifyingGlassBold,
@@ -23,19 +23,19 @@ const PAGE_SIZE = 50;
 const Clients = () => {
   const { t } = useTranslation();
 
-  const CP_OPTIONS: Partial<Record<SortOption, string>> = {
-    cp_asc: t('clients.postalAsc'),
-    cp_desc: t('clients.postalDesc'),
+  const POSTAL_OPTIONS: Partial<Record<SortOption, string>> = {
+    postal_asc: t('clients.postalAsc'),
+    postal_desc: t('clients.postalDesc'),
   };
 
-  const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
-    nombre_asc: t('clients.nameAsc'),
-    nombre_desc: t('clients.nameDesc'),
-    registro_desc: t('clients.registrationNewest'),
-    registro_asc: t('clients.registrationOldest'),
+  const NAME_OPTIONS: Partial<Record<SortOption, string>> = {
+    name_asc: t('clients.nameAsc'),
+    name_desc: t('clients.nameDesc'),
+    registration_desc: t('clients.registrationNewest'),
+    registration_asc: t('clients.registrationOldest'),
   };
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
+  const [sortBy, setSortBy] = useState<SortOption>('name_asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
 
@@ -59,12 +59,12 @@ const Clients = () => {
 
     result.sort((a, b) => {
       switch (sortBy) {
-        case 'nombre_asc': return a.firstName.localeCompare(b.firstName);
-        case 'nombre_desc': return b.firstName.localeCompare(a.firstName);
-        case 'cp_asc': return (a.postalCode || '').localeCompare(b.postalCode || '', undefined, { numeric: true });
-        case 'cp_desc': return (b.postalCode || '').localeCompare(a.postalCode || '', undefined, { numeric: true });
-        case 'registro_desc': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        case 'registro_asc': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case 'name_asc': return a.firstName.localeCompare(b.firstName);
+        case 'name_desc': return b.firstName.localeCompare(a.firstName);
+        case 'postal_asc': return (a.postalCode || '').localeCompare(b.postalCode || '', undefined, { numeric: true });
+        case 'postal_desc': return (b.postalCode || '').localeCompare(a.postalCode || '', undefined, { numeric: true });
+        case 'registration_desc': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'registration_asc': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         default: return 0;
       }
     });
@@ -94,8 +94,8 @@ const Clients = () => {
     showToast(t('clients.exportSuccess'), 'success');
   };
 
-  const cpValue = sortBy in CP_OPTIONS ? sortBy : '';
-  const nombreValue = sortBy in NOMBRE_OPTIONS ? sortBy : '';
+  const postalValue = sortBy in POSTAL_OPTIONS ? sortBy : '';
+  const nameValue = sortBy in NAME_OPTIONS ? sortBy : '';
 
   return (
     <MainLayout>
@@ -138,23 +138,23 @@ const Clients = () => {
           </div>
           <div className="clients__selects">
             <select
-              value={cpValue}
+              value={postalValue}
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
               className="select"
             >
               <option value="">{t('clients.sortByPostal')}</option>
-              {(Object.keys(CP_OPTIONS) as SortOption[]).map(opt => (
-                <option key={opt} value={opt}>{CP_OPTIONS[opt]}</option>
+              {(Object.keys(POSTAL_OPTIONS) as SortOption[]).map(opt => (
+                <option key={opt} value={opt}>{POSTAL_OPTIONS[opt]}</option>
               ))}
             </select>
             <select
-              value={nombreValue}
+              value={nameValue}
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
               className="select"
             >
               <option value="">{t('clients.sortByName')}</option>
-              {(Object.keys(NOMBRE_OPTIONS) as SortOption[]).map(opt => (
-                <option key={opt} value={opt}>{NOMBRE_OPTIONS[opt]}</option>
+              {(Object.keys(NAME_OPTIONS) as SortOption[]).map(opt => (
+                <option key={opt} value={opt}>{NAME_OPTIONS[opt]}</option>
               ))}
             </select>
           </div>

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type SortOption = 'nombre_asc' | 'nombre_desc' | 'precio_asc' | 'precio_desc' | 'registro_desc' | 'registro_asc';
+type SortOption = 'name_asc' | 'name_desc' | 'price_asc' | 'price_desc' | 'registration_desc' | 'registration_asc';
 import { useLocation } from 'react-router-dom';
 import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPlusBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import { useProducts } from '../hooks/useProducts';
@@ -21,20 +21,20 @@ const PAGE_SIZE = 50;
 const Products = () => {
   const { t } = useTranslation();
 
-  const PRECIO_OPTIONS: Partial<Record<SortOption, string>> = {
-    precio_asc: t('products.priceAsc'),
-    precio_desc: t('products.priceDesc'),
+  const PRICE_OPTIONS: Partial<Record<SortOption, string>> = {
+    price_asc: t('products.priceAsc'),
+    price_desc: t('products.priceDesc'),
   };
 
-  const NOMBRE_OPTIONS: Partial<Record<SortOption, string>> = {
-    nombre_asc: t('products.nameAsc'),
-    nombre_desc: t('products.nameDesc'),
-    registro_desc: t('products.registrationNewest'),
-    registro_asc: t('products.registrationOldest'),
+  const NAME_OPTIONS: Partial<Record<SortOption, string>> = {
+    name_asc: t('products.nameAsc'),
+    name_desc: t('products.nameDesc'),
+    registration_desc: t('products.registrationNewest'),
+    registration_asc: t('products.registrationOldest'),
   };
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('nombre_asc');
+  const [sortBy, setSortBy] = useState<SortOption>('name_asc');
   const [filterExpiring, setFilterExpiring] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
@@ -74,12 +74,12 @@ const Products = () => {
 
     result.sort((a, b) => {
       switch (sortBy) {
-        case 'nombre_asc': return a.name.localeCompare(b.name);
-        case 'nombre_desc': return b.name.localeCompare(a.name);
-        case 'precio_asc': return a.price - b.price;
-        case 'precio_desc': return b.price - a.price;
-        case 'registro_desc': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        case 'registro_asc': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case 'name_asc': return a.name.localeCompare(b.name);
+        case 'name_desc': return b.name.localeCompare(a.name);
+        case 'price_asc': return a.price - b.price;
+        case 'price_desc': return b.price - a.price;
+        case 'registration_desc': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'registration_asc': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         default: return 0;
       }
     });
@@ -168,23 +168,23 @@ const Products = () => {
           </div>
           <div className="products__selects">
             <select
-              value={sortBy in PRECIO_OPTIONS ? sortBy : ''}
+              value={sortBy in PRICE_OPTIONS ? sortBy : ''}
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
               className="select"
             >
               <option value="">{t('products.sortByPrice')}</option>
-              {(Object.keys(PRECIO_OPTIONS) as SortOption[]).map(opt => (
-                <option key={opt} value={opt}>{PRECIO_OPTIONS[opt]}</option>
+              {(Object.keys(PRICE_OPTIONS) as SortOption[]).map(opt => (
+                <option key={opt} value={opt}>{PRICE_OPTIONS[opt]}</option>
               ))}
             </select>
             <select
-              value={sortBy in NOMBRE_OPTIONS ? sortBy : ''}
+              value={sortBy in NAME_OPTIONS ? sortBy : ''}
               onChange={(e) => e.target.value && setSortBy(e.target.value as SortOption)}
               className="select"
             >
               <option value="">{t('products.sortByName')}</option>
-              {(Object.keys(NOMBRE_OPTIONS) as SortOption[]).map(opt => (
-                <option key={opt} value={opt}>{NOMBRE_OPTIONS[opt]}</option>
+              {(Object.keys(NAME_OPTIONS) as SortOption[]).map(opt => (
+                <option key={opt} value={opt}>{NAME_OPTIONS[opt]}</option>
               ))}
             </select>
           </div>

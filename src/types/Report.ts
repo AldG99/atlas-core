@@ -1,6 +1,6 @@
 import type { OrderStatus } from './Order';
 
-export type PeriodType = 'hoy' | 'semana' | 'mes';
+export type PeriodType = 'today' | 'week' | 'month';
 
 export interface KPIs {
   totalSales: number;

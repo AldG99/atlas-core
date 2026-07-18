@@ -35,9 +35,9 @@ import TemplatesPanel from '../components/settings/TemplatesPanel';
 import { getPlanLimits } from '../constants/planLimits';
 import './Settings.scss';
 
-type Section = 'moneda' | 'notificaciones' | 'instalar' | 'plantillas' | 'equipo' | 'respaldo' | 'gestion' | 'membresia' | 'idioma';
+type Section = 'currency' | 'notifications' | 'install' | 'templates' | 'team' | 'backup' | 'manage' | 'membership' | 'language';
 
-const SIMBOLOS_MONEDA = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
+const CURRENCY_SYMBOLS = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
 
 type NavItem = { id: Section; icon: React.ReactNode; title: string; color: string };
 type NavGroup = { label: string; items: NavItem[] };
@@ -49,15 +49,15 @@ const Settings = () => {
 
   const getSectionTitle = (section: Section): string => {
     switch (section) {
-      case 'moneda':        return t('settings.sections.currency');
-      case 'notificaciones': return t('settings.sections.notifications');
-      case 'instalar':      return t('settings.sections.install');
-      case 'plantillas':    return t('settings.sections.templates');
-      case 'equipo':        return t('settings.sections.team');
-      case 'respaldo':      return t('settings.sections.backup');
-      case 'gestion':       return t('settings.sections.manage');
-      case 'membresia':     return t('settings.sections.membership');
-      case 'idioma':        return t('settings.sections.language');
+      case 'currency':        return t('settings.sections.currency');
+      case 'notifications': return t('settings.sections.notifications');
+      case 'install':      return t('settings.sections.install');
+      case 'templates':    return t('settings.sections.templates');
+      case 'team':        return t('settings.sections.team');
+      case 'backup':      return t('settings.sections.backup');
+      case 'manage':       return t('settings.sections.manage');
+      case 'membership':     return t('settings.sections.membership');
+      case 'language':        return t('settings.sections.language');
     }
   };
   const { showToast } = useToast();
@@ -148,36 +148,36 @@ const Settings = () => {
   };
 
   // ── Nav groups ───────────────────────────────────────
-  const preferenciasItems: NavItem[] = [
-    ...(role !== 'member' ? [{ id: 'moneda' as Section, icon: <PiCurrencyDollarBold size={16} />, title: t('settings.sections.currency'), color: 'yellow' }] : []),
-    { id: 'notificaciones' as Section, icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: t('settings.sections.notifications'), color: notifPermission === 'granted' ? 'green' : 'gray' },
-    { id: 'idioma' as Section, icon: <PiTranslateBold size={16} />, title: t('settings.sections.language'), color: 'blue' },
-    ...(canInstall ? [{ id: 'instalar' as Section, icon: <PiDownloadBold size={16} />, title: t('settings.sections.install'), color: 'teal' }] : []),
+  const preferencesItems: NavItem[] = [
+    ...(role !== 'member' ? [{ id: 'currency' as Section, icon: <PiCurrencyDollarBold size={16} />, title: t('settings.sections.currency'), color: 'yellow' }] : []),
+    { id: 'notifications' as Section, icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: t('settings.sections.notifications'), color: notifPermission === 'granted' ? 'green' : 'gray' },
+    { id: 'language' as Section, icon: <PiTranslateBold size={16} />, title: t('settings.sections.language'), color: 'blue' },
+    ...(canInstall ? [{ id: 'install' as Section, icon: <PiDownloadBold size={16} />, title: t('settings.sections.install'), color: 'teal' }] : []),
   ];
 
   const navGroups: NavGroup[] = role === 'member'
     ? [
-        { label: t('settings.groups.preferences'), items: preferenciasItems },
-        { label: t('settings.groups.business'), items: [{ id: 'plantillas', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' }] },
-        { label: t('settings.groups.account'), items: [{ id: 'membresia', icon: <PiUsersThreeBold size={16} />, title: t('settings.sections.membership'), color: 'blue' }] },
+        { label: t('settings.groups.preferences'), items: preferencesItems },
+        { label: t('settings.groups.business'), items: [{ id: 'templates', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' }] },
+        { label: t('settings.groups.account'), items: [{ id: 'membership', icon: <PiUsersThreeBold size={16} />, title: t('settings.sections.membership'), color: 'blue' }] },
       ]
     : [
-        { label: t('settings.groups.preferences'), items: preferenciasItems },
+        { label: t('settings.groups.preferences'), items: preferencesItems },
         {
           label: t('settings.groups.business'),
           items: [
-            { id: 'plantillas', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' },
-            { id: 'equipo', icon: <PiUsersThreeBold size={16} />, title: t('settings.sections.team'), color: 'blue' },
+            { id: 'templates', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' },
+            { id: 'team', icon: <PiUsersThreeBold size={16} />, title: t('settings.sections.team'), color: 'blue' },
           ],
         },
-        { label: t('settings.groups.data'), items: [{ id: 'respaldo', icon: <PiDownloadSimpleBold size={16} />, title: t('settings.sections.backup'), color: 'teal' }] },
-        { label: t('settings.groups.account'), items: [{ id: 'gestion', icon: <PiWarningBold size={16} />, title: t('settings.sections.manage'), color: 'gray' }] },
+        { label: t('settings.groups.data'), items: [{ id: 'backup', icon: <PiDownloadSimpleBold size={16} />, title: t('settings.sections.backup'), color: 'teal' }] },
+        { label: t('settings.groups.account'), items: [{ id: 'manage', icon: <PiWarningBold size={16} />, title: t('settings.sections.manage'), color: 'gray' }] },
       ];
 
   // ── Panel renderer ───────────────────────────────────
   const renderPanel = () => {
     switch (activeSection) {
-      case 'moneda':
+      case 'currency':
         if (role === 'member') return (
           <p className="settings__desc">{t('settings.currency.adminOnly')}</p>
         );
@@ -192,7 +192,7 @@ const Settings = () => {
                 value={currency}
                 onChange={e => setCurrency(e.target.value)}
               >
-                {SIMBOLOS_MONEDA.map(s => (
+                {CURRENCY_SYMBOLS.map(s => (
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>
@@ -207,7 +207,7 @@ const Settings = () => {
           </>
         );
 
-      case 'notificaciones':
+      case 'notifications':
         return (
           <>
             <p className="settings__desc">
@@ -239,7 +239,7 @@ const Settings = () => {
           </>
         );
 
-      case 'instalar':
+      case 'install':
         return (
           <>
             <p className="settings__desc">
@@ -254,10 +254,10 @@ const Settings = () => {
           </>
         );
 
-      case 'plantillas':
+      case 'templates':
         return <TemplatesPanel />;
 
-      case 'equipo':
+      case 'team':
         return (
           <>
             <p className="settings__desc">
@@ -307,10 +307,10 @@ const Settings = () => {
           </>
         );
 
-      case 'respaldo':
+      case 'backup':
         return <BackupPanel />;
 
-      case 'gestion':
+      case 'manage':
         return (
           <div className="settings__backup-blocks">
             <div className="settings__backup-block">
@@ -340,7 +340,7 @@ const Settings = () => {
           </div>
         );
 
-      case 'membresia':
+      case 'membership':
         return (
           <>
             <p className="settings__desc">
@@ -408,7 +408,7 @@ const Settings = () => {
           </>
         );
 
-      case 'idioma':
+      case 'language':
         return (
           <>
             <p className="settings__desc">
