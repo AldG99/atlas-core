@@ -37,7 +37,7 @@ export const useTeam = () => {
   }, [user, role, businessUid]);
 
   const createMember = async (data: MemberFormData): Promise<void> => {
-    if (!user || !businessUid) throw new Error('No autenticado');
+    if (!user || !businessUid) throw new Error(i18n.t('errors.noActiveSession'));
 
     const limits = getPlanLimits(user.plan);
     if (limits.members === 0) {

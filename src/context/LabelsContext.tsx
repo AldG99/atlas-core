@@ -34,7 +34,7 @@ export const LabelsProvider = ({ children }: { children: ReactNode }) => {
       const data = await getLabels(businessUid);
       setLabels(data);
     } catch {
-      setError('Error al cargar las etiquetas');
+      setError(i18n.t('errors.loadLabelsError'));
     } finally {
       setLoading(false);
     }

@@ -37,7 +37,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       const data = await getProducts(businessUid);
       setProducts(data);
     } catch {
-      setError('Error al cargar los productos');
+      setError(i18n.t('errors.loadProductsError'));
     } finally {
       setLoading(false);
     }

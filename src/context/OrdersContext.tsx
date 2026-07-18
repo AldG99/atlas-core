@@ -134,7 +134,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
         setHasMore(result.hasMore);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar más pedidos');
+      setError(err instanceof Error ? err.message : i18n.t('errors.loadMoreOrdersError'));
     } finally {
       setLoading(false);
     }
@@ -152,7 +152,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       setHasMore(result.hasMore);
       lastDocRef.current = result.lastDoc;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar pedidos archivados');
+      setError(err instanceof Error ? err.message : i18n.t('errors.loadArchivedOrdersError'));
     } finally {
       setLoading(false);
     }
@@ -169,7 +169,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       setHasMore(false);
       lastDocRef.current = null;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar pedidos');
+      setError(err instanceof Error ? err.message : i18n.t('errors.loadOrdersError'));
     } finally {
       setLoading(false);
     }
@@ -185,7 +185,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       const newOrder = await createOrder(data, businessUid, buildCreatedBy(user));
       return newOrder;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al crear pedido');
+      setError(err instanceof Error ? err.message : i18n.t('orders.createError'));
       throw err;
     }
   }, [user, businessUid]);
@@ -204,7 +204,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       setOrders(updateFn);
       setAllOrders(updateFn);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cambiar estado');
+      setError(err instanceof Error ? err.message : i18n.t('orders.detail.statusChangeError'));
       throw err;
     }
   }, []);
@@ -217,7 +217,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       setOrders(filterFn);
       setAllOrders(filterFn);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al eliminar pedido');
+      setError(err instanceof Error ? err.message : i18n.t('orders.deleteError'));
       throw err;
     }
   }, []);
@@ -230,7 +230,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       setOrders(filterFn);
       setAllOrders(filterFn);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al archivar pedido');
+      setError(err instanceof Error ? err.message : i18n.t('errors.archiveOrderError'));
       throw err;
     }
   }, []);
@@ -241,7 +241,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       await unarchiveOrder(orderId);
       setOrders((prev) => prev.filter((o) => o.id !== orderId));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al restaurar pedido');
+      setError(err instanceof Error ? err.message : i18n.t('archive.restoreError'));
       throw err;
     }
   }, []);
@@ -263,7 +263,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       setOrders(updateFn);
       setAllOrders(updateFn);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al registrar abono');
+      setError(err instanceof Error ? err.message : i18n.t('orders.detail.paymentRecordError'));
       throw err;
     }
   }, [user]);

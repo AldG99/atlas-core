@@ -7,7 +7,6 @@ import type { OrderFormData, OrderItem } from '../types/Order';
 import type { Client } from '../types/Client';
 import { PiShoppingBagBold } from 'react-icons/pi';
 import { ROUTES } from '../config/routes';
-import { ORDER_MESSAGES } from '../constants/messages';
 import MainLayout from '../layouts/MainLayout';
 import OrderForm from '../components/orders/OrderForm';
 import './NewOrder.scss';
@@ -39,7 +38,7 @@ const NewOrder = () => {
       showToast(t('orders.createSuccess'), 'success');
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : ORDER_MESSAGES.CREATE_ERROR;
+      const msg = err instanceof Error ? err.message : t('orders.createError');
       setError(msg);
       showToast(msg, 'error');
     } finally {

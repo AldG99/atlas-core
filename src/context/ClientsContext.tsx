@@ -42,7 +42,7 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
       const data = await getClients(businessUid);
       setClients(data);
     } catch {
-      setError('Error al cargar los clientes');
+      setError(i18n.t('errors.loadClientsError'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +58,7 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
   }, [user, businessUid, fetchClients]);
 
   const addClient = async (data: ClientFormData): Promise<Client> => {
-    if (!user || !businessUid) throw new Error('Usuario no autenticado');
+    if (!user || !businessUid) throw new Error(i18n.t('errors.noActiveSession'));
     const limits = getPlanLimits(user.plan);
     checkPlanLimit(clients.length, limits.clients, i18n.t('common.resources.clients'));
     const id = await createClient(data, businessUid);

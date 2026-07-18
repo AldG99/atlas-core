@@ -727,6 +727,7 @@
     }
   },
   "reports": {
+    "loadError": "Erro ao carregar relatórios",
     "title": "Relatórios",
     "export": "Exportar CSV",
     "noDataExport": "Sem pedidos para exportar",
@@ -850,7 +851,9 @@
       "restore": "Restaurar",
       "cancel": "Cancelar",
       "save": "Salvar",
-      "saving": "Salvando..."
+      "saving": "Salvando...",
+      "saveSuccess": "Modelos salvos",
+      "saveError": "Erro ao salvar os modelos"
     },
     "team": {
       "desc": "Crie contas para os membros da sua equipe. Eles entram com o nome de usuário e senha na tela de login.",
@@ -1160,6 +1163,17 @@
     "planLimitReached": "Você atingiu o limite de {{limit}} {{resource}} do seu plano. Atualize seu plano para adicionar mais.",
     "planNoMembers": "Seu plano não inclui membros da equipe. Atualize seu plano para adicionar colaboradores.",
     "emailSendError": "Erro ao enviar o e-mail",
-    "driveLoadError": "Não foi possível carregar o Google Identity Services"
+    "driveLoadError": "Não foi possível carregar o Google Identity Services",
+    "logoutError": "Erro ao sair",
+    "passwordChangeError": "Erro ao alterar a senha",
+    "deleteDataError": "Erro ao excluir os dados",
+    "deleteAccountError": "Erro ao excluir a conta",
+    "loadClientsError": "Erro ao carregar os clientes",
+    "loadLabelsError": "Erro ao carregar as etiquetas",
+    "loadProductsError": "Erro ao carregar os produtos",
+    "loadOrdersError": "Erro ao carregar pedidos",
+    "loadMoreOrdersError": "Erro ao carregar mais pedidos",
+    "loadArchivedOrdersError": "Erro ao carregar pedidos arquivados",
+    "archiveOrderError": "Erro ao arquivar pedido"
   }
 }

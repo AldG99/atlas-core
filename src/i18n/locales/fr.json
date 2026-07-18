@@ -727,6 +727,7 @@
     }
   },
   "reports": {
+    "loadError": "Erreur lors du chargement des rapports",
     "title": "Rapports",
     "export": "Exporter CSV",
     "noDataExport": "Aucune commande à exporter",
@@ -850,7 +851,9 @@
       "restore": "Restaurer",
       "cancel": "Annuler",
       "save": "Enregistrer",
-      "saving": "Enregistrement..."
+      "saving": "Enregistrement...",
+      "saveSuccess": "Modèles enregistrés",
+      "saveError": "Erreur lors de l'enregistrement des modèles"
     },
     "team": {
       "desc": "Créez des comptes pour les membres de votre équipe. Ils se connectent avec leur identifiant et mot de passe depuis l'écran de connexion.",
@@ -1160,6 +1163,17 @@
     "planLimitReached": "Vous avez atteint la limite de {{limit}} {{resource}} de votre plan. Mettez à niveau votre plan pour en ajouter.",
     "planNoMembers": "Votre plan n'inclut pas de membres d'équipe. Mettez à niveau votre plan pour ajouter des collaborateurs.",
     "emailSendError": "Erreur lors de l'envoi de l'e-mail",
-    "driveLoadError": "Impossible de charger Google Identity Services"
+    "driveLoadError": "Impossible de charger Google Identity Services",
+    "logoutError": "Erreur lors de la déconnexion",
+    "passwordChangeError": "Erreur lors du changement de mot de passe",
+    "deleteDataError": "Erreur lors de la suppression des données",
+    "deleteAccountError": "Erreur lors de la suppression du compte",
+    "loadClientsError": "Erreur lors du chargement des clients",
+    "loadLabelsError": "Erreur lors du chargement des étiquettes",
+    "loadProductsError": "Erreur lors du chargement des produits",
+    "loadOrdersError": "Erreur lors du chargement des commandes",
+    "loadMoreOrdersError": "Erreur lors du chargement d'autres commandes",
+    "loadArchivedOrdersError": "Erreur lors du chargement des commandes archivées",
+    "archiveOrderError": "Erreur lors de l'archivage de la commande"
   }
 }

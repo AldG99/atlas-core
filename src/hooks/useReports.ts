@@ -73,14 +73,14 @@ export const useReports = () => {
       })
       .catch(err => {
         if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'Error al cargar reportes');
+        setError(err instanceof Error ? err.message : i18n.t('reports.loadError'));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
 
     return () => { cancelled = true; };
-  }, [businessUid, dateRange]);
+  }, [businessUid, dateRange, i18n]);
 
   const reportData: ReportData = useMemo(() => ({
     kpis: calculateKPIs(currentPeriodOrders),

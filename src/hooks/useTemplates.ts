@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
 import { saveTemplates } from '../services/templateService';
@@ -7,6 +8,7 @@ import { type Templates, DEFAULT_TEMPLATES } from '../types/User';
 export const useTemplates = () => {
   const { user, updateProfile } = useAuth();
   const { showToast } = useToast();
+  const { t } = useTranslation();
 
   const current: Templates = {
     confirmation: user?.templates?.confirmation ?? DEFAULT_TEMPLATES.confirmation,
@@ -35,13 +37,13 @@ export const useTemplates = () => {
     try {
       await saveTemplates(user.uid, draft);
       await updateProfile({ templates: draft });
-      showToast('Plantillas guardadas', 'success');
+      showToast(t('settings.templates.saveSuccess'), 'success');
     } catch {
-      showToast('Error al guardar las plantillas', 'error');
+      showToast(t('settings.templates.saveError'), 'error');
     } finally {
       setSaving(false);
     }
-  }, [user, draft, updateProfile, showToast]);
+  }, [user, draft, updateProfile, showToast, t]);
 
   const isDirty =
     draft.confirmation !== current.confirmation ||

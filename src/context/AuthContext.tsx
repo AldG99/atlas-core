@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const userData = await loginUser(credentials);
       setUser(userData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
+      setError(err instanceof Error ? err.message : i18n.t('auth.messages.loginError'));
       throw err;
     } finally {
       setLoading(false);
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const userData = await loginMemberService(username, password);
       setUser(userData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
+      setError(err instanceof Error ? err.message : i18n.t('auth.messages.loginError'));
       throw err;
     } finally {
       setLoading(false);
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const userData = await registerUser(credentials);
       setUser(userData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al registrarse');
+      setError(err instanceof Error ? err.message : i18n.t('auth.register.errors.generic'));
       throw err;
     } finally {
       setLoading(false);
@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       await logoutUser();
       setUser(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cerrar sesión');
+      setError(err instanceof Error ? err.message : i18n.t('errors.logoutError'));
       throw err;
     }
   };
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const updatedUser = await updateUserProfile(user.uid, profileData);
       setUser(updatedUser);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al actualizar perfil');
+      setError(err instanceof Error ? err.message : i18n.t('profile.updateError'));
       throw err;
     }
   };
@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setError(null);
       await changeUserPassword(currentPassword, newPassword);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cambiar contraseña');
+      setError(err instanceof Error ? err.message : i18n.t('errors.passwordChangeError'));
       throw err;
     }
   };
@@ -140,7 +140,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setError(null);
       await deleteAllUserDataWithAuth(password, user.uid);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al eliminar los datos');
+      setError(err instanceof Error ? err.message : i18n.t('errors.deleteDataError'));
       throw err;
     }
   };
@@ -160,7 +160,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       await deleteAccountService(password, user.uid);
       setUser(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al eliminar la cuenta');
+      setError(err instanceof Error ? err.message : i18n.t('errors.deleteAccountError'));
       throw err;
     }
   };
