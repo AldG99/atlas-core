@@ -31,9 +31,11 @@ const TopProducts = ({ products }: TopProductsProps) => {
               </div>
               <div className="top-products__stats">
                 <span className="top-products__units">{product.units} {t('reports.topProducts.sold')}</span>
-                {product.profit !== undefined && (
-                  <span className="top-products__profit">+{format(product.profit)} {t('reports.topProducts.profit')}</span>
-                )}
+                <span
+                  className={`top-products__profit${product.profit === undefined ? ' top-products__profit--placeholder' : ''}`}
+                >
+                  {product.profit !== undefined ? `+${format(product.profit)} ${t('reports.topProducts.profit')}` : ' '}
+                </span>
               </div>
             </li>
           ))}

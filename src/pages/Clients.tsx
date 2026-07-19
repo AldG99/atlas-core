@@ -48,13 +48,17 @@ const Clients = () => {
 
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
-      result = result.filter(
-        client =>
+      const digitsTerm = searchTerm.replace(/\D/g, '');
+      result = result.filter(client => {
+        const digitsPhone = client.phone.replace(/\D/g, '');
+        return (
           client.firstName.toLowerCase().includes(term) ||
           client.lastName.toLowerCase().includes(term) ||
           `${client.firstName} ${client.lastName}`.toLowerCase().includes(term) ||
-          client.phone.toLowerCase().includes(term)
-      );
+          client.phone.toLowerCase().includes(term) ||
+          (digitsTerm.length > 0 && (digitsPhone.includes(digitsTerm) || digitsTerm.includes(digitsPhone)))
+        );
+      });
     }
 
     result.sort((a, b) => {

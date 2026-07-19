@@ -31,8 +31,24 @@ const SalesChart = ({ data, totalSales, totalOrders }: SalesChartProps) => {
 
   return (
     <div className="sales-chart">
-      <span className="sales-chart__label">{t('reports.chart.totalSales')}</span>
-      <span className="sales-chart__amount">{format(totalSales)}</span>
+      <div className="sales-chart__header">
+        <div className="sales-chart__totals">
+          <span className="sales-chart__label">{t('reports.chart.totalSales')}</span>
+          <span className="sales-chart__amount">{format(totalSales)}</span>
+        </div>
+        <div className="sales-chart__stats">
+          <div className="sales-chart__stat">
+            <span className="sales-chart__stat-value">{totalOrders}</span>
+            <span className="sales-chart__stat-label">{t('reports.chart.orders')}</span>
+          </div>
+          <div className="sales-chart__stat">
+            <span className="sales-chart__stat-value">
+              {format(totalOrders > 0 ? totalSales / totalOrders : 0)}
+            </span>
+            <span className="sales-chart__stat-label">{t('reports.chart.average')}</span>
+          </div>
+        </div>
+      </div>
 
       <div className="sales-chart__chart-area">
         <div className="sales-chart__grid">
@@ -65,19 +81,6 @@ const SalesChart = ({ data, totalSales, totalOrders }: SalesChartProps) => {
               </div>
             );
           })}
-        </div>
-      </div>
-
-      <div className="sales-chart__footer">
-        <div className="sales-chart__stat">
-          <span className="sales-chart__stat-value">{totalOrders}</span>
-          <span className="sales-chart__stat-label">{t('reports.chart.orders')}</span>
-        </div>
-        <div className="sales-chart__stat">
-          <span className="sales-chart__stat-value">
-            {format(totalOrders > 0 ? totalSales / totalOrders : 0)}
-          </span>
-          <span className="sales-chart__stat-label">{t('reports.chart.average')}</span>
         </div>
       </div>
     </div>
