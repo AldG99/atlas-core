@@ -1,13 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PiXBold, PiImageBold, PiPlusBold, PiTrashBold, PiWarehouseBold } from 'react-icons/pi';
 import type { ProductFormData, Label } from '../../types/Product';
-import { uploadProductImage } from '../../services/productService';
-import { useAuth } from '../../hooks/useAuth';
-import { useToast } from '../../hooks/useToast';
 import { useLabels } from '../../hooks/useLabels';
 import { LABEL_ICONS, LABEL_COLORS } from '../../constants/labelIcons';
-import ImageCropper from '../ui/ImageCropper';
 import './ProductModal.scss';
 
 interface ProductModalProps {
@@ -18,14 +14,8 @@ interface ProductModalProps {
 
 const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
   const { t } = useTranslation();
-  const { user } = useAuth();
-  const { showToast } = useToast();
   const { labels: allLabels, addLabel, removeLabel } = useLabels();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(product?.image ?? null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [cropSrc, setCropSrc] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const previewImage = product?.image ?? null;
 
   const [formData, setFormData] = useState<ProductFormData>(
     product ?? {
@@ -70,27 +60,8 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!validate() || !user) return;
-
-    let finalData = { ...formData };
-
-    if (imageFile) {
-      setIsUploading(true);
-      try {
-        const imageUrl = await uploadProductImage(imageFile, user.uid);
-        finalData = { ...finalData, image: imageUrl };
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : '';
-        if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
-        else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
-        else showToast(t('common.imageModeration.error'), 'error');
-        setIsUploading(false);
-        return;
-      }
-      setIsUploading(false);
-    }
-
-    onSave(finalData);
+    if (!validate()) return;
+    onSave(formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -104,36 +75,6 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
 
     if (errors[name as keyof ProductFormData]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
-    }
-  };
-
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setCropSrc(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-    e.target.value = '';
-  };
-
-  const handleCropConfirm = (blob: Blob, url: string) => {
-    setImageFile(new File([blob], 'producto.jpg', { type: 'image/jpeg' }));
-    setPreviewImage(url);
-    setCropSrc(null);
-  };
-
-  const removeImage = () => {
-    setPreviewImage(null);
-    setImageFile(null);
-    setCropSrc(null);
-    setFormData(prev => ({ ...prev, image: '' }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
     }
   };
 
@@ -183,7 +124,6 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
   };
 
   return (
-    <>
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal--large" onClick={e => e.stopPropagation()}>
         <div className="modal__header">
@@ -199,30 +139,13 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
           <div className="form-section">
             <h3 className="form-section__title">{t('products.modal.image')}</h3>
             <div className="product-image-upload">
-              <div className="product-image-preview" onClick={handleImageClick}>
+              <div className="product-image-preview">
                 {previewImage ? (
                   <img src={previewImage} alt="Preview" />
                 ) : (
                   <div className="product-image-placeholder">
                     <PiImageBold size={24} />
                   </div>
-                )}
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-              />
-              <div className="product-image-info">
-                <span className="product-image-hint">
-                  {previewImage ? t('products.modal.imageHintChange') : t('products.modal.imageHintAdd')}
-                </span>
-                {previewImage && (
-                  <button type="button" className="btn btn--sm btn--danger" onClick={removeImage}>
-                    {t('products.modal.imageRemove')}
-                  </button>
                 )}
               </div>
             </div>
@@ -580,25 +503,17 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
           </div>
 
           <div className="modal__actions">
-            <button type="button" className="btn btn--secondary" onClick={onClose} disabled={isUploading}>
+            <button type="button" className="btn btn--secondary" onClick={onClose}>
               {t('common.cancel')}
             </button>
-            <button type="submit" className="btn btn--primary" disabled={isUploading}>
-              {isUploading ? t('products.modal.uploadingImage') : product ? t('products.modal.submitEdit') : t('products.modal.submitNew')}
+            <button type="submit" className="btn btn--primary">
+              {product ? t('products.modal.submitEdit') : t('products.modal.submitNew')}
             </button>
           </div>
 
         </form>
       </div>
     </div>
-    {cropSrc && (
-      <ImageCropper
-        imageSrc={cropSrc}
-        onConfirm={handleCropConfirm}
-        onCancel={() => setCropSrc(null)}
-      />
-    )}
-    </>
   );
 };
 

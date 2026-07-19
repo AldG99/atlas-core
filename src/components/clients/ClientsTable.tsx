@@ -123,7 +123,7 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
                   <div className="clients-table__avatar">
                     <Avatar
                       src={client.profilePhoto}
-                      initials={`${client.firstName[0]}${client.lastName[0]}`}
+                      seed={client.id}
                       alt={client.firstName}
                     />
                   </div>

@@ -3,7 +3,7 @@ import { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import type { User, AuthState, LoginCredentials, RegisterCredentials } from '../types/User';
-import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, uploadProfileImage, changeUserPassword, deleteAllUserDataWithAuth, deleteAccount as deleteAccountService, loginMember as loginMemberService, resetPassword } from '../services/authService';
+import { loginUser, registerUser, logoutUser, getUserData, updateUserProfile, changeUserPassword, deleteAllUserDataWithAuth, deleteAccount as deleteAccountService, loginMember as loginMemberService, resetPassword } from '../services/authService';
 import type { UpdateProfileData } from '../services/authService';
 import i18n from '../i18n';
 
@@ -12,7 +12,7 @@ interface AuthContextType extends AuthState {
   loginMember: (username: string, password: string) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: (data: UpdateProfileData, imageFile?: File | null) => Promise<void>;
+  updateProfile: (data: UpdateProfileData) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   deleteAllData: (password: string) => Promise<void>;
   deleteAccount: (password: string) => Promise<void>;
@@ -104,19 +104,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const updateProfile = async (data: UpdateProfileData, imageFile?: File | null) => {
+  const updateProfile = async (data: UpdateProfileData) => {
     if (!user) return;
 
     try {
       setError(null);
-      const profileData = { ...data };
-
-      if (imageFile) {
-        const imageUrl = await uploadProfileImage(imageFile, user.uid);
-        profileData.profilePhoto = imageUrl;
-      }
-
-      const updatedUser = await updateUserProfile(user.uid, profileData);
+      const updatedUser = await updateUserProfile(user.uid, data);
       setUser(updatedUser);
     } catch (err) {
       setError(err instanceof Error ? err.message : i18n.t('profile.updateError'));

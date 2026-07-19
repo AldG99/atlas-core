@@ -5,7 +5,6 @@ interface Props {
   isEditing: boolean;
   role: 'admin' | 'member';
   saving: boolean;
-  isUploading: boolean;
   onBack: () => void;
   onStartEdit: () => void;
   onDelete: () => void;
@@ -14,7 +13,7 @@ interface Props {
 }
 
 const ProductTopBar = ({
-  isEditing, role, saving, isUploading,
+  isEditing, role, saving,
   onBack, onStartEdit, onDelete, onSave, onCancel,
 }: Props) => {
   const { t } = useTranslation();
@@ -34,20 +33,16 @@ const ProductTopBar = ({
               <button
                 onClick={onCancel}
                 className="btn btn--outline btn--sm"
-                disabled={saving || isUploading}
+                disabled={saving}
               >
                 {t('common.cancel')}
               </button>
               <button
                 onClick={onSave}
                 className="btn btn--primary btn--sm"
-                disabled={saving || isUploading}
+                disabled={saving}
               >
-                {isUploading
-                  ? t('common.imageModeration.verifying')
-                  : saving
-                  ? t('common.saving')
-                  : t('common.save')}
+                {saving ? t('common.saving') : t('common.save')}
               </button>
             </div>
           ) : (

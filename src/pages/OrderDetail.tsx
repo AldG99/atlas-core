@@ -409,7 +409,7 @@ const OrderDetail = () => {
               <div className="order-detail__avatar">
                 <Avatar
                   src={clientPhoto}
-                  initials={clientData ? `${clientData.firstName[0]}${clientData.lastName?.[0] ?? ''}`.toUpperCase() : order.clientName[0].toUpperCase()}
+                  seed={clientData?.id ?? order.clientPhone}
                   alt={order.clientName}
                 />
               </div>

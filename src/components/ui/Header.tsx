@@ -29,11 +29,6 @@ const Header = ({ notifications }: HeaderProps) => {
     }
   };
 
-  const getInitials = (name: string | undefined) => {
-    if (!name) return 'U';
-    return name.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
-
   const getWeekday = () => {
     return new Intl.DateTimeFormat(i18n.language, { weekday: 'long' }).format(new Date());
   };
@@ -135,7 +130,7 @@ const Header = ({ notifications }: HeaderProps) => {
             <div className="header__avatar">
               <Avatar
                 src={user?.profilePhoto}
-                initials={getInitials(user?.businessName)}
+                seed={user?.uid ?? ''}
                 alt={user?.businessName}
               />
             </div>

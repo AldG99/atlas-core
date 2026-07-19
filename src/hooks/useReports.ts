@@ -48,8 +48,8 @@ export const useReports = () => {
     const cached = reportsCache.get(cacheKey);
 
     if (cached && Date.now() - cached.cachedAt < CACHE_TTL) {
-      setCurrentPeriodOrders(cached.current.orders.filter(o => !o.archived));
-      setPreviousPeriodOrders(cached.yearAgo.orders.filter(o => !o.archived));
+      setCurrentPeriodOrders(cached.current.orders);
+      setPreviousPeriodOrders(cached.yearAgo.orders);
       setHasMore(cached.current.hasMore);
       return;
     }
@@ -67,8 +67,11 @@ export const useReports = () => {
       .then(([current, yearAgo]) => {
         if (cancelled) return;
         reportsCache.set(cacheKey, { current, yearAgo, cachedAt: Date.now() });
-        setCurrentPeriodOrders(current.orders.filter(o => !o.archived));
-        setPreviousPeriodOrders(yearAgo.orders.filter(o => !o.archived));
+        // Los reportes deben reflejar toda la actividad del período, incluyendo
+        // pedidos ya archivados (el archivado solo despeja el Dashboard, no
+        // significa que el pedido no haya ocurrido).
+        setCurrentPeriodOrders(current.orders);
+        setPreviousPeriodOrders(yearAgo.orders);
         setHasMore(current.hasMore);
       })
       .catch(err => {

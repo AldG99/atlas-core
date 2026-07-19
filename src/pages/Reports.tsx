@@ -38,7 +38,7 @@ const Reports = () => {
       ...o,
       clientCountryCode: getCountryCode(clients.find(c => c.phone === o.clientPhone)?.phoneCountryCode ?? '')?.code
     }));
-    exportToCSV(ordersWithCode, `reporte_${period}`);
+    exportToCSV(ordersWithCode, `report_${period}`);
     showToast(t('reports.export'), 'success');
   };
 

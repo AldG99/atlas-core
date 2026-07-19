@@ -51,7 +51,6 @@ const MemberProfileModal = ({
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
   const fullName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim();
-  const initials = `${(member.firstName?.[0] ?? '').toUpperCase()}${(member.lastName?.[0] ?? '').toUpperCase()}`;
   const countryCode = member.phoneCountryCode ? getCountryCode(member.phoneCountryCode) : null;
   const formattedPhone = member.phone
     ? `${countryCode ? `${countryCode.code} ` : ''}${formatPhone(member.phone)}`
@@ -122,7 +121,7 @@ const MemberProfileModal = ({
             <>
               <div className="settings__member-profile">
                 <div className="settings__member-avatar">
-                  <Avatar src={member.profilePhoto} initials={initials || '?'} alt={fullName} />
+                  <Avatar src={member.profilePhoto} seed={member.uid} alt={fullName} />
                 </div>
                 <div className="settings__member-name">{fullName || '—'}</div>
                 {member.memberNumber && (

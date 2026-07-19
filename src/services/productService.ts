@@ -12,12 +12,8 @@ import {
   arrayUnion,
   writeBatch
 } from 'firebase/firestore';
-import { ref, uploadBytes } from 'firebase/storage';
-import { db, storage } from './firebase';
+import { db } from './firebase';
 import type { Product, ProductFormData, DiscountHistory } from '../types/Product';
-import { compressImage } from '../utils/imageUtils';
-import { waitForModeration } from '../utils/imageModeration';
-import i18n from '../i18n';
 
 const COLLECTION_NAME = 'products';
 
@@ -183,20 +179,3 @@ export const deleteProduct = async (id: string): Promise<void> => {
   await deleteDoc(docRef);
 };
 
-export const uploadProductImage = async (
-  file: File,
-  userId: string
-): Promise<string> => {
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-    throw new Error(i18n.t('errors.invalidImageFormat'));
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    throw new Error(i18n.t('errors.imageTooLarge'));
-  }
-  const compressed = await compressImage(file, 800, 0.78);
-  const moderationId = crypto.randomUUID();
-  const fileName = `${Date.now()}.jpg`;
-  const storageRef = ref(storage, `pending/${userId}/products/${fileName}`);
-  await uploadBytes(storageRef, compressed, { customMetadata: { moderationId } });
-  return waitForModeration(moderationId);
-};

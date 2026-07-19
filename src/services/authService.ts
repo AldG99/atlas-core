@@ -11,11 +11,9 @@ import {
 } from 'firebase/auth';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, writeBatch, Timestamp, deleteField } from 'firebase/firestore';
-import { ref, uploadBytes, deleteObject } from 'firebase/storage';
+import { ref, deleteObject } from 'firebase/storage';
 import { auth, db, storage } from './firebase';
 import type { User, LoginCredentials, RegisterCredentials, Templates } from '../types/User';
-import { compressImage } from '../utils/imageUtils';
-import { waitForModeration } from '../utils/imageModeration';
 import { makeMemberEmail } from '../constants/member';
 import i18n from '../i18n';
 
@@ -244,20 +242,6 @@ export const loginMember = async (username: string, password: string): Promise<U
   return userData;
 };
 
-export const uploadProfileImage = async (file: File, uid: string): Promise<string> => {
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-    throw new Error(i18n.t('errors.invalidImageFormat'));
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    throw new Error(i18n.t('errors.imageTooLarge'));
-  }
-  const compressed = await compressImage(file, 400, 0.75);
-  const moderationId = crypto.randomUUID();
-  const fileName = `profile_${Date.now()}.jpg`;
-  const storageRef = ref(storage, `pending/${uid}/profile/${fileName}`);
-  await uploadBytes(storageRef, compressed, { customMetadata: { moderationId } });
-  return waitForModeration(moderationId);
-};
 
 export const resetPassword = async (email: string): Promise<void> => {
   await sendPasswordResetEmail(auth, email);

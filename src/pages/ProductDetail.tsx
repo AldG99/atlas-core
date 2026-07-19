@@ -1,13 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   PiPackageBold,
   PiCalendarBold,
-  PiCameraBold,
 } from 'react-icons/pi';
 import type { Product, ProductFormData } from '../types/Product';
-import { getProductById, updateProduct, uploadProductImage } from '../services/productService';
+import { getProductById, updateProduct } from '../services/productService';
 import type { CancelDiscountInfo } from '../services/productService';
 import { useLabels } from '../hooks/useLabels';
 import { useAuth } from '../hooks/useAuth';
@@ -15,7 +14,6 @@ import { useToast } from '../hooks/useToast';
 import { useCurrency } from '../hooks/useCurrency';
 import { ROUTES } from '../config/routes';
 import { LABEL_ICONS } from '../constants/labelIcons';
-import { compressImage } from '../utils/imageUtils';
 import ProductImage from '../components/ui/ProductImage';
 import ProductDeleteModal from '../components/orders/ProductDeleteModal';
 import ProductTopBar from '../components/products/ProductTopBar';
@@ -27,7 +25,7 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { user, role } = useAuth();
+  const { role } = useAuth();
   const { showToast } = useToast();
   const { labels, addLabel, removeLabel } = useLabels();
   const { format } = useCurrency();
@@ -39,31 +37,6 @@ const ProductDetail = () => {
   const [confirmDeleteLabelId, setConfirmDeleteLabelId] = useState<string | null>(null);
   const [editData, setEditData] = useState<ProductFormData | null>(null);
   const [saving, setSaving] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const selectedImageFile = useRef<File | null>(null);
-
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && editData) {
-      try {
-        const compressed = await compressImage(file, 600, 0.8);
-        selectedImageFile.current = compressed;
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setEditData({ ...editData, image: reader.result as string });
-        };
-        reader.readAsDataURL(compressed);
-      } catch {
-        selectedImageFile.current = file;
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setEditData({ ...editData, image: reader.result as string });
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-  };
 
   const fetchProduct = useCallback(async () => {
     if (!id) return;
@@ -130,7 +103,6 @@ const ProductDetail = () => {
   const cancelEditing = () => {
     setIsEditing(false);
     setEditData(null);
-    selectedImageFile.current = null;
   };
 
   const handleDeleteLabel = async (id: string) => {
@@ -150,26 +122,9 @@ const ProductDetail = () => {
   };
 
   const handleSave = async () => {
-    if (!product || !editData || !user) return;
+    if (!product || !editData) return;
     try {
       const dataToSave = { ...editData };
-
-      if (selectedImageFile.current) {
-        setIsUploading(true);
-        try {
-          const url = await uploadProductImage(selectedImageFile.current, user.uid);
-          dataToSave.image = url;
-          selectedImageFile.current = null;
-        } catch (error) {
-          const msg = error instanceof Error ? error.message : '';
-          if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
-          else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
-          else showToast(t('common.imageModeration.error'), 'error');
-          return;
-        } finally {
-          setIsUploading(false);
-        }
-      }
 
       setSaving(true);
 
@@ -205,12 +160,8 @@ const ProductDetail = () => {
       setIsEditing(false);
       setEditData(null);
       showToast(t('products.detail.updateSuccess'), 'success');
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : '';
-      if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
-      else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
-      else if (msg === 'MODERACION_ERROR') showToast(t('common.imageModeration.error'), 'error');
-      else showToast(t('products.detail.updateError'), 'error');
+    } catch {
+      showToast(t('products.detail.updateError'), 'error');
     } finally {
       setSaving(false);
     }
@@ -266,7 +217,6 @@ const ProductDetail = () => {
           isEditing={isEditing}
           role={role}
           saving={saving}
-          isUploading={isUploading}
           onBack={() => navigate(ROUTES.PRODUCTS)}
           onStartEdit={startEditing}
           onDelete={handleDelete}
@@ -281,27 +231,11 @@ const ProductDetail = () => {
             {/* Header: Image + Info */}
             <div className="product-detail__header">
               {/* Image Section */}
-              <div
-                className={`product-detail__image-section ${isEditing ? 'product-detail__image-section--editable' : ''}`}
-                onClick={() => isEditing && fileInputRef.current?.click()}
-              >
+              <div className="product-detail__image-section">
                 <ProductImage
-                  src={isEditing ? editData?.image : product.image}
+                  src={product.image}
                   alt={product.name}
                   placeholderClassName="product-detail__image-placeholder"
-                />
-                {isEditing && (
-                  <div className="product-detail__image-overlay">
-                    <PiCameraBold size={28} />
-                    <span>{t('products.detail.changeImage')}</span>
-                  </div>
-                )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  style={{ display: 'none' }}
                 />
               </div>
 

@@ -1,12 +1,13 @@
 import { useState } from 'react';
+import { generateAvatarUri } from '../../utils/avatar';
 
 interface Props {
   src?: string | null;
-  initials: string;
+  seed: string;
   alt?: string;
 }
 
-const Avatar = ({ src, initials, alt = '' }: Props) => {
+const Avatar = ({ src, seed, alt = '' }: Props) => {
   const [failed, setFailed] = useState(false);
   const [prevSrc, setPrevSrc] = useState(src);
 
@@ -15,10 +16,8 @@ const Avatar = ({ src, initials, alt = '' }: Props) => {
     setFailed(false);
   }
 
-  if (src && !failed) {
-    return <img src={src} alt={alt} onError={() => setFailed(true)} />;
-  }
-  return <span>{initials}</span>;
+  const resolvedSrc = src && !failed ? src : generateAvatarUri(seed);
+  return <img src={resolvedSrc} alt={alt} onError={() => setFailed(true)} />;
 };
 
 export default Avatar;

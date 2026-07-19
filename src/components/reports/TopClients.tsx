@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import type { TopClient } from '../../types/Report';
 import { formatPhone } from '../../utils/formatters';
 import { useClients } from '../../hooks/useClients';
+import { useCurrency } from '../../hooks/useCurrency';
 import { getCountryCode } from '../../data/countryCodes';
 import './TopClients.scss';
 
@@ -12,6 +13,7 @@ interface TopClientsProps {
 const TopClients = ({ clients }: TopClientsProps) => {
   const { t } = useTranslation();
   const { clients: clientsData } = useClients();
+  const { format } = useCurrency();
 
   const getDialCode = (phone: string): string => {
     const client = clientsData.find(c => c.phone === phone);
@@ -32,10 +34,11 @@ const TopClients = ({ clients }: TopClientsProps) => {
               <div className="top-clients__rank">#{index + 1}</div>
               <div className="top-clients__info">
                 <span className="top-clients__name">{client.name}</span>
+                <span className="top-clients__phone">
+                  {getDialCode(client.phone)}{getDialCode(client.phone) ? ' ' : ''}{formatPhone(client.phone)}
+                </span>
               </div>
-              <span className="top-clients__phone">
-                {getDialCode(client.phone)}{getDialCode(client.phone) ? ' ' : ''}{formatPhone(client.phone)}
-              </span>
+              <span className="top-clients__total">{format(client.total)}</span>
             </li>
           ))}
         </ul>

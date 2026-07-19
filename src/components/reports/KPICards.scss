@@ -114,13 +114,13 @@
     }
   }
 
-  &--ventas .kpi-card__icon {
+  &--sales .kpi-card__icon {
     background-color: rgba($color-success, 0.1);
     color: $color-success;
     border-color: rgba($color-success, 0.15);
   }
 
-  &--pedidos .kpi-card__icon {
+  &--orders .kpi-card__icon {
     background-color: rgba($color-primary, 0.1);
     color: $color-primary;
     border-color: rgba($color-primary, 0.15);
@@ -132,7 +132,7 @@
     border-color: rgba($color-warning, 0.15);
   }
 
-  &--clientes .kpi-card__icon {
+  &--clients .kpi-card__icon {
     background-color: rgba($color-secondary, 0.1);
     color: $color-secondary;
     border-color: rgba($color-secondary, 0.15);

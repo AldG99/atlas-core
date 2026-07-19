@@ -401,18 +401,21 @@ export const getOrdersByDateRange = async (
   start: Date,
   end: Date,
 ): Promise<{ orders: Order[]; hasMore: boolean }> => {
+  // Orden descendente: si el rango excede RANGE_LIMIT, se conservan los pedidos
+  // más recientes (no los más viejos) y se revierte a orden cronológico al final.
   const q = query(
     collection(db, COLLECTION_NAME),
     where('userId', '==', userId),
     where('createdAt', '>=', Timestamp.fromDate(start)),
     where('createdAt', '<=', Timestamp.fromDate(end)),
-    orderBy('createdAt', 'asc'),
+    orderBy('createdAt', 'desc'),
     limit(RANGE_LIMIT + 1)
   );
   const snap = await getDocs(q);
   const hasMore = snap.docs.length > RANGE_LIMIT;
   const docs = hasMore ? snap.docs.slice(0, RANGE_LIMIT) : snap.docs;
-  return { orders: docs.map(d => parseOrderDoc(d.id, d.data())), hasMore };
+  const orders = docs.map(d => parseOrderDoc(d.id, d.data())).reverse();
+  return { orders, hasMore };
 };
 
 export const parseOrderDoc = (docId: string, data: DocumentData): Order => ({

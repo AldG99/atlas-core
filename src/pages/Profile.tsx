@@ -1,11 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   PiArrowLeftBold,
   PiPencilBold,
-  PiCameraBold,
-  PiTrashBold,
   PiUserBold,
   PiUsersBold,
   PiShoppingBagBold,
@@ -15,7 +13,6 @@ import {
   PiEyeSlashBold,
 } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
-import { uploadProfileImage } from '../services/authService';
 import { useToast } from '../hooks/useToast';
 import { useClients } from '../hooks/useClients';
 import { useProducts } from '../hooks/useProducts';
@@ -23,7 +20,6 @@ import { useOrders } from '../hooks/useOrders';
 import PhoneInput from '../components/clients/PhoneInput';
 import { formatPhone } from '../utils/formatters';
 import { getCountryCode } from '../data/countryCodes';
-import ImageCropper from '../components/ui/ImageCropper';
 import Avatar from '../components/ui/Avatar';
 import './Profile.scss';
 
@@ -66,11 +62,9 @@ const Profile = () => {
   const { products } = useProducts();
   const { orders } = useOrders();
   const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
@@ -78,16 +72,6 @@ const Profile = () => {
   const [savingPassword, setSavingPassword] = useState(false);
   const [showCurrentPwd, setShowCurrentPwd] = useState(false);
   const [showNewPwd, setShowNewPwd] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(user?.profilePhoto ?? null);
-  const [photoRemoved, setPhotoRemoved] = useState(false);
-  const [cropSrc, setCropSrc] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isEditing) {
-      setPreviewImage(user?.profilePhoto ?? null);
-    }
-  }, [user?.profilePhoto, isEditing]);
 
   const [formData, setFormData] = useState({
     businessName: user?.businessName ?? '',
@@ -98,42 +82,9 @@ const Profile = () => {
     phoneCountryCode: user?.phoneCountryCode ?? 'MX',
   });
 
-  const getInitials = () => {
-    const name = user?.businessName;
-    if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleImageClick = () => {
-    if (isEditing) fileInputRef.current?.click();
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setCropSrc(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-    e.target.value = '';
-  };
-
-  const handleCropConfirm = (blob: Blob, url: string) => {
-    setImageFile(new File([blob], 'perfil.jpg', { type: 'image/jpeg' }));
-    setPreviewImage(url);
-    setCropSrc(null);
-  };
-
-  const removeImage = () => {
-    setPreviewImage(null);
-    setImageFile(null);
-    setPhotoRemoved(true);
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const validate = (): boolean => {
@@ -181,32 +132,13 @@ const Profile = () => {
 
   const handleSave = async () => {
     if (!isMember && !validate()) return;
-    const removePhotoData = photoRemoved && !imageFile ? { profilePhoto: '' } : {};
-
-    let uploadedPhotoUrl: string | undefined;
-    if (imageFile && user) {
-      setIsUploading(true);
-      try {
-        uploadedPhotoUrl = await uploadProfileImage(imageFile, user.uid);
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : '';
-        if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
-        else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
-        else showToast(t('common.imageModeration.error'), 'error');
-        setIsUploading(false);
-        return;
-      }
-      setIsUploading(false);
-    }
 
     setSaving(true);
-    const photoData = uploadedPhotoUrl ? { profilePhoto: uploadedPhotoUrl } : removePhotoData;
     try {
       if (isMember) {
-        await updateProfile(photoData);
+        await updateProfile({});
       } else {
         await updateProfile({
-          ...photoData,
           businessName: formData.businessName.trim(),
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
@@ -216,8 +148,6 @@ const Profile = () => {
         });
       }
       setIsEditing(false);
-      setImageFile(null);
-      setPhotoRemoved(false);
       showToast(t('profile.updateSuccess'), 'success');
     } catch {
       showToast(t('profile.updateError'), 'error');
@@ -235,9 +165,6 @@ const Profile = () => {
       phone: user?.phone ?? '',
       phoneCountryCode: user?.phoneCountryCode ?? 'MX',
     });
-    setPreviewImage(user?.profilePhoto ?? null);
-    setImageFile(null);
-    setPhotoRemoved(false);
     setErrors({});
     setIsEditing(false);
   };
@@ -282,30 +209,9 @@ const Profile = () => {
           <div className="profile__card profile__card--main">
             {/* Avatar dentro del card */}
             <div className="profile__avatar-section">
-              <div
-                className={`profile__avatar${isEditing ? ' profile__avatar--editable' : ''}`}
-                onClick={handleImageClick}
-              >
-                <Avatar src={previewImage} initials={getInitials()} alt="Foto de perfil" />
-                {isEditing && (
-                  <div className="profile__avatar-overlay">
-                    <PiCameraBold size={22} />
-                  </div>
-                )}
+              <div className="profile__avatar">
+                <Avatar src={user?.profilePhoto} seed={user?.uid ?? ''} alt="Foto de perfil" />
               </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-              />
-              {isEditing && previewImage && (
-                <button type="button" className="profile__remove-photo" onClick={removeImage}>
-                  <PiTrashBold size={14} />
-                  {t('profile.removePhoto')}
-                </button>
-              )}
               {!isEditing && (
                 <div className="profile__avatar-name">
                   <span className="profile__business">{user?.businessName}</span>
@@ -321,11 +227,11 @@ const Profile = () => {
                 <div className="profile__card-header-actions">
                   {isEditing ? (
                     <>
-                      <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving || isUploading}>
+                      <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving}>
                         {t('common.cancel')}
                       </button>
-                      <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving || isUploading}>
-                        {isUploading ? t('common.imageModeration.verifying') : saving ? t('common.saving') : t('profile.saveButton')}
+                      <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving}>
+                        {saving ? t('common.saving') : t('profile.saveButton')}
                       </button>
                     </>
                   ) : (
@@ -571,13 +477,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-        {cropSrc && (
-          <ImageCropper
-            imageSrc={cropSrc}
-            onConfirm={handleCropConfirm}
-            onCancel={() => setCropSrc(null)}
-          />
-        )}
     </div>
   );
 };

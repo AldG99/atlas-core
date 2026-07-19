@@ -734,7 +734,7 @@
     "limitWarning": "Há mais de 2.000 pedidos neste período. Apenas os primeiros 2.000 são exibidos.",
     "period": {
       "today": "Hoje",
-      "week": "Esta semana",
+      "week": "Últimos 7 dias",
       "month": "Este mês"
     },
     "kpi": {

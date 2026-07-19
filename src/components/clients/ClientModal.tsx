@@ -1,13 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiXBold, PiUserBold } from 'react-icons/pi';
+import { PiXBold } from 'react-icons/pi';
 import type { ClientFormData } from '../../types/Client';
 import { isValidPhone } from '../../utils/validators';
-import { uploadClientImage } from '../../services/clientService';
-import { useAuth } from '../../hooks/useAuth';
-import { useToast } from '../../hooks/useToast';
 import PhoneInput from './PhoneInput';
-import ImageCropper from '../ui/ImageCropper';
 import './ClientModal.scss';
 
 const DISPOSABLE_DOMAINS = [
@@ -28,13 +24,6 @@ interface ClientModalProps {
 
 const ClientModal = ({ client, onClose, onSave, existingPhones = [] }: ClientModalProps) => {
   const { t } = useTranslation();
-  const { user } = useAuth();
-  const { showToast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(client?.profilePhoto ?? null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [cropSrc, setCropSrc] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
 
   const [formData, setFormData] = useState<ClientFormData>(
     client ?? {
@@ -147,36 +136,18 @@ const ClientModal = ({ client, onClose, onSave, existingPhones = [] }: ClientMod
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!validate() || !user) return;
-
-    let finalData = { ...formData };
-
-    if (imageFile) {
-      setIsUploading(true);
-      try {
-        const imageUrl = await uploadClientImage(imageFile, user.uid);
-        finalData = { ...finalData, profilePhoto: imageUrl };
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : '';
-        if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
-        else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
-        else showToast(t('common.imageModeration.error'), 'error');
-        setIsUploading(false);
-        return;
-      }
-      setIsUploading(false);
-    }
+    if (!validate()) return;
 
     onSave({
-      ...finalData,
-      street: finalData.street?.toUpperCase(),
-      exteriorNumber: finalData.exteriorNumber?.toUpperCase(),
-      interiorNumber: finalData.interiorNumber?.toUpperCase(),
-      neighborhood: finalData.neighborhood?.toUpperCase(),
-      city: finalData.city?.toUpperCase(),
-      state: finalData.state?.toUpperCase(),
-      postalCode: finalData.postalCode?.toUpperCase(),
-      country: finalData.country?.toUpperCase(),
+      ...formData,
+      street: formData.street?.toUpperCase(),
+      exteriorNumber: formData.exteriorNumber?.toUpperCase(),
+      interiorNumber: formData.interiorNumber?.toUpperCase(),
+      neighborhood: formData.neighborhood?.toUpperCase(),
+      city: formData.city?.toUpperCase(),
+      state: formData.state?.toUpperCase(),
+      postalCode: formData.postalCode?.toUpperCase(),
+      country: formData.country?.toUpperCase(),
     });
   };
 
@@ -206,38 +177,7 @@ const ClientModal = ({ client, onClose, onSave, existingPhones = [] }: ClientMod
       }
     };
 
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setCropSrc(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-    e.target.value = '';
-  };
-
-  const handleCropConfirm = (blob: Blob, url: string) => {
-    setImageFile(new File([blob], 'client.jpg', { type: 'image/jpeg' }));
-    setPreviewImage(url);
-    setCropSrc(null);
-  };
-
-  const removeImage = () => {
-    setPreviewImage(null);
-    setImageFile(null);
-    setCropSrc(null);
-    setFormData((prev) => ({ ...prev, profilePhoto: '' }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   return (
-    <>
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal--large" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
@@ -248,39 +188,6 @@ const ClientModal = ({ client, onClose, onSave, existingPhones = [] }: ClientMod
         </div>
 
         <form onSubmit={handleSubmit} className="modal__body">
-          {/* Foto de perfil */}
-          <div className="form-section">
-            <h3 className="form-section__title">{t('clients.modal.photo')}</h3>
-            <div className="form-avatar">
-              <div className="form-avatar__preview" onClick={handleImageClick}>
-                {previewImage ? (
-                  <img src={previewImage} alt="Preview" />
-                ) : (
-                  <div className="form-avatar__placeholder">
-                    <PiUserBold size={24} />
-                  </div>
-                )}
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-              />
-              <div className="form-avatar__info">
-                <span className="form-avatar__hint">
-                  {previewImage ? t('clients.modal.photoHintChange') : t('clients.modal.photoHintAdd')}
-                </span>
-                {previewImage && (
-                  <button type="button" className="btn btn--sm btn--danger" onClick={removeImage}>
-                    {t('clients.modal.photoRemove')}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
           {/* Información personal */}
           <div className="form-section">
             <h3 className="form-section__title">{t('clients.modal.personalInfo')}</h3>
@@ -488,24 +395,16 @@ const ClientModal = ({ client, onClose, onSave, existingPhones = [] }: ClientMod
           </div>
 
           <div className="modal__actions">
-            <button type="button" className="btn btn--secondary" onClick={onClose} disabled={isUploading}>
+            <button type="button" className="btn btn--secondary" onClick={onClose}>
               {t('common.cancel')}
             </button>
-            <button type="submit" className="btn btn--primary" disabled={isUploading}>
-              {isUploading ? t('clients.modal.uploadingImage') : client ? t('clients.modal.submitEdit') : t('clients.modal.submitNew')}
+            <button type="submit" className="btn btn--primary">
+              {client ? t('clients.modal.submitEdit') : t('clients.modal.submitNew')}
             </button>
           </div>
         </form>
       </div>
     </div>
-    {cropSrc && (
-      <ImageCropper
-        imageSrc={cropSrc}
-        onConfirm={handleCropConfirm}
-        onCancel={() => setCropSrc(null)}
-      />
-    )}
-    </>
   );
 };
 

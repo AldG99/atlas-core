@@ -74,11 +74,6 @@
     @include truncate;
   }
 
-  &__pedidos {
-    font-size: $font-size-xs;
-    color: $color-gray-500;
-  }
-
   &__total {
     font-size: $font-size-sm;
     font-weight: 600;
@@ -89,8 +84,6 @@
   &__phone {
     font-size: $font-size-xs;
     color: $color-gray-500;
-    flex-shrink: 0;
-    max-width: 110px;
     @include truncate;
   }
 }

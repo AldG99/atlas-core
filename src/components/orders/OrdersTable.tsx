@@ -166,7 +166,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
                   <div className="orders-table__avatar">
                     <Avatar
                       src={photo}
-                      initials={(() => { const c = clientMap.get(order.clientPhone); return c ? `${c.firstName[0]}${c.lastName?.[0] ?? ''}`.toUpperCase() : order.clientName[0].toUpperCase(); })()}
+                      seed={clientMap.get(order.clientPhone)?.id ?? order.clientPhone}
                       alt={order.clientName}
                     />
                   </div>

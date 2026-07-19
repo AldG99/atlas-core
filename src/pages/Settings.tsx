@@ -280,7 +280,7 @@ const Settings = () => {
                     <div className="settings__team-avatar">
                       <Avatar
                         src={m.profilePhoto}
-                        initials={`${(m.firstName?.[0] ?? '?').toUpperCase()}${(m.lastName?.[0] ?? '').toUpperCase()}`}
+                        seed={m.uid}
                         alt={m.firstName}
                       />
                     </div>
@@ -354,7 +354,7 @@ const Settings = () => {
                   <div className="settings__team-avatar">
                     <Avatar
                       src={businessAdmin.profilePhoto}
-                      initials={`${(businessAdmin.firstName?.[0] ?? '?').toUpperCase()}${(businessAdmin.lastName?.[0] ?? '').toUpperCase()}`}
+                      seed={businessAdmin.uid}
                       alt={businessAdmin.firstName}
                     />
                   </div>
@@ -378,7 +378,7 @@ const Settings = () => {
                       <div className="settings__team-avatar">
                         <Avatar
                           src={m.profilePhoto}
-                          initials={`${(m.firstName?.[0] ?? '?').toUpperCase()}${(m.lastName?.[0] ?? '').toUpperCase()}`}
+                          seed={m.uid}
                           alt={m.firstName}
                         />
                       </div>

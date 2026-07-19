@@ -734,7 +734,7 @@
     "limitWarning": "There are more than 2,000 orders in this period. Only the first 2,000 are shown.",
     "period": {
       "today": "Today",
-      "week": "This week",
+      "week": "Last 7 days",
       "month": "This month"
     },
     "kpi": {

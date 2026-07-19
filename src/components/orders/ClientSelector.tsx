@@ -122,14 +122,7 @@ const ClientSelector = ({
       <div className="client-selector client-selector--selected">
         <div className="client-selector__selected-row">
           <div className="client-selector__avatar">
-            {selectedClient.profilePhoto ? (
-              <img
-                src={selectedClient.profilePhoto}
-                alt={selectedClient.firstName}
-              />
-            ) : (
-              <span>{selectedClient.firstName.charAt(0).toUpperCase()}</span>
-            )}
+            <Avatar src={selectedClient.profilePhoto} seed={selectedClient.id} alt={selectedClient.firstName} />
           </div>
           <div className="client-selector__client-info">
             <span className="client-selector__client-name">
@@ -204,7 +197,7 @@ const ClientSelector = ({
                 <div className="client-selector__dropdown-avatar">
                   <Avatar
                     src={client.profilePhoto}
-                    initials={`${client.firstName[0]}${client.lastName?.[0] ?? ''}`.toUpperCase()}
+                    seed={client.id}
                     alt={client.firstName}
                   />
                 </div>

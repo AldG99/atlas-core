@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -6,15 +6,13 @@ import {
   PiWhatsappLogoBold,
   PiPencilBold,
   PiTrashBold,
-  PiCameraBold,
   PiStarFill,
   PiStarBold,
   PiXBold,
 } from 'react-icons/pi';
 import type { Client, ClientFormData } from '../types/Client';
 import type { Order } from '../types/Order';
-import { getClientById, deleteClient, updateClient, toggleClientFavorite, uploadClientImage } from '../services/clientService';
-import ImageCropper from '../components/ui/ImageCropper';
+import { getClientById, deleteClient, updateClient, toggleClientFavorite } from '../services/clientService';
 import Avatar from '../components/ui/Avatar';
 import PhoneInput from '../components/clients/PhoneInput';
 import ClientOrderHistory from '../components/clients/ClientOrderHistory';
@@ -48,33 +46,9 @@ const ClientDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ClientFormData | null>(null);
   const [saving, setSaving] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersError, setOrdersError] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [cropSrc, setCropSrc] = useState<string | null>(null);
-  const selectedBlobRef = useRef<Blob | null>(null);
-
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setCropSrc(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-    e.target.value = '';
-  };
-
-  const handleCropConfirm = (blob: Blob) => {
-    selectedBlobRef.current = blob;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setEditData(prev => prev ? { ...prev, profilePhoto: reader.result as string } : prev);
-    };
-    reader.readAsDataURL(blob);
-    setCropSrc(null);
-  };
 
   const fetchClient = useCallback(async () => {
     if (!id) return;
@@ -210,29 +184,9 @@ const ClientDetail = () => {
   const handleSave = async () => {
     if (!client || !editData || !user) return;
     try {
-      let finalPhoto = editData.profilePhoto;
-
-      if (selectedBlobRef.current) {
-        setIsUploading(true);
-        try {
-          const blobFile = new File([selectedBlobRef.current], 'foto.jpg', { type: 'image/jpeg' });
-          finalPhoto = await uploadClientImage(blobFile, user.uid);
-          selectedBlobRef.current = null;
-        } catch (error) {
-          const msg = error instanceof Error ? error.message : '';
-          if (msg === 'IMAGEN_RECHAZADA') showToast(t('common.imageModeration.rejected'), 'error');
-          else if (msg === 'MODERACION_TIMEOUT') showToast(t('common.imageModeration.timeout'), 'warning');
-          else showToast(t('common.imageModeration.error'), 'error');
-          return;
-        } finally {
-          setIsUploading(false);
-        }
-      }
-
       setSaving(true);
       const dataToSave: ClientFormData = {
         ...editData,
-        profilePhoto: finalPhoto,
         street: editData.street?.toUpperCase() ?? editData.street,
         exteriorNumber: editData.exteriorNumber?.toUpperCase() ?? editData.exteriorNumber,
         interiorNumber: editData.interiorNumber?.toUpperCase() ?? editData.interiorNumber,
@@ -279,7 +233,6 @@ const ClientDetail = () => {
   const addr = getPostalAddress(client);
 
   return (
-    <>
     <MainLayout>
       <div className="client-detail">
         {/* Fixed Top Bar */}
@@ -294,11 +247,11 @@ const ClientDetail = () => {
             </button>
             {role === 'admin' && isEditing ? (
               <div className="client-detail__top-bar-actions">
-                <button onClick={cancelEditing} className="btn btn--outline btn--sm" disabled={saving || isUploading}>
+                <button onClick={cancelEditing} className="btn btn--outline btn--sm" disabled={saving}>
                   {t('common.cancel')}
                 </button>
-                <button onClick={handleSave} className="btn btn--primary btn--sm" disabled={saving || isUploading}>
-                  {isUploading ? t('common.imageModeration.verifying') : saving ? t('common.saving') : t('common.save')}
+                <button onClick={handleSave} className="btn btn--primary btn--sm" disabled={saving}>
+                  {saving ? t('common.saving') : t('common.save')}
                 </button>
               </div>
             ) : (
@@ -341,19 +294,8 @@ const ClientDetail = () => {
             <div className="client-detail__header">
               {/* Avatar + nombre + fecha + info */}
               <div className="client-detail__client">
-                <div
-                  className={`client-detail__avatar ${isEditing ? 'client-detail__avatar--editable' : ''}`}
-                  onClick={() => isEditing && fileInputRef.current?.click()}
-                >
-                  <Avatar
-                    src={isEditing ? editData?.profilePhoto : client.profilePhoto}
-                    initials={`${(editData?.firstName || client.firstName)[0]}${(editData?.lastName || client.lastName)?.[0] ?? ''}`}
-                    alt={client.firstName}
-                  />
-                  {isEditing && (
-                    <div className="client-detail__avatar-overlay"><PiCameraBold size={20} /></div>
-                  )}
-                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
+                <div className="client-detail__avatar">
+                  <Avatar src={client.profilePhoto} seed={client.id} alt={client.firstName} />
                 </div>
                 <div className="client-detail__client-info">
                   <div className="client-detail__client-name-row">
@@ -498,14 +440,6 @@ const ClientDetail = () => {
         </div>
       )}
     </MainLayout>
-    {cropSrc && (
-      <ImageCropper
-        imageSrc={cropSrc}
-        onConfirm={handleCropConfirm}
-        onCancel={() => setCropSrc(null)}
-      />
-    )}
-    </>
   );
 };
 

@@ -12,12 +12,8 @@ import {
   deleteField,
   type FieldValue
 } from 'firebase/firestore';
-import { ref, uploadBytes } from 'firebase/storage';
-import { db, storage } from './firebase';
+import { db } from './firebase';
 import type { Client, ClientFormData } from '../types/Client';
-import { compressImage } from '../utils/imageUtils';
-import { waitForModeration } from '../utils/imageModeration';
-import i18n from '../i18n';
 
 const COLLECTION_NAME = 'clients';
 
@@ -111,22 +107,4 @@ export const toggleClientFavorite = async (
 ): Promise<void> => {
   const docRef = doc(db, COLLECTION_NAME, id);
   await updateDoc(docRef, { favorite });
-};
-
-export const uploadClientImage = async (
-  file: File,
-  userId: string
-): Promise<string> => {
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-    throw new Error(i18n.t('errors.invalidImageFormat'));
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    throw new Error(i18n.t('errors.imageTooLarge'));
-  }
-  const compressed = await compressImage(file, 400, 0.75);
-  const moderationId = crypto.randomUUID();
-  const fileName = `${Date.now()}.jpg`;
-  const storageRef = ref(storage, `pending/${userId}/clients/${fileName}`);
-  await uploadBytes(storageRef, compressed, { customMetadata: { moderationId } });
-  return waitForModeration(moderationId);
 };

@@ -25,7 +25,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       rawValue: kpis.totalSales,
       comparisonValue: comparisonKPIs?.totalSales,
       label: t('reports.kpi.totalSales'),
-      className: 'kpi-card--ventas'
+      className: 'kpi-card--sales'
     },
     {
       icon: <PiHashBold size={24} />,
@@ -33,7 +33,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       rawValue: kpis.totalOrders,
       comparisonValue: comparisonKPIs?.totalOrders,
       label: t('reports.kpi.orders'),
-      className: 'kpi-card--pedidos'
+      className: 'kpi-card--orders'
     },
     {
       icon: <PiTrendUpBold size={24} />,
@@ -49,7 +49,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       rawValue: kpis.uniqueClients,
       comparisonValue: comparisonKPIs?.uniqueClients,
       label: t('reports.kpi.clients'),
-      className: 'kpi-card--clientes'
+      className: 'kpi-card--clients'
     }
   ];
 
