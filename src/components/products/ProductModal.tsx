@@ -22,6 +22,7 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
       sku: '',
       name: '',
       price: 0,
+      costPrice: 0,
       description: '',
       image: '',
       labels: [],
@@ -51,6 +52,9 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
     }
     if (formData.price <= 0) {
       newErrors.price = t('products.modal.errors.priceInvalid');
+    }
+    if (formData.costPrice <= 0) {
+      newErrors.costPrice = t('products.modal.errors.costPriceInvalid');
     }
 
     setErrors(newErrors);
@@ -185,7 +189,7 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                 {errors.name && <span className="form-error">{errors.name}</span>}
               </div>
 
-              <div className="form-group form-group--full">
+              <div className="form-group">
                 <label htmlFor="price">{t('products.modal.price')}</label>
                 <div className="input-currency">
                   <span className="input-currency__symbol">$</span>
@@ -202,6 +206,27 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                   />
                 </div>
                 {errors.price && <span className="form-error">{errors.price}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="costPrice">{t('products.modal.costPrice')}</label>
+                <div className="input-currency">
+                  <span className="input-currency__symbol">$</span>
+                  <input
+                    type="number"
+                    id="costPrice"
+                    name="costPrice"
+                    value={formData.costPrice || ''}
+                    onChange={handleChange}
+                    className={`input ${errors.costPrice ? 'input--error' : ''}`}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                {errors.costPrice
+                  ? <span className="form-error">{errors.costPrice}</span>
+                  : <span className="form-hint">{t('products.modal.costPriceHint')}</span>}
               </div>
             </div>
           </div>

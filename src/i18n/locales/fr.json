@@ -665,6 +665,8 @@
       "name": "Nom *",
       "namePlaceholder": "Ex : Gâteau au chocolat",
       "price": "Prix *",
+      "costPrice": "Prix d'achat *",
+      "costPriceHint": "Le coût auquel vous obtenez ce produit. Utilisé pour calculer votre bénéfice réel dans les Rapports.",
       "description": "Description",
       "descriptionPlaceholder": "Décrivez le produit...",
       "labels": "Étiquettes",
@@ -688,7 +690,8 @@
       "errors": {
         "codeRequired": "Le code est requis",
         "nameRequired": "Le nom est requis",
-        "priceInvalid": "Le prix doit être supérieur à 0"
+        "priceInvalid": "Le prix doit être supérieur à 0",
+        "costPriceInvalid": "Le prix d'achat doit être supérieur à 0"
       },
       "addSuccess": "Produit ajouté avec succès",
       "addError": "Erreur lors de l'ajout du produit"
@@ -700,6 +703,9 @@
       "name": "Nom",
       "unit": "Unité",
       "price": "Prix",
+      "costPrice": "Prix d'achat",
+      "margin": "Marge bénéficiaire",
+      "noCostPrice": "Non renseigné",
       "discountValidUntil": "Remise valable jusqu'au",
       "labels": "Étiquettes",
       "noLabels": "Aucune étiquette",
@@ -741,7 +747,8 @@
       "totalSales": "Ventes totales",
       "orders": "Commandes",
       "avgTicket": "Ticket moyen",
-      "clients": "Clients"
+      "profit": "Bénéfice",
+      "profitIncompleteHint": "Certains produits n'ont pas de prix d'achat renseigné, le bénéfice réel peut être inférieur"
     },
     "chart": {
       "totalSales": "Total des ventes",
@@ -761,7 +768,8 @@
     "topProducts": {
       "title": "Produits les plus vendus",
       "empty": "Aucune vente sur cette période",
-      "sold": "vendus"
+      "sold": "vendus",
+      "profit": "bénéfice"
     },
     "inventory": {
       "title": "État de l'inventaire",

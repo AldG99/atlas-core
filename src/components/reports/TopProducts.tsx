@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { TopProduct } from '../../types/Report';
+import { useCurrency } from '../../hooks/useCurrency';
 import './TopProducts.scss';
 
 interface TopProductsProps {
@@ -8,6 +9,7 @@ interface TopProductsProps {
 
 const TopProducts = ({ products }: TopProductsProps) => {
   const { t } = useTranslation();
+  const { format } = useCurrency();
   return (
     <div className="top-products">
       <h3 className="top-products__title">{t('reports.topProducts.title')}</h3>
@@ -27,7 +29,12 @@ const TopProducts = ({ products }: TopProductsProps) => {
                   {product.name}
                 </span>
               </div>
-              <span className="top-products__units">{product.units} {t('reports.topProducts.sold')}</span>
+              <div className="top-products__stats">
+                <span className="top-products__units">{product.units} {t('reports.topProducts.sold')}</span>
+                {product.profit !== undefined && (
+                  <span className="top-products__profit">+{format(product.profit)} {t('reports.topProducts.profit')}</span>
+                )}
+              </div>
             </li>
           ))}
         </ul>

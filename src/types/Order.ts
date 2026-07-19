@@ -20,6 +20,7 @@ export interface OrderItem {
   sku?: string;
   quantity: number;
   unitPrice: number;
+  unitCost?: number;
   subtotal: number;
   originalPrice?: number;
   discount?: number;

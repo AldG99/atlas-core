@@ -665,6 +665,8 @@
       "name": "Nombre *",
       "namePlaceholder": "Ej: Pastel de chocolate",
       "price": "Precio *",
+      "costPrice": "Precio de compra *",
+      "costPriceHint": "Costo al que adquieres el producto. Se usa para calcular tu ganancia real en Reportes.",
       "description": "Descripción",
       "descriptionPlaceholder": "Describe el producto...",
       "labels": "Etiquetas",
@@ -688,7 +690,8 @@
       "errors": {
         "codeRequired": "La clave es requerida",
         "nameRequired": "El nombre es requerido",
-        "priceInvalid": "El precio debe ser mayor a 0"
+        "priceInvalid": "El precio debe ser mayor a 0",
+        "costPriceInvalid": "El precio de compra debe ser mayor a 0"
       },
       "addSuccess": "Producto agregado correctamente",
       "addError": "Error al agregar el producto"
@@ -700,6 +703,9 @@
       "name": "Nombre",
       "unit": "Unidad",
       "price": "Precio",
+      "costPrice": "Precio de compra",
+      "margin": "Margen de ganancia",
+      "noCostPrice": "Sin registrar",
       "discountValidUntil": "Descuento válido hasta",
       "labels": "Etiquetas",
       "noLabels": "Sin etiquetas",
@@ -741,7 +747,8 @@
       "totalSales": "Ventas totales",
       "orders": "Pedidos",
       "avgTicket": "Ticket promedio",
-      "clients": "Clientes"
+      "profit": "Ganancia",
+      "profitIncompleteHint": "Algunos productos no tienen precio de compra registrado, la ganancia real puede ser menor"
     },
     "chart": {
       "totalSales": "Total ventas",
@@ -761,7 +768,8 @@
     "topProducts": {
       "title": "Productos más vendidos",
       "empty": "No hay ventas en este período",
-      "sold": "vendidos"
+      "sold": "vendidos",
+      "profit": "ganancia"
     },
     "inventory": {
       "title": "Estado del inventario",

@@ -70,6 +70,9 @@
   }
 
   &__value {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     font-size: $font-size-base;
     font-weight: 600;
     color: $color-gray-900;
@@ -81,6 +84,13 @@
     }
 
     @include truncate;
+  }
+
+  &__warning {
+    display: inline-flex;
+    color: $color-warning;
+    flex-shrink: 0;
+    cursor: help;
   }
 
   &__bottom {
@@ -132,9 +142,9 @@
     border-color: rgba($color-warning, 0.15);
   }
 
-  &--clients .kpi-card__icon {
-    background-color: rgba($color-secondary, 0.1);
-    color: $color-secondary;
-    border-color: rgba($color-secondary, 0.15);
+  &--profit .kpi-card__icon {
+    background-color: rgba($color-success, 0.1);
+    color: $color-success;
+    border-color: rgba($color-success, 0.15);
   }
 }

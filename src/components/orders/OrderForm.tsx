@@ -35,6 +35,7 @@ const OrderForm = ({
           sku: p.sku || '',
           name: p.name,
           price: p.unitPrice,
+          costPrice: p.unitCost,
           userId: '',
           createdAt: new Date()
         } as Product,
@@ -77,6 +78,7 @@ const OrderForm = ({
         sku: item.product.sku || undefined,
         quantity: item.quantity,
         unitPrice: effective,
+        unitCost: item.product.costPrice,
         subtotal: item.subtotal,
         ...(hasDiscount && {
           originalPrice: item.product.price,

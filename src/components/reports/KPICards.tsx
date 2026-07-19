@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { PiCurrencyDollarBold, PiHashBold, PiTrendUpBold, PiUsersBold, PiArrowUpBold, PiArrowDownBold } from 'react-icons/pi';
+import { PiCurrencyDollarBold, PiHashBold, PiTrendUpBold, PiArrowUpBold, PiArrowDownBold, PiWalletBold, PiWarningBold } from 'react-icons/pi';
 import type { KPIs } from '../../types/Report';
 import { useCurrency } from '../../hooks/useCurrency';
 import './KPICards.scss';
@@ -18,7 +18,15 @@ const getDelta = (current: number, previous: number): number | null => {
 const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
   const { t } = useTranslation();
   const { format } = useCurrency();
-  const allCards = [
+  const allCards: {
+    icon: React.ReactNode;
+    value: string;
+    rawValue: number;
+    comparisonValue: number | undefined;
+    label: string;
+    className: string;
+    warning?: string;
+  }[] = [
     {
       icon: <PiCurrencyDollarBold size={24} />,
       value: format(kpis.totalSales),
@@ -44,12 +52,13 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       className: 'kpi-card--ticket'
     },
     {
-      icon: <PiUsersBold size={24} />,
-      value: kpis.uniqueClients.toString(),
-      rawValue: kpis.uniqueClients,
-      comparisonValue: comparisonKPIs?.uniqueClients,
-      label: t('reports.kpi.clients'),
-      className: 'kpi-card--clients'
+      icon: <PiWalletBold size={24} />,
+      value: format(kpis.totalProfit),
+      rawValue: kpis.totalProfit,
+      comparisonValue: comparisonKPIs?.totalProfit,
+      label: `${t('reports.kpi.profit')} · ${kpis.profitMargin.toFixed(1)}%`,
+      className: 'kpi-card--profit',
+      warning: kpis.hasIncompleteCost ? t('reports.kpi.profitIncompleteHint') : undefined
     }
   ];
 
@@ -66,7 +75,14 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
           <div key={card.label} className={`kpi-card ${card.className}`}>
             <div className="kpi-card__icon">{card.icon}</div>
             <div className="kpi-card__content">
-              <div className="kpi-card__value">{card.value}</div>
+              <div className="kpi-card__value">
+                {card.value}
+                {card.warning && (
+                  <span className="kpi-card__warning" title={card.warning}>
+                    <PiWarningBold size={12} />
+                  </span>
+                )}
+              </div>
               <div className="kpi-card__bottom">
                 <span className="kpi-card__label">{card.label}</span>
                 {delta !== null && delta !== 0 && (

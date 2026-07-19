@@ -181,6 +181,13 @@
   color: $color-danger;
 }
 
+.form-hint {
+  display: block;
+  margin-top: $spacing-xs;
+  font-size: $font-size-xs;
+  color: $color-gray-500;
+}
+
 .input--error {
   border-color: $color-danger;
 

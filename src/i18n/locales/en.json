@@ -665,6 +665,8 @@
       "name": "Name *",
       "namePlaceholder": "e.g. Chocolate cake",
       "price": "Price *",
+      "costPrice": "Purchase price *",
+      "costPriceHint": "The cost you pay to get this product. Used to calculate your real profit in Reports.",
       "description": "Description",
       "descriptionPlaceholder": "Describe the product...",
       "labels": "Labels",
@@ -688,7 +690,8 @@
       "errors": {
         "codeRequired": "Code is required",
         "nameRequired": "Name is required",
-        "priceInvalid": "Price must be greater than 0"
+        "priceInvalid": "Price must be greater than 0",
+        "costPriceInvalid": "Purchase price must be greater than 0"
       },
       "addSuccess": "Product added successfully",
       "addError": "Error adding product"
@@ -700,6 +703,9 @@
       "name": "Name",
       "unit": "Unit",
       "price": "Price",
+      "costPrice": "Purchase price",
+      "margin": "Profit margin",
+      "noCostPrice": "Not set",
       "discountValidUntil": "Discount valid until",
       "labels": "Labels",
       "noLabels": "No labels",
@@ -741,7 +747,8 @@
       "totalSales": "Total sales",
       "orders": "Orders",
       "avgTicket": "Avg. ticket",
-      "clients": "Clients"
+      "profit": "Profit",
+      "profitIncompleteHint": "Some products don't have a purchase price set, real profit may be lower"
     },
     "chart": {
       "totalSales": "Total sales",
@@ -761,7 +768,8 @@
     "topProducts": {
       "title": "Best-selling products",
       "empty": "No sales in this period",
-      "sold": "sold"
+      "sold": "sold",
+      "profit": "profit"
     },
     "inventory": {
       "title": "Inventory status",

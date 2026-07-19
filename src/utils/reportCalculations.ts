@@ -60,20 +60,43 @@ export const calculateKPIs = (orders: Order[]): KPIs => {
       totalSales: 0,
       totalOrders: 0,
       averageTicket: 0,
-      uniqueClients: 0
+      totalCost: 0,
+      totalProfit: 0,
+      profitMargin: 0,
+      hasIncompleteCost: false
     };
   }
 
   const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
   const totalOrders = orders.length;
   const averageTicket = totalSales / totalOrders;
-  const uniqueClients = new Set(orders.map((o) => o.clientPhone || o.clientName.toLowerCase().trim())).size;
+
+  // El costo solo se suma para ítems con unitCost registrado (snapshot tomado
+  // al crear el pedido). Los ítems sin costo no restan ganancia, así que
+  // hasIncompleteCost avisa a la UI que la ganancia mostrada puede ser mayor
+  // a la real.
+  let totalCost = 0;
+  let hasIncompleteCost = false;
+  orders.forEach((order) => {
+    order.items.forEach((item) => {
+      if (item.unitCost !== undefined) {
+        totalCost += item.unitCost * item.quantity;
+      } else {
+        hasIncompleteCost = true;
+      }
+    });
+  });
+  const totalProfit = totalSales - totalCost;
+  const profitMargin = totalSales > 0 ? (totalProfit / totalSales) * 100 : 0;
 
   return {
     totalSales,
     totalOrders,
     averageTicket,
-    uniqueClients
+    totalCost,
+    totalProfit,
+    profitMargin,
+    hasIncompleteCost
   };
 };
 
@@ -208,21 +231,28 @@ const groupByDay = (orders: Order[], dateRange: DateRange, locale: string): Char
 };
 
 export const calculateTopProducts = (orders: Order[], limit = 3): TopProduct[] => {
-  const map = new Map<string, TopProduct>();
+  const map = new Map<string, TopProduct & { hasCost: boolean }>();
 
   orders.forEach((order) => {
     order.items.forEach((item) => {
       const key = item.productId ?? item.name.toLowerCase().trim();
+      const itemProfit = item.unitCost !== undefined
+        ? (item.unitPrice - item.unitCost) * item.quantity
+        : 0;
       const existing = map.get(key);
       if (existing) {
         existing.units += item.quantity;
         existing.total += item.subtotal;
+        existing.profit = (existing.profit ?? 0) + itemProfit;
+        existing.hasCost = existing.hasCost || item.unitCost !== undefined;
       } else {
         map.set(key, {
           name: item.name,
           sku: item.sku,
           units: item.quantity,
-          total: item.subtotal
+          total: item.subtotal,
+          profit: itemProfit,
+          hasCost: item.unitCost !== undefined
         });
       }
     });
@@ -230,7 +260,11 @@ export const calculateTopProducts = (orders: Order[], limit = 3): TopProduct[] =
 
   return Array.from(map.values())
     .sort((a, b) => b.units - a.units)
-    .slice(0, limit);
+    .slice(0, limit)
+    .map(({ hasCost, ...product }) => ({
+      ...product,
+      profit: hasCost ? product.profit : undefined
+    }));
 };
 
 export const calculateInventoryStats = (products: Product[]): InventoryStats => {

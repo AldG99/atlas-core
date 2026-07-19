@@ -119,7 +119,7 @@
 
     @include lg {
       grid-template-columns: 3fr 1fr;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: auto 3fr 2fr;
     }
   }
 
@@ -132,7 +132,7 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: $spacing-md;
-    min-height: 200px;
+    min-height: 160px;
 
     @include sm {
       grid-template-columns: 1fr 1fr;

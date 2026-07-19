@@ -96,6 +96,20 @@ const ProductDetailModal = ({ product, labels, onClose }: ProductDetailModalProp
                     <span className="order-detail__modal-value">{format(product.price)}</span>
                   )}
                 </div>
+                <div className="order-detail__modal-row">
+                  <span className="order-detail__modal-label">{t('products.detailModal.costPrice')}</span>
+                  <span className="order-detail__modal-value">
+                    {product.costPrice ? format(product.costPrice) : t('products.detailModal.noCostPrice')}
+                  </span>
+                </div>
+                {!!product.costPrice && (
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.margin')}</span>
+                    <span className="order-detail__modal-value">
+                      {(((product.price - product.costPrice) / product.price) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                )}
                 {isDiscountActive(product) && product.discountEndDate && (
                   <div className="order-detail__modal-row">
                     <span className="order-detail__modal-label">{t('products.detailModal.discountValidUntil')}</span>

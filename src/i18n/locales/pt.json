@@ -665,6 +665,8 @@
       "name": "Nome *",
       "namePlaceholder": "ex. Bolo de chocolate",
       "price": "Preço *",
+      "costPrice": "Preço de compra *",
+      "costPriceHint": "O custo pelo qual você adquire este produto. Usado para calcular seu lucro real em Relatórios.",
       "description": "Descrição",
       "descriptionPlaceholder": "Descreva o produto...",
       "labels": "Etiquetas",
@@ -688,7 +690,8 @@
       "errors": {
         "codeRequired": "O código é obrigatório",
         "nameRequired": "O nome é obrigatório",
-        "priceInvalid": "O preço deve ser maior que 0"
+        "priceInvalid": "O preço deve ser maior que 0",
+        "costPriceInvalid": "O preço de compra deve ser maior que 0"
       },
       "addSuccess": "Produto adicionado com sucesso",
       "addError": "Erro ao adicionar produto"
@@ -700,6 +703,9 @@
       "name": "Nome",
       "unit": "Unidade",
       "price": "Preço",
+      "costPrice": "Preço de compra",
+      "margin": "Margem de lucro",
+      "noCostPrice": "Não definido",
       "discountValidUntil": "Desconto válido até",
       "labels": "Etiquetas",
       "noLabels": "Sem etiquetas",
@@ -741,7 +747,8 @@
       "totalSales": "Vendas totais",
       "orders": "Pedidos",
       "avgTicket": "Ticket médio",
-      "clients": "Clientes"
+      "profit": "Lucro",
+      "profitIncompleteHint": "Alguns produtos não têm preço de compra registrado, o lucro real pode ser menor"
     },
     "chart": {
       "totalSales": "Vendas totais",
@@ -761,7 +768,8 @@
     "topProducts": {
       "title": "Produtos mais vendidos",
       "empty": "Sem vendas neste período",
-      "sold": "vendidos"
+      "sold": "vendidos",
+      "profit": "lucro"
     },
     "inventory": {
       "title": "Status do estoque",

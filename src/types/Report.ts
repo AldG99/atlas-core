@@ -6,7 +6,10 @@ export interface KPIs {
   totalSales: number;
   totalOrders: number;
   averageTicket: number;
-  uniqueClients: number;
+  totalCost: number;
+  totalProfit: number;
+  profitMargin: number;
+  hasIncompleteCost: boolean;
 }
 
 export interface StatusBreakdownItem {
@@ -34,6 +37,7 @@ export interface TopProduct {
   sku?: string;
   units: number;
   total: number;
+  profit?: number;
 }
 
 export interface InventoryItem {

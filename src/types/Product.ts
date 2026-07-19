@@ -19,6 +19,7 @@ export interface Product {
   sku: string;
   name: string;
   price: number;
+  costPrice: number;
   description?: string;
   image?: string;
   labels?: string[];
@@ -37,6 +38,7 @@ export interface ProductFormData {
   sku: string;
   name: string;
   price: number;
+  costPrice: number;
   description?: string;
   image?: string;
   labels?: string[];

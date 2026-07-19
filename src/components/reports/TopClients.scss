@@ -9,6 +9,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 
   &__title {
     font-size: $font-size-base;

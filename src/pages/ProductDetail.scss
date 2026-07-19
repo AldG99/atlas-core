@@ -267,6 +267,16 @@ $topbar-height: 52px;
     gap: $spacing-sm;
   }
 
+  &__input--cost {
+    color: $color-gray-500;
+  }
+
+  &__margin {
+    font-size: $font-size-sm;
+    color: $color-success;
+    font-weight: 500;
+  }
+
   &__price-edit-discount {
     display: flex;
     flex-direction: column;

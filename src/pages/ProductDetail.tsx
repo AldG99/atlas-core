@@ -85,6 +85,7 @@ const ProductDetail = () => {
       sku: product.sku,
       name: product.name,
       price: product.price,
+      costPrice: product.costPrice,
       description: product.description,
       image: product.image,
       labels: product.labels,
@@ -323,6 +324,15 @@ const ProductDetail = () => {
                         step="0.01"
                         min="0"
                       />
+                      <input
+                        type="number"
+                        value={editData?.costPrice || 0}
+                        onChange={(e) => updateField('costPrice', parseFloat(e.target.value) || 0)}
+                        placeholder={t('products.modal.costPrice')}
+                        className="product-detail__input product-detail__input--cost"
+                        step="0.01"
+                        min="0"
+                      />
                       <div className="product-detail__price-edit-discount">
                         <div className="product-detail__price-edit-row">
                           <div className="product-detail__discount-input-wrapper">
@@ -389,6 +399,12 @@ const ProductDetail = () => {
                     format(product.price)
                   )}
                 </div>
+
+                {!isEditing && !!product.costPrice && (
+                  <div className="product-detail__margin">
+                    {t('products.detailModal.margin')}: {(((product.price - product.costPrice) / product.price) * 100).toFixed(1)}%
+                  </div>
+                )}
 
                 {/* Etiquetas */}
                 <div className="product-detail__header-labels">
