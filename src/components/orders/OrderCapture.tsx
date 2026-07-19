@@ -12,10 +12,11 @@ interface OrderCaptureProps {
   phoneCountryCode?: string;
   downloadDate?: Date | null;
   businessName?: string;
+  businessAddress?: string;
 }
 
 const OrderCapture = forwardRef<HTMLDivElement, OrderCaptureProps>(
-  ({ order, coverage, phoneCountryCode, downloadDate, businessName }, ref) => {
+  ({ order, coverage, phoneCountryCode, downloadDate, businessName, businessAddress }, ref) => {
     const { t, i18n } = useTranslation();
     const { format } = useCurrency();
     const paid = getTotalPaid(order);
@@ -36,6 +37,9 @@ const OrderCapture = forwardRef<HTMLDivElement, OrderCaptureProps>(
         <div className="order-capture__header">
           {businessName && (
             <div className="order-capture__business">{businessName}</div>
+          )}
+          {businessAddress && (
+            <div className="order-capture__business-address">{businessAddress}</div>
           )}
           {order.orderNumber && (
             <div className="order-capture__order-number">{order.orderNumber}</div>

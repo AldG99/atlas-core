@@ -9,11 +9,6 @@ import {
   getOrdersByStatus,
   getArchivedOrders,
   createOrder,
-  updateOrderStatus,
-  deleteOrder,
-  archiveOrder,
-  unarchiveOrder,
-  addPayment as addPaymentService,
   countOrdersThisMonth,
   subscribeToOrders,
 } from '../services/orderService';
@@ -41,11 +36,6 @@ interface OrdersContextType {
   fetchByStatus: (status: OrderStatus) => Promise<void>;
   loadMore: () => Promise<void>;
   addOrder: (data: OrderFormData) => Promise<Order | undefined>;
-  changeStatus: (orderId: string, status: OrderStatus) => Promise<void>;
-  removeOrder: (orderId: string) => Promise<void>;
-  archive: (orderId: string) => Promise<void>;
-  restore: (orderId: string) => Promise<void>;
-  addPayment: (orderId: string, amount: number, itemIndex?: number) => Promise<void>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -63,6 +53,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const allOrdersRef = useRef<Order[]>([]);
   const isLiveViewRef = useRef(true);
   const hasMoreFromSnapshotRef = useRef(false);
+  const statusFilterRef = useRef<OrderStatus | null>(null);
 
   useEffect(() => {
     if (!user || !businessUid) {
@@ -103,6 +94,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const fetchOrders = useCallback(async () => {
     if (!user || !businessUid) return;
     isLiveViewRef.current = true;
+    statusFilterRef.current = null;
     const active = allOrdersRef.current;
     setOrders(active);
     setAllOrders(active);
@@ -119,6 +111,12 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       if (showArchived) {
         const result = await getArchivedOrders(businessUid, lastDocRef.current);
         setOrders((prev) => [...prev, ...result.orders]);
+        lastDocRef.current = result.lastDoc;
+        setHasMore(result.hasMore);
+      } else if (statusFilterRef.current) {
+        const result = await getOrdersByStatus(businessUid, statusFilterRef.current, lastDocRef.current);
+        const active = result.orders.filter((o) => !o.archived);
+        setOrders((prev) => [...prev, ...active]);
         lastDocRef.current = result.lastDoc;
         setHasMore(result.hasMore);
       } else {
@@ -146,6 +144,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       isLiveViewRef.current = false;
+      statusFilterRef.current = null;
       const result = await getArchivedOrders(businessUid);
       setOrders(result.orders);
       setShowArchived(true);
@@ -164,10 +163,12 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       isLiveViewRef.current = false;
-      const data = await getOrdersByStatus(businessUid, status);
-      setOrders(data.filter((o) => !o.archived));
-      setHasMore(false);
-      lastDocRef.current = null;
+      statusFilterRef.current = status;
+      const result = await getOrdersByStatus(businessUid, status);
+      setOrders(result.orders.filter((o) => !o.archived));
+      setShowArchived(false);
+      setHasMore(result.hasMore);
+      lastDocRef.current = result.lastDoc;
     } catch (err) {
       setError(err instanceof Error ? err.message : i18n.t('errors.loadOrdersError'));
     } finally {
@@ -190,89 +191,11 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, businessUid]);
 
-  const changeStatus = useCallback(async (orderId: string, status: OrderStatus) => {
-    try {
-      setError(null);
-      await updateOrderStatus(orderId, status);
-      const updateFn = (prev: Order[]) =>
-        prev.map((o) => {
-          if (o.id !== orderId) return o;
-          const updated = { ...o, status };
-          if (status === 'delivered') updated.deliveredAt = new Date();
-          return updated;
-        });
-      setOrders(updateFn);
-      setAllOrders(updateFn);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : i18n.t('orders.detail.statusChangeError'));
-      throw err;
-    }
-  }, []);
-
-  const removeOrder = useCallback(async (orderId: string) => {
-    try {
-      setError(null);
-      await deleteOrder(orderId);
-      const filterFn = (prev: Order[]) => prev.filter((o) => o.id !== orderId);
-      setOrders(filterFn);
-      setAllOrders(filterFn);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : i18n.t('orders.deleteError'));
-      throw err;
-    }
-  }, []);
-
-  const archive = useCallback(async (orderId: string) => {
-    try {
-      setError(null);
-      await archiveOrder(orderId);
-      const filterFn = (prev: Order[]) => prev.filter((o) => o.id !== orderId);
-      setOrders(filterFn);
-      setAllOrders(filterFn);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : i18n.t('errors.archiveOrderError'));
-      throw err;
-    }
-  }, []);
-
-  const restore = useCallback(async (orderId: string) => {
-    try {
-      setError(null);
-      await unarchiveOrder(orderId);
-      setOrders((prev) => prev.filter((o) => o.id !== orderId));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : i18n.t('archive.restoreError'));
-      throw err;
-    }
-  }, []);
-
-  const addPayment = useCallback(async (orderId: string, amount: number, itemIndex?: number) => {
-    try {
-      setError(null);
-      const { payment: newPayment, newStatus } = await addPaymentService(
-        orderId,
-        amount,
-        itemIndex,
-        user ? buildCreatedBy(user) : undefined
-      );
-      const updateFn = (prev: Order[]) =>
-        prev.map((o) => {
-          if (o.id !== orderId) return o;
-          return { ...o, payments: [...(o.payments || []), newPayment], status: newStatus ?? o.status };
-        });
-      setOrders(updateFn);
-      setAllOrders(updateFn);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : i18n.t('orders.detail.paymentRecordError'));
-      throw err;
-    }
-  }, [user]);
-
   return (
     <OrdersContext.Provider value={{
       orders, allOrders, loading, error, hasMore, showArchived,
       fetchOrders, fetchArchived, fetchByStatus, loadMore,
-      addOrder, changeStatus, removeOrder, archive, restore, addPayment,
+      addOrder,
     }}>
       {children}
     </OrdersContext.Provider>

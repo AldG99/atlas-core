@@ -18,6 +18,7 @@ import {
   openWhatsApp,
   copyToClipboard,
   formatPhone,
+  formatBusinessAddress,
 } from '../utils/formatters';
 import { DEFAULT_TEMPLATES } from '../types/User';
 import { useCurrency } from '../hooks/useCurrency';
@@ -29,6 +30,7 @@ import {
   updatePayment,
   deleteOrder,
 } from '../services/orderService';
+import { getAdminByUid } from '../services/teamService';
 import { useAuth } from '../hooks/useAuth';
 import { buildCreatedBy } from '../hooks/useOrders';
 import { useClients } from '../hooks/useClients';
@@ -79,6 +81,16 @@ const OrderDetail = () => {
   const captureRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadDate, setDownloadDate] = useState<Date | null>(null);
+  const ownAddress = useMemo(() => (user ? formatBusinessAddress(user) : ''), [user]);
+  const [adminAddress, setAdminAddress] = useState('');
+  const businessAddress = role === 'member' ? adminAddress : ownAddress;
+
+  useEffect(() => {
+    if (role !== 'member' || !businessUid) return;
+    getAdminByUid(businessUid).then((admin) => {
+      if (admin) setAdminAddress(formatBusinessAddress(admin));
+    }).catch(() => {});
+  }, [role, businessUid]);
 
   const fetchOrder = useCallback(async (silent = false) => {
     if (!id || !user || !businessUid) return;
@@ -523,7 +535,7 @@ const OrderDetail = () => {
       )}
       {downloading && (
         <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', zIndex: -1 }}>
-          <OrderCapture ref={captureRef} order={order} coverage={coverage} phoneCountryCode={clientData?.phoneCountryCode} downloadDate={downloadDate} businessName={user?.businessName} />
+          <OrderCapture ref={captureRef} order={order} coverage={coverage} phoneCountryCode={clientData?.phoneCountryCode} downloadDate={downloadDate} businessName={user?.businessName} businessAddress={businessAddress} />
         </div>
       )}
     </MainLayout>

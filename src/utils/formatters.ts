@@ -33,6 +33,21 @@ export const formatShortDate = (date: Date): string => {
   }).format(date);
 };
 
+interface AddressFields {
+  street?: string;
+  exteriorNumber?: string;
+  interiorNumber?: string;
+  neighborhood?: string;
+  city?: string;
+}
+
+export const formatBusinessAddress = (a: AddressFields): string => {
+  const interiorNumber = a.interiorNumber ? ` Int. ${a.interiorNumber}` : '';
+  const streetLine = [a.street, a.exteriorNumber ? `${a.exteriorNumber}${interiorNumber}` : ''].filter(Boolean).join(' ');
+  const cityLine = [a.neighborhood, a.city].filter(Boolean).join(', ');
+  return [streetLine, cityLine].filter(Boolean).join('\n');
+};
+
 import type { Order, OrderItem } from '../types/Order';
 import type { Templates } from '../types/User';
 import { getCountryCode } from '../data/countryCodes';

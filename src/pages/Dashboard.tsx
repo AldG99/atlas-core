@@ -271,7 +271,7 @@ const Dashboard = () => {
           error={error}
           searchTerm={searchTerm}
         />
-        {hasMore && filterStatus === 'all' && !searchTerm.trim() && (
+        {hasMore && filterStatus !== 'pendingPayment' && !searchTerm.trim() && (
           <div className="dashboard__load-more">
             <button
               className="btn btn--outline"

@@ -428,4 +428,11 @@
     font-weight: 500;
     color: $color-gray-600;
   }
+
+  &__load-more {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0;
+    flex-shrink: 0;
+  }
 }

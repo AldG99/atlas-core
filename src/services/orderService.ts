@@ -160,28 +160,37 @@ export const getOrders = async (
   };
 };
 
-export const getOrdersByStatus = async (userId: string, status: OrderStatus): Promise<Order[]> => {
-  const q = query(
-    collection(db, COLLECTION_NAME),
-    where('userId', '==', userId),
-    where('status', '==', status),
-    orderBy('createdAt', 'desc'),
-    limit(PAGE_LIMIT)
-  );
+export const getOrdersByStatus = async (
+  userId: string,
+  status: OrderStatus,
+  lastDoc?: QueryDocumentSnapshot
+): Promise<{ orders: Order[]; lastDoc: QueryDocumentSnapshot | null; hasMore: boolean }> => {
+  const q = lastDoc
+    ? query(
+        collection(db, COLLECTION_NAME),
+        where('userId', '==', userId),
+        where('status', '==', status),
+        orderBy('createdAt', 'desc'),
+        limit(PAGE_LIMIT + 1),
+        startAfter(lastDoc)
+      )
+    : query(
+        collection(db, COLLECTION_NAME),
+        where('userId', '==', userId),
+        where('status', '==', status),
+        orderBy('createdAt', 'desc'),
+        limit(PAGE_LIMIT + 1)
+      );
 
   const querySnapshot = await getDocs(q);
+  const hasMore = querySnapshot.docs.length > PAGE_LIMIT;
+  const docs = hasMore ? querySnapshot.docs.slice(0, PAGE_LIMIT) : querySnapshot.docs;
 
-  return querySnapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      ...data,
-      items: (data.items as OrderItem[]),
-      payments: parsePayments(data.payments),
-      createdAt: data.createdAt.toDate(),
-      deliveredAt: data.deliveredAt?.toDate() || undefined
-    } as Order;
-  });
+  return {
+    orders: docs.map(d => parseOrderDoc(d.id, d.data())),
+    lastDoc: docs[docs.length - 1] ?? null,
+    hasMore,
+  };
 };
 
 export const updateOrderNotes = async (orderId: string, notes: string): Promise<void> => {

@@ -1,5 +1,6 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { QueryDocumentSnapshot } from 'firebase/firestore';
 import { PiMagnifyingGlassBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import type { Order } from '../types/Order';
 import { useAuth } from '../hooks/useAuth';
@@ -22,10 +23,13 @@ const Archive = () => {
   const { clients } = useClients();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('date_desc');
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
+  const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
 
   const SORT_OPTIONS: Record<SortOption, string> = {
     date_desc: t('archive.sortNewest'),
@@ -50,16 +54,33 @@ const Archive = () => {
       setError(null);
       const result = await getArchivedOrders(user.uid);
       setOrders(result.orders);
+      setHasMore(result.hasMore);
+      lastDocRef.current = result.lastDoc;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar pedidos archivados');
+      setError(err instanceof Error ? err.message : t('errors.loadArchivedOrdersError'));
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, t]);
 
   useEffect(() => {
     fetchArchived();
   }, [fetchArchived]);
+
+  const loadMore = async () => {
+    if (!user || !hasMore || !lastDocRef.current) return;
+    try {
+      setLoadingMore(true);
+      const result = await getArchivedOrders(user.uid, lastDocRef.current);
+      setOrders((prev) => [...prev, ...result.orders]);
+      setHasMore(result.hasMore);
+      lastDocRef.current = result.lastDoc;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('errors.loadArchivedOrdersError'));
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const filteredAndSortedOrders = useMemo(() => {
     let result = [...orders];
@@ -198,6 +219,17 @@ const Archive = () => {
           error={error}
           searchTerm={searchTerm}
         />
+        {hasMore && !searchTerm.trim() && (
+          <div className="archive__load-more">
+            <button
+              className="btn btn--outline"
+              onClick={loadMore}
+              disabled={loadingMore}
+            >
+              {loadingMore ? t('dashboard.loadingMore') : t('dashboard.loadMore')}
+            </button>
+          </div>
+        )}
       </div>
     </MainLayout>
   );
