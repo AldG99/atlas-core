@@ -9,7 +9,6 @@ import type { Product, ProductFormData } from '../types/Product';
 import { getProductById, updateProduct } from '../services/productService';
 import type { CancelDiscountInfo } from '../services/productService';
 import { useLabels } from '../hooks/useLabels';
-import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useCurrency } from '../hooks/useCurrency';
 import { ROUTES } from '../config/routes';
@@ -25,7 +24,6 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { role } = useAuth();
   const { showToast } = useToast();
   const { labels, addLabel, removeLabel } = useLabels();
   const { format } = useCurrency();
@@ -216,7 +214,6 @@ const ProductDetail = () => {
       <div className="product-detail">
         <ProductTopBar
           isEditing={isEditing}
-          role={role}
           saving={saving}
           onBack={() => navigate(ROUTES.PRODUCTS)}
           onStartEdit={startEditing}

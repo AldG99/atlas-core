@@ -2,47 +2,22 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Obtiene los datos del usuario autenticado
-    function getUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-    }
-
-    // Verifica si el usuario autenticado es administrador
-    function isAdmin() {
-      return getUserData().role == 'admin';
-    }
-
-    // Retorna el UID del negocio: para admin es su propio UID, para empleado es businessUid
-    function getBusinessUid() {
-      let u = getUserData();
-      return (u.keys().hasAll(['businessUid']) && u.businessUid != null)
-        ? u.businessUid
-        : request.auth.uid;
-    }
-
     // Verifica si el usuario autenticado pertenece al negocio del documento
+    // (app de un solo usuario: el negocio siempre es el propio uid)
     function canAccessBusiness(businessUid) {
-      return request.auth != null && getBusinessUid() == businessUid;
+      return request.auth != null && request.auth.uid == businessUid;
     }
 
     // ── Usuarios ──────────────────────────────────────────────────────────────
     match /users/{userId} {
-      // Lectura: propio documento, o admin (rol verificado) leyendo a sus empleados
-      allow read: if request.auth != null && (
-        request.auth.uid == userId ||
-        (isAdmin() && get(/databases/$(database)/documents/users/$(userId)).data.businessUid == request.auth.uid)
-      );
+      allow read: if request.auth != null && request.auth.uid == userId;
       // Escritura: solo el propio documento, con campos protegidos
       allow write: if request.auth != null && request.auth.uid == userId
         && !request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(['plan', 'role', 'businessUid', 'uid', 'email', 'username', 'memberNumber', 'stripeCustomerId']);
+            .hasAny(['plan', 'uid', 'email', 'stripeCustomerId']);
       // Creación inicial (registro): el usuario solo puede crear su propio doc.
-      // Se bloquea businessUid y role para que nadie pueda auto-asignarse acceso
-      // a otro negocio ni elevarse permisos en el momento del registro.
-      // Los miembros son creados por Cloud Functions (Admin SDK), que bypasea estas reglas.
       allow create: if request.auth != null && request.auth.uid == userId
-        && !request.resource.data.keys().hasAny(['businessUid', 'stripeCustomerId', 'memberNumber', 'username'])
-        && (!request.resource.data.keys().hasAll(['role']) || request.resource.data.role == 'admin')
+        && !request.resource.data.keys().hasAny(['stripeCustomerId'])
         && (!request.resource.data.keys().hasAll(['plan']) || request.resource.data.plan == 'free');
     }
 
@@ -73,7 +48,7 @@ service cloud.firestore {
     // ── Contadores de folios ───────────────────────────────────────────────────
     match /orderCounters/{counterId} {
       allow read, write: if request.auth != null &&
-        counterId.matches(getBusinessUid() + '_.*');
+        counterId.matches(request.auth.uid + '_.*');
     }
 
     // ── Resultados de moderación de imágenes ──────────────────────────────────

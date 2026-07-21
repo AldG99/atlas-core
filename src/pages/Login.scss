@@ -19,38 +19,6 @@
     }
   }
 
-  // iOS-style segmented control
-  &__tabs {
-    display: flex;
-    background-color: $color-gray-100;
-    border: 1px solid $color-gray-200;
-    padding: 3px;
-    gap: 2px;
-  }
-
-  &__tab {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: $spacing-xs;
-    padding: $spacing-xs $spacing-sm;
-    background: none;
-    border: none;
-    font-size: $font-size-sm;
-    font-weight: 500;
-    color: $color-gray-500;
-    cursor: pointer;
-    transition: all $transition-fast;
-    line-height: 1.6;
-
-    &--active {
-      background-color: $color-white;
-      color: $color-gray-900;
-      font-weight: 600;
-    }
-  }
-
   // Fields block — tighter grouped
   &__fields {
     display: flex;

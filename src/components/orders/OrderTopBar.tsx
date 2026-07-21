@@ -15,7 +15,6 @@ interface Props {
   copiedId: boolean;
   downloading: boolean;
   submitting: boolean;
-  role: string;
   settled: boolean;
   canMarkDelivered: boolean;
   paymentInput: string;
@@ -37,7 +36,6 @@ const OrderTopBar = ({
   copiedId,
   downloading,
   submitting,
-  role,
   settled,
   canMarkDelivered,
   paymentInput,
@@ -86,18 +84,14 @@ const OrderTopBar = ({
         >
           <PiDownloadSimpleBold size={20} />
         </button>
-        {role === 'admin' && (
-          <>
-            <span className="order-detail__top-divider" />
-            <button
-              onClick={onDelete}
-              className="order-detail__icon-btn order-detail__icon-btn--danger"
-              title={t('orders.detail.delete')}
-            >
-              <PiTrashBold size={20} />
-            </button>
-          </>
-        )}
+        <span className="order-detail__top-divider" />
+        <button
+          onClick={onDelete}
+          className="order-detail__icon-btn order-detail__icon-btn--danger"
+          title={t('orders.detail.delete')}
+        >
+          <PiTrashBold size={20} />
+        </button>
         {!order.archived && (
           <>
             <div className="order-detail__top-bar-payment-group">

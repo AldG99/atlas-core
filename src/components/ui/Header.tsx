@@ -15,7 +15,7 @@ interface HeaderProps {
 
 const Header = ({ notifications }: HeaderProps) => {
   const { t, i18n } = useTranslation();
-  const { user, logout, role } = useAuth();
+  const { user, logout } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -142,10 +142,7 @@ const Header = ({ notifications }: HeaderProps) => {
                     ? `${user.firstName} ${user.lastName}`
                     : t('auth.login.adminTab')}
                 </span>
-                {role === 'member'
-                  ? <PiUserBold size={11} color="#2368C4" />
-                  : <PiShieldCheckBold size={11} color="#F8A800" />
-                }
+                <PiShieldCheckBold size={11} color="#F8A800" />
               </div>
             </div>
             <PiCaretDownBold size={16} />

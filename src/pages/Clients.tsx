@@ -10,7 +10,6 @@ import {
 } from 'react-icons/pi';
 import { useClients } from '../hooks/useClients';
 import { useToast } from '../hooks/useToast';
-import { useAuth } from '../hooks/useAuth';
 import type { ClientFormData } from '../types/Client';
 import { exportClientsCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
@@ -41,7 +40,6 @@ const Clients = () => {
 
   const { clients, loading, error, addClient } = useClients();
   const { showToast } = useToast();
-  const { role } = useAuth();
 
   const filteredClients = useMemo(() => {
     let result = clients;
@@ -117,15 +115,13 @@ const Clients = () => {
               <PiDownloadSimpleBold size={18} />
               {t('common.exportCsv')}
             </button>
-            {role === 'admin' && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="btn btn--primary"
-              >
-                <PiPlusBold size={18} />
-                {t('clients.newClient')}
-              </button>
-            )}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="btn btn--primary"
+            >
+              <PiPlusBold size={18} />
+              {t('clients.newClient')}
+            </button>
           </div>
         </div>
 

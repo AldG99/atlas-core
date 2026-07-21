@@ -2,11 +2,9 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // Helper — true if the caller belongs to the given business (admin owns it, employee is linked)
+    // Helper — true if the caller owns the given business (single-user app: always own uid)
     function belongsToBusiness(businessUid) {
-      let u = firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data;
-      return request.auth.uid == businessUid ||
-        (u.keys().hasAll(['businessUid']) && u.businessUid == businessUid);
+      return request.auth.uid == businessUid;
     }
 
     // Image write constraints: JPEG/PNG/WebP only, max 5 MB

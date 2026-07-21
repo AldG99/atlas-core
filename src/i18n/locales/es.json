@@ -46,8 +46,7 @@
       "ordersThisMonth": "pedidos este mes",
       "clients": "clientes",
       "products": "productos",
-      "labels": "etiquetas",
-      "members": "miembros"
+      "labels": "etiquetas"
     },
     "csvHeaders": {
       "orders": [
@@ -115,11 +114,8 @@
     "login": {
       "title": "Iniciar sesión",
       "adminTab": "Administrador",
-      "memberTab": "Miembro",
       "email": "Correo electrónico",
       "emailPlaceholder": "tu@correo.com",
-      "username": "Usuario",
-      "usernamePlaceholder": "Tu nombre de usuario",
       "password": "Contraseña",
       "passwordPlaceholder": "••••••••",
       "submit": "Entrar",
@@ -136,9 +132,7 @@
       "backToLogin": "Volver al inicio de sesión",
       "tooManyAttempts": "Demasiados intentos fallidos. Espera {{seconds}} segundos.",
       "tooManyAttemptsLong": "Demasiados intentos fallidos. Espera 5 minutos.",
-      "invalidCredentials": "Credenciales inválidas",
-      "memberDesc": "Los miembros son colaboradores del negocio.",
-      "memberDescSub": "Tu acceso fue creado por el administrador."
+      "invalidCredentials": "Credenciales inválidas"
     },
     "register": {
       "title": "Crear cuenta",
@@ -209,7 +203,6 @@
   "profile": {
     "title": "Mi perfil",
     "adminInfo": "Información del administrador",
-    "memberInfo": "Información del miembro",
     "businessName": "Nombre del negocio",
     "businessNamePlaceholder": "Mi Negocio",
     "firstName": "Nombre",
@@ -218,7 +211,6 @@
     "phone": "Número de celular",
     "phonePlaceholder": "Número de celular",
     "email": "Correo electrónico",
-    "username": "Usuario",
     "memberSince": "Miembro desde",
     "editButton": "Editar perfil",
     "saveButton": "Guardar cambios",
@@ -377,12 +369,12 @@
       "statusPartial": "Parcial",
       "statusPending": "Pendiente",
       "statusLiquidated": "Liquidado",
-      "createdBy": "Creado por",
-      "deliveredBy": "Entregado por",
-      "notDeliveredYet": "Aún sin entregar",
+      "profit": "Ganancia",
+      "profitUnknownHint": "Este producto no tiene precio de compra registrado",
       "paymentRecorded": "Abono registrado",
       "paymentRecordError": "Error al registrar abono",
       "paymentCorrected": "Abono corregido",
+      "paymentCorrectedReverted": "Abono corregido — el pedido volvió a Pendiente porque ya no está cubierto al 100%",
       "paymentCorrectionError": "Error al corregir el abono",
       "paymentCorrectionFailed": "El monto debe ser mayor a cero",
       "paymentTotalExceeded": "El total de abonos no puede superar {{total}}",
@@ -398,7 +390,6 @@
         "code": "Clave",
         "product": "Producto",
         "amount": "Monto",
-        "by": "Por",
         "date": "Fecha"
       }
     },
@@ -492,6 +483,7 @@
         "product": "Producto",
         "labels": "Etiquetas",
         "amount": "Importe",
+        "profit": "Ganancia",
         "accumulated": "Acumulado"
       },
       "viewOrderDetail": "Ver detalle del pedido",
@@ -814,10 +806,8 @@
       "notifications": "Notificaciones",
       "install": "Instalar aplicación",
       "templates": "Plantillas de mensajes",
-      "team": "Equipo",
       "backup": "Respaldo",
       "manage": "Gestionar cuenta",
-      "membership": "Equipo",
       "language": "Idioma"
     },
     "language": {
@@ -826,7 +816,6 @@
     },
     "currency": {
       "desc": "Elige el símbolo de moneda a mostrar en precios y reportes.",
-      "adminOnly": "Solo el administrador puede cambiar la moneda.",
       "save": "Guardar",
       "saveSuccess": "Moneda actualizada correctamente",
       "saveError": "Error al guardar la moneda"
@@ -862,56 +851,6 @@
       "saving": "Guardando...",
       "saveSuccess": "Plantillas guardadas",
       "saveError": "Error al guardar las plantillas"
-    },
-    "team": {
-      "desc": "Crea cuentas para los miembros de tu equipo. Entran con su usuario y contraseña desde la pantalla de inicio de sesión.",
-      "loading": "Cargando equipo...",
-      "empty": "No hay miembros todavía.",
-      "members": "Miembros",
-      "newMember": "+ Nuevo miembro",
-      "memberSince": "Miembro desde",
-      "memberNumber": "Nº {{number}}",
-      "removeTitle": "Remover del equipo",
-      "upgradePlanToAdd": "Actualiza tu plan para agregar miembros al equipo",
-      "remove": "Remover",
-      "removed": "{{name}} ha sido removido del equipo",
-      "removeError": "Error al remover al miembro",
-      "created": "Miembro creado correctamente",
-      "createError": "Error al crear miembro",
-      "updated": "Miembro actualizado",
-      "updateError": "Error al guardar cambios",
-      "createModal": {
-        "title": "Nuevo miembro",
-        "firstName": "Nombre",
-        "lastName": "Apellido",
-        "dob": "Fecha de nacimiento",
-        "phone": "Número de teléfono",
-        "password": "Contraseña",
-        "confirmPassword": "Confirmar contraseña",
-        "cancel": "Cancelar",
-        "submit": "Crear miembro",
-        "submitting": "Creando...",
-        "passwordMismatch": "Las contraseñas no coinciden",
-        "dobRequired": "La fecha de nacimiento es requerida",
-        "phoneInvalid": "Ingresa un número de teléfono válido"
-      },
-      "profileModal": {
-        "viewTitle": "Perfil del miembro",
-        "editTitle": "Editar miembro",
-        "username": "Usuario",
-        "phone": "Teléfono",
-        "dob": "Fecha de nacimiento",
-        "newPassword": "Nueva contraseña",
-        "confirmPassword": "Confirmar contraseña",
-        "remove": "Remover",
-        "close": "Cerrar",
-        "edit": "Editar",
-        "cancel": "Cancelar",
-        "save": "Guardar",
-        "saving": "Guardando...",
-        "passwordMismatch": "Las contraseñas no coinciden",
-        "passwordShort": "La contraseña debe tener al menos 6 caracteres"
-      }
     },
     "backup": {
       "upgradePlanToUse": "Actualiza tu plan para usar exportar e importar datos",
@@ -958,14 +897,6 @@
       "wrongPassword": "Contraseña incorrecta",
       "passwordRequired": "Ingresa tu contraseña para confirmar",
       "deleteDataSuccess": "Todos los datos han sido eliminados"
-    },
-    "membership": {
-      "desc": "Eres miembro de este negocio. Contacta con el administrador para cambios en la cuenta.",
-      "admin": "Administrador",
-      "teammates": "Compañeros",
-      "leave": "Salir del negocio",
-      "leaving": "Saliendo...",
-      "leaveError": "Error al salir del negocio"
     }
   },
   "support": {
@@ -1076,8 +1007,7 @@
           "Hasta 80 productos",
           "Hasta 6 etiquetas",
           "Exportar CSV",
-          "Exportar e importar datos",
-          "Miembros del equipo"
+          "Exportar e importar datos"
         ]
       },
       "pro": {
@@ -1089,8 +1019,7 @@
           "Hasta 160 productos",
           "Hasta 10 etiquetas",
           "Exportar CSV",
-          "Exportar e importar datos",
-          "Hasta 2 miembros en tu negocio"
+          "Exportar e importar datos"
         ]
       },
       "business": {
@@ -1102,8 +1031,7 @@
           "Hasta 640 productos",
           "Hasta 16 etiquetas",
           "Exportar CSV",
-          "Exportar e importar datos",
-          "Hasta 6 miembros en tu negocio"
+          "Exportar e importar datos"
         ]
       }
     }
@@ -1151,8 +1079,6 @@
   "errors": {
     "userNotFound": "Usuario no encontrado",
     "noActiveSession": "No hay sesión activa",
-    "invalidCredentials": "Usuario o contraseña incorrectos",
-    "accountDisabled": "Tu cuenta ha sido desactivada. Contacta con tu administrador.",
     "invalidImageFormat": "Solo se permiten imágenes en formato JPEG, PNG o WebP",
     "imageTooLarge": "La imagen no puede superar 5 MB",
     "orderDailyLimitReached": "Límite de pedidos del día alcanzado (máx. 9,999)",
@@ -1169,7 +1095,6 @@
     "driveUploadError": "Error al subir archivo a Drive",
     "driveNoFileLink": "No se recibió enlace del archivo",
     "planLimitReached": "Has alcanzado el límite de {{limit}} {{resource}} en tu plan. Actualiza tu plan para agregar más.",
-    "planNoMembers": "Tu plan no incluye miembros del equipo. Actualiza tu plan para agregar colaboradores.",
     "emailSendError": "Error al enviar el correo",
     "driveLoadError": "No se pudo cargar Google Identity Services",
     "logoutError": "Error al cerrar sesión",

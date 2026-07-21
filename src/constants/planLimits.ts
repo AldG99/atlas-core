@@ -1,9 +1,9 @@
 import i18n from '../i18n';
 
 export const PLAN_LIMITS = {
-  free:       { ordersPerMonth: 360, clients: 120,      products: 80,  labels: 6,  members: 0 },
-  pro:        { ordersPerMonth: 720, clients: 240,       products: 160, labels: 10, members: 2 },
-  enterprise: { ordersPerMonth: Infinity, clients: Infinity, products: 640, labels: 16, members: 6 },
+  free:       { ordersPerMonth: 360, clients: 120,      products: 80,  labels: 6 },
+  pro:        { ordersPerMonth: 720, clients: 240,       products: 160, labels: 10 },
+  enterprise: { ordersPerMonth: Infinity, clients: Infinity, products: 640, labels: 16 },
 } as const;
 
 export type PlanKey = keyof typeof PLAN_LIMITS;

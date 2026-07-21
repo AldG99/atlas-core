@@ -7,7 +7,6 @@ import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPl
 import { useProducts } from '../hooks/useProducts';
 import { useLabels } from '../hooks/useLabels';
 import { useToast } from '../hooks/useToast';
-import { useAuth } from '../hooks/useAuth';
 import type { ProductFormData } from '../types/Product';
 import { exportProductsCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
@@ -50,7 +49,6 @@ const Products = () => {
   const { products, loading, error, addProduct, editProduct } = useProducts();
   const { labels } = useLabels();
   const { showToast } = useToast();
-  const { role } = useAuth();
 
   const filteredProducts = useMemo(() => {
     let result = searchTerm.trim()
@@ -143,15 +141,13 @@ const Products = () => {
               <PiClockCounterClockwiseBold size={18} />
               {t('products.discountHistory')}
             </button>
-            {role === 'admin' && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="btn btn--primary"
-              >
-                <PiPlusBold size={18} />
-                {t('products.newProduct')}
-              </button>
-            )}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="btn btn--primary"
+            >
+              <PiPlusBold size={18} />
+              {t('products.newProduct')}
+            </button>
           </div>
         </div>
 

@@ -2,19 +2,15 @@ import type { FormEvent } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PiUserGear, PiUsers, PiEyeBold, PiEyeSlashBold } from 'react-icons/pi';
+import { PiEyeBold, PiEyeSlashBold } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
 import { ROUTES } from '../config/routes';
 import AuthLayout from '../layouts/AuthLayout';
 import './Login.scss';
 
-type LoginMode = 'admin' | 'member';
-
 const Login = () => {
   const { t } = useTranslation();
-  const [mode, setMode] = useState<LoginMode>('admin');
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,7 +27,7 @@ const Login = () => {
   const [resetSent, setResetSent] = useState(false);
   const [resetError, setResetError] = useState('');
 
-  const { login, loginMember, sendPasswordReset, user, loading: authLoading } = useAuth();
+  const { login, sendPasswordReset, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,11 +78,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      if (mode === 'admin') {
-        await login({ email, password });
-      } else {
-        await loginMember(username, password);
-      }
+      await login({ email, password });
       setFailedAttempts(0);
       setLockedUntil(null);
       navigate(ROUTES.DASHBOARD);
@@ -167,55 +159,21 @@ const Login = () => {
           <h2>{t('auth.login.title')}</h2>
         </div>
 
-        <div className="login-form__tabs">
-          <button
-            type="button"
-            className={`login-form__tab${mode === 'admin' ? ' login-form__tab--active' : ''}`}
-            onClick={() => { setMode('admin'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
-          >
-            <PiUserGear size={17} />
-            {t('auth.login.adminTab')}
-          </button>
-          <button
-            type="button"
-            className={`login-form__tab${mode === 'member' ? ' login-form__tab--active' : ''}`}
-            onClick={() => { setMode('member'); setError(''); setFailedAttempts(0); setLockedUntil(null); }}
-          >
-            <PiUsers size={17} />
-            {t('auth.login.memberTab')}
-          </button>
-        </div>
-
         {error && <div className="login-form__error">{error}</div>}
 
         <div className="login-form__fields">
-          {mode === 'admin' ? (
-            <div className="form-group">
-              <label htmlFor="email">{t('auth.login.email')}</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="input"
-                placeholder={t('auth.login.emailPlaceholder')}
-                required
-              />
-            </div>
-          ) : (
-            <div className="form-group">
-              <label htmlFor="username">{t('auth.login.username')}</label>
-              <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                className="input"
-                placeholder="AL0898-0126-4723"
-                required
-              />
-            </div>
-          )}
+          <div className="form-group">
+            <label htmlFor="email">{t('auth.login.email')}</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="input"
+              placeholder={t('auth.login.emailPlaceholder')}
+              required
+            />
+          </div>
 
           <div className="form-group">
             <label htmlFor="password">{t('auth.login.password')}</label>
@@ -246,23 +204,14 @@ const Login = () => {
         </button>
 
         <div className="login-form__footer">
-          {mode === 'admin' ? (
-            <>
-              <p className="login-form__link">
-                {t('auth.login.noAccount')} <Link to={ROUTES.REGISTER}>{t('auth.login.register')}</Link>
-              </p>
-              <p className="login-form__link">
-                <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(true); setResetEmail(email); }}>
-                  {t('auth.login.forgotPassword')}
-                </button>
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="login-form__link">{t('auth.login.memberDesc')}</p>
-              <p className="login-form__link login-form__link--muted">{t('auth.login.memberDescSub')}</p>
-            </>
-          )}
+          <p className="login-form__link">
+            {t('auth.login.noAccount')} <Link to={ROUTES.REGISTER}>{t('auth.login.register')}</Link>
+          </p>
+          <p className="login-form__link">
+            <button type="button" className="login-form__link-btn" onClick={() => { setShowReset(true); setResetEmail(email); }}>
+              {t('auth.login.forgotPassword')}
+            </button>
+          </p>
         </div>
       </form>
     </AuthLayout>

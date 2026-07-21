@@ -46,8 +46,7 @@
       "ordersThisMonth": "orders this month",
       "clients": "clients",
       "products": "products",
-      "labels": "labels",
-      "members": "members"
+      "labels": "labels"
     },
     "csvHeaders": {
       "orders": [
@@ -115,11 +114,8 @@
     "login": {
       "title": "Log in",
       "adminTab": "Administrator",
-      "memberTab": "Member",
       "email": "Email address",
       "emailPlaceholder": "you@email.com",
-      "username": "Username",
-      "usernamePlaceholder": "Your username",
       "password": "Password",
       "passwordPlaceholder": "••••••••",
       "submit": "Log in",
@@ -136,9 +132,7 @@
       "backToLogin": "Back to login",
       "tooManyAttempts": "Too many failed attempts. Wait {{seconds}} seconds.",
       "tooManyAttemptsLong": "Too many failed attempts. Wait 5 minutes.",
-      "invalidCredentials": "Invalid credentials",
-      "memberDesc": "Members are collaborators of the business.",
-      "memberDescSub": "Your access was created by the administrator."
+      "invalidCredentials": "Invalid credentials"
     },
     "register": {
       "title": "Create account",
@@ -209,7 +203,6 @@
   "profile": {
     "title": "My profile",
     "adminInfo": "Administrator information",
-    "memberInfo": "Member information",
     "businessName": "Business name",
     "businessNamePlaceholder": "My Business",
     "firstName": "First name",
@@ -218,7 +211,6 @@
     "phone": "Phone number",
     "phonePlaceholder": "Phone number",
     "email": "Email address",
-    "username": "Username",
     "memberSince": "Member since",
     "editButton": "Edit profile",
     "saveButton": "Save changes",
@@ -377,12 +369,12 @@
       "statusPartial": "Partial",
       "statusPending": "Pending",
       "statusLiquidated": "Settled",
-      "createdBy": "Created by",
-      "deliveredBy": "Delivered by",
-      "notDeliveredYet": "Not yet delivered",
+      "profit": "Profit",
+      "profitUnknownHint": "This product has no purchase price registered",
       "paymentRecorded": "Payment recorded",
       "paymentRecordError": "Error recording payment",
       "paymentCorrected": "Payment corrected",
+      "paymentCorrectedReverted": "Payment corrected — the order went back to Pending because it's no longer fully covered",
       "paymentCorrectionError": "Error correcting payment",
       "paymentCorrectionFailed": "Amount must be greater than zero",
       "paymentTotalExceeded": "Total payments cannot exceed {{total}}",
@@ -398,7 +390,6 @@
         "code": "Code",
         "product": "Product",
         "amount": "Amount",
-        "by": "By",
         "date": "Date"
       }
     },
@@ -492,6 +483,7 @@
         "product": "Product",
         "labels": "Labels",
         "amount": "Amount",
+        "profit": "Profit",
         "accumulated": "Accumulated"
       },
       "viewOrderDetail": "View order detail",
@@ -814,10 +806,8 @@
       "notifications": "Notifications",
       "install": "Install app",
       "templates": "Message templates",
-      "team": "Team",
       "backup": "Backup",
       "manage": "Manage account",
-      "membership": "Team",
       "language": "Language"
     },
     "language": {
@@ -826,7 +816,6 @@
     },
     "currency": {
       "desc": "Choose the currency symbol to display in prices and reports.",
-      "adminOnly": "Only the administrator can change the currency.",
       "save": "Save",
       "saveSuccess": "Currency updated successfully",
       "saveError": "Error saving currency"
@@ -862,56 +851,6 @@
       "saving": "Saving...",
       "saveSuccess": "Templates saved",
       "saveError": "Error saving templates"
-    },
-    "team": {
-      "desc": "Create accounts for your team members. They sign in with their username and password from the login screen.",
-      "loading": "Loading team...",
-      "empty": "No members yet.",
-      "members": "Members",
-      "newMember": "+ New member",
-      "memberSince": "Member since",
-      "memberNumber": "No. {{number}}",
-      "removeTitle": "Remove from team",
-      "upgradePlanToAdd": "Upgrade your plan to add team members",
-      "remove": "Remove",
-      "removed": "{{name}} has been removed from the team",
-      "removeError": "Error removing member",
-      "created": "Member created successfully",
-      "createError": "Error creating member",
-      "updated": "Member updated",
-      "updateError": "Error saving changes",
-      "createModal": {
-        "title": "New member",
-        "firstName": "First name",
-        "lastName": "Last name",
-        "dob": "Date of birth",
-        "phone": "Phone number",
-        "password": "Password",
-        "confirmPassword": "Confirm password",
-        "cancel": "Cancel",
-        "submit": "Create member",
-        "submitting": "Creating...",
-        "passwordMismatch": "Passwords do not match",
-        "dobRequired": "Date of birth is required",
-        "phoneInvalid": "Enter a valid phone number"
-      },
-      "profileModal": {
-        "viewTitle": "Member profile",
-        "editTitle": "Edit member",
-        "username": "Username",
-        "phone": "Phone",
-        "dob": "Date of birth",
-        "newPassword": "New password",
-        "confirmPassword": "Confirm password",
-        "remove": "Remove",
-        "close": "Close",
-        "edit": "Edit",
-        "cancel": "Cancel",
-        "save": "Save",
-        "saving": "Saving...",
-        "passwordMismatch": "Passwords do not match",
-        "passwordShort": "Password must be at least 6 characters"
-      }
     },
     "backup": {
       "upgradePlanToUse": "Upgrade your plan to use export and import data",
@@ -958,14 +897,6 @@
       "wrongPassword": "Incorrect password",
       "passwordRequired": "Enter your password to confirm",
       "deleteDataSuccess": "All data has been deleted"
-    },
-    "membership": {
-      "desc": "You are a member of this business. Contact the administrator for account changes.",
-      "admin": "Administrator",
-      "teammates": "Teammates",
-      "leave": "Leave business",
-      "leaving": "Leaving...",
-      "leaveError": "Error leaving the business"
     }
   },
   "support": {
@@ -1076,8 +1007,7 @@
           "Up to 80 products",
           "Up to 6 labels",
           "CSV export",
-          "Export & import data",
-          "Team members"
+          "Export & import data"
         ]
       },
       "pro": {
@@ -1089,8 +1019,7 @@
           "Up to 160 products",
           "Up to 10 labels",
           "CSV export",
-          "Export & import data",
-          "Up to 2 team members"
+          "Export & import data"
         ]
       },
       "business": {
@@ -1102,8 +1031,7 @@
           "Up to 640 products",
           "Up to 16 labels",
           "CSV export",
-          "Export & import data",
-          "Up to 6 team members"
+          "Export & import data"
         ]
       }
     }
@@ -1151,8 +1079,6 @@
   "errors": {
     "userNotFound": "User not found",
     "noActiveSession": "No active session",
-    "invalidCredentials": "Incorrect username or password",
-    "accountDisabled": "Your account has been disabled. Contact your administrator.",
     "invalidImageFormat": "Only JPEG, PNG or WebP images are allowed",
     "imageTooLarge": "The image cannot exceed 5 MB",
     "orderDailyLimitReached": "Daily order limit reached (max. 9,999)",
@@ -1169,7 +1095,6 @@
     "driveUploadError": "Error uploading file to Drive",
     "driveNoFileLink": "No file link was received",
     "planLimitReached": "You've reached the limit of {{limit}} {{resource}} on your plan. Upgrade your plan to add more.",
-    "planNoMembers": "Your plan does not include team members. Upgrade your plan to add collaborators.",
     "emailSendError": "Error sending the email",
     "driveLoadError": "Could not load Google Identity Services",
     "logoutError": "Error signing out",

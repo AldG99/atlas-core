@@ -33,11 +33,6 @@ export interface User {
   plan?: 'free' | 'pro' | 'enterprise';
   currency?: string;
   templates?: Templates;
-  role?: 'admin' | 'member';
-  businessUid?: string;
-  username?: string;
-  memberNumber?: string;
-  active?: boolean;
 }
 
 export interface AuthState {

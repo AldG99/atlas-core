@@ -55,8 +55,7 @@ interface FormErrors {
 
 const Profile = () => {
   const { t } = useTranslation();
-  const { user, updateProfile, changePassword, role } = useAuth();
-  const isMember = role === 'member';
+  const { user, updateProfile, changePassword } = useAuth();
   const { showToast } = useToast();
   const { clients } = useClients();
   const { products } = useProducts();
@@ -131,22 +130,18 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    if (!isMember && !validate()) return;
+    if (!validate()) return;
 
     setSaving(true);
     try {
-      if (isMember) {
-        await updateProfile({});
-      } else {
-        await updateProfile({
-          businessName: formData.businessName.trim(),
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
-          birthDate: formData.birthDate,
-          phone: formData.phone,
-          phoneCountryCode: formData.phoneCountryCode,
-        });
-      }
+      await updateProfile({
+        businessName: formData.businessName.trim(),
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        birthDate: formData.birthDate,
+        phone: formData.phone,
+        phoneCountryCode: formData.phoneCountryCode,
+      });
       setIsEditing(false);
       showToast(t('profile.updateSuccess'), 'success');
     } catch {
@@ -215,39 +210,37 @@ const Profile = () => {
               {!isEditing && (
                 <div className="profile__avatar-name">
                   <span className="profile__business">{user?.businessName}</span>
-                  <span className="profile__email">{isMember ? user?.username : user?.email}</span>
+                  <span className="profile__email">{user?.email}</span>
                 </div>
               )}
             </div>
 
             <div className="profile__card-header">
               <PiUserBold size={16} />
-              <span>{isMember ? t('profile.memberInfo') : t('profile.adminInfo')}</span>
-              {!isMember && (
-                <div className="profile__card-header-actions">
-                  {isEditing ? (
-                    <>
-                      <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving}>
-                        {t('common.cancel')}
-                      </button>
-                      <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving}>
-                        {saving ? t('common.saving') : t('profile.saveButton')}
-                      </button>
-                    </>
-                  ) : (
-                    <button className="profile__action-btn profile__action-btn--primary" onClick={() => setIsEditing(true)} title={t('profile.editButton')}>
-                      <PiPencilBold size={20} />
+              <span>{t('profile.adminInfo')}</span>
+              <div className="profile__card-header-actions">
+                {isEditing ? (
+                  <>
+                    <button className="btn btn--outline btn--sm" onClick={handleCancel} disabled={saving}>
+                      {t('common.cancel')}
                     </button>
-                  )}
-                </div>
-              )}
+                    <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving}>
+                      {saving ? t('common.saving') : t('profile.saveButton')}
+                    </button>
+                  </>
+                ) : (
+                  <button className="profile__action-btn profile__action-btn--primary" onClick={() => setIsEditing(true)} title={t('profile.editButton')}>
+                    <PiPencilBold size={20} />
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="profile__fields">
               {/* Nombre del negocio */}
               <div className="profile__field profile__field--full">
                 <label>{t('profile.businessName')}</label>
-                {isEditing && !isMember ? (
+                {isEditing ? (
                   <>
                     <input
                       type="text"
@@ -268,7 +261,7 @@ const Profile = () => {
               {/* Nombre y Apellido */}
               <div className="profile__field">
                 <label>{t('profile.firstName')}</label>
-                {isEditing && !isMember ? (
+                {isEditing ? (
                   <>
                     <input
                       type="text"
@@ -288,7 +281,7 @@ const Profile = () => {
 
               <div className="profile__field">
                 <label>{t('profile.lastName')}</label>
-                {isEditing && !isMember ? (
+                {isEditing ? (
                   <>
                     <input
                       type="text"
@@ -309,7 +302,7 @@ const Profile = () => {
               {/* Fecha de nacimiento */}
               <div className="profile__field">
                 <label>{t('profile.dob')}</label>
-                {isEditing && !isMember ? (
+                {isEditing ? (
                   <>
                     <input
                       type="date"
@@ -334,7 +327,7 @@ const Profile = () => {
               {/* Teléfono */}
               <div className="profile__field">
                 <label>{t('profile.phone')}</label>
-                {isEditing && !isMember ? (
+                {isEditing ? (
                   <>
                     <PhoneInput
                       value={formData.phone}
@@ -356,8 +349,8 @@ const Profile = () => {
 
               {/* Email — solo lectura */}
               <div className="profile__field profile__field--full">
-                <label>{isMember ? t('profile.username') : t('profile.email')} <span className="profile__readonly-badge">{t('common.readOnly')}</span></label>
-                <p className="profile__readonly">{isMember ? user?.username : user?.email || '—'}</p>
+                <label>{t('profile.email')} <span className="profile__readonly-badge">{t('common.readOnly')}</span></label>
+                <p className="profile__readonly">{user?.email || '—'}</p>
               </div>
 
               {/* Fecha de registro — solo lectura */}
@@ -372,8 +365,7 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Cambiar contraseña — solo admin */}
-          {!isMember && <div className="profile__card">
+          <div className="profile__card">
             <div className="profile__card-header">
               <PiLockKeyBold size={16} />
               <span>{t('profile.security')}</span>
@@ -443,7 +435,7 @@ const Profile = () => {
                 </div>
               </div>
             )}
-          </div>}
+          </div>
 
           {/* Estadísticas */}
           <div className="profile__stats">

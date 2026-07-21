@@ -5,12 +5,11 @@ import { ROUTES } from '../../config/routes';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: Array<'admin' | 'member'>;
 }
 
-const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { t } = useTranslation();
-  const { user, loading, role } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -22,10 +21,6 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
   if (!user) {
     return <Navigate to={ROUTES.LOGIN} replace />;
-  }
-
-  if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
   return <>{children}</>;

@@ -46,8 +46,7 @@
       "ordersThisMonth": "commandes ce mois-ci",
       "clients": "clients",
       "products": "produits",
-      "labels": "étiquettes",
-      "members": "membres"
+      "labels": "étiquettes"
     },
     "csvHeaders": {
       "orders": [
@@ -115,11 +114,8 @@
     "login": {
       "title": "Se connecter",
       "adminTab": "Administrateur",
-      "memberTab": "Membre",
       "email": "Adresse e-mail",
       "emailPlaceholder": "votre@email.com",
-      "username": "Utilisateur",
-      "usernamePlaceholder": "Votre nom d'utilisateur",
       "password": "Mot de passe",
       "passwordPlaceholder": "••••••••",
       "submit": "Connexion",
@@ -136,9 +132,7 @@
       "backToLogin": "Retour à la connexion",
       "tooManyAttempts": "Trop de tentatives échouées. Attendez {{seconds}} secondes.",
       "tooManyAttemptsLong": "Trop de tentatives échouées. Attendez 5 minutes.",
-      "invalidCredentials": "Identifiants invalides",
-      "memberDesc": "Les membres sont des collaborateurs de l'entreprise.",
-      "memberDescSub": "Votre accès a été créé par l'administrateur."
+      "invalidCredentials": "Identifiants invalides"
     },
     "register": {
       "title": "Créer un compte",
@@ -209,7 +203,6 @@
   "profile": {
     "title": "Mon profil",
     "adminInfo": "Informations de l'administrateur",
-    "memberInfo": "Informations du membre",
     "businessName": "Nom de l'entreprise",
     "businessNamePlaceholder": "Mon entreprise",
     "firstName": "Prénom",
@@ -218,7 +211,6 @@
     "phone": "Numéro de téléphone",
     "phonePlaceholder": "Numéro de téléphone",
     "email": "Adresse e-mail",
-    "username": "Utilisateur",
     "memberSince": "Membre depuis",
     "editButton": "Modifier le profil",
     "saveButton": "Enregistrer les modifications",
@@ -377,12 +369,12 @@
       "statusPartial": "Partiel",
       "statusPending": "En attente",
       "statusLiquidated": "Soldé",
-      "createdBy": "Créé par",
-      "deliveredBy": "Livré par",
-      "notDeliveredYet": "Pas encore livré",
+      "profit": "Bénéfice",
+      "profitUnknownHint": "Ce produit n'a pas de prix d'achat renseigné",
       "paymentRecorded": "Paiement enregistré",
       "paymentRecordError": "Erreur lors de l'enregistrement du paiement",
       "paymentCorrected": "Paiement corrigé",
+      "paymentCorrectedReverted": "Paiement corrigé — la commande est repassée à En attente car elle n'est plus couverte à 100 %",
       "paymentCorrectionError": "Erreur lors de la correction du paiement",
       "paymentCorrectionFailed": "Le montant doit être supérieur à zéro",
       "paymentTotalExceeded": "Le total des paiements ne peut pas dépasser {{total}}",
@@ -398,7 +390,6 @@
         "code": "Code",
         "product": "Produit",
         "amount": "Montant",
-        "by": "Par",
         "date": "Date"
       }
     },
@@ -492,6 +483,7 @@
         "product": "Produit",
         "labels": "Étiquettes",
         "amount": "Montant",
+        "profit": "Bénéfice",
         "accumulated": "Cumulé"
       },
       "viewOrderDetail": "Voir le détail de la commande",
@@ -814,10 +806,8 @@
       "notifications": "Notifications",
       "install": "Installer l'application",
       "templates": "Modèles de messages",
-      "team": "Équipe",
       "backup": "Sauvegarde",
       "manage": "Gérer le compte",
-      "membership": "Équipe",
       "language": "Langue"
     },
     "language": {
@@ -826,7 +816,6 @@
     },
     "currency": {
       "desc": "Choisissez le symbole de devise à afficher dans les prix et les rapports.",
-      "adminOnly": "Seul l'administrateur peut modifier la devise.",
       "save": "Enregistrer",
       "saveSuccess": "Devise mise à jour avec succès",
       "saveError": "Erreur lors de l'enregistrement de la devise"
@@ -862,56 +851,6 @@
       "saving": "Enregistrement...",
       "saveSuccess": "Modèles enregistrés",
       "saveError": "Erreur lors de l'enregistrement des modèles"
-    },
-    "team": {
-      "desc": "Créez des comptes pour les membres de votre équipe. Ils se connectent avec leur identifiant et mot de passe depuis l'écran de connexion.",
-      "loading": "Chargement de l'équipe...",
-      "empty": "Aucun membre pour l'instant.",
-      "members": "Membres",
-      "newMember": "+ Nouveau membre",
-      "memberSince": "Membre depuis",
-      "memberNumber": "N° {{number}}",
-      "removeTitle": "Retirer de l'équipe",
-      "upgradePlanToAdd": "Mettez à niveau votre plan pour ajouter des membres à l'équipe",
-      "remove": "Retirer",
-      "removed": "{{name}} a été retiré de l'équipe",
-      "removeError": "Erreur lors du retrait du membre",
-      "created": "Membre créé avec succès",
-      "createError": "Erreur lors de la création du membre",
-      "updated": "Membre mis à jour",
-      "updateError": "Erreur lors de l'enregistrement des modifications",
-      "createModal": {
-        "title": "Nouveau membre",
-        "firstName": "Prénom",
-        "lastName": "Nom",
-        "dob": "Date de naissance",
-        "phone": "Numéro de téléphone",
-        "password": "Mot de passe",
-        "confirmPassword": "Confirmer le mot de passe",
-        "cancel": "Annuler",
-        "submit": "Créer le membre",
-        "submitting": "Création...",
-        "passwordMismatch": "Les mots de passe ne correspondent pas",
-        "dobRequired": "La date de naissance est requise",
-        "phoneInvalid": "Saisissez un numéro de téléphone valide"
-      },
-      "profileModal": {
-        "viewTitle": "Profil du membre",
-        "editTitle": "Modifier le membre",
-        "username": "Utilisateur",
-        "phone": "Téléphone",
-        "dob": "Date de naissance",
-        "newPassword": "Nouveau mot de passe",
-        "confirmPassword": "Confirmer le mot de passe",
-        "remove": "Retirer",
-        "close": "Fermer",
-        "edit": "Modifier",
-        "cancel": "Annuler",
-        "save": "Enregistrer",
-        "saving": "Enregistrement...",
-        "passwordMismatch": "Les mots de passe ne correspondent pas",
-        "passwordShort": "Le mot de passe doit comporter au moins 6 caractères"
-      }
     },
     "backup": {
       "upgradePlanToUse": "Mettez à niveau votre plan pour utiliser l'exportation et l'importation de données",
@@ -958,14 +897,6 @@
       "wrongPassword": "Mot de passe incorrect",
       "passwordRequired": "Saisissez votre mot de passe pour confirmer",
       "deleteDataSuccess": "Toutes les données ont été supprimées"
-    },
-    "membership": {
-      "desc": "Vous êtes membre de cette entreprise. Contactez l'administrateur pour les modifications du compte.",
-      "admin": "Administrateur",
-      "teammates": "Collègues",
-      "leave": "Quitter l'entreprise",
-      "leaving": "Départ...",
-      "leaveError": "Erreur lors du départ de l'entreprise"
     }
   },
   "support": {
@@ -1076,8 +1007,7 @@
           "Jusqu'à 80 produits",
           "Jusqu'à 6 étiquettes",
           "Export CSV",
-          "Export et import de données",
-          "Membres de l'équipe"
+          "Export et import de données"
         ]
       },
       "pro": {
@@ -1089,8 +1019,7 @@
           "Jusqu'à 160 produits",
           "Jusqu'à 10 étiquettes",
           "Export CSV",
-          "Export et import de données",
-          "Jusqu'à 2 membres dans votre équipe"
+          "Export et import de données"
         ]
       },
       "business": {
@@ -1102,8 +1031,7 @@
           "Jusqu'à 640 produits",
           "Jusqu'à 16 étiquettes",
           "Export CSV",
-          "Export et import de données",
-          "Jusqu'à 6 membres dans votre équipe"
+          "Export et import de données"
         ]
       }
     }
@@ -1151,8 +1079,6 @@
   "errors": {
     "userNotFound": "Utilisateur introuvable",
     "noActiveSession": "Aucune session active",
-    "invalidCredentials": "Nom d'utilisateur ou mot de passe incorrect",
-    "accountDisabled": "Votre compte a été désactivé. Contactez votre administrateur.",
     "invalidImageFormat": "Seules les images au format JPEG, PNG ou WebP sont autorisées",
     "imageTooLarge": "L'image ne peut pas dépasser 5 Mo",
     "orderDailyLimitReached": "Limite quotidienne de commandes atteinte (max. 9 999)",
@@ -1169,7 +1095,6 @@
     "driveUploadError": "Erreur lors du téléversement du fichier vers Drive",
     "driveNoFileLink": "Aucun lien de fichier reçu",
     "planLimitReached": "Vous avez atteint la limite de {{limit}} {{resource}} de votre plan. Mettez à niveau votre plan pour en ajouter.",
-    "planNoMembers": "Votre plan n'inclut pas de membres d'équipe. Mettez à niveau votre plan pour ajouter des collaborateurs.",
     "emailSendError": "Erreur lors de l'envoi de l'e-mail",
     "driveLoadError": "Impossible de charger Google Identity Services",
     "logoutError": "Erreur lors de la déconnexion",

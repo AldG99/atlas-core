@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,31 +11,21 @@ import {
   PiBellBold,
   PiBellSlashBold,
   PiDownloadBold,
-  PiUsersThreeBold,
   PiCaretRightBold,
   PiArrowLeftBold,
-  PiUserBold,
-  PiShieldCheckBold,
   PiGearSixBold,
   PiTranslateBold,
 } from 'react-icons/pi';
-import type { User } from '../types/User';
 import { usePWA } from '../hooks/usePWA';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { useTeam } from '../hooks/useTeam';
-import { leaveBusiness, getAdminByUid, getMembers } from '../services/teamService';
-import Avatar from '../components/ui/Avatar';
 import LanguageSwitcher from '../components/ui/LanguageSwitcher';
 import DangerModal from '../components/settings/DangerModal';
-import CreateMemberModal from '../components/settings/CreateMemberModal';
-import MemberProfileModal from '../components/settings/MemberProfileModal';
 import BackupPanel from '../components/settings/BackupPanel';
 import TemplatesPanel from '../components/settings/TemplatesPanel';
-import { getPlanLimits } from '../constants/planLimits';
 import './Settings.scss';
 
-type Section = 'currency' | 'notifications' | 'install' | 'templates' | 'team' | 'backup' | 'manage' | 'membership' | 'language';
+type Section = 'currency' | 'notifications' | 'install' | 'templates' | 'backup' | 'manage' | 'language';
 
 const CURRENCY_SYMBOLS = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
 
@@ -45,7 +35,7 @@ type NavGroup = { label: string; items: NavItem[] };
 const Settings = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, updateProfile, deleteAllData, deleteAccount, role } = useAuth();
+  const { user, updateProfile, deleteAllData, deleteAccount } = useAuth();
 
   const getSectionTitle = (section: Section): string => {
     switch (section) {
@@ -53,10 +43,8 @@ const Settings = () => {
       case 'notifications': return t('settings.sections.notifications');
       case 'install':      return t('settings.sections.install');
       case 'templates':    return t('settings.sections.templates');
-      case 'team':        return t('settings.sections.team');
       case 'backup':      return t('settings.sections.backup');
       case 'manage':       return t('settings.sections.manage');
-      case 'membership':     return t('settings.sections.membership');
       case 'language':        return t('settings.sections.language');
     }
   };
@@ -83,27 +71,6 @@ const Settings = () => {
   // Zona de peligro
   const [dangerModal, setDangerModal] = useState<'deleteData' | 'deleteAccount' | null>(null);
 
-  // Equipo
-  const { members, loading: teamLoading, createMember, remove, update, updatePassword } = useTeam();
-  const [showCreateMember, setShowCreateMember] = useState(false);
-  const planAllowsMembers = getPlanLimits(user?.plan).members > 0;
-
-  // Perfil de miembro
-  const [selectedMember, setSelectedMember] = useState<User | null>(null);
-
-  // Membresía (datos del negocio para miembros)
-  const [leaveLoading, setLeaveLoading] = useState(false);
-  const [businessAdmin, setBusinessAdmin] = useState<User | null>(null);
-  const [teammates, setTeammates] = useState<User[]>([]);
-
-  useEffect(() => {
-    if (role !== 'member' || !user?.businessUid) return;
-    getAdminByUid(user.businessUid).then(setBusinessAdmin);
-    getMembers(user.businessUid).then(data =>
-      setTeammates(data.filter(m => m.uid !== user.uid))
-    );
-  }, [role, user?.businessUid, user?.uid]);
-
   // ── Moneda ──────────────────────────────────────────
   const handleSaveCurrency = async () => {
     setSavingCurrency(true);
@@ -114,25 +81,6 @@ const Settings = () => {
       showToast(t('settings.currency.saveError'), 'error');
     } finally {
       setSavingCurrency(false);
-    }
-  };
-
-  // ── Equipo ──────────────────────────────────────────
-  const handleCreateMember = async (form: { firstName: string; lastName: string; birthDate: string; phone: string; phoneCountryCode: string; password: string }) => {
-    await createMember(form);
-    showToast(t('settings.team.created'), 'success');
-  };
-
-  // ── Membresía ────────────────────────────────────────
-  const handleLeaveBusiness = async () => {
-    if (!user) return;
-    setLeaveLoading(true);
-    try {
-      await leaveBusiness(user.uid);
-      window.location.reload();
-    } catch {
-      showToast(t('settings.membership.leaveError'), 'error');
-      setLeaveLoading(false);
     }
   };
 
@@ -149,38 +97,28 @@ const Settings = () => {
 
   // ── Nav groups ───────────────────────────────────────
   const preferencesItems: NavItem[] = [
-    ...(role !== 'member' ? [{ id: 'currency' as Section, icon: <PiCurrencyDollarBold size={16} />, title: t('settings.sections.currency'), color: 'yellow' }] : []),
+    { id: 'currency' as Section, icon: <PiCurrencyDollarBold size={16} />, title: t('settings.sections.currency'), color: 'yellow' },
     { id: 'notifications' as Section, icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: t('settings.sections.notifications'), color: notifPermission === 'granted' ? 'green' : 'gray' },
     { id: 'language' as Section, icon: <PiTranslateBold size={16} />, title: t('settings.sections.language'), color: 'blue' },
     ...(canInstall ? [{ id: 'install' as Section, icon: <PiDownloadBold size={16} />, title: t('settings.sections.install'), color: 'teal' }] : []),
   ];
 
-  const navGroups: NavGroup[] = role === 'member'
-    ? [
-        { label: t('settings.groups.preferences'), items: preferencesItems },
-        { label: t('settings.groups.business'), items: [{ id: 'templates', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' }] },
-        { label: t('settings.groups.account'), items: [{ id: 'membership', icon: <PiUsersThreeBold size={16} />, title: t('settings.sections.membership'), color: 'blue' }] },
-      ]
-    : [
-        { label: t('settings.groups.preferences'), items: preferencesItems },
-        {
-          label: t('settings.groups.business'),
-          items: [
-            { id: 'templates', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' },
-            { id: 'team', icon: <PiUsersThreeBold size={16} />, title: t('settings.sections.team'), color: 'blue' },
-          ],
-        },
-        { label: t('settings.groups.data'), items: [{ id: 'backup', icon: <PiDownloadSimpleBold size={16} />, title: t('settings.sections.backup'), color: 'teal' }] },
-        { label: t('settings.groups.account'), items: [{ id: 'manage', icon: <PiWarningBold size={16} />, title: t('settings.sections.manage'), color: 'gray' }] },
-      ];
+  const navGroups: NavGroup[] = [
+    { label: t('settings.groups.preferences'), items: preferencesItems },
+    {
+      label: t('settings.groups.business'),
+      items: [
+        { id: 'templates', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' },
+      ],
+    },
+    { label: t('settings.groups.data'), items: [{ id: 'backup', icon: <PiDownloadSimpleBold size={16} />, title: t('settings.sections.backup'), color: 'teal' }] },
+    { label: t('settings.groups.account'), items: [{ id: 'manage', icon: <PiWarningBold size={16} />, title: t('settings.sections.manage'), color: 'gray' }] },
+  ];
 
   // ── Panel renderer ───────────────────────────────────
   const renderPanel = () => {
     switch (activeSection) {
       case 'currency':
-        if (role === 'member') return (
-          <p className="settings__desc">{t('settings.currency.adminOnly')}</p>
-        );
         return (
           <>
             <p className="settings__desc">
@@ -257,56 +195,6 @@ const Settings = () => {
       case 'templates':
         return <TemplatesPanel />;
 
-      case 'team':
-        return (
-          <>
-            <p className="settings__desc">
-              {t('settings.team.desc')}
-            </p>
-
-            {/* Member list */}
-            {teamLoading ? (
-              <p className="settings__desc">{t('settings.team.loading')}</p>
-            ) : members.length === 0 ? (
-              <p className="settings__empty-list">{t('settings.team.empty')}</p>
-            ) : (
-              <div className="settings__team-list">
-                {members.map(m => (
-                  <div
-                    key={m.uid}
-                    className="settings__team-item settings__team-item--clickable"
-                    onClick={() => setSelectedMember(m)}
-                  >
-                    <div className="settings__team-avatar">
-                      <Avatar
-                        src={m.profilePhoto}
-                        seed={m.uid}
-                        alt={m.firstName}
-                      />
-                    </div>
-                    <div className="settings__team-info">
-                      <div className="settings__team-name-row">
-                        <span className="settings__team-name">{m.firstName} {m.lastName}</span>
-                        <PiUserBold size={11} color="#2368C4" />
-                      </div>
-                      <span className="settings__team-email">{m.username}{m.memberNumber ? ` · Nº ${m.memberNumber}` : ''}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button
-              className="btn btn--primary btn--sm"
-              onClick={() => setShowCreateMember(true)}
-              disabled={!planAllowsMembers}
-              title={!planAllowsMembers ? t('settings.team.upgradePlanToAdd') : undefined}
-            >
-              {t('settings.team.newMember')}
-            </button>
-          </>
-        );
-
       case 'backup':
         return <BackupPanel />;
 
@@ -338,74 +226,6 @@ const Settings = () => {
               </div>
             </div>
           </div>
-        );
-
-      case 'membership':
-        return (
-          <>
-            <p className="settings__desc">
-              {t('settings.membership.desc')}
-            </p>
-
-            {businessAdmin && (
-              <div className="settings__membership-section">
-                <p className="settings__membership-label">{t('settings.membership.admin')}</p>
-                <div className="settings__team-item">
-                  <div className="settings__team-avatar">
-                    <Avatar
-                      src={businessAdmin.profilePhoto}
-                      seed={businessAdmin.uid}
-                      alt={businessAdmin.firstName}
-                    />
-                  </div>
-                  <div className="settings__team-info">
-                    <div className="settings__team-name-row">
-                      <span className="settings__team-name">{businessAdmin.firstName} {businessAdmin.lastName}</span>
-                      <PiShieldCheckBold size={11} color="#F8A800" />
-                    </div>
-                    <span className="settings__team-email">{businessAdmin.businessName}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {teammates.length > 0 && (
-              <div className="settings__membership-section">
-                <p className="settings__membership-label">{t('settings.membership.teammates')}</p>
-                <div className="settings__team-list">
-                  {teammates.map(m => (
-                    <div key={m.uid} className="settings__team-item">
-                      <div className="settings__team-avatar">
-                        <Avatar
-                          src={m.profilePhoto}
-                          seed={m.uid}
-                          alt={m.firstName}
-                        />
-                      </div>
-                      <div className="settings__team-info">
-                        <div className="settings__team-name-row">
-                          <span className="settings__team-name">{m.firstName} {m.lastName}</span>
-                          <PiUserBold size={11} color="#2368C4" />
-                        </div>
-                        <span className="settings__team-email">{m.username}{m.memberNumber ? ` · Nº ${m.memberNumber}` : ''}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="settings__actions">
-              <button
-                className="btn btn--danger btn--sm"
-                onClick={handleLeaveBusiness}
-                disabled={leaveLoading}
-              >
-                <PiUserMinusBold size={15} />
-                {leaveLoading ? t('settings.membership.leaving') : t('settings.membership.leave')}
-              </button>
-            </div>
-          </>
         );
 
       case 'language':
@@ -483,23 +303,6 @@ const Settings = () => {
           onClose={() => setDangerModal(null)}
           onDeleteData={handleDeleteData}
           onDeleteAccount={handleDeleteAccount}
-        />
-      )}
-
-      {showCreateMember && (
-        <CreateMemberModal
-          onClose={() => setShowCreateMember(false)}
-          onSubmit={handleCreateMember}
-        />
-      )}
-
-      {selectedMember && (
-        <MemberProfileModal
-          member={selectedMember}
-          onClose={() => setSelectedMember(null)}
-          onRemove={(uid) => { remove(uid); setSelectedMember(null); }}
-          onUpdate={update}
-          onUpdatePassword={updatePassword}
         />
       )}
     </div>

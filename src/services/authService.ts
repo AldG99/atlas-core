@@ -14,7 +14,6 @@ import { doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, ge
 import { ref, deleteObject } from 'firebase/storage';
 import { auth, db, storage } from './firebase';
 import type { User, LoginCredentials, RegisterCredentials, Templates } from '../types/User';
-import { makeMemberEmail } from '../constants/member';
 import i18n from '../i18n';
 
 export const registerUser = async (credentials: RegisterCredentials): Promise<User> => {
@@ -45,7 +44,6 @@ export const registerUser = async (credentials: RegisterCredentials): Promise<Us
     country: country ?? '',
     reference: reference ?? '',
     registeredAt: new Date(),
-    role: 'admin',
   };
 
   await setDoc(doc(db, 'users', uid), newUser);
@@ -220,28 +218,6 @@ export const deleteAccount = async (password: string, uid: string): Promise<void
   await deleteDoc(doc(db, 'users', uid));
   await deleteUser(currentUser);
 };
-
-export const loginMember = async (username: string, password: string): Promise<User> => {
-  // Email sintético construido desde el username — no requiere consulta previa
-  const authEmail = makeMemberEmail(username);
-
-  let userCredential;
-  try {
-    userCredential = await signInWithEmailAndPassword(auth, authEmail, password);
-  } catch {
-    throw new Error(i18n.t('errors.invalidCredentials'));
-  }
-
-  const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
-  if (!userDoc.exists()) throw new Error(i18n.t('errors.userNotFound'));
-  const userData = normalizeUserData(userDoc.data());
-  if (userData.active === false) {
-    await signOut(auth);
-    throw new Error(i18n.t('errors.accountDisabled'));
-  }
-  return userData;
-};
-
 
 export const resetPassword = async (email: string): Promise<void> => {
   await sendPasswordResetEmail(auth, email);
