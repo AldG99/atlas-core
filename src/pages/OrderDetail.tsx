@@ -30,9 +30,7 @@ import {
   updatePayment,
   deleteOrder,
 } from '../services/orderService';
-import { getAdminByUid } from '../services/teamService';
 import { useAuth } from '../hooks/useAuth';
-import { buildCreatedBy } from '../hooks/useOrders';
 import { useClients } from '../hooks/useClients';
 import { useProducts } from '../hooks/useProducts';
 import { useLabels } from '../hooks/useLabels';
@@ -53,7 +51,7 @@ const OrderDetail = () => {
   const location = useLocation();
   const { t } = useTranslation();
   const backRoute = (location.state as { from?: string })?.from || ROUTES.DASHBOARD;
-  const { user, businessUid, role } = useAuth();
+  const { user, businessUid } = useAuth();
   const { showToast } = useToast();
   const { clients } = useClients();
   const { products: productCatalog } = useProducts();
@@ -81,16 +79,7 @@ const OrderDetail = () => {
   const captureRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadDate, setDownloadDate] = useState<Date | null>(null);
-  const ownAddress = useMemo(() => (user ? formatBusinessAddress(user) : ''), [user]);
-  const [adminAddress, setAdminAddress] = useState('');
-  const businessAddress = role === 'member' ? adminAddress : ownAddress;
-
-  useEffect(() => {
-    if (role !== 'member' || !businessUid) return;
-    getAdminByUid(businessUid).then((admin) => {
-      if (admin) setAdminAddress(formatBusinessAddress(admin));
-    }).catch(() => {});
-  }, [role, businessUid]);
+  const businessAddress = useMemo(() => (user ? formatBusinessAddress(user) : ''), [user]);
 
   const fetchOrder = useCallback(async (silent = false) => {
     if (!id || !user || !businessUid) return;
@@ -273,9 +262,8 @@ const OrderDetail = () => {
     if (!order || submitting) return;
     try {
       setSubmitting(true);
-      const deliveredBy = status === 'delivered' && user ? buildCreatedBy(user) : undefined;
-      await updateOrderStatus(order.id, status, deliveredBy);
-      setOrder({ ...order, status, ...(deliveredBy ? { deliveredBy } : {}) });
+      await updateOrderStatus(order.id, status);
+      setOrder({ ...order, status });
       showToast(t('orders.detail.statusChanged', { status: t(`orders.status.${status}`) }), 'success');
     } catch {
       showToast(t('orders.detail.statusChangeError'), 'error');
@@ -326,8 +314,7 @@ const OrderDetail = () => {
       setSubmitting(true);
       const itemIndex =
         paymentProduct === 'general' ? undefined : parseInt(paymentProduct, 10);
-      const createdBy = user ? buildCreatedBy(user) : undefined;
-      const { payment: newPayment, newStatus } = await addPayment(order.id, amount, itemIndex, createdBy);
+      const { payment: newPayment, newStatus } = await addPayment(order.id, amount, itemIndex);
       const updatedPayments = [...(order.payments || []), newPayment];
       setOrder({ ...order, payments: updatedPayments, status: newStatus ?? order.status });
       setPaymentInput('');
@@ -354,10 +341,14 @@ const OrderDetail = () => {
       return;
     }
     try {
-      const updatedPayments = await updatePayment(order.id, paymentId, newAmount);
-      setOrder({ ...order, payments: updatedPayments });
+      const { payments: updatedPayments, newStatus } = await updatePayment(order.id, paymentId, newAmount);
+      setOrder({ ...order, payments: updatedPayments, status: newStatus ?? order.status });
       setEditingPaymentId(null);
-      showToast(t('orders.detail.paymentCorrected'), 'success');
+      if (newStatus === 'pending') {
+        showToast(t('orders.detail.paymentCorrectedReverted'), 'warning');
+      } else {
+        showToast(t('orders.detail.paymentCorrected'), 'success');
+      }
     } catch {
       showToast(t('orders.detail.paymentCorrectionError'), 'error');
     }
@@ -396,7 +387,6 @@ const OrderDetail = () => {
           copiedId={copiedId}
           downloading={downloading}
           submitting={submitting}
-          role={role}
           settled={settled}
           canMarkDelivered={canMarkDelivered}
           paymentInput={paymentInput}
@@ -485,32 +475,29 @@ const OrderDetail = () => {
             onRowClick={(index) => { setFocusedRow(index); setFocusedPaymentRow(null); }}
           />
 
-          <div className="order-detail__section order-detail__section--notes">
-            <div className="order-detail__notes">
-              <strong>{t('orders.detail.notes')}</strong>{' '}
-              {order.notes ? order.notes : <span className="order-detail__notes--empty">{t('orders.detail.noNotes')}</span>}
-            </div>
-          </div>
-
           <OrderPaymentsTable
             payments={payments}
             items={order.items}
             focusedPaymentRow={focusedPaymentRow}
             editingPaymentId={editingPaymentId}
             editingPaymentValue={editingPaymentValue}
-            role={role}
             status={order.status}
             archived={order.archived}
             paymentScrollRef={paymentScrollRef}
             format={format}
-            createdBy={order.createdBy}
-            deliveredBy={order.deliveredBy}
             onRowClick={(i) => { setFocusedPaymentRow(i); setFocusedRow(null); }}
             onEditStart={(id, amount) => { setEditingPaymentId(id); setEditingPaymentValue(String(amount)); }}
             onEditConfirm={handleUpdatePayment}
             onEditCancel={() => setEditingPaymentId(null)}
             onEditValueChange={setEditingPaymentValue}
           />
+
+          <div className="order-detail__section order-detail__section--notes">
+            <div className="order-detail__notes">
+              <strong>{t('orders.detail.notes')}</strong>{' '}
+              {order.notes ? order.notes : <span className="order-detail__notes--empty">{t('orders.detail.noNotes')}</span>}
+            </div>
+          </div>
           </div>
         </div>
 

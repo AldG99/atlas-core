@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { PiCheckBold, PiXBold, PiPencilSimpleBold } from 'react-icons/pi';
-import type { Payment, OrderItem, CreatedBy, OrderStatus } from '../../types/Order';
+import type { Payment, OrderItem, OrderStatus } from '../../types/Order';
 import { formatDate } from '../../utils/formatters';
 
 interface Props {
@@ -9,13 +9,10 @@ interface Props {
   focusedPaymentRow: number | null;
   editingPaymentId: string | null;
   editingPaymentValue: string;
-  role: string;
   status: OrderStatus;
   archived: boolean;
   paymentScrollRef: React.RefObject<HTMLDivElement | null>;
   format: (n: number) => string;
-  createdBy?: CreatedBy;
-  deliveredBy?: CreatedBy;
   onRowClick: (index: number) => void;
   onEditStart: (id: string, amount: number) => void;
   onEditConfirm: (id: string) => void;
@@ -26,12 +23,11 @@ interface Props {
 const Colgroup = () => (
   <colgroup>
     <col style={{ width: '8%' }} />
-    <col style={{ width: '27%' }} />
-    <col style={{ width: '14%' }} />
-    <col style={{ width: '6%' }} />
-    <col style={{ width: '8%' }} />
-    <col style={{ width: '17%' }} />
-    <col style={{ width: '20%' }} />
+    <col style={{ width: '30%' }} />
+    <col style={{ width: '15%' }} />
+    <col style={{ width: '7%' }} />
+    <col style={{ width: '10%' }} />
+    <col style={{ width: '30%' }} />
   </colgroup>
 );
 
@@ -41,13 +37,10 @@ const OrderPaymentsTable: React.FC<Props> = ({
   focusedPaymentRow,
   editingPaymentId,
   editingPaymentValue,
-  role,
   status,
   archived,
   paymentScrollRef,
   format,
-  createdBy,
-  deliveredBy,
   onRowClick,
   onEditStart,
   onEditConfirm,
@@ -71,7 +64,6 @@ const OrderPaymentsTable: React.FC<Props> = ({
                 <th>{t('orders.detail.paymentsTable.amount')}</th>
                 <th></th>
                 <th></th>
-                <th>{t('orders.detail.paymentsTable.by')}</th>
                 <th>{t('orders.detail.paymentsTable.date')}</th>
               </tr>
             </thead>
@@ -147,7 +139,7 @@ const OrderPaymentsTable: React.FC<Props> = ({
                       )}
                     </td>
                     <td onClick={e => e.stopPropagation()}>
-                      {role === 'admin' && editingPaymentId !== payment.id && (
+                      {editingPaymentId !== payment.id && (
                         <button
                           className="order-detail__payment-edit-btn"
                           title={t('common.edit')}
@@ -158,13 +150,6 @@ const OrderPaymentsTable: React.FC<Props> = ({
                         </button>
                       )}
                     </td>
-                    <td>
-                      {payment.createdBy && (
-                        <span className="order-detail__payment-author" title={payment.createdBy.name}>
-                          {payment.createdBy.name}
-                        </span>
-                      )}
-                    </td>
                     <td>{formatDate(payment.date)}</td>
                   </tr>
                 ))
@@ -172,16 +157,6 @@ const OrderPaymentsTable: React.FC<Props> = ({
             </tbody>
           </table>
         </div>
-      </div>
-
-      {createdBy && (
-        <div className="order-detail__created-by-row">
-          {t('orders.detail.createdBy')} <span>{createdBy.name}</span>
-        </div>
-      )}
-      <hr className="order-detail__info-divider" />
-      <div className="order-detail__created-by-row">
-        {t('orders.detail.deliveredBy')} <span>{deliveredBy ? deliveredBy.name : t('orders.detail.notDeliveredYet')}</span>
       </div>
     </div>
   );

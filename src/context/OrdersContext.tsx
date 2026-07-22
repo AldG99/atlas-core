@@ -1,7 +1,6 @@
 import { createContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import type { QueryDocumentSnapshot } from 'firebase/firestore';
-import type { Order, OrderFormData, OrderStatus, CreatedBy } from '../types/Order';
-import type { User } from '../types/User';
+import type { Order, OrderFormData, OrderStatus } from '../types/Order';
 import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
 import i18n from '../i18n';
 import {
@@ -13,16 +12,6 @@ import {
   subscribeToOrders,
 } from '../services/orderService';
 import { useAuth } from '../hooks/useAuth';
-
-export const buildCreatedBy = (user: User): CreatedBy => {
-  const base = user.firstName
-    ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
-    : user.businessName;
-  const suffix = user.role === 'member'
-    ? (user.memberNumber ? ` #${user.memberNumber}` : '')
-    : ' (Adm.)';
-  return { uid: user.uid, name: `${base}${suffix}` };
-};
 
 interface OrdersContextType {
   orders: Order[];
@@ -183,7 +172,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       const limits = getPlanLimits(user.plan);
       const ordersThisMonth = await countOrdersThisMonth(businessUid);
       checkPlanLimit(ordersThisMonth, limits.ordersPerMonth, i18n.t('common.resources.ordersThisMonth'));
-      const newOrder = await createOrder(data, businessUid, buildCreatedBy(user));
+      const newOrder = await createOrder(data, businessUid);
       return newOrder;
     } catch (err) {
       setError(err instanceof Error ? err.message : i18n.t('orders.createError'));

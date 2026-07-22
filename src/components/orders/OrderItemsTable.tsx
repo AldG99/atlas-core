@@ -21,14 +21,18 @@ const Colgroup = () => (
   <colgroup>
     <col style={{ width: '7%' }} />   {/* Clave */}
     <col style={{ width: '6%' }} />   {/* Cant. */}
-    <col style={{ width: '18%' }} />  {/* Producto */}
-    <col style={{ width: '10%' }} />  {/* Etiquetas */}
-    <col style={{ width: '14%' }} />  {/* Precio */}
-    <col style={{ width: '13%' }} />  {/* Abonado */}
-    <col style={{ width: '22%' }} />  {/* Subtotal */}
-    <col style={{ width: '10%' }} />  {/* Estado */}
+    <col style={{ width: '15%' }} />  {/* Producto */}
+    <col style={{ width: '8%' }} />   {/* Etiquetas */}
+    <col style={{ width: '12%' }} />  {/* Precio */}
+    <col style={{ width: '11%' }} />  {/* Abonado */}
+    <col style={{ width: '17%' }} />  {/* Subtotal */}
+    <col style={{ width: '12%' }} />  {/* Ganancia */}
+    <col style={{ width: '12%' }} />  {/* Estado */}
   </colgroup>
 );
+
+const itemProfit = (p: OrderItem): number | undefined =>
+  p.unitCost !== undefined ? (p.unitPrice - p.unitCost) * p.quantity : undefined;
 
 const OrderItemsTable: React.FC<Props> = ({
   items,
@@ -43,6 +47,8 @@ const OrderItemsTable: React.FC<Props> = ({
   onRowClick,
 }) => {
   const { t } = useTranslation();
+  const totalProfit = items.reduce((sum, p) => sum + (itemProfit(p) ?? 0), 0);
+  const hasIncompleteCost = items.some(p => p.unitCost === undefined);
   const labelsBySku = useMemo(() => {
     const map = new Map<string, Label[]>();
     for (const cp of productCatalog) {
@@ -73,6 +79,7 @@ const OrderItemsTable: React.FC<Props> = ({
                 <th>{t('orders.price')}</th>
                 <th>{t('orders.paid')}</th>
                 <th className="order-detail__col--right">{t('orders.subtotal')}</th>
+                <th className="order-detail__col--right">{t('orders.detail.profit')}</th>
                 <th>{t('orders.status_col')}</th>
               </tr>
             </thead>
@@ -88,6 +95,7 @@ const OrderItemsTable: React.FC<Props> = ({
                 const covered = Math.min(coverage[index] || 0, p.subtotal);
                 const percentage = p.subtotal > 0 ? (covered / p.subtotal) * 100 : 0;
                 const status = percentage >= 100 ? 'paid' : percentage > 0 ? 'partial' : 'pending';
+                const profit = itemProfit(p);
                 return (
                   <tr
                     key={index}
@@ -140,6 +148,13 @@ const OrderItemsTable: React.FC<Props> = ({
                         format(p.subtotal)
                       )}
                     </td>
+                    <td className="order-detail__col--right">
+                      {profit !== undefined ? (
+                        <span className="order-detail__product-profit">{format(profit)}</span>
+                      ) : (
+                        <span className="order-detail__product-profit order-detail__product-profit--unknown" title={t('orders.detail.profitUnknownHint')}>—</span>
+                      )}
+                    </td>
                     <td>
                       <span className={`order-detail__product-status order-detail__product-status--${status}`}>
                         {status === 'paid' ? t('orders.detail.statusPaid') : status === 'partial' ? `${Math.round(percentage)}%` : t('orders.detail.statusPending')}
@@ -169,6 +184,12 @@ const OrderItemsTable: React.FC<Props> = ({
                   </div>
                 </td>
                 <td><strong>{format(total)}</strong></td>
+                <td>
+                  <strong className="order-detail__product-profit">{format(totalProfit)}</strong>
+                  {hasIncompleteCost && (
+                    <span className="order-detail__product-profit-warning" title={t('orders.detail.profitUnknownHint')}>*</span>
+                  )}
+                </td>
                 <td>
                   <strong className={
                     paid >= total

@@ -20,7 +20,7 @@ import {
   type DocumentData
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Order, OrderFormData, OrderStatus, OrderItem, Payment, CreatedBy } from '../types/Order';
+import type { Order, OrderFormData, OrderStatus, OrderItem, Payment } from '../types/Order';
 import i18n from '../i18n';
 
 // Firestore rechaza valores undefined — los elimina recursivamente
@@ -79,13 +79,12 @@ const parsePayments = (raw: unknown[]): Payment[] => {
     if (typeof p.itemIndex === 'number') payment.itemIndex = p.itemIndex;
     if (typeof p.originalAmount === 'number') payment.originalAmount = p.originalAmount;
     if (p.editedAt) payment.editedAt = parseTimestamp(p.editedAt);
-    if (p.createdBy) payment.createdBy = p.createdBy as CreatedBy;
     return payment;
   });
 };
 
 
-export const createOrder = async (data: OrderFormData, userId: string, createdBy?: CreatedBy): Promise<Order> => {
+export const createOrder = async (data: OrderFormData, userId: string): Promise<Order> => {
   const orderNumber = await generateOrderNumber(userId);
 
   const newOrder = {
@@ -95,7 +94,6 @@ export const createOrder = async (data: OrderFormData, userId: string, createdBy
     archived: false,
     createdAt: Timestamp.now(),
     userId,
-    ...(createdBy ? { createdBy } : {})
   };
 
   const newDocRef = doc(collection(db, COLLECTION_NAME));
@@ -116,7 +114,6 @@ export const createOrder = async (data: OrderFormData, userId: string, createdBy
     archived: false,
     createdAt: new Date(),
     userId,
-    ...(createdBy ? { createdBy } : {})
   };
 };
 
@@ -198,12 +195,11 @@ export const updateOrderNotes = async (orderId: string, notes: string): Promise<
   await updateDoc(orderRef, { notes });
 };
 
-export const updateOrderStatus = async (orderId: string, status: OrderStatus, deliveredBy?: { uid: string; name: string }): Promise<void> => {
+export const updateOrderStatus = async (orderId: string, status: OrderStatus): Promise<void> => {
   const orderRef = doc(db, COLLECTION_NAME, orderId);
   const updateData: Record<string, unknown> = { status };
   if (status === 'delivered') {
     updateData.deliveredAt = Timestamp.now();
-    if (deliveredBy) updateData.deliveredBy = deliveredBy;
   }
   await updateDoc(orderRef, updateData);
 };
@@ -217,10 +213,16 @@ export const deleteOrder = async (orderId: string): Promise<void> => {
   batch.delete(orderRef);
 
   if (orderSnap.exists()) {
-    const items = orderSnap.data().items as OrderItem[];
-    items
-      .filter(i => i.trackStock && i.productId)
-      .forEach(i => batch.update(doc(db, 'products', i.productId!), { stock: increment(i.quantity) }));
+    const data = orderSnap.data();
+    // Un pedido entregado ya salió físicamente del negocio — borrar el pedido
+    // no debe devolver ese stock al inventario, solo pedidos que nunca se
+    // entregaron (pending/preparing) liberan la existencia que tenían reservada.
+    if (data.status !== 'delivered') {
+      const items = data.items as OrderItem[];
+      items
+        .filter(i => i.trackStock && i.productId)
+        .forEach(i => batch.update(doc(db, 'products', i.productId!), { stock: increment(i.quantity) }));
+    }
   }
 
   await batch.commit();
@@ -368,14 +370,12 @@ export const addPayment = async (
   orderId: string,
   amount: number,
   itemIndex?: number,
-  createdBy?: CreatedBy
 ): Promise<{ payment: Payment; newStatus: OrderStatus | null }> => {
   const orderRef = doc(db, COLLECTION_NAME, orderId);
   const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const date = Timestamp.now();
   const paymentData: Record<string, unknown> = { id, amount, date };
   if (typeof itemIndex === 'number') paymentData.itemIndex = itemIndex;
-  if (createdBy) paymentData.createdBy = createdBy;
 
   let newStatus: OrderStatus | null = null;
 
@@ -398,7 +398,6 @@ export const addPayment = async (
 
   const payment: Payment = { id, amount, date: new Date() };
   if (typeof itemIndex === 'number') payment.itemIndex = itemIndex;
-  if (createdBy) payment.createdBy = createdBy;
 
   return { payment, newStatus };
 };
@@ -461,15 +460,19 @@ export const updatePayment = async (
   orderId: string,
   paymentId: string,
   newAmount: number,
-): Promise<Payment[]> => {
+): Promise<{ payments: Payment[]; newStatus: OrderStatus | null }> => {
   const orderRef = doc(db, COLLECTION_NAME, orderId);
   let updatedRaw: Record<string, unknown>[] = [];
+  let newStatus: OrderStatus | null = null;
 
   await runTransaction(db, async (transaction) => {
     const snap = await transaction.get(orderRef);
     if (!snap.exists()) throw new Error(i18n.t('errors.orderNotFound'));
 
-    const raw = (snap.data().payments ?? []) as Record<string, unknown>[];
+    const data = snap.data();
+    const currentStatus = data.status as OrderStatus;
+    const total = data.total as number;
+    const raw = (data.payments ?? []) as Record<string, unknown>[];
     updatedRaw = raw.map(p => {
       if (p.id !== paymentId) return p;
       return {
@@ -479,8 +482,23 @@ export const updatePayment = async (
         editedAt: Timestamp.now(),
       };
     });
-    transaction.update(orderRef, { payments: updatedRaw });
+
+    const updateData: Record<string, unknown> = { payments: updatedRaw };
+
+    // El estado 'preparing' solo se alcanza cuando el pedido queda cubierto
+    // al 100% (ver addPayment). Corregir un abono puede romper esa condición
+    // en ambos sentidos, así que la reevaluamos aquí igual que ahí.
+    const totalPaid = parsePayments(updatedRaw).reduce((s, p) => s + p.amount, 0);
+    if (currentStatus === 'pending' && totalPaid >= total) {
+      newStatus = 'preparing';
+      updateData.status = 'preparing';
+    } else if (currentStatus === 'preparing' && totalPaid < total) {
+      newStatus = 'pending';
+      updateData.status = 'pending';
+    }
+
+    transaction.update(orderRef, updateData);
   });
 
-  return parsePayments(updatedRaw);
+  return { payments: parsePayments(updatedRaw), newStatus };
 };

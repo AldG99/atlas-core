@@ -1,10 +1,5 @@
 export type OrderStatus = 'pending' | 'preparing' | 'delivered';
 
-export interface CreatedBy {
-  uid: string;
-  name: string;
-}
-
 export interface Payment {
   id: string;
   amount: number;
@@ -12,7 +7,6 @@ export interface Payment {
   itemIndex?: number;
   originalAmount?: number;
   editedAt?: Date;
-  createdBy?: CreatedBy;
 }
 
 export interface OrderItem {
@@ -44,8 +38,6 @@ export interface Order {
   deliveredAt?: Date;
   userId: string;
   payments?: Payment[];
-  createdBy?: CreatedBy;
-  deliveredBy?: CreatedBy;
 }
 
 export interface OrderFormData {
