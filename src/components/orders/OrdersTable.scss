@@ -57,7 +57,8 @@
     border-bottom: 1px solid $color-gray-200;
 
     th {
-      padding: $spacing-sm $spacing-md;
+      height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1); // altura compacta +10%
+      padding: $spacing-xs $spacing-md;
       text-align: left;
       font-size: $font-size-sm;
       font-weight: 600;
@@ -132,7 +133,7 @@
   }
 
   &__row {
-    height: 50px;
+    height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1); // altura compacta +10%
     cursor: pointer;
 
     &:hover {
@@ -170,30 +171,6 @@
     display: flex;
     align-items: center;
     gap: $spacing-sm;
-  }
-
-  &__avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: linear-gradient(135deg, $color-primary, $color-primary-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    span {
-      color: $color-white;
-      font-size: $font-size-sm;
-      font-weight: 600;
-    }
   }
 
   &__name {
@@ -293,8 +270,8 @@
     justify-content: flex-end;
     position: relative;
     gap: $spacing-sm;
-    padding: $spacing-sm $spacing-md;
-    min-height: calc(#{$font-size-sm} * 1.5 + 2 * #{$spacing-sm});
+    padding: $spacing-xs $spacing-md;
+    min-height: calc((#{$font-size-sm} * 1.5 + 2 * #{$spacing-xs}) * 1.1); // altura compacta +10%
     border-top: 1px solid $color-gray-200;
     flex-shrink: 0;
     background-color: $color-gray-50;
@@ -345,7 +322,7 @@
   }
 
   &__skeleton-row {
-    height: 50px;
+    height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1); // altura compacta +10%
     pointer-events: none;
 
     td {

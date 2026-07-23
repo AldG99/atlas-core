@@ -10,7 +10,6 @@ import { ORDER_STATUS_COLORS } from '../../constants/orderStatus';
 import { formatShortDate, getTotalPaid } from '../../utils/formatters';
 import { useClients } from '../../hooks/useClients';
 import { useCurrency } from '../../hooks/useCurrency';
-import Avatar from '../ui/Avatar';
 import './OrdersTable.scss';
 
 interface OrdersTableProps {
@@ -47,11 +46,6 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
     }
     return map;
   }, [clients]);
-
-  const getClientPhoto = (order: Order): string | undefined => {
-    if (order.clientPhoto) return order.clientPhoto;
-    return clientMap.get(order.clientPhone)?.profilePhoto;
-  };
 
   const getClientFavorite = (order: Order): boolean => {
     return clientMap.get(order.clientPhone)?.favorite ?? false;
@@ -152,7 +146,6 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
               </td>
             </tr>
           ) : paginatedOrders.map((order, index) => {
-            const photo = getClientPhoto(order);
             const favorite = getClientFavorite(order);
             return (
             <tr
@@ -163,13 +156,6 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
             >
               <td>
                 <div className="orders-table__client">
-                  <div className="orders-table__avatar">
-                    <Avatar
-                      src={photo}
-                      seed={clientMap.get(order.clientPhone)?.id ?? order.clientPhone}
-                      alt={order.clientName}
-                    />
-                  </div>
                   <span className="orders-table__name" title={order.clientName}>
                     {order.clientName}
                   </span>
