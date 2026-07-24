@@ -139,6 +139,7 @@ $topbar-height: 52px;
     flex-shrink: 0;
     flex-wrap: wrap;
     border-bottom: 1px solid $color-gray-200;
+    background-color: $color-gray-100;
   }
 
   &__client {
@@ -293,6 +294,9 @@ $topbar-height: 52px;
   }
 
   &__info-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     font-size: $font-size-xs;
     color: $color-gray-500;
     font-weight: 500;
@@ -314,7 +318,6 @@ $topbar-height: 52px;
     &--empty {
       color: $color-gray-400;
       font-weight: 400;
-      font-style: italic;
     }
   }
 
@@ -664,6 +667,7 @@ $topbar-height: 52px;
 
     thead {
       th {
+        height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
         padding: $spacing-xs $spacing-sm;
         text-align: left;
         font-size: $font-size-sm;
@@ -674,12 +678,14 @@ $topbar-height: 52px;
         &:first-child { padding-left: $spacing-md; }
         &:nth-child(4) { text-align: left; }    // Etiquetas
         &:nth-child(5) { text-align: right; }   // Importe
-        &:nth-child(6) { text-align: right; padding-right: $spacing-sm; }   // Acumulado
+        &:nth-child(6) { text-align: right; }   // Acumulado
+        &:nth-child(7) { text-align: right; padding-right: $spacing-md; }   // Ganancia
       }
     }
 
     tbody {
       tr {
+        height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
         border-bottom: 1px solid $color-gray-200;
 
         &:last-child {
@@ -698,7 +704,8 @@ $topbar-height: 52px;
         &:nth-child(3) { white-space: normal; }                    // Producto
         &:nth-child(4) { text-align: left; }                       // Etiquetas
         &:nth-child(5) { text-align: right; }                      // Importe
-        &:nth-child(6) { text-align: right; padding-right: $spacing-md; }  // Acumulado
+        &:nth-child(6) { text-align: right; }                      // Acumulado
+        &:nth-child(7) { text-align: right; padding-right: $spacing-md; }  // Ganancia
       }
     }
   }
@@ -735,9 +742,10 @@ $topbar-height: 52px;
     position: relative;
     display: flex;
     align-items: center;
+    min-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
     gap: $spacing-md;
     padding: $spacing-xs $spacing-sm;
-    padding-left: calc(18% + #{$spacing-sm});
+    padding-left: calc(16% + #{$spacing-sm});
   }
 
   &__orders-date-main {
@@ -851,6 +859,35 @@ $topbar-height: 52px;
     color: $color-gray-800;
   }
 
+  &__orders-total-profit {
+    // !important necesario: por el colSpan={4} de la celda "Total", esta celda
+    // cae en nth-child(4) real del DOM, la misma posición que usa la regla de
+    // Etiquetas (text-align: left) en las filas de producto — esa regla tiene
+    // más especificidad y gana si no se fuerza aquí.
+    text-align: right !important;
+    padding-right: $spacing-md;
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-success;
+  }
+
+  &__orders-profit {
+    color: $color-success;
+    font-weight: 500;
+
+    &--unknown {
+      color: $color-gray-400;
+      font-weight: 400;
+      cursor: help;
+    }
+  }
+
+  &__orders-profit-warning {
+    color: $color-warning;
+    margin-left: 2px;
+    cursor: help;
+  }
+
   &__orders-accumulated-value {
     text-align: right;
     padding-right: $spacing-md;
@@ -872,6 +909,7 @@ $topbar-height: 52px;
   }
 
   &__orders-table-total-label {
+    height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
     padding: $spacing-xs $spacing-sm;
     padding-left: $spacing-md;
     font-size: $font-size-sm;
@@ -881,10 +919,21 @@ $topbar-height: 52px;
   }
 
   &__orders-table-total-value {
+    height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
     padding: $spacing-xs $spacing-sm;
     font-size: $font-size-sm;
     font-weight: 700;
     color: $color-primary;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  &__orders-table-total-profit {
+    height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-sm;
+    font-weight: 700;
+    color: $color-success;
     text-align: right;
     white-space: nowrap;
   }

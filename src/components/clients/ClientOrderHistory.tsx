@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PiArrowRightBold, PiMagnifyingGlassBold } from 'react-icons/pi';
-import type { Order } from '../../types/Order';
+import type { Order, OrderItem } from '../../types/Order';
 import type { Product, Label } from '../../types/Product';
 import { LABEL_ICONS } from '../../constants/labelIcons';
 import { ROUTES } from '../../config/routes';
 
 type DateFilter = 'all' | 'week' | 'month' | '3months';
+
+const itemProfit = (item: OrderItem): number | undefined =>
+  item.unitCost !== undefined ? (item.unitPrice - item.unitCost) * item.quantity : undefined;
 
 interface Props {
   clientId: string;
@@ -134,7 +137,13 @@ const ClientOrderHistory: React.FC<Props> = ({
     if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }, [focusedRow]);
 
-  const totalAccumulated = orders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0);
+  const deliveredOrders = orders.filter(o => o.status === 'delivered');
+  const totalAccumulated = deliveredOrders.reduce((s, o) => s + o.total, 0);
+  const totalProfitAccumulated = deliveredOrders.reduce(
+    (sum, o) => sum + o.items.reduce((s, item) => s + (itemProfit(item) ?? 0), 0),
+    0
+  );
+  const hasIncompleteProfitData = deliveredOrders.some(o => o.items.some(item => item.unitCost === undefined));
 
   return (
     <div className="client-detail__main">
@@ -162,12 +171,13 @@ const ClientOrderHistory: React.FC<Props> = ({
         <div className="client-detail__orders-table-head">
           <table className="client-detail__orders-table">
             <colgroup>
+              <col style={{ width: '9%' }} />
+              <col style={{ width: '7%' }} />
+              <col style={{ width: '26%' }} />
               <col style={{ width: '10%' }} />
-              <col style={{ width: '8%' }} />
-              <col style={{ width: '34%' }} />
-              <col style={{ width: '12%' }} />
-              <col style={{ width: '18%' }} />
-              <col style={{ width: '18%' }} />
+              <col style={{ width: '14%' }} />
+              <col style={{ width: '20%' }} />
+              <col style={{ width: '14%' }} />
             </colgroup>
             <thead>
               <tr>
@@ -177,6 +187,7 @@ const ClientOrderHistory: React.FC<Props> = ({
                 <th>{t('clients.detail.historyTable.labels')}</th>
                 <th>{t('clients.detail.historyTable.amount')}</th>
                 <th>{t('clients.detail.historyTable.accumulated')}</th>
+                <th>{t('clients.detail.historyTable.profit')}</th>
               </tr>
             </thead>
           </table>
@@ -184,25 +195,26 @@ const ClientOrderHistory: React.FC<Props> = ({
         <div ref={tableBodyRef} className="client-detail__orders-table-body">
           <table className="client-detail__orders-table">
             <colgroup>
+              <col style={{ width: '9%' }} />
+              <col style={{ width: '7%' }} />
+              <col style={{ width: '26%' }} />
               <col style={{ width: '10%' }} />
-              <col style={{ width: '8%' }} />
-              <col style={{ width: '34%' }} />
-              <col style={{ width: '12%' }} />
-              <col style={{ width: '18%' }} />
-              <col style={{ width: '18%' }} />
+              <col style={{ width: '14%' }} />
+              <col style={{ width: '20%' }} />
+              <col style={{ width: '14%' }} />
             </colgroup>
             <tbody>
               {ordersLoading ? (
                 <tr>
-                  <td colSpan={6} className="client-detail__orders-table-empty">{t('clients.detail.orderHistoryLoading')}</td>
+                  <td colSpan={7} className="client-detail__orders-table-empty">{t('clients.detail.orderHistoryLoading')}</td>
                 </tr>
               ) : ordersError ? (
                 <tr>
-                  <td colSpan={6} className="client-detail__orders-table-empty client-detail__orders-table-empty--error">{t('clients.detail.orderHistoryError')}</td>
+                  <td colSpan={7} className="client-detail__orders-table-empty client-detail__orders-table-empty--error">{t('clients.detail.orderHistoryError')}</td>
                 </tr>
               ) : filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="client-detail__orders-table-empty">
+                  <td colSpan={7} className="client-detail__orders-table-empty">
                     {orders.length === 0 ? t('clients.detail.orderHistoryEmpty') : t('clients.detail.orderHistoryNotFound')}
                   </td>
                 </tr>
@@ -219,7 +231,7 @@ const ClientOrderHistory: React.FC<Props> = ({
                         className={`client-detail__orders-date-row${focusedRow === dateIdx ? ' client-detail__orders-date-row--focused' : ''}`}
                         onMouseEnter={() => setFocusedRow(dateIdx)}
                       >
-                        <td colSpan={6}>
+                        <td colSpan={7}>
                           <div className="client-detail__orders-date-row-inner">
                             {order.orderNumber && (
                               <span className="client-detail__orders-order-number">{order.orderNumber}</span>
@@ -272,17 +284,36 @@ const ClientOrderHistory: React.FC<Props> = ({
                           </td>
                           <td>{format(item.subtotal)}</td>
                           <td />
+                          <td>
+                            {itemProfit(item) !== undefined ? (
+                              <span className="client-detail__orders-profit">{format(itemProfit(item)!)}</span>
+                            ) : (
+                              <span className="client-detail__orders-profit client-detail__orders-profit--unknown" title={t('orders.detail.profitUnknownHint')}>—</span>
+                            )}
+                          </td>
                         </tr>
                       ))}
                       {/* Fila de total */}
-                      <tr
-                        className={`client-detail__orders-total-row${focusedRow === totalIdx ? ' client-detail__orders-total-row--focused' : ''}`}
-                        onMouseEnter={() => setFocusedRow(totalIdx)}
-                      >
-                        <td colSpan={4} className="client-detail__orders-total-label">{t('clients.detail.historyTotal')}</td>
-                        <td className="client-detail__orders-total-value">{format(order.total)}</td>
-                        <td className="client-detail__orders-accumulated-value">{format(accumulatedMap.get(order.id) ?? 0)}</td>
-                      </tr>
+                      {(() => {
+                        const orderProfit = order.items.reduce((sum, item) => sum + (itemProfit(item) ?? 0), 0);
+                        const orderHasIncompleteCost = order.items.some(item => item.unitCost === undefined);
+                        return (
+                          <tr
+                            className={`client-detail__orders-total-row${focusedRow === totalIdx ? ' client-detail__orders-total-row--focused' : ''}`}
+                            onMouseEnter={() => setFocusedRow(totalIdx)}
+                          >
+                            <td colSpan={4} className="client-detail__orders-total-label">{t('clients.detail.historyTotal')}</td>
+                            <td className="client-detail__orders-total-value">{format(order.total)}</td>
+                            <td className="client-detail__orders-accumulated-value">{format(accumulatedMap.get(order.id) ?? 0)}</td>
+                            <td className="client-detail__orders-total-profit">
+                              {format(orderProfit)}
+                              {orderHasIncompleteCost && (
+                                <span className="client-detail__orders-profit-warning" title={t('orders.detail.profitUnknownHint')}>*</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })()}
                     </React.Fragment>
                   );
                 });
@@ -293,17 +324,24 @@ const ClientOrderHistory: React.FC<Props> = ({
         <div className="client-detail__orders-table-total">
           <table className="client-detail__orders-table">
             <colgroup>
+              <col style={{ width: '9%' }} />
+              <col style={{ width: '7%' }} />
+              <col style={{ width: '26%' }} />
               <col style={{ width: '10%' }} />
-              <col style={{ width: '8%' }} />
-              <col style={{ width: '34%' }} />
-              <col style={{ width: '12%' }} />
-              <col style={{ width: '18%' }} />
-              <col style={{ width: '18%' }} />
+              <col style={{ width: '14%' }} />
+              <col style={{ width: '20%' }} />
+              <col style={{ width: '14%' }} />
             </colgroup>
             <tfoot>
               <tr>
                 <td colSpan={5} className="client-detail__orders-table-total-label">{t('clients.detail.historyAccumulated')}</td>
                 <td className="client-detail__orders-table-total-value">{format(totalAccumulated)}</td>
+                <td className="client-detail__orders-table-total-profit">
+                  {format(totalProfitAccumulated)}
+                  {hasIncompleteProfitData && (
+                    <span className="client-detail__orders-profit-warning" title={t('orders.detail.profitUnknownHint')}>*</span>
+                  )}
+                </td>
               </tr>
             </tfoot>
           </table>
