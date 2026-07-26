@@ -45,9 +45,12 @@ const PLANS_CONFIG = [
   },
 ];
 
+const CHECKOUT_POLL_ATTEMPTS = 5;
+const CHECKOUT_POLL_DELAY_MS = 1500;
+
 const Plans = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { subscribe, manage, loading } = useSubscription();
@@ -61,13 +64,32 @@ const Plans = () => {
     const checkout = searchParams.get('checkout');
     if (!checkout) return;
 
+    let cancelled = false;
+
     if (checkout === 'success') {
       showToast(t('plans.checkoutSuccess'), 'success');
+
+      // El webhook de Stripe puede tardar un par de segundos en escribir el
+      // plan nuevo en Firestore — reintenta el refetch hasta que cambie o se
+      // agoten los intentos, en vez de dejar al usuario con el badge viejo.
+      const planBeforeCheckout = user?.plan ?? 'free';
+
+      (async () => {
+        for (let attempt = 0; attempt < CHECKOUT_POLL_ATTEMPTS && !cancelled; attempt++) {
+          await new Promise(resolve => setTimeout(resolve, CHECKOUT_POLL_DELAY_MS));
+          if (cancelled) return;
+          const updated = await refreshUser();
+          if (updated && updated.plan !== planBeforeCheckout) return;
+        }
+      })();
     } else if (checkout === 'canceled') {
       showToast(t('plans.checkoutCanceled'), 'warning');
     }
 
     setSearchParams({}, { replace: true });
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, setSearchParams, showToast, t]);
 
   const handlePlanAction = (plan: (typeof PLANS_CONFIG)[number]) => {

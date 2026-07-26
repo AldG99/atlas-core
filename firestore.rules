@@ -51,17 +51,6 @@ service cloud.firestore {
         counterId.matches(request.auth.uid + '_.*');
     }
 
-    // ── Resultados de moderación de imágenes ──────────────────────────────────
-    // Solo el Admin SDK (Cloud Function) puede crear/actualizar.
-    // El propietario puede leer (incluso antes de que exista el doc) y borrar su resultado.
-    match /moderatedImages/{docId} {
-      allow read: if request.auth != null &&
-        (resource == null || resource.data.userId == request.auth.uid);
-      allow delete: if request.auth != null &&
-        resource != null && resource.data.userId == request.auth.uid;
-      allow write: if false;
-    }
-
     // ── Mensajes de soporte ────────────────────────────────────────────────────
     match /supportMessages/{msgId} {
       allow create: if request.auth != null &&

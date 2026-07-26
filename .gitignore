@@ -17,6 +17,8 @@ dist-ssr
 .firebaserc
 .firebase
 cors.json
+*firebase-adminsdk*.json
+service-account*.json
 
 # Docs
 fase-1-gestor-pedidos.md

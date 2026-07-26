@@ -13,13 +13,6 @@ service firebase.storage {
         && request.resource.contentType.matches('image/(jpeg|png|webp)');
     }
 
-    // ── Imágenes pendientes de moderación ─────────────────────────────────────
-    // Los usuarios pueden subir a su carpeta pending; solo el Admin SDK puede leer/borrar.
-    match /pending/{userId}/{type}/{fileName} {
-      allow write: if request.auth != null && request.auth.uid == userId && isValidImage();
-      allow read, delete: if false;
-    }
-
     // ── Profile images ─────────────────────────────────────────────────────────
     match /users/{uid}/profile/{fileName} {
       allow read:  if request.auth != null && request.auth.uid == uid;

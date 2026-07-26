@@ -12,6 +12,7 @@ interface AuthContextType extends AuthState {
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: UpdateProfileData) => Promise<void>;
+  refreshUser: () => Promise<User | null>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   deleteAllData: (password: string) => Promise<void>;
   deleteAccount: (password: string) => Promise<void>;
@@ -137,6 +138,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const refreshUser = async (): Promise<User | null> => {
+    if (!user) return null;
+    const userData = await getUserData(user.uid);
+    setUser(userData);
+    return userData;
+  };
+
   const businessUid = user?.uid ?? null;
 
   const value: AuthContextType = {
@@ -147,6 +155,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     register,
     logout,
     updateProfile,
+    refreshUser,
     changePassword,
     deleteAllData,
     deleteAccount,

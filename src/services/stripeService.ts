@@ -1,7 +1,5 @@
-import { getFunctions, httpsCallable } from 'firebase/functions';
 import { auth } from './firebase';
-
-const fns = getFunctions(auth.app, 'us-central1');
+import { ROUTES } from '../config/routes';
 
 // ── Precios de Stripe (configurar en .env) ────────────────────────────────────
 export const STRIPE_PRICES = {
@@ -9,32 +7,41 @@ export const STRIPE_PRICES = {
   enterprise: import.meta.env.VITE_STRIPE_PRICE_BUSINESS as string,
 } as const;
 
-// ── Checkout: iniciar suscripción nueva ───────────────────────────────────────
-export const redirectToCheckout = async (priceId: string): Promise<void> => {
-  const createSession = httpsCallable<
-    { priceId: string; successUrl: string; cancelUrl: string },
-    { url: string }
-  >(fns, 'createCheckoutSession');
+const callApi = async <T>(path: string, body: unknown): Promise<T> => {
+  const idToken = await auth.currentUser?.getIdToken();
+  if (!idToken) throw new Error('Must be logged in');
 
-  const result = await createSession({
-    priceId,
-    successUrl: `${window.location.origin}/planes?checkout=success`,
-    cancelUrl: `${window.location.origin}/planes?checkout=canceled`,
+  const response = await fetch(path, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`,
+    },
+    body: JSON.stringify(body),
   });
 
-  window.location.href = result.data.url;
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message ?? data.error ?? 'Request failed');
+
+  return data as T;
+};
+
+// ── Checkout: iniciar suscripción nueva ───────────────────────────────────────
+export const redirectToCheckout = async (priceId: string): Promise<void> => {
+  const result = await callApi<{ url: string }>('/api/create-checkout-session', {
+    priceId,
+    successUrl: `${window.location.origin}${ROUTES.PLANS}?checkout=success`,
+    cancelUrl: `${window.location.origin}${ROUTES.PLANS}?checkout=canceled`,
+  });
+
+  window.location.href = result.url;
 };
 
 // ── Portal: gestionar / cambiar / cancelar suscripción existente ──────────────
 export const redirectToPortal = async (): Promise<void> => {
-  const createPortal = httpsCallable<
-    { returnUrl: string },
-    { url: string }
-  >(fns, 'createPortalSession');
-
-  const result = await createPortal({
-    returnUrl: `${window.location.origin}/planes`,
+  const result = await callApi<{ url: string }>('/api/create-portal-session', {
+    returnUrl: `${window.location.origin}${ROUTES.PLANS}`,
   });
 
-  window.location.href = result.data.url;
+  window.location.href = result.url;
 };
