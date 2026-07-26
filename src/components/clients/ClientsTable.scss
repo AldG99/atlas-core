@@ -139,6 +139,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     transition: color 0.2s ease;
+    flex: 1;
+    min-width: 0;
   }
 
   &__fav-icon {

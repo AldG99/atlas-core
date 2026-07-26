@@ -22,6 +22,7 @@ import PhoneInput from '../components/clients/PhoneInput';
 import ClientOrderHistory from '../components/clients/ClientOrderHistory';
 import { getOrdersByClientPhone } from '../services/orderService';
 import { getCountryCode } from '../data/countryCodes';
+import { getInitials } from '../utils/avatar';
 import { formatPhone } from '../utils/formatters';
 import { useCurrency } from '../hooks/useCurrency';
 import { useAuth } from '../hooks/useAuth';
@@ -291,7 +292,7 @@ const ClientDetail = () => {
               {/* Avatar + nombre + fecha + info */}
               <div className="client-detail__client">
                 <div className="client-detail__avatar">
-                  <Avatar src={client.profilePhoto} seed={client.id} alt={client.firstName} />
+                  <Avatar src={client.profilePhoto} seed={client.id} alt={client.firstName} initials={getInitials(client.firstName, client.lastName)} />
                 </div>
                 <div className="client-detail__client-info">
                   <div className="client-detail__client-name-row">

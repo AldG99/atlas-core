@@ -6,6 +6,7 @@ import { useClients } from '../../hooks/useClients';
 import { useToast } from '../../hooks/useToast';
 import { formatPhone } from '../../utils/formatters';
 import { getCountryCode } from '../../data/countryCodes';
+import { getInitials } from '../../utils/avatar';
 import type { Client, ClientFormData } from '../../types/Client';
 import Avatar from '../ui/Avatar';
 import ClientModal from '../clients/ClientModal';
@@ -122,7 +123,7 @@ const ClientSelector = ({
       <div className="client-selector client-selector--selected">
         <div className="client-selector__selected-row">
           <div className="client-selector__avatar">
-            <Avatar src={selectedClient.profilePhoto} seed={selectedClient.id} alt={selectedClient.firstName} />
+            <Avatar src={selectedClient.profilePhoto} seed={selectedClient.id} alt={selectedClient.firstName} initials={getInitials(selectedClient.firstName, selectedClient.lastName)} />
           </div>
           <div className="client-selector__client-info">
             <span className="client-selector__client-name">
@@ -199,6 +200,7 @@ const ClientSelector = ({
                     src={client.profilePhoto}
                     seed={client.id}
                     alt={client.firstName}
+                    initials={getInitials(client.firstName, client.lastName)}
                   />
                 </div>
                 <div className="client-selector__dropdown-info">

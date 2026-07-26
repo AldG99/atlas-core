@@ -2,7 +2,14 @@ import type { FormEvent } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PiEyeBold, PiEyeSlashBold } from 'react-icons/pi';
+import {
+  PiEyeBold,
+  PiEyeSlashBold,
+  PiEnvelopeSimpleBold,
+  PiLockSimpleBold,
+  PiWarningCircleBold,
+  PiCheckCircleBold,
+} from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
 import { ROUTES } from '../config/routes';
 import AuthLayout from '../layouts/AuthLayout';
@@ -115,23 +122,32 @@ const Login = () => {
 
           {resetSent ? (
             <div className="login-form__success">
+              <PiCheckCircleBold size={16} />
               {t('auth.login.resetSentSuccess')}
             </div>
           ) : (
             <>
-              {resetError && <div className="login-form__error">{resetError}</div>}
+              {resetError && (
+                <div className="login-form__error">
+                  <PiWarningCircleBold size={16} />
+                  {resetError}
+                </div>
+              )}
               <div className="login-form__fields">
                 <div className="form-group">
                   <label htmlFor="resetEmail">{t('auth.login.email')}</label>
-                  <input
-                    type="email"
-                    id="resetEmail"
-                    value={resetEmail}
-                    onChange={e => setResetEmail(e.target.value)}
-                    className="input"
-                    placeholder={t('auth.login.emailPlaceholder')}
-                    required
-                  />
+                  <div className="login-form__input-wrapper">
+                    <PiEnvelopeSimpleBold size={16} className="login-form__input-icon" />
+                    <input
+                      type="email"
+                      id="resetEmail"
+                      value={resetEmail}
+                      onChange={e => setResetEmail(e.target.value)}
+                      className="input login-form__input--icon"
+                      placeholder={t('auth.login.emailPlaceholder')}
+                      required
+                    />
+                  </div>
                 </div>
               </div>
               <button type="submit" className="btn btn--primary btn--full" disabled={resetLoading}>
@@ -159,31 +175,40 @@ const Login = () => {
           <h2>{t('auth.login.title')}</h2>
         </div>
 
-        {error && <div className="login-form__error">{error}</div>}
+        {error && (
+          <div className="login-form__error">
+            <PiWarningCircleBold size={16} />
+            {error}
+          </div>
+        )}
 
         <div className="login-form__fields">
           <div className="form-group">
             <label htmlFor="email">{t('auth.login.email')}</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="input"
-              placeholder={t('auth.login.emailPlaceholder')}
-              required
-            />
+            <div className="login-form__input-wrapper">
+              <PiEnvelopeSimpleBold size={16} className="login-form__input-icon" />
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="input login-form__input--icon"
+                placeholder={t('auth.login.emailPlaceholder')}
+                required
+              />
+            </div>
           </div>
 
           <div className="form-group">
             <label htmlFor="password">{t('auth.login.password')}</label>
             <div className="login-form__pwd-wrapper">
+              <PiLockSimpleBold size={16} className="login-form__input-icon" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="input"
+                className="input login-form__input--icon"
                 placeholder={t('auth.login.passwordPlaceholder')}
                 required
               />

@@ -7,7 +7,8 @@ const PAGE_SIZE = 20;
 import type { Order } from '../../types/Order';
 import type { Client } from '../../types/Client';
 import { ORDER_STATUS_COLORS } from '../../constants/orderStatus';
-import { formatShortDate, getTotalPaid } from '../../utils/formatters';
+import { formatShortDate, formatPhone, getTotalPaid } from '../../utils/formatters';
+import { getCountryCode } from '../../data/countryCodes';
 import { useClients } from '../../hooks/useClients';
 import { useCurrency } from '../../hooks/useCurrency';
 import './OrdersTable.scss';
@@ -51,6 +52,10 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
     return clientMap.get(order.clientPhone)?.favorite ?? false;
   };
 
+  const getClientPhoneCountryCode = (order: Order): string | undefined => {
+    return clientMap.get(order.clientPhone)?.phoneCountryCode;
+  };
+
   useEffect(() => {
     if (!paginatedOrders.length) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -85,9 +90,8 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
         <table className="orders-table">
           <colgroup>
             <col style={{ width: '20%' }} />
-            <col style={{ width: '7%' }} />
+            <col style={{ width: '12%' }} />
             <col style={{ width: '15%' }} />
-            <col style={{ width: '6%' }} />
             <col style={{ width: '12%' }} />
             <col style={{ width: '10%' }} />
             <col style={{ width: '7%' }} />
@@ -96,9 +100,8 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
           <thead>
             <tr>
               <th>{t('orders.table.client')}</th>
-              <th>{t('clients.table.postal')}</th>
+              <th>{t('clients.table.phone')}</th>
               <th>{t('orders.table.folio')}</th>
-              <th>{t('orders.table.products')}</th>
               <th>{t('orders.paid')}</th>
               <th>{t('orders.table.total')}</th>
               <th>{t('orders.table.status')}</th>
@@ -111,9 +114,8 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
         <table className="orders-table">
           <colgroup>
             <col style={{ width: '20%' }} />
-            <col style={{ width: '7%' }} />
+            <col style={{ width: '12%' }} />
             <col style={{ width: '15%' }} />
-            <col style={{ width: '6%' }} />
             <col style={{ width: '12%' }} />
             <col style={{ width: '10%' }} />
             <col style={{ width: '7%' }} />
@@ -126,7 +128,6 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
                 <td><span className="orders-table__skeleton orders-table__skeleton--name" /></td>
                 <td><span className="orders-table__skeleton orders-table__skeleton--short" /></td>
                 <td><span className="orders-table__skeleton orders-table__skeleton--order-number" /></td>
-                <td style={{ textAlign: 'center' }}><span className="orders-table__skeleton orders-table__skeleton--short" /></td>
                 <td style={{ textAlign: 'right' }}><span className="orders-table__skeleton orders-table__skeleton--medium" /></td>
                 <td style={{ textAlign: 'right' }}><span className="orders-table__skeleton orders-table__skeleton--medium" /></td>
                 <td style={{ textAlign: 'center' }}><span className="orders-table__skeleton orders-table__skeleton--status" /></td>
@@ -135,13 +136,13 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
             ))
           ) : error ? (
             <tr>
-              <td colSpan={8} className="orders-table__empty orders-table__empty--error">
+              <td colSpan={7} className="orders-table__empty orders-table__empty--error">
                 {error}
               </td>
             </tr>
           ) : orders.length === 0 ? (
             <tr>
-              <td colSpan={8} className="orders-table__empty">
+              <td colSpan={7} className="orders-table__empty">
                 {searchTerm?.trim() ? t('orders.table.emptySearch', { term: searchTerm }) : t('orders.table.empty')}
               </td>
             </tr>
@@ -163,22 +164,21 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
                 </div>
               </td>
               <td>
-                <span className="orders-table__postal">{order.clientPostalCode || '-'}</span>
+                {(() => {
+                  const phoneCountryCode = getClientPhoneCountryCode(order);
+                  return (
+                    <span className="orders-table__phone">
+                      {phoneCountryCode
+                        ? `${getCountryCode(phoneCountryCode)?.code ?? ''} ${formatPhone(order.clientPhone)}`
+                        : formatPhone(order.clientPhone)}
+                    </span>
+                  );
+                })()}
               </td>
               <td>
                 <span className="orders-table__order-number">
                   {order.orderNumber || '-'}
                 </span>
-              </td>
-              <td>
-                <div className="orders-table__product-cell">
-                  <span className="orders-table__product-count">
-                    {order.items.reduce((sum, p) => sum + p.quantity, 0)}
-                  </span>
-                  {order.items.some(p => p.discount && p.discount > 0) && (
-                    <span className="orders-table__discount-indicator" title={t('orders.table.hasDiscount')}>%</span>
-                  )}
-                </div>
               </td>
               <td>
                 {(() => {

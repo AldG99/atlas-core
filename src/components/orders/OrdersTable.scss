@@ -65,23 +65,28 @@
       color: $color-gray-600;
       white-space: nowrap;
 
-      // Productos
-      &:nth-child(4) {
-        text-align: center;
+      // Teléfono
+      &:nth-child(2) {
+        padding-left: 2px;
+      }
+
+      // Folio
+      &:nth-child(3) {
+        padding-left: $spacing-xl;
       }
 
       // Abonado
-      &:nth-child(5) {
+      &:nth-child(4) {
         text-align: right;
       }
 
       // Total
-      &:nth-child(6) {
+      &:nth-child(5) {
         text-align: right;
       }
 
       // Estado
-      &:nth-child(7) {
+      &:nth-child(6) {
         text-align: center;
       }
     }
@@ -99,23 +104,28 @@
       color: $color-gray-700;
       vertical-align: middle;
 
-      // Productos
-      &:nth-child(4) {
-        text-align: center;
+      // Teléfono
+      &:nth-child(2) {
+        padding-left: 2px;
+      }
+
+      // Folio
+      &:nth-child(3) {
+        padding-left: $spacing-xl;
       }
 
       // Abonado
-      &:nth-child(5) {
+      &:nth-child(4) {
         text-align: right;
       }
 
       // Total
-      &:nth-child(6) {
+      &:nth-child(5) {
         text-align: right;
       }
 
       // Estado
-      &:nth-child(7) {
+      &:nth-child(6) {
         text-align: center;
       }
     }
@@ -181,6 +191,8 @@
     text-overflow: ellipsis;
     max-width: 100%;
     transition: color $transition-fast;
+    flex: 1;
+    min-width: 0;
   }
 
   &__fav-icon {
@@ -188,40 +200,9 @@
     flex-shrink: 0;
   }
 
-  &__product-cell {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    min-width: 32px;
-  }
-
-  &__product-count {
+  &__phone {
     font-size: $font-size-sm;
-    font-weight: 600;
-    color: $color-gray-700;
-  }
-
-  &__discount-indicator {
-    position: absolute;
-    top: -6px;
-    right: -10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    border-radius: 0;
-    background-color: $color-danger;
-    color: $color-white;
-    font-size: 9px;
-    font-weight: 700;
-  }
-
-  &__postal {
-    font-size: $font-size-sm;
-    font-weight: 500;
-    color: $color-gray-600;
+    color: $color-gray-500;
     white-space: nowrap;
   }
 

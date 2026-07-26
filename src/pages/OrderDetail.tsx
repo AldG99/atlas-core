@@ -23,6 +23,7 @@ import {
 import { DEFAULT_TEMPLATES } from '../types/User';
 import { useCurrency } from '../hooks/useCurrency';
 import { getCountryCode } from '../data/countryCodes';
+import { getInitials } from '../utils/avatar';
 import {
   getOrderById,
   updateOrderStatus,
@@ -374,6 +375,10 @@ const OrderDetail = () => {
   const paid = getTotalPaid(order);
   const clientPhoto = order.clientPhoto ?? clientData?.profilePhoto;
   const clientFavorite = clientData?.favorite ?? false;
+  const [clientFirstWord, ...clientRestWords] = order.clientName.trim().split(/\s+/);
+  const clientInitials = clientData
+    ? getInitials(clientData.firstName, clientData.lastName)
+    : getInitials(clientFirstWord, clientRestWords[clientRestWords.length - 1]);
   const payments = order.payments || [];
 
   const settled = paid >= order.total;
@@ -413,6 +418,7 @@ const OrderDetail = () => {
                   src={clientPhoto}
                   seed={clientData?.id ?? order.clientPhone}
                   alt={order.clientName}
+                  initials={clientInitials}
                 />
               </div>
               <div className="order-detail__client-info">
