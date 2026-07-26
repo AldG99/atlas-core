@@ -94,14 +94,14 @@ $topbar-height: 52px;
     }
 
     input {
-      min-width: 80px;
-      width: 80px;
+      min-width: 100px;
+      width: 100px;
       color: $color-gray-800;
       text-align: right;
 
       @include sm {
-        min-width: 140px;
-        width: 140px;
+        min-width: 170px;
+        width: 170px;
       }
 
       &::placeholder {
@@ -126,10 +126,12 @@ $topbar-height: 52px;
 
   &__top-bar-payment-group > .btn {
     padding: 0 $spacing-md;
+    min-width: 110px;
   }
 
   &__top-bar-inner > .order-detail__btn-delivered {
     padding: 0 $spacing-sm;
+    min-width: 110px;
   }
 
   &__top-bar-payment-error {
@@ -869,9 +871,9 @@ $topbar-height: 52px;
     }
 
     &--product {
-      width: min(840px, 90vw);
+      width: min(880px, 90vw);
       max-width: none;
-      max-height: 90vh;
+      height: min(481px, 90vh);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -881,6 +883,8 @@ $topbar-height: 52px;
       }
 
       .order-detail__modal-body {
+        flex: 1;
+        min-height: 0;
         flex-direction: column;
         padding: 0;
         overflow: hidden;
@@ -902,7 +906,7 @@ $topbar-height: 52px;
         justify-content: center;
 
         @include md {
-          width: 380px;
+          width: 420px;
           height: auto;
           border-bottom: none;
           border-right: 1px solid $color-gray-200;
@@ -924,6 +928,7 @@ $topbar-height: 52px;
 
   &__modal-right {
     flex: 1;
+    min-width: 0;
     overflow-y: auto;
     padding: $spacing-md;
     display: flex;
@@ -1042,6 +1047,7 @@ $topbar-height: 52px;
       color: $color-gray-600;
       line-height: 1.5;
       margin: 0;
+      overflow-wrap: break-word;
     }
   }
 
@@ -1054,6 +1060,7 @@ $topbar-height: 52px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: $spacing-sm;
     padding: $spacing-xs 0;
     border-bottom: 1px solid $color-gray-200;
 
@@ -1084,6 +1091,9 @@ $topbar-height: 52px;
     font-size: $font-size-sm;
     color: $color-gray-800;
     font-weight: 600;
+    text-align: right;
+    overflow-wrap: break-word;
+    min-width: 0;
   }
 
 

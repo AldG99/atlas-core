@@ -161,7 +161,7 @@ const Dashboard = () => {
               <PiCloudArrowUpBold size={18} />
               {uploadingDrive ? t('dashboard.uploading') : t('dashboard.googleDrive')}
             </button>
-            <Link to={ROUTES.NEW_ORDER} className="btn btn--primary">
+            <Link to={ROUTES.NEW_ORDER} className="btn btn--primary dashboard__new-order-btn">
               <PiPlusBold size={18} />
               {t('dashboard.newOrder')}
             </Link>

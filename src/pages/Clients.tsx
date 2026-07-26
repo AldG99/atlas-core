@@ -5,7 +5,7 @@ type SortOption = 'name_asc' | 'name_desc' | 'postal_asc' | 'postal_desc' | 'reg
 
 import {
   PiMagnifyingGlassBold,
-  PiPlusBold,
+  PiUserPlusBold,
   PiDownloadSimpleBold,
 } from 'react-icons/pi';
 import { useClients } from '../hooks/useClients';
@@ -119,7 +119,7 @@ const Clients = () => {
               onClick={() => setIsModalOpen(true)}
               className="btn btn--primary"
             >
-              <PiPlusBold size={18} />
+              <PiUserPlusBold size={18} />
               {t('clients.newClient')}
             </button>
           </div>

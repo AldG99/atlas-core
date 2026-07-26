@@ -78,6 +78,13 @@
         color: $color-primary;
       }
     }
+
+    &--plain {
+      &:hover {
+        background-color: transparent;
+        color: $color-primary;
+      }
+    }
   }
 
   &__notification-badge {

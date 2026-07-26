@@ -46,6 +46,8 @@ import Avatar from '../components/ui/Avatar';
 import MainLayout from '../layouts/MainLayout';
 import './OrderDetail.scss';
 
+const MAX_PAYMENT_AMOUNT = 999999;
+
 const OrderDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -297,6 +299,11 @@ const OrderDetail = () => {
     const amount = parseFloat(paymentInput);
     if (!amount || amount <= 0) return;
     setPaymentError(null);
+
+    if (amount > MAX_PAYMENT_AMOUNT) {
+      setPaymentError(t('orders.detail.paymentExceedsMax', { max: format(MAX_PAYMENT_AMOUNT) }));
+      return;
+    }
 
     const totalPaid = getTotalPaid(order);
     const remaining = Math.round((order.total - totalPaid) * 100) / 100;

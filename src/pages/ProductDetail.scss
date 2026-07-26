@@ -271,6 +271,19 @@ $topbar-height: 52px;
     color: $color-gray-500;
   }
 
+  &__cost-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+  }
+
+  &__cost-price {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+    font-weight: 500;
+  }
+
   &__margin {
     font-size: $font-size-sm;
     color: $color-success;

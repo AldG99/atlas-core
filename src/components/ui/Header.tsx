@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiCrownSimpleBold, PiWarningBold, PiInfoBold, PiShieldCheckBold, PiGearSixBold } from 'react-icons/pi';
+import { PiBellBold, PiCaretDownBold, PiUserBold, PiSignOutBold, PiStorefrontBold, PiWarningBold, PiInfoBold, PiShieldCheckBold } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import type { Notification } from '../../hooks/useNotifications';
@@ -118,6 +118,14 @@ const Header = ({ notifications }: HeaderProps) => {
           )}
         </div>
 
+        <button
+          className="header__icon-btn header__icon-btn--plain"
+          onClick={() => navigate(ROUTES.FAQ)}
+          aria-label={t('nav.faq')}
+        >
+          <PiInfoBold size={20} />
+        </button>
+
         {/* Profile */}
         <div className="header__profile">
           <button
@@ -165,20 +173,10 @@ const Header = ({ notifications }: HeaderProps) => {
                   className="header__dropdown-item"
                   onClick={() => {
                     setShowProfileMenu(false);
-                    navigate(ROUTES.SETTINGS);
-                  }}
-                >
-                  <PiGearSixBold size={18} />
-                  <span>{t('nav.settings')}</span>
-                </button>
-                <button
-                  className="header__dropdown-item"
-                  onClick={() => {
-                    setShowProfileMenu(false);
                     navigate(ROUTES.PLANS);
                   }}
                 >
-                  <PiCrownSimpleBold size={18} />
+                  <PiStorefrontBold size={18} />
                   <span>{t('nav.plan', { plan: user?.plan === 'pro' ? 'Pro' : user?.plan === 'enterprise' ? 'Enterprise' : t('plans.free') })}</span>
                 </button>
                 <div className="header__dropdown-divider"></div>

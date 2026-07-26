@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PiListBold, PiXBold, PiClipboardTextBold, PiUsersBold, PiPackageBold, PiChartBarBold, PiArchiveBold, PiInfoBold, PiLifebuoyBold } from 'react-icons/pi';
+import { PiListBold, PiXBold, PiClipboardTextBold, PiUsersBold, PiPackageBold, PiChartBarBold, PiArchiveBold, PiLifebuoyBold, PiGearSixBold } from 'react-icons/pi';
 import { ROUTES } from '../../config/routes';
 import './Sidebar.scss';
 
@@ -90,12 +90,12 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
 
         <div className="sidebar__footer">
           <NavLink
-            to={ROUTES.FAQ}
+            to={ROUTES.SETTINGS}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
-            <span className="sidebar__link-icon"><PiInfoBold size={22} /></span>
-            <span className="sidebar__link-text">{t('nav.faq')}</span>
+            <span className="sidebar__link-icon"><PiGearSixBold size={22} /></span>
+            <span className="sidebar__link-text">{t('nav.settings')}</span>
           </NavLink>
 
           <NavLink

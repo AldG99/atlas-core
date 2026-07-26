@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { ChartDataPoint } from '../../types/Report';
 import { useCurrency } from '../../hooks/useCurrency';
+import { useAnimatedNumber } from '../../hooks/useAnimatedNumber';
 import './SalesChart.scss';
 
 interface SalesChartProps {
@@ -19,6 +20,14 @@ const formatAxisValue = (value: number, symbol: string): string => {
 const SalesChart = ({ data, totalSales, totalOrders }: SalesChartProps) => {
   const { t } = useTranslation();
   const { format, symbol } = useCurrency();
+  const averageTarget = totalOrders > 0 ? totalSales / totalOrders : 0;
+  const animatedTotalSales = useAnimatedNumber(totalSales);
+  const animatedTotalOrders = useAnimatedNumber(totalOrders);
+  const animatedAverage = useAnimatedNumber(averageTarget);
+  // Reserva el ancho final de cada valor para que ninguno se desplace mientras el otro cuenta.
+  const ordersMinWidth = `${totalOrders.toString().length}ch`;
+  const averageMinWidth = `${format(averageTarget).length}ch`;
+
   if (data.length === 0) {
     return (
       <div className="sales-chart sales-chart--empty">
@@ -34,16 +43,18 @@ const SalesChart = ({ data, totalSales, totalOrders }: SalesChartProps) => {
       <div className="sales-chart__header">
         <div className="sales-chart__totals">
           <span className="sales-chart__label">{t('reports.chart.totalSales')}</span>
-          <span className="sales-chart__amount">{format(totalSales)}</span>
+          <span className="sales-chart__amount">{format(animatedTotalSales)}</span>
         </div>
         <div className="sales-chart__stats">
           <div className="sales-chart__stat">
-            <span className="sales-chart__stat-value">{totalOrders}</span>
+            <span className="sales-chart__stat-value" style={{ minWidth: ordersMinWidth }}>
+              {Math.round(animatedTotalOrders)}
+            </span>
             <span className="sales-chart__stat-label">{t('reports.chart.orders')}</span>
           </div>
           <div className="sales-chart__stat">
-            <span className="sales-chart__stat-value">
-              {format(totalOrders > 0 ? totalSales / totalOrders : 0)}
+            <span className="sales-chart__stat-value" style={{ minWidth: averageMinWidth }}>
+              {format(animatedAverage)}
             </span>
             <span className="sales-chart__stat-label">{t('reports.chart.average')}</span>
           </div>

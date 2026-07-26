@@ -144,10 +144,13 @@
   }
 
   &__stat-value {
+    display: inline-block;
     font-size: $font-size-base;
     font-weight: 600;
     color: $color-gray-900;
     letter-spacing: -0.3px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
   }
 
   &__stat-label {

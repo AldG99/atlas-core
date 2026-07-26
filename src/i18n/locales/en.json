@@ -380,6 +380,7 @@
       "paymentTotalExceeded": "Total payments cannot exceed {{total}}",
       "paymentAlreadyPaid": "This order is already fully paid",
       "paymentExceedsRemaining": "Amount exceeds remaining balance ({{remaining}})",
+      "paymentExceedsMax": "Amount cannot exceed {{max}}",
       "statusChanged": "Status changed to \"{{status}}\"",
       "statusChangeError": "Error changing status",
       "productUnavailable": "Product not available in catalog",

@@ -11,6 +11,7 @@ import {
   PiLockKeyBold,
   PiEyeBold,
   PiEyeSlashBold,
+  PiMapPinBold,
 } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -51,6 +52,11 @@ interface FormErrors {
   lastName?: string;
   birthDate?: string;
   phone?: string;
+  street?: string;
+  exteriorNumber?: string;
+  neighborhood?: string;
+  city?: string;
+  postalCode?: string;
 }
 
 const Profile = () => {
@@ -79,6 +85,14 @@ const Profile = () => {
     birthDate: user?.birthDate ?? '',
     phone: user?.phone ?? '',
     phoneCountryCode: user?.phoneCountryCode ?? 'MX',
+    country: user?.country ?? '',
+    state: user?.state ?? '',
+    city: user?.city ?? '',
+    neighborhood: user?.neighborhood ?? '',
+    street: user?.street ?? '',
+    exteriorNumber: user?.exteriorNumber ?? '',
+    interiorNumber: user?.interiorNumber ?? '',
+    postalCode: user?.postalCode ?? '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,6 +139,36 @@ const Profile = () => {
       }
     }
 
+    if (!formData.street.trim()) {
+      newErrors.street = t('clients.modal.errors.streetRequired');
+    } else if (formData.street.trim().length < 3) {
+      newErrors.street = t('clients.modal.errors.streetShort');
+    }
+
+    if (!formData.exteriorNumber.trim()) {
+      newErrors.exteriorNumber = t('clients.modal.errors.exteriorNumberRequired');
+    } else if (!/\d/.test(formData.exteriorNumber)) {
+      newErrors.exteriorNumber = t('clients.modal.errors.exteriorNumberInvalid');
+    }
+
+    if (!formData.neighborhood.trim()) {
+      newErrors.neighborhood = t('clients.modal.errors.colonyRequired');
+    } else if (formData.neighborhood.trim().length < 3) {
+      newErrors.neighborhood = t('clients.modal.errors.colonyShort');
+    }
+
+    if (!formData.city.trim()) {
+      newErrors.city = t('clients.modal.errors.cityRequired');
+    } else if (formData.city.trim().length < 3) {
+      newErrors.city = t('clients.modal.errors.cityShort');
+    }
+
+    if (!formData.postalCode.trim()) {
+      newErrors.postalCode = t('clients.modal.errors.postalRequired');
+    } else if (!/^\d{5}$/.test(formData.postalCode.trim())) {
+      newErrors.postalCode = t('clients.modal.errors.postalInvalid');
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -141,6 +185,14 @@ const Profile = () => {
         birthDate: formData.birthDate,
         phone: formData.phone,
         phoneCountryCode: formData.phoneCountryCode,
+        country: formData.country.trim(),
+        state: formData.state.trim(),
+        city: formData.city.trim(),
+        neighborhood: formData.neighborhood.trim(),
+        street: formData.street.trim(),
+        exteriorNumber: formData.exteriorNumber.trim(),
+        interiorNumber: formData.interiorNumber.trim(),
+        postalCode: formData.postalCode.trim(),
       });
       setIsEditing(false);
       showToast(t('profile.updateSuccess'), 'success');
@@ -159,6 +211,14 @@ const Profile = () => {
       birthDate: user?.birthDate ?? '',
       phone: user?.phone ?? '',
       phoneCountryCode: user?.phoneCountryCode ?? 'MX',
+      country: user?.country ?? '',
+      state: user?.state ?? '',
+      city: user?.city ?? '',
+      neighborhood: user?.neighborhood ?? '',
+      street: user?.street ?? '',
+      exteriorNumber: user?.exteriorNumber ?? '',
+      interiorNumber: user?.interiorNumber ?? '',
+      postalCode: user?.postalCode ?? '',
     });
     setErrors({});
     setIsEditing(false);
@@ -361,6 +421,166 @@ const Profile = () => {
                     ? new Date(user.registeredAt).toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })
                     : '—'}
                 </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="profile__card">
+            <div className="profile__card-header">
+              <PiMapPinBold size={16} />
+              <span>{t('profile.address')}</span>
+            </div>
+
+            <div className="profile__fields">
+              <div className="profile__field">
+                <label>{t('clients.modal.country')}</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="input"
+                    placeholder={t('clients.modal.countryPlaceholder')}
+                    maxLength={40}
+                  />
+                ) : (
+                  <p>{user?.country || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label>{t('clients.modal.state')}</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    className="input"
+                    placeholder={t('clients.modal.statePlaceholder')}
+                    maxLength={60}
+                  />
+                ) : (
+                  <p>{user?.state || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label>{t('clients.modal.city')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className={`input${errors.city ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.cityPlaceholder')}
+                      maxLength={60}
+                    />
+                    {errors.city && <span className="profile__field-error">{errors.city}</span>}
+                  </>
+                ) : (
+                  <p>{user?.city || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label>{t('clients.modal.colony')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      name="neighborhood"
+                      value={formData.neighborhood}
+                      onChange={handleChange}
+                      className={`input${errors.neighborhood ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.colonyPlaceholder')}
+                      maxLength={60}
+                    />
+                    {errors.neighborhood && <span className="profile__field-error">{errors.neighborhood}</span>}
+                  </>
+                ) : (
+                  <p>{user?.neighborhood || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field profile__field--full">
+                <label>{t('clients.modal.street')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      name="street"
+                      value={formData.street}
+                      onChange={handleChange}
+                      className={`input${errors.street ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.streetPlaceholder')}
+                      maxLength={80}
+                    />
+                    {errors.street && <span className="profile__field-error">{errors.street}</span>}
+                  </>
+                ) : (
+                  <p>{user?.street || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label>{t('clients.modal.exteriorNumber')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      name="exteriorNumber"
+                      value={formData.exteriorNumber}
+                      onChange={handleChange}
+                      className={`input${errors.exteriorNumber ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.exteriorNumberPlaceholder')}
+                      maxLength={10}
+                    />
+                    {errors.exteriorNumber && <span className="profile__field-error">{errors.exteriorNumber}</span>}
+                  </>
+                ) : (
+                  <p>{user?.exteriorNumber || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label>{t('clients.modal.interiorNumber')}</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="interiorNumber"
+                    value={formData.interiorNumber}
+                    onChange={handleChange}
+                    className="input"
+                    placeholder={t('clients.modal.interiorNumberPlaceholder')}
+                    maxLength={20}
+                  />
+                ) : (
+                  <p>{user?.interiorNumber || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label>{t('clients.modal.postal')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      name="postalCode"
+                      value={formData.postalCode}
+                      onChange={handleChange}
+                      className={`input${errors.postalCode ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.postalPlaceholder')}
+                      maxLength={5}
+                    />
+                    {errors.postalCode && <span className="profile__field-error">{errors.postalCode}</span>}
+                  </>
+                ) : (
+                  <p>{user?.postalCode || '—'}</p>
+                )}
               </div>
             </div>
           </div>

@@ -4,9 +4,8 @@ import {
   PiWhatsappLogoBold,
   PiCopyBold,
   PiCheckBold,
-  PiCheckCircleBold,
   PiTrashBold,
-  PiDownloadSimpleBold,
+  PiFileArrowDownBold,
 } from 'react-icons/pi';
 import type { Order } from '../../types/Order';
 
@@ -70,19 +69,19 @@ const OrderTopBar = ({
           <PiWhatsappLogoBold size={20} />
         </button>
         <button
-          onClick={onCopy}
-          className={`order-detail__icon-btn ${copiedId ? 'order-detail__icon-btn--success' : ''}`}
-          title={copiedId ? t('orders.detail.copied') : t('orders.detail.copy')}
-        >
-          {copiedId ? <PiCheckBold size={20} /> : <PiCopyBold size={20} />}
-        </button>
-        <button
           onClick={onDownload}
           className="order-detail__icon-btn"
           title={t('orders.detail.download')}
           disabled={downloading}
         >
-          <PiDownloadSimpleBold size={20} />
+          <PiFileArrowDownBold size={20} />
+        </button>
+        <button
+          onClick={onCopy}
+          className={`order-detail__icon-btn ${copiedId ? 'order-detail__icon-btn--success' : ''}`}
+          title={copiedId ? t('orders.detail.copied') : t('orders.detail.copy')}
+        >
+          {copiedId ? <PiCheckBold size={20} /> : <PiCopyBold size={20} />}
         </button>
         <span className="order-detail__top-divider" />
         <button
@@ -111,6 +110,7 @@ const OrderTopBar = ({
                 <input
                   type="number"
                   min="0"
+                  max="999999"
                   step="0.01"
                   placeholder={t('orders.detail.payInputPlaceholder')}
                   value={paymentInput}
@@ -133,8 +133,8 @@ const OrderTopBar = ({
               disabled={!canMarkDelivered || submitting}
             >
               {order.status === 'delivered'
-                ? <><PiCheckBold size={16} />{t('orders.status.delivered')}</>
-                : <><PiCheckCircleBold size={16} />{t('orders.detail.deliver')}</>
+                ? t('orders.status.delivered')
+                : t('orders.detail.deliver')
               }
             </button>
             {paymentError && (

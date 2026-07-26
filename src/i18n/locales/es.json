@@ -380,6 +380,7 @@
       "paymentTotalExceeded": "El total de abonos no puede superar {{total}}",
       "paymentAlreadyPaid": "Este pedido ya está completamente pagado",
       "paymentExceedsRemaining": "El monto excede el saldo restante ({{remaining}})",
+      "paymentExceedsMax": "El monto no puede superar {{max}}",
       "statusChanged": "Estado cambiado a \"{{status}}\"",
       "statusChangeError": "Error al cambiar el estado",
       "productUnavailable": "Producto no disponible en el catálogo",

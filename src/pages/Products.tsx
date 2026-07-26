@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 type SortOption = 'name_asc' | 'name_desc' | 'price_asc' | 'price_desc' | 'registration_desc' | 'registration_asc';
 import { useLocation } from 'react-router-dom';
-import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiPlusBold, PiDownloadSimpleBold } from 'react-icons/pi';
+import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiStackPlusBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import { useProducts } from '../hooks/useProducts';
 import { useLabels } from '../hooks/useLabels';
 import { useToast } from '../hooks/useToast';
@@ -145,7 +145,7 @@ const Products = () => {
               onClick={() => setIsModalOpen(true)}
               className="btn btn--primary"
             >
-              <PiPlusBold size={18} />
+              <PiStackPlusBold size={18} />
               {t('products.newProduct')}
             </button>
           </div>

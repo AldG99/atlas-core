@@ -398,8 +398,13 @@ const ProductDetail = () => {
                 </div>
 
                 {!isEditing && !!product.costPrice && (
-                  <div className="product-detail__margin">
-                    {t('products.detailModal.margin')}: {(((product.price - product.costPrice) / product.price) * 100).toFixed(1)}%
+                  <div className="product-detail__cost-info">
+                    <span className="product-detail__cost-price">
+                      {t('products.detailModal.costPrice')}: {format(product.costPrice)}
+                    </span>
+                    <span className="product-detail__margin">
+                      {t('products.detailModal.margin')}: {(((product.price - product.costPrice) / product.price) * 100).toFixed(1)}%
+                    </span>
                   </div>
                 )}
 
