@@ -1,6 +1,9 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
+// Altura compacta +10%, compartida entre el header, las filas y la barra de paginación
+$table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
+
 .products-table-wrapper {
   display: flex;
   flex-direction: column;
@@ -56,7 +59,7 @@
     border-bottom: 1px solid $color-gray-200;
 
     th {
-      height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
+      height: $table-row-height;
       padding: $spacing-xs $spacing-md;
       text-align: left;
       font-size: $font-size-sm;
@@ -92,7 +95,7 @@
   }
 
   &__row {
-    height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1); // misma altura compacta que el resto de las tablas
+    height: $table-row-height; // misma altura compacta que el resto de las tablas
     cursor: pointer;
 
     &:hover {
@@ -203,10 +206,10 @@
     align-items: center;
     justify-content: center;
     padding: $spacing-xs $spacing-md;
-    min-height: calc((#{$font-size-sm} * 1.5 + 2 * #{$spacing-xs}) * 1.1);
+    height: $table-row-height;
     border-top: 1px solid $color-gray-200;
     flex-shrink: 0;
-    background-color: $color-gray-50;
+    background-color: $color-gray-100;
   }
 
   &__page-info {

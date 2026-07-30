@@ -2,11 +2,36 @@ import { useTranslation } from 'react-i18next';
 import type { StatusBreakdownItem } from '../../types/Report';
 import { ORDER_STATUS_COLORS } from '../../constants/orderStatus';
 import { useCurrency } from '../../hooks/useCurrency';
+import { useAnimatedNumber } from '../../hooks/useAnimatedNumber';
 import './StatusBreakdown.scss';
 
 interface StatusBreakdownProps {
   breakdown: StatusBreakdownItem[];
 }
+
+const StatusItem = ({ item, format }: { item: StatusBreakdownItem; format: (value: number) => string }) => {
+  const { t } = useTranslation();
+  const animatedCount = useAnimatedNumber(item.count);
+  const animatedPercentage = useAnimatedNumber(item.percentage);
+  const animatedTotal = useAnimatedNumber(item.total);
+
+  return (
+    <li className="status-breakdown__item">
+      <div className="status-breakdown__item-header">
+        <span
+          className="status-breakdown__dot"
+          style={{ backgroundColor: ORDER_STATUS_COLORS[item.status] }}
+        />
+        <span className="status-breakdown__name">{t(`orders.status.${item.status}`)}</span>
+      </div>
+      <div className="status-breakdown__item-data">
+        <span className="status-breakdown__count">{Math.round(animatedCount)}</span>
+        <span className="status-breakdown__percent">({animatedPercentage.toFixed(0)}%)</span>
+        <span className="status-breakdown__total">{format(animatedTotal)}</span>
+      </div>
+    </li>
+  );
+};
 
 const RADIUS = 34;
 const STROKE_WIDTH = 11;
@@ -85,20 +110,7 @@ const StatusBreakdown = ({ breakdown }: StatusBreakdownProps) => {
 
           <ul className="status-breakdown__list">
             {breakdown.map((item) => (
-              <li key={item.status} className="status-breakdown__item">
-                <div className="status-breakdown__item-header">
-                  <span
-                    className="status-breakdown__dot"
-                    style={{ backgroundColor: ORDER_STATUS_COLORS[item.status] }}
-                  />
-                  <span className="status-breakdown__name">{t(`orders.status.${item.status}`)}</span>
-                </div>
-                <div className="status-breakdown__item-data">
-                  <span className="status-breakdown__count">{item.count}</span>
-                  <span className="status-breakdown__percent">({item.percentage.toFixed(0)}%)</span>
-                  <span className="status-breakdown__total">{format(item.total)}</span>
-                </div>
-              </li>
+              <StatusItem key={item.status} item={item} format={format} />
             ))}
           </ul>
         </>
