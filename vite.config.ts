@@ -8,6 +8,25 @@ export default defineConfig({
     globals: true,
     include: ['src/__tests__/**/*.test.ts', 'src/__tests__/**/*.test.tsx'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Separa los vendors pesados del código de la app: se cargan igual
+        // en el arranque (Auth/Firestore se necesitan antes de rutear), pero
+        // quedan en chunks propios que el navegador cachea entre despliegues
+        // donde solo cambia el código de la app, no las dependencias.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+          if (id.includes('firebase') || id.includes('@firebase')) return 'vendor-firebase';
+          if (id.includes('react-router') || id.includes('/react-dom/') || id.includes('/react/')) return 'vendor-react';
+          if (id.includes('i18next')) return 'vendor-i18n';
+          if (id.includes('@dicebear')) return 'vendor-dicebear';
+          if (id.includes('react-icons')) return 'vendor-icons';
+          return 'vendor';
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({

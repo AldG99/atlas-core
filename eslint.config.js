@@ -25,6 +25,11 @@ export default defineConfig([
         varsIgnorePattern: '^_',
         caughtErrorsIgnorePattern: '^_',
       }],
+      // Regla de React Compiler (no adoptado en este proyecto, ver README).
+      // Marca como error el patrón fetch-on-mount vía useCallback usado en
+      // todo el codebase (contexts, hooks y páginas de detalle); se deja como
+      // advisory hasta que se evalúe adoptar el Compiler.
+      'react-hooks/set-state-in-effect': 'warn',
     },
   },
 ])

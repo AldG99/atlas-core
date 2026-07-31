@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold, PiDownloadSimpleBold, PiPlusBold } from 'react-icons/pi';
+import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold, PiDownloadSimpleBold, PiPlusBold, PiWalletBold, PiWarningBold } from 'react-icons/pi';
 import { useOrders } from '../hooks/useOrders';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useClients } from '../hooks/useClients';
 import { useCurrency } from '../hooks/useCurrency';
 import { useDashboardFilters, type StatusFilter } from '../hooks/useDashboardFilters';
+import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { getCountryCode } from '../data/countryCodes';
 import type { OrderStatus } from '../types/Order';
 import { ORDER_STATUS_COLORS } from '../constants/orderStatus';
@@ -97,6 +98,11 @@ const Dashboard = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [filterStatus, handleFilterChange]);
 
+  const animatedOrderCount = useAnimatedNumber(todaySummary.orderCount);
+  const animatedTotalSales = useAnimatedNumber(todaySummary.totalSales);
+  const animatedDeliveredSales = useAnimatedNumber(todaySummary.deliveredSales);
+  const animatedProfit = useAnimatedNumber(todaySummary.totalProfit);
+
   const [uploadingDrive, setUploadingDrive] = useState(false);
 
   const handleGoogleDrive = async () => {
@@ -175,7 +181,7 @@ const Dashboard = () => {
               </div>
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.ordersToday')}</span>
-                <span className="dashboard__summary-value">{todaySummary.orderCount}</span>
+                <span className="dashboard__summary-value">{Math.round(animatedOrderCount)}</span>
               </div>
             </div>
             <div className="dashboard__summary-card">
@@ -185,7 +191,7 @@ const Dashboard = () => {
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.salesToday')}</span>
                 <span className="dashboard__summary-value">
-                  {format(todaySummary.totalSales)}
+                  {format(animatedTotalSales)}
                 </span>
               </div>
             </div>
@@ -196,7 +202,23 @@ const Dashboard = () => {
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.delivered')}</span>
                 <span className="dashboard__summary-value">
-                  {format(todaySummary.deliveredSales)}
+                  {format(animatedDeliveredSales)}
+                </span>
+              </div>
+            </div>
+            <div className="dashboard__summary-card">
+              <div className="dashboard__summary-icon dashboard__summary-icon--success">
+                <PiWalletBold size={20} />
+              </div>
+              <div className="dashboard__summary-content">
+                <span className="dashboard__summary-label">{t('dashboard.profitToday')}</span>
+                <span className="dashboard__summary-value">
+                  {format(animatedProfit)}
+                  {todaySummary.hasIncompleteCost && (
+                    <span className="dashboard__summary-warning" title={t('reports.kpi.profitIncompleteHint')}>
+                      <PiWarningBold size={12} />
+                    </span>
+                  )}
                 </span>
               </div>
             </div>

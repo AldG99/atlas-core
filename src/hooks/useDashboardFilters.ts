@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Order, OrderStatus } from '../types/Order';
+import { calculateKPIs } from '../utils/reportCalculations';
 
 // Nota: los valores de SortOption son también las llaves de i18next en
 // dashboard.sortOptions.* (en los 4 locales) — se mantienen en español
@@ -61,11 +62,14 @@ export const useDashboardFilters = ({
     const ordersToday = allOrders.filter((o) => new Date(o.createdAt) >= startOfDay);
     const totalSales = ordersToday.reduce((sum, o) => sum + o.total, 0);
     const deliveredOrders = ordersToday.filter((o) => o.status === 'delivered');
+    const { totalProfit, hasIncompleteCost } = calculateKPIs(ordersToday);
     return {
       orderCount: ordersToday.length,
       totalSales,
       deliveredCount: deliveredOrders.length,
       deliveredSales: deliveredOrders.reduce((sum, o) => sum + o.total, 0),
+      totalProfit,
+      hasIncompleteCost,
     };
   }, [allOrders]);
 

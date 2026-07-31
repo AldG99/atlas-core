@@ -224,7 +224,7 @@ const Login = () => {
           </div>
         </div>
 
-        <button type="submit" className="btn btn--primary btn--full" disabled={loading || (lockedUntil !== null && Date.now() < lockedUntil.getTime())}>
+        <button type="submit" className="btn btn--primary btn--full" disabled={loading || lockCountdown > 0}>
           {loading ? t('auth.login.submitting') : t('auth.login.submit')}
         </button>
 

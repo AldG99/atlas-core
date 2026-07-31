@@ -65,8 +65,12 @@
     flex-shrink: 0;
 
     @include sm {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: $spacing-md;
+    }
+
+    @include lg {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
@@ -127,6 +131,9 @@
   }
 
   &__summary-value {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     font-size: $font-size-base;
     font-weight: 600;
     color: $color-gray-900;
@@ -136,6 +143,13 @@
     @include sm {
       font-size: $font-size-lg;
     }
+  }
+
+  &__summary-warning {
+    display: inline-flex;
+    color: $color-warning;
+    flex-shrink: 0;
+    cursor: help;
   }
 
   &__controls {
