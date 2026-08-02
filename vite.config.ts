@@ -18,7 +18,17 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes('node_modules')) return;
           if (id.includes('firebase') || id.includes('@firebase')) return 'vendor-firebase';
-          if (id.includes('react-router') || id.includes('/react-dom/') || id.includes('/react/')) return 'vendor-react';
+          // Todo el ecosistema de React debe ir junto: separarlo (ej. scheduler
+          // o use-sync-external-store cayendo en el chunk genérico) rompe el
+          // orden de inicialización entre chunks y causa "x is undefined" en runtime.
+          if (
+            id.includes('react-router') ||
+            id.includes('/react-dom/') ||
+            id.includes('/react/') ||
+            id.includes('/scheduler/') ||
+            id.includes('/react-is/') ||
+            id.includes('/use-sync-external-store/')
+          ) return 'vendor-react';
           if (id.includes('i18next')) return 'vendor-i18n';
           if (id.includes('@dicebear')) return 'vendor-dicebear';
           if (id.includes('react-icons')) return 'vendor-icons';
