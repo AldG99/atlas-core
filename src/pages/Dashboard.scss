@@ -46,12 +46,21 @@
       }
     }
 
+    .btn--secondary {
+      border: 1px solid color.adjust($color-gray-200, $lightness: -12%);
+
+      &:hover:not(:disabled) {
+        background-color: color.adjust($color-gray-200, $lightness: -5%);
+      }
+    }
+
     .dashboard__new-order-btn {
       background-color: $color-chart;
       color: $color-black;
+      border: 1px solid color.adjust($color-chart, $lightness: -3%);
 
       &:hover:not(:disabled) {
-        background-color: color.adjust($color-chart, $lightness: -8%);
+        background-color: color.adjust($color-chart, $lightness: -5%);
         color: $color-black;
       }
     }
@@ -114,6 +123,12 @@
       background-color: rgba($color-success, 0.1);
       color: $color-success;
       border-color: rgba($color-success, 0.15);
+    }
+
+    &--chart {
+      background-color: rgba($color-chart, 0.15);
+      color: color.adjust($color-chart, $lightness: -15%);
+      border-color: rgba($color-chart, 0.25);
     }
   }
 

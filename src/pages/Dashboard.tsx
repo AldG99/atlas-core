@@ -207,7 +207,7 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="dashboard__summary-card">
-              <div className="dashboard__summary-icon dashboard__summary-icon--success">
+              <div className="dashboard__summary-icon dashboard__summary-icon--chart">
                 <PiWalletBold size={20} />
               </div>
               <div className="dashboard__summary-content">

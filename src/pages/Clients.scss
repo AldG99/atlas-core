@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
@@ -50,6 +51,22 @@
 
     .btn {
       height: 36px;
+    }
+
+    .btn--secondary {
+      border: 1px solid color.adjust($color-gray-200, $lightness: -12%);
+
+      &:hover:not(:disabled) {
+        background-color: color.adjust($color-gray-200, $lightness: -5%);
+      }
+    }
+
+    .btn--primary {
+      border: 1px solid color.adjust($color-primary, $lightness: -12%);
+
+      &:hover:not(:disabled) {
+        background-color: color.adjust($color-primary, $lightness: -5%);
+      }
     }
   }
 

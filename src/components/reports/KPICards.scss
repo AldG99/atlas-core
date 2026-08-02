@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
@@ -143,8 +144,8 @@
   }
 
   &--profit .kpi-card__icon {
-    background-color: rgba($color-success, 0.1);
-    color: $color-success;
-    border-color: rgba($color-success, 0.15);
+    background-color: rgba($color-chart, 0.15);
+    color: color.adjust($color-chart, $lightness: -15%);
+    border-color: rgba($color-chart, 0.25);
   }
 }

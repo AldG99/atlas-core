@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
@@ -41,6 +42,14 @@
 
       @include sm {
         width: auto;
+      }
+    }
+
+    .btn--secondary {
+      border: 1px solid color.adjust($color-gray-200, $lightness: -12%);
+
+      &:hover:not(:disabled) {
+        background-color: color.adjust($color-gray-200, $lightness: -5%);
       }
     }
   }
