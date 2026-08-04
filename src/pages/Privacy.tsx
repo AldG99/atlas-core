@@ -877,11 +877,232 @@ function ContentFR() {
   );
 }
 
+function ContentIT() {
+  return (
+    <>
+      <h1 className="legal-page__title">Informativa sulla Privacy</h1>
+      <p className="legal-page__date">Ultimo aggiornamento: 2 maggio 2026</p>
+
+      <section className="legal-page__section">
+        <h2>1. Titolare del Trattamento</h2>
+        <p>
+          <strong>Al García</strong>, gestore di Skytla, è responsabile del trattamento
+          dei dati personali che ci fornisci. Per qualsiasi richiesta relativa ai tuoi
+          dati, contattaci all'indirizzo{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+        </p>
+        <p>
+          La presente informativa è conforme alle leggi sulla protezione dei dati
+          applicabili a livello internazionale, tra cui:
+        </p>
+        <ul>
+          <li><strong>Messico:</strong> Legge Federale sulla Protezione dei Dati Personali detenuti dai Privati (LFPDPPP).</li>
+          <li><strong>Unione Europea / SEE:</strong> Regolamento Generale sulla Protezione dei Dati (RGPD/GDPR).</li>
+          <li><strong>California, USA:</strong> California Consumer Privacy Act (CCPA).</li>
+          <li><strong>Brasile:</strong> Lei Geral de Proteção de Dados (LGPD).</li>
+        </ul>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>2. Dati Personali Raccolti</h2>
+        <p>Quando ti registri e utilizzi il Servizio, potremmo raccogliere i seguenti dati:</p>
+        <ul>
+          <li>Nome e cognome</li>
+          <li>Indirizzo e-mail</li>
+          <li>Numero di telefono</li>
+          <li>Data di nascita (per verificare che tu abbia almeno 18 anni)</li>
+          <li>Nome dell'attività commerciale</li>
+          <li>Dati di clienti, prodotti e ordini che inserisci nella piattaforma</li>
+        </ul>
+        <p>Non raccogliamo dati sensibili come informazioni finanziarie, sanitarie o biometriche.</p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>3. Base Giuridica del Trattamento</h2>
+        <p>Trattiamo i tuoi dati sulla base delle seguenti basi giuridiche, a seconda della tua regione:</p>
+        <ul>
+          <li><strong>Consenso:</strong> prestato al momento dell'accettazione della presente informativa in fase di registrazione (si applica a livello globale).</li>
+          <li><strong>Esecuzione di un contratto:</strong> necessario per fornire il Servizio (RGPD Art. 6.1.b / LGPD Art. 7.V).</li>
+          <li><strong>Legittimo interesse:</strong> miglioramento del Servizio e della sicurezza della piattaforma (RGPD Art. 6.1.f).</li>
+          <li><strong>Obbligo legale:</strong> quando la legge ci richiede di conservare o comunicare dati.</li>
+        </ul>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>4. Finalità del Trattamento</h2>
+        <p>I tuoi dati personali sono utilizzati per:</p>
+        <ul>
+          <li>Creare e gestire il tuo account Skytla.</li>
+          <li>Verificare che tu soddisfi il requisito di età minima (18 anni).</li>
+          <li>Fornire accesso al Servizio e alle sue funzionalità.</li>
+          <li>Elaborare i pagamenti dell'abbonamento tramite Stripe.</li>
+          <li>Inviarti notifiche relative al Servizio.</li>
+          <li>Gestire le richieste di assistenza.</li>
+          <li>Migliorare la piattaforma tramite l'analisi dell'utilizzo (senza identificare i singoli utenti).</li>
+        </ul>
+        <p>
+          Non utilizziamo i tuoi dati per finalità pubblicitarie, né li vendiamo a terzi
+          in alcuna circostanza.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>5. Trasferimento e Conservazione dei Dati</h2>
+        <p>
+          I tuoi dati sono trattati dai seguenti fornitori di fiducia, tutti conformi a
+          standard di sicurezza internazionali:
+        </p>
+        <ul>
+          <li>
+            <strong>Google Firebase (Google LLC)</strong> — Archiviazione principale,
+            autenticazione e database. Certificato ISO 27001 e SOC 2. Conforme al RGPD
+            tramite Clausole Contrattuali Standard (SCC).
+          </li>
+          <li>
+            <strong>Stripe, Inc.</strong> — Elaborazione dei pagamenti. Quando sottoscrivi
+            un piano a pagamento, Stripe elabora il tuo nome, indirizzo e-mail e cronologia
+            di fatturazione. Stripe è certificato PCI-DSS Livello 1. Skytla non conserva i
+            dati della carta nei propri sistemi.
+          </li>
+          <li>
+            <strong>Google Cloud Vision (Google LLC)</strong> — Moderazione delle immagini.
+            Le foto che carichi sulla piattaforma (clienti, prodotti o profilo) vengono
+            analizzate automaticamente per rilevare contenuti inappropriati prima di essere
+            archiviate. Le immagini sono elaborate temporaneamente; Google Cloud Vision non
+            le conserva.
+          </li>
+          <li>
+            <strong>Google Drive (Google LLC)</strong> — Backup opzionali. Se attivi la
+            funzione di backup dalle Impostazioni, i tuoi dati esportati vengono archiviati
+            nel tuo account Google Drive personale. La gestione di tali dati è soggetta
+            all'Informativa sulla Privacy di Google.
+          </li>
+        </ul>
+        <p>
+          Utilizzando il Servizio, riconosci che i tuoi dati potrebbero essere trattati su
+          server situati al di fuori del tuo paese di residenza. In tutti i casi, i fornitori
+          sopra indicati applicano le garanzie per i trasferimenti internazionali richieste
+          dalla legge applicabile, incluse le SCC per gli utenti dell'Unione Europea.
+        </p>
+        <p>
+          Non trasferiamo i tuoi dati ad altri terzi, salvo quanto richiesto dalla legge o
+          con il tuo consenso esplicito.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>6. I Tuoi Diritti</h2>
+        <p>A seconda della tua regione, hai i seguenti diritti sui tuoi dati:</p>
+
+        <p><strong>Tutti gli utenti (globale):</strong></p>
+        <ul>
+          <li>Accedere ai tuoi dati personali.</li>
+          <li>Rettificare dati inesatti o incompleti.</li>
+          <li>Richiedere la cancellazione dei tuoi dati.</li>
+          <li>Opporti al trattamento dei tuoi dati.</li>
+        </ul>
+
+        <p><strong>Unione Europea / SEE (RGPD):</strong></p>
+        <ul>
+          <li>Portabilità dei dati (ricevere i tuoi dati in un formato strutturato).</li>
+          <li>Diritto alla cancellazione ("diritto all'oblio").</li>
+          <li>Limitare il trattamento in determinate circostanze.</li>
+          <li>Presentare un reclamo all'autorità di controllo del tuo paese.</li>
+          <li>Risposta entro un massimo di <strong>30 giorni di calendario</strong>.</li>
+        </ul>
+
+        <p><strong>Messico (LFPDPPP) — Diritti ARCO:</strong></p>
+        <ul>
+          <li>Accesso, Rettifica, Cancellazione e Opposizione al trattamento.</li>
+          <li>Risposta entro un massimo di <strong>20 giorni lavorativi</strong>.</li>
+        </ul>
+
+        <p><strong>California, USA (CCPA):</strong></p>
+        <ul>
+          <li>Conoscere quali dati raccogliamo e per quale finalità.</li>
+          <li>Richiedere la cancellazione dei tuoi dati.</li>
+          <li>Non discriminazione per l'esercizio dei tuoi diritti.</li>
+          <li>Diritto di opporsi alla vendita di dati personali — <strong>Skytla non vende dati.</strong></li>
+        </ul>
+
+        <p><strong>Brasile (LGPD):</strong></p>
+        <ul>
+          <li>Conferma del trattamento, accesso, correzione e portabilità.</li>
+          <li>Cancellazione dei dati trattati con consenso.</li>
+          <li>Revoca del consenso in qualsiasi momento.</li>
+        </ul>
+
+        <p>
+          Per esercitare uno qualsiasi di questi diritti, contattaci all'indirizzo{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> oppure tramite
+          la sezione Assistenza all'interno della piattaforma.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>7. Sicurezza</h2>
+        <p>
+          Implementiamo misure tecniche e organizzative per proteggere i tuoi dati da
+          accessi non autorizzati, perdita o alterazione, inclusa la cifratura in transito
+          (HTTPS) e a riposo. Tuttavia, nessun sistema è completamente infallibile.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>8. Conservazione dei Dati</h2>
+        <p>
+          Conserviamo i tuoi dati finché il tuo account è attivo o per il tempo necessario
+          a fornire il Servizio. Dopo aver richiesto la cancellazione dell'account, i tuoi
+          dati saranno eliminati entro un massimo di <strong>30 giorni</strong>, salvo
+          obbligo legale di conservazione.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>9. Cookie e Tecnologie Simili</h2>
+        <p>
+          Skytla utilizza token di sessione necessari per l'autenticazione e il
+          funzionamento del Servizio. Non utilizziamo cookie di tracciamento, cookie
+          pubblicitari né analisi comportamentale di terze parti.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>10. Minori</h2>
+        <p>
+          Il Servizio non è rivolto a persone di età inferiore ai 18 anni. Non raccogliamo
+          intenzionalmente dati di minori. Se rileviamo che un minore si è registrato,
+          elimineremo immediatamente il suo account e i relativi dati.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>11. Modifiche alla Presente Informativa</h2>
+        <p>
+          Potremmo aggiornare questa Informativa sulla Privacy in qualsiasi momento. Le
+          modifiche sostanziali saranno comunicate all'interno della piattaforma con
+          almeno 30 giorni di preavviso. Ti consigliamo di consultarla periodicamente.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>12. Contatti</h2>
+        <p>
+          Per qualsiasi domanda, richiesta relativa ai tuoi diritti o reclamo riguardante
+          i tuoi dati personali, contattaci all'indirizzo{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> oppure tramite
+          la sezione Assistenza all'interno della piattaforma.
+        </p>
+      </section>
+    </>
+  );
+}
+
 const Privacy = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const lang = getLegalLang(i18n.language);
-  const Content = lang === 'en' ? ContentEN : lang === 'pt' ? ContentPT : lang === 'fr' ? ContentFR : ContentES;
+  const Content = lang === 'en' ? ContentEN : lang === 'pt' ? ContentPT : lang === 'fr' ? ContentFR : lang === 'it' ? ContentIT : ContentES;
 
   return (
     <div className="legal-page">

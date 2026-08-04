@@ -796,11 +796,213 @@ function ContentFR() {
   );
 }
 
+function ContentIT() {
+  return (
+    <>
+      <h1 className="legal-page__title">Termini di Utilizzo</h1>
+      <p className="legal-page__date">Ultimo aggiornamento: 2 maggio 2026</p>
+
+      <section className="legal-page__section">
+        <h2>1. Responsabile del Servizio</h2>
+        <p>
+          Skytla è gestito da <strong>Al García</strong>, di seguito "il Responsabile".
+          Per qualsiasi domanda relativa ai presenti Termini, puoi contattarci all'indirizzo{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> oppure tramite
+          la sezione Assistenza all'interno della piattaforma.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>2. Accettazione dei termini</h2>
+        <p>
+          Registrandoti e utilizzando Skytla ("il Servizio"), accetti di essere vincolato
+          dai presenti Termini di Utilizzo. Se non sei d'accordo con uno qualsiasi di essi,
+          non devi utilizzare il Servizio. Questi termini si applicano agli utenti di
+          qualsiasi paese.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>3. Descrizione del Servizio</h2>
+        <p>
+          Skytla è una piattaforma di gestione di ordini, clienti e prodotti pensata per
+          piccole e medie imprese. Il Servizio si trova attualmente in{' '}
+          <strong>versione Beta</strong>, pertanto alcune funzionalità potrebbero essere
+          modificate, aggiornate o rimosse senza preavviso.
+        </p>
+        <p>
+          Il Servizio è fornito <strong>"così com'è"</strong> e{' '}
+          <strong>"secondo disponibilità"</strong>, senza garanzie di alcun tipo, espresse o
+          implicite, incluse a titolo esemplificativo le garanzie di commerciabilità,
+          idoneità per uno scopo particolare o assenza di interruzioni.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>4. Account utente</h2>
+        <p>
+          Sei responsabile del mantenimento della riservatezza della tua password e di
+          tutte le attività svolte tramite il tuo account. Devi notificarci immediatamente
+          qualsiasi uso non autorizzato.
+        </p>
+        <p>
+          Registrandoti, garantisci che le informazioni fornite sono veritiere, complete e
+          aggiornate. Devi avere almeno 18 anni per creare un account.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>5. Uso consentito</h2>
+        <p>Ti impegni a non utilizzare il Servizio per:</p>
+        <ul>
+          <li>Attività illegali o fraudolente.</li>
+          <li>Archiviare o condividere informazioni di terzi senza il loro consenso.</li>
+          <li>Tentare di accedere agli account di altri utenti.</li>
+          <li>Azioni che possano danneggiare, disabilitare o sovraccaricare la piattaforma.</li>
+          <li>Violare leggi locali, nazionali o internazionali applicabili.</li>
+        </ul>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>6. Manleva</h2>
+        <p>
+          Accetti di manlevare e tenere indenne il Responsabile, i suoi collaboratori e
+          fornitori da qualsiasi reclamo, danno, perdita o spesa (comprese le ragionevoli
+          spese legali) derivanti da: (a) il tuo utilizzo del Servizio in violazione dei
+          presenti Termini, (b) la tua inosservanza di qualsiasi legge applicabile, oppure
+          (c) qualsiasi contenuto da te introdotto nella piattaforma.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>7. Sospensione e cancellazione dell'account</h2>
+        <p>
+          Il Responsabile si riserva il diritto di sospendere o cancellare il tuo account
+          senza preavviso in caso di:
+        </p>
+        <ul>
+          <li>Violazione dei presenti Termini.</li>
+          <li>Uso fraudolento o attività illegale.</li>
+          <li>Comportamento che metta a rischio la piattaforma o altri utenti.</li>
+        </ul>
+        <p>
+          Puoi inoltre cancellare il tuo account in qualsiasi momento dalla sezione
+          Impostazioni della piattaforma. Dopo la cancellazione, i tuoi dati saranno
+          eliminati come stabilito nell'Informativa sulla Privacy.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>8. Pagamenti e politica di rimborso</h2>
+        <p>
+          Skytla offre piani a pagamento disponibili durante la <strong>versione Beta</strong>.
+          Sottoscrivendo un piano a pagamento, accetti le seguenti condizioni:
+        </p>
+        <ul>
+          <li>
+            <strong>Nessun rimborso.</strong> Tutti i pagamenti effettuati sono definitivi
+            e non rimborsabili, salvo quanto espressamente richiesto dalla legge applicabile
+            nel tuo paese.
+          </li>
+          <li>
+            Poiché il Servizio è in versione Beta, i piani, i prezzi e le funzionalità
+            incluse possono cambiare. Eventuali modifiche rilevanti saranno comunicate
+            all'interno della piattaforma con almeno{' '}
+            <strong>15 giorni di preavviso</strong>.
+          </li>
+          <li>
+            La cancellazione del tuo abbonamento avrà effetto al termine del periodo di
+            fatturazione in corso. Non saranno effettuati addebiti aggiuntivi dopo la
+            cancellazione.
+          </li>
+          <li>
+            In caso di controversia relativa a un addebito, contattaci all'indirizzo{' '}
+            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> entro
+            30 giorni dall'addebito.
+          </li>
+          <li>
+            <strong>Utenti dell'Unione Europea — Diritto di recesso:</strong> Ai sensi
+            della Direttiva 2011/83/UE sui diritti dei consumatori, sottoscrivendo un
+            piano a pagamento e richiedendo che il Servizio abbia inizio immediatamente,
+            riconosci e accetti espressamente di rinunciare al tuo diritto di recesso di
+            14 giorni. Questa rinuncia è necessaria per accedere al Servizio immediatamente
+            dopo il completamento del pagamento.
+          </li>
+        </ul>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>9. Proprietà intellettuale</h2>
+        <p>
+          Tutti i diritti sul Servizio, inclusi design, codice e contenuti, sono di
+          proprietà esclusiva del Responsabile. Non viene concessa alcuna licenza oltre
+          all'accesso personale al Servizio.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>10. Disponibilità del Servizio</h2>
+        <p>
+          Poiché il Servizio è in versione Beta, non garantiamo disponibilità continua.
+          Possiamo sospendere o modificare il Servizio in qualsiasi momento per
+          manutenzione, miglioramenti o motivi tecnici.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>11. Limitazione di responsabilità</h2>
+        <p>
+          Nella misura massima consentita dalla legge applicabile, il Responsabile non
+          sarà responsabile per perdita di dati, interruzioni del servizio, mancato
+          guadagno o danni diretti, indiretti, incidentali o consequenziali derivanti
+          dall'uso o dall'impossibilità di utilizzare il Servizio.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>12. Modifiche</h2>
+        <p>
+          Ci riserviamo il diritto di modificare i presenti Termini in qualsiasi momento.
+          Le modifiche sostanziali saranno comunicate all'interno della piattaforma con
+          almeno 30 giorni di preavviso. L'uso continuato del Servizio dopo le modifiche
+          implica la loro accettazione.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>13. Legge applicabile e risoluzione delle controversie</h2>
+        <p>I presenti Termini sono disciplinati dalle leggi applicabili in base alla residenza dell'utente:</p>
+        <ul>
+          <li><strong>Messico:</strong> Leggi degli Stati Uniti Messicani e giurisdizione dei tribunali messicani.</li>
+          <li><strong>Unione Europea:</strong> Legislazione dello Stato membro corrispondente e normativa UE applicabile, incluso il RGPD.</li>
+          <li><strong>Stati Uniti:</strong> Leggi dello stato di residenza dell'utente, incluso il CCPA per i residenti della California.</li>
+          <li><strong>Brasile:</strong> Lei Geral de Proteção de Dados (LGPD) e legislazione brasiliana applicabile.</li>
+          <li><strong>Altri paesi:</strong> Leggi locali applicabili in materia di commercio elettronico e protezione dei dati.</li>
+        </ul>
+        <p>
+          In caso di controversia, le parti cercheranno di risolverla amichevolmente.
+          Qualora ciò non fosse possibile, la controversia sarà sottoposta ad arbitrato
+          o ai tribunali competenti secondo la giurisdizione applicabile.
+        </p>
+      </section>
+
+      <section className="legal-page__section">
+        <h2>14. Contatti</h2>
+        <p>
+          Per qualsiasi dubbio sui presenti Termini, puoi contattarci all'indirizzo{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> oppure tramite
+          la sezione Assistenza all'interno della piattaforma.
+        </p>
+      </section>
+    </>
+  );
+}
+
 const Terms = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const lang = getLegalLang(i18n.language);
-  const Content = lang === 'en' ? ContentEN : lang === 'pt' ? ContentPT : lang === 'fr' ? ContentFR : ContentES;
+  const Content = lang === 'en' ? ContentEN : lang === 'pt' ? ContentPT : lang === 'fr' ? ContentFR : lang === 'it' ? ContentIT : ContentES;
 
   return (
     <div className="legal-page">

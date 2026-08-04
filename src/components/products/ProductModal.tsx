@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PiXBold, PiImageBold, PiPlusBold, PiTrashBold, PiWarehouseBold } from 'react-icons/pi';
 import type { ProductFormData, Label } from '../../types/Product';
 import { useLabels } from '../../hooks/useLabels';
+import { useCurrency } from '../../hooks/useCurrency';
 import { LABEL_ICONS, LABEL_COLORS } from '../../constants/labelIcons';
 import './ProductModal.scss';
 
@@ -15,6 +16,7 @@ interface ProductModalProps {
 const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
   const { t } = useTranslation();
   const { labels: allLabels, addLabel, removeLabel } = useLabels();
+  const { format } = useCurrency();
   const previewImage = product?.image ?? null;
 
   const [formData, setFormData] = useState<ProductFormData>(
@@ -89,6 +91,9 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
   const availableLabels = allLabels.filter(
     l => !(formData.labels || []).includes(l.id)
   );
+
+  const profit = formData.price - formData.costPrice;
+  const profitMargin = formData.price > 0 ? (profit / formData.price) * 100 : 0;
 
   const MAX_LABELS = 4;
   const limitReached = (formData.labels || []).length >= MAX_LABELS;
@@ -190,25 +195,6 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="price">{t('products.modal.price')}</label>
-                <div className="input-currency">
-                  <span className="input-currency__symbol">$</span>
-                  <input
-                    type="number"
-                    id="price"
-                    name="price"
-                    value={formData.price || ''}
-                    onChange={handleChange}
-                    className={`input ${errors.price ? 'input--error' : ''}`}
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-                {errors.price && <span className="form-error">{errors.price}</span>}
-              </div>
-
-              <div className="form-group">
                 <label htmlFor="costPrice">{t('products.modal.costPrice')}</label>
                 <div className="input-currency">
                   <span className="input-currency__symbol">$</span>
@@ -227,6 +213,37 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                 {errors.costPrice
                   ? <span className="form-error">{errors.costPrice}</span>
                   : <span className="form-hint">{t('products.modal.costPriceHint')}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="price">{t('products.modal.price')}</label>
+                <div className="input-currency">
+                  <span className="input-currency__symbol">$</span>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    value={formData.price || ''}
+                    onChange={handleChange}
+                    className={`input ${errors.price ? 'input--error' : ''}`}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                {errors.price && <span className="form-error">{errors.price}</span>}
+              </div>
+
+              <div className="form-group form-group--full">
+                <label>{t('products.modal.profit')}</label>
+                <div className={`product-profit-preview${profit < 0 ? ' product-profit-preview--negative' : ''}`}>
+                  {format(profit)}
+                  {formData.price > 0 && (
+                    <span className="product-profit-preview__margin">
+                      ({profitMargin.toFixed(1)}%)
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>

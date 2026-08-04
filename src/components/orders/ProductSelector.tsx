@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { PiPlusBold, PiMinusBold, PiMagnifyingGlassBold, PiXBold } from 'react-icons/pi';
+import { PiPlusBold, PiMinusBold, PiMagnifyingGlassBold, PiXBold, PiStackPlusBold } from 'react-icons/pi';
 import ProductDetailModal from '../products/ProductDetailModal';
 import ProductModal from '../products/ProductModal';
 import { useProducts } from '../../hooks/useProducts';
@@ -65,6 +65,13 @@ const ProductSelector = ({
     }
     return p.price;
   };
+
+  const getProfit = (p: Product, quantity: number): number | undefined =>
+    p.costPrice !== undefined ? (getEffectivePrice(p) - p.costPrice) * quantity : undefined;
+
+  const totalProfit = items.reduce((sum, item) => sum + (getProfit(item.product, item.quantity) ?? 0), 0);
+  const hasIncompleteCost = items.some((item) => item.product.costPrice === undefined);
+  const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
 
   const filteredProducts = products.filter(
@@ -274,7 +281,7 @@ const ProductSelector = ({
           title={t('orders.addProductTitle')}
           disabled={disabled}
         >
-          <PiPlusBold size={18} />
+          <PiStackPlusBold size={18} />
         </button>
       </div>
 
@@ -296,14 +303,15 @@ const ProductSelector = ({
           <div className="product-selector__table-head">
             <table className="product-selector__table">
               <colgroup>
-                <col style={{ width: '8%' }} />
-                <col style={{ width: '10%' }} />
-                <col style={{ width: '18%' }} />
-                <col style={{ width: '8%' }} />
-                <col style={{ width: '12%' }} />
-                <col style={{ width: '10%' }} />
-                <col style={{ width: '16%' }} />
-                <col style={{ width: '12%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '15%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '14%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '11%' }} />
                 <col style={{ width: '4%' }} />
               </colgroup>
               <thead>
@@ -316,6 +324,7 @@ const ProductSelector = ({
                   <th>{t('orders.stock')}</th>
                   <th className="product-selector__col--right">{t('orders.price')}</th>
                   <th>{t('orders.subtotal')}</th>
+                  <th className="product-selector__col--right">{t('orders.detail.profit')}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -325,14 +334,15 @@ const ProductSelector = ({
           <div className="product-selector__table-scroll" ref={tableScrollRef}>
             <table className="product-selector__table">
               <colgroup>
-                <col style={{ width: '8%' }} />
-                <col style={{ width: '10%' }} />
-                <col style={{ width: '18%' }} />
-                <col style={{ width: '8%' }} />
-                <col style={{ width: '12%' }} />
-                <col style={{ width: '10%' }} />
-                <col style={{ width: '16%' }} />
-                <col style={{ width: '12%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '15%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '14%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '11%' }} />
                 <col style={{ width: '4%' }} />
               </colgroup>
               <tbody>
@@ -438,6 +448,21 @@ const ProductSelector = ({
                     <td className="product-selector__table-subtotal">
                       {format(item.subtotal)}
                     </td>
+                    <td className="product-selector__col--right">
+                      {(() => {
+                        const profit = getProfit(item.product, item.quantity);
+                        return profit !== undefined ? (
+                          <span className="product-selector__table-profit">{format(profit)}</span>
+                        ) : (
+                          <span
+                            className="product-selector__table-profit product-selector__table-profit--unknown"
+                            title={t('orders.detail.profitUnknownHint')}
+                          >
+                            —
+                          </span>
+                        );
+                      })()}
+                    </td>
                     <td>
                       <button
                         type="button"
@@ -457,26 +482,40 @@ const ProductSelector = ({
           <div className="product-selector__table-foot">
             <table className="product-selector__table">
               <colgroup>
-                <col style={{ width: '8%' }} />
-                <col style={{ width: '10%' }} />
-                <col style={{ width: '18%' }} />
-                <col style={{ width: '8%' }} />
-                <col style={{ width: '12%' }} />
-                <col style={{ width: '10%' }} />
-                <col style={{ width: '16%' }} />
-                <col style={{ width: '12%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '15%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '14%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '11%' }} />
                 <col style={{ width: '4%' }} />
               </colgroup>
               <tfoot className="product-selector__tfoot">
                 <tr>
                   <td className="product-selector__total-label">{t('orders.total')}</td>
-                  <td></td>
+                  <td className="product-selector__total-quantity">{totalQuantity}</td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td className="product-selector__total-value">{format(total)}</td>
+                  <td className="product-selector__col--right">
+                    <span className="product-selector__table-profit product-selector__table-profit--total">
+                      {format(totalProfit)}
+                    </span>
+                    {hasIncompleteCost && (
+                      <span
+                        className="product-selector__table-profit-warning"
+                        title={t('orders.detail.profitUnknownHint')}
+                      >
+                        *
+                      </span>
+                    )}
+                  </td>
                   <td></td>
                 </tr>
               </tfoot>

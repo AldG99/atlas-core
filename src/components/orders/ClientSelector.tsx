@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { PiStarFill, PiPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
+import { PiStarFill, PiUserPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import { useClients } from '../../hooks/useClients';
 import { useToast } from '../../hooks/useToast';
 import { formatPhone } from '../../utils/formatters';
@@ -180,7 +180,7 @@ const ClientSelector = ({
           onClick={() => setShowModal(true)}
           title={t('orders.addClientTitle')}
         >
-          <PiPlusBold size={14} />
+          <PiUserPlusBold size={16} />
         </button>
       </div>
 

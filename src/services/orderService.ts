@@ -97,14 +97,29 @@ export const createOrder = async (data: OrderFormData, userId: string): Promise<
   };
 
   const newDocRef = doc(collection(db, COLLECTION_NAME));
-  const batch = writeBatch(db);
-  batch.set(newDocRef, stripUndefined(newOrder));
+  const stockedItems = data.items.filter(i => i.trackStock && i.productId);
 
-  data.items
-    .filter(i => i.trackStock && i.productId)
-    .forEach(i => batch.update(doc(db, 'products', i.productId!), { stock: increment(-i.quantity) }));
+  await runTransaction(db, async (transaction) => {
+    // Todas las lecturas antes que cualquier escritura (regla de las
+    // transacciones de Firestore) — se leen los productos con stock
+    // rastreado para validar existencia suficiente de forma atómica y
+    // evitar que dos pedidos concurrentes vendan de más el mismo producto.
+    const productRefs = stockedItems.map(i => doc(db, 'products', i.productId!));
+    const productSnaps = await Promise.all(productRefs.map(ref => transaction.get(ref)));
 
-  await batch.commit();
+    stockedItems.forEach((item, idx) => {
+      const currentStock = (productSnaps[idx].data()?.stock as number) ?? 0;
+      if (currentStock < item.quantity) {
+        throw new Error(i18n.t('errors.insufficientStock', { name: item.name }));
+      }
+    });
+
+    transaction.set(newDocRef, stripUndefined(newOrder));
+    stockedItems.forEach((item, idx) => {
+      const currentStock = (productSnaps[idx].data()?.stock as number) ?? 0;
+      transaction.update(productRefs[idx], { stock: currentStock - item.quantity });
+    });
+  });
 
   return {
     id: newDocRef.id,

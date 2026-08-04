@@ -288,6 +288,10 @@ $topbar-height: 52px;
     font-size: $font-size-sm;
     color: $color-success;
     font-weight: 500;
+
+    &--negative {
+      color: $color-danger;
+    }
   }
 
   &__price-edit-discount {

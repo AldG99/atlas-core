@@ -79,6 +79,12 @@ const ProductDetailModal = ({ product, labels, onClose }: ProductDetailModalProp
                   </span>
                 </div>
                 <div className="order-detail__modal-row">
+                  <span className="order-detail__modal-label">{t('products.detailModal.costPrice')}</span>
+                  <span className="order-detail__modal-value">
+                    {product.costPrice ? format(product.costPrice) : t('products.detailModal.noCostPrice')}
+                  </span>
+                </div>
+                <div className="order-detail__modal-row">
                   <span className="order-detail__modal-label">{t('products.detailModal.price')}</span>
                   {isDiscountActive(product) ? (
                     <span className="order-detail__modal-price-discount">
@@ -96,20 +102,21 @@ const ProductDetailModal = ({ product, labels, onClose }: ProductDetailModalProp
                     <span className="order-detail__modal-value">{format(product.price)}</span>
                   )}
                 </div>
-                <div className="order-detail__modal-row">
-                  <span className="order-detail__modal-label">{t('products.detailModal.costPrice')}</span>
-                  <span className="order-detail__modal-value">
-                    {product.costPrice ? format(product.costPrice) : t('products.detailModal.noCostPrice')}
-                  </span>
-                </div>
-                {!!product.costPrice && (
-                  <div className="order-detail__modal-row">
-                    <span className="order-detail__modal-label">{t('products.detailModal.margin')}</span>
-                    <span className="order-detail__modal-value">
-                      {(((product.price - product.costPrice) / product.price) * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                )}
+                {!!product.costPrice && (() => {
+                  const effectivePrice = isDiscountActive(product)
+                    ? getDiscountedPrice(product.price, product.discount!)
+                    : product.price;
+                  const profit = effectivePrice - product.costPrice;
+                  const margin = effectivePrice > 0 ? (profit / effectivePrice) * 100 : 0;
+                  return (
+                    <div className="order-detail__modal-row">
+                      <span className="order-detail__modal-label">{t('products.detailModal.profit')}</span>
+                      <span className={`order-detail__product-profit${profit < 0 ? ' order-detail__product-profit--negative' : ''}`}>
+                        {format(profit)} ({margin.toFixed(1)}%)
+                      </span>
+                    </div>
+                  );
+                })()}
                 {isDiscountActive(product) && product.discountEndDate && (
                   <div className="order-detail__modal-row">
                     <span className="order-detail__modal-label">{t('products.detailModal.discountValidUntil')}</span>

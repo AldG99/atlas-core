@@ -397,16 +397,23 @@ const ProductDetail = () => {
                   )}
                 </div>
 
-                {!isEditing && !!product.costPrice && (
-                  <div className="product-detail__cost-info">
-                    <span className="product-detail__cost-price">
-                      {t('products.detailModal.costPrice')}: {format(product.costPrice)}
-                    </span>
-                    <span className="product-detail__margin">
-                      {t('products.detailModal.margin')}: {(((product.price - product.costPrice) / product.price) * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                )}
+                {!isEditing && !!product.costPrice && (() => {
+                  const effectivePrice = isDiscountActive(product)
+                    ? getDiscountedPrice(product.price, product.discount!)
+                    : product.price;
+                  const profit = effectivePrice - product.costPrice;
+                  const margin = effectivePrice > 0 ? (profit / effectivePrice) * 100 : 0;
+                  return (
+                    <div className="product-detail__cost-info">
+                      <span className="product-detail__cost-price">
+                        {t('products.detailModal.costPrice')}: {format(product.costPrice)}
+                      </span>
+                      <span className={`product-detail__margin${profit < 0 ? ' product-detail__margin--negative' : ''}`}>
+                        {t('products.detailModal.profit')}: {format(profit)} ({margin.toFixed(1)}%)
+                      </span>
+                    </div>
+                  );
+                })()}
 
                 {/* Etiquetas */}
                 <div className="product-detail__header-labels">

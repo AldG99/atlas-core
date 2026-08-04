@@ -2,6 +2,25 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/components/modal';
 
+.product-profit-preview {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-xs;
+  font-size: $font-size-lg;
+  font-weight: 700;
+  color: $color-success;
+
+  &--negative {
+    color: $color-danger;
+  }
+
+  &__margin {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-gray-500;
+  }
+}
+
 .input-currency {
   position: relative;
   display: flex;

@@ -690,6 +690,10 @@ $topbar-height: 52px;
       font-weight: 400;
       cursor: help;
     }
+
+    &--negative {
+      color: $color-danger;
+    }
   }
 
   &__product-profit-warning {

@@ -1,7 +1,9 @@
 @use '../../styles/abstracts/variables' as *;
+@use '../../styles/components/modal';
 
 .lang-switcher {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 6px;
@@ -39,5 +41,9 @@
       color: $color-gray-700;
       cursor: default;
     }
+  }
+
+  &__modal {
+    max-width: 280px;
   }
 }
