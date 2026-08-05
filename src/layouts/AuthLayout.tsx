@@ -44,6 +44,11 @@ const AuthLayout = ({ children, showSubtitle = true, fullWidth = false }: AuthLa
                     Conçu pour <span className="auth-layout__image-tagline--accent">gérer</span> vos commandes.{' '}
                     Construit pour <span className="auth-layout__image-tagline--accent">développer</span> votre activité.
                   </>
+                ) : i18n.language?.startsWith('it') ? (
+                  <>
+                    Progettato per <span className="auth-layout__image-tagline--accent">gestire</span> i tuoi ordini.{' '}
+                    Costruito per <span className="auth-layout__image-tagline--accent">far crescere</span> la tua attività.
+                  </>
                 ) : (
                   <>
                     Diseñado para <span className="auth-layout__image-tagline--accent">gestionar</span> tus pedidos.{' '}

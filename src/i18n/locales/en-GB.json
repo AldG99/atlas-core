@@ -35,6 +35,7 @@
     "closeNotification": "Close notification",
     "noImage": "No image",
     "noResults": "No results",
+    "moreLanguages": "More languages...",
     "imageModeration": {
       "verifying": "Verifying image...",
       "rejected": "The image was rejected for containing inappropriate content.",
