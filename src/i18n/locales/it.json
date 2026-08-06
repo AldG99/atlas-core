@@ -629,6 +629,7 @@
       "description": "Descrizione",
       "noDescription": "Nessuna descrizione",
       "addedOn": "Prodotto aggiunto",
+      "lastEdited": "Ultima modifica",
       "noUnit": "---",
       "noStock": "Esaurito",
       "stockUnits": "{{count}} unità",
@@ -636,6 +637,7 @@
       "manageStock": "Gestisci stock",
       "inWarehouse": "In magazzino",
       "specifyUnit": "Specifica l'unità di misura",
+      "discount": "Sconto",
       "cancelDiscount": "Annulla sconto",
       "validUntil": "Fino al {{date}}",
       "deleteModal": {

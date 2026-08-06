@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   PiPackageBold,
   PiCalendarBold,
+  PiClockCounterClockwiseBold,
 } from 'react-icons/pi';
 import type { Product, ProductFormData } from '../types/Product';
 import { getProductById, updateProduct } from '../services/productService';
@@ -120,6 +121,14 @@ const ProductDetail = () => {
     }
   };
 
+  // Campos que cuentan como "edición del producto" para efectos de la fecha
+  // de última edición — el descuento (agregarlo, quitarlo o que expire) se
+  // excluye a propósito.
+  const NON_DISCOUNT_FIELDS: (keyof ProductFormData)[] = [
+    'sku', 'name', 'price', 'costPrice', 'description', 'image',
+    'labels', 'trackStock', 'stock', 'unit', 'unitQuantity',
+  ];
+
   const handleSave = async () => {
     if (!product || !editData) return;
     try {
@@ -143,7 +152,11 @@ const ProductDetail = () => {
         dataToSave.discountEndDate = '';
       }
 
-      await updateProduct(product.id, dataToSave, cancelledDiscount);
+      const hasOtherChanges = NON_DISCOUNT_FIELDS.some(
+        (field) => JSON.stringify(product[field] ?? null) !== JSON.stringify(dataToSave[field] ?? null)
+      );
+
+      await updateProduct(product.id, dataToSave, cancelledDiscount, hasOtherChanges);
 
       if (cancelledDiscount) {
         await fetchProduct();
@@ -151,6 +164,7 @@ const ProductDetail = () => {
         setProduct({
           ...product,
           ...dataToSave,
+          updatedAt: hasOtherChanges ? new Date() : product.updatedAt,
           discountEndDate: dataToSave.discountEndDate
             ? new Date(dataToSave.discountEndDate + 'T00:00:00')
             : undefined
@@ -239,271 +253,339 @@ const ProductDetail = () => {
 
               {/* Info Side */}
               <div className="product-detail__header-info">
-                <div className="product-detail__title-section">
-                  {isEditing ? (
-                    <>
-                      <input
-                        type="text"
-                        value={editData?.sku || ''}
-                        onChange={(e) => updateField('sku', e.target.value)}
-                        placeholder={t('products.detail.codePlaceholder')}
-                        className="product-detail__input product-detail__input--sku"
-                      />
-                      <input
-                        type="text"
-                        value={editData?.name || ''}
-                        onChange={(e) => updateField('name', e.target.value)}
-                        placeholder={t('products.detail.namePlaceholder')}
-                        className="product-detail__input product-detail__input--name"
-                      />
-                      <div className="product-detail__unit-edit">
-                        <label className="product-detail__stock-toggle">
-                          <input
-                            type="checkbox"
-                            checked={!!editData?.unit}
-                            onChange={(e) => {
-                              if (!editData) return;
-                              setEditData({ ...editData, unit: e.target.checked ? 'kg' : '' });
-                            }}
-                          />
-                          <span>{t('products.detail.specifyUnit')}</span>
-                          <input
-                            type="number"
-                            value={editData?.unitQuantity ?? 1}
-                            onChange={(e) => {
-                              if (!editData) return;
-                              setEditData({ ...editData, unitQuantity: Math.max(0, parseFloat(e.target.value) || 0) });
-                            }}
-                            className="product-detail__input product-detail__input--unit-quantity"
-                            min="0"
-                            step="0.1"
-                            disabled={!editData?.unit}
-                          />
-                          <select
-                            value={editData?.unit || 'kg'}
-                            onChange={(e) => {
-                              if (!editData) return;
-                              setEditData({ ...editData, unit: e.target.value });
-                            }}
-                            className="product-detail__input product-detail__input--unit"
-                            disabled={!editData?.unit}
-                          >
-                            <option value="kg">kg</option>
-                            <option value="g">g</option>
-                            <option value="L">L</option>
-                            <option value="ml">ml</option>
-                          </select>
-                        </label>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <span className="product-detail__sku">{product.sku}</span>
-                      <h1 className="product-detail__name">{product.name}</h1>
-                      <span className="product-detail__unit-display">
-                        {product.unit
-                          ? `${product.unitQuantity ?? ''} ${product.unit}`.trim()
-                          : '---'}
-                      </span>
-                    </>
-                  )}
-                </div>
+                <div className="product-detail__info-rows">
 
-                <div className="product-detail__price">
-                  {isEditing ? (
-                    <div className="product-detail__price-edit">
-                      <input
-                        type="number"
-                        value={editData?.price || 0}
-                        onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
-                        placeholder="Precio"
-                        className="product-detail__input product-detail__input--price"
-                        step="0.01"
-                        min="0"
-                      />
-                      <input
-                        type="number"
-                        value={editData?.costPrice || 0}
-                        onChange={(e) => updateField('costPrice', parseFloat(e.target.value) || 0)}
-                        placeholder={t('products.modal.costPrice')}
-                        className="product-detail__input product-detail__input--cost"
-                        step="0.01"
-                        min="0"
-                      />
-                      <div className="product-detail__price-edit-discount">
-                        <div className="product-detail__price-edit-row">
-                          <div className="product-detail__discount-input-wrapper">
+                  {/* Clave */}
+                  <div className="product-detail__row">
+                    <span className="product-detail__row-label">{t('products.detailModal.code')}</span>
+                    {isEditing ? (
+                      <div className="product-detail__row-value product-detail__row-value--form">
+                        <input
+                          type="text"
+                          value={editData?.sku || ''}
+                          onChange={(e) => updateField('sku', e.target.value)}
+                          placeholder={t('products.detail.codePlaceholder')}
+                          className="product-detail__input product-detail__input--sku"
+                        />
+                      </div>
+                    ) : (
+                      <span className="product-detail__row-value">
+                        <span className="product-detail__sku">{product.sku}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Nombre */}
+                  <div className="product-detail__row">
+                    <span className="product-detail__row-label">{t('products.detailModal.name')}</span>
+                    {isEditing ? (
+                      <div className="product-detail__row-value product-detail__row-value--form">
+                        <input
+                          type="text"
+                          value={editData?.name || ''}
+                          onChange={(e) => updateField('name', e.target.value)}
+                          placeholder={t('products.detail.namePlaceholder')}
+                          className="product-detail__input product-detail__input--name"
+                        />
+                      </div>
+                    ) : (
+                      <h1 className="product-detail__row-value">{product.name}</h1>
+                    )}
+                  </div>
+
+                  {/* Unidad */}
+                  <div className="product-detail__row">
+                    <span className="product-detail__row-label">{t('products.detailModal.unit')}</span>
+                    {isEditing ? (
+                      <div className="product-detail__row-value product-detail__row-value--form">
+                        <div className="product-detail__unit-edit">
+                          <label className="product-detail__stock-toggle">
+                            <input
+                              type="checkbox"
+                              checked={!!editData?.unit}
+                              onChange={(e) => {
+                                if (!editData) return;
+                                setEditData({ ...editData, unit: e.target.checked ? 'kg' : '' });
+                              }}
+                            />
+                            <span>{t('products.detail.specifyUnit')}</span>
                             <input
                               type="number"
-                              value={editData?.discount || ''}
+                              value={editData?.unitQuantity ?? 1}
                               onChange={(e) => {
-                                const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
-                                updateField('discount', val);
-                              }}
-                              placeholder="0"
-                              className="product-detail__input product-detail__input--discount"
-                              min="0"
-                              max="100"
-                              step="1"
-                            />
-                            <span className="product-detail__discount-percent">%</span>
-                          </div>
-                          <input
-                            type="date"
-                            value={editData?.discountEndDate as string || ''}
-                            onChange={(e) => updateField('discountEndDate', e.target.value)}
-                            className="product-detail__input product-detail__input--date"
-                          />
-                          {editData?.discount && editData.discount > 0 && (
-                            <button
-                              type="button"
-                              className="product-detail__cancel-discount"
-                              onClick={() => {
                                 if (!editData) return;
-                                setEditData({ ...editData, discount: 0, discountEndDate: '' });
+                                setEditData({ ...editData, unitQuantity: Math.max(0, parseFloat(e.target.value) || 0) });
                               }}
+                              className="product-detail__input product-detail__input--unit-quantity"
+                              min="0"
+                              step="0.1"
+                              disabled={!editData?.unit}
+                            />
+                            <select
+                              value={editData?.unit || 'kg'}
+                              onChange={(e) => {
+                                if (!editData) return;
+                                setEditData({ ...editData, unit: e.target.value });
+                              }}
+                              className="product-detail__input product-detail__input--unit"
+                              disabled={!editData?.unit}
                             >
-                              {t('products.detail.cancelDiscount')}
-                            </button>
+                              <option value="kg">kg</option>
+                              <option value="g">g</option>
+                              <option value="L">L</option>
+                              <option value="ml">ml</option>
+                            </select>
+                          </label>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="product-detail__row-value">
+                        {product.unit
+                          ? `${product.unitQuantity ?? ''} ${product.unit}`.trim()
+                          : '—'}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Costo de producción */}
+                  <div className="product-detail__row">
+                    <span className="product-detail__row-label">{t('products.detailModal.costPrice')}</span>
+                    {isEditing ? (
+                      <div className="product-detail__row-value product-detail__row-value--form">
+                        <input
+                          type="number"
+                          value={editData?.costPrice || 0}
+                          onChange={(e) => updateField('costPrice', parseFloat(e.target.value) || 0)}
+                          className="product-detail__input product-detail__input--cost"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                    ) : (
+                      <span className="product-detail__row-value">
+                        {product.costPrice ? format(product.costPrice) : t('products.detailModal.noCostPrice')}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Precio de venta */}
+                  <div className="product-detail__row">
+                    <span className="product-detail__row-label">{t('products.detailModal.price')}</span>
+                    {isEditing ? (
+                      <div className="product-detail__row-value product-detail__row-value--form">
+                        <input
+                          type="number"
+                          value={editData?.price || 0}
+                          onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
+                          placeholder="Precio"
+                          className="product-detail__input product-detail__input--price"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                    ) : isDiscountActive(product) ? (
+                      <span className="product-detail__row-value product-detail__price-discount">
+                        <span className="product-detail__price-badge">-{product.discount}%</span>
+                        <span className="product-detail__price-original">{format(product.price)}</span>
+                        <span className="product-detail__price-final">
+                          {format(getDiscountedPrice(product.price, product.discount!))}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="product-detail__row-value">{format(product.price)}</span>
+                    )}
+                  </div>
+
+                  {/* Ganancia: en edición siempre visible (vista previa en vivo, igual que ProductModal);
+                      en vista solo si hay costo registrado (igual que ProductDetailModal). */}
+                  {isEditing ? (() => {
+                    const priceValue = editData?.price || 0;
+                    const effectivePrice = editData?.discount
+                      ? getDiscountedPrice(priceValue, editData.discount)
+                      : priceValue;
+                    const profit = effectivePrice - (editData?.costPrice || 0);
+                    const margin = effectivePrice > 0 ? (profit / effectivePrice) * 100 : 0;
+                    return (
+                      <div className="product-detail__row">
+                        <span className="product-detail__row-label">{t('products.detailModal.profit')}</span>
+                        <span className={`product-detail__row-value product-detail__margin${profit < 0 ? ' product-detail__margin--negative' : ''}`}>
+                          {format(profit)} ({margin.toFixed(1)}%)
+                        </span>
+                      </div>
+                    );
+                  })() : !!product.costPrice && (() => {
+                    const effectivePrice = isDiscountActive(product)
+                      ? getDiscountedPrice(product.price, product.discount!)
+                      : product.price;
+                    const profit = effectivePrice - product.costPrice;
+                    const margin = effectivePrice > 0 ? (profit / effectivePrice) * 100 : 0;
+                    return (
+                      <div className="product-detail__row">
+                        <span className="product-detail__row-label">{t('products.detailModal.profit')}</span>
+                        <span className={`product-detail__row-value product-detail__margin${profit < 0 ? ' product-detail__margin--negative' : ''}`}>
+                          {format(profit)} ({margin.toFixed(1)}%)
+                        </span>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Descuento válido hasta (solo vista, descuento activo) */}
+                  {!isEditing && isDiscountActive(product) && product.discountEndDate && (
+                    <div className="product-detail__row">
+                      <span className="product-detail__row-label">{t('products.detailModal.discountValidUntil')}</span>
+                      <span className="product-detail__row-value">{formatDate(product.discountEndDate)}</span>
+                    </div>
+                  )}
+
+                  {/* Etiquetas */}
+                  <div className="product-detail__row product-detail__row--align-start">
+                    <span className="product-detail__row-label">{t('products.detailModal.labels')}</span>
+                    {isEditing ? (
+                      <div className="product-detail__row-value product-detail__row-value--form">
+                        <LabelEditSection
+                          labels={labels}
+                          selectedIds={editData?.labels || []}
+                          limitReached={limitReached}
+                          confirmDeleteId={confirmDeleteLabelId}
+                          maxLabels={MAX_LABELS}
+                          onToggle={toggleLabel}
+                          onDeleteRequest={setConfirmDeleteLabelId}
+                          onDeleteConfirm={handleDeleteLabel}
+                          onDeleteCancel={() => setConfirmDeleteLabelId(null)}
+                          onCreate={handleCreateLabel}
+                        />
+                      </div>
+                    ) : productLabels.length > 0 ? (
+                      <div className="product-detail__row-value product-detail__header-labels-row">
+                        {productLabels.map(l => {
+                          const iconData = LABEL_ICONS[l.icon];
+                          const Icon = iconData?.icon;
+                          return (
+                            <span
+                              key={l.id}
+                              className="product-detail__label"
+                              style={{ backgroundColor: l.color }}
+                              title={l.name}
+                            >
+                              {Icon && <Icon size={12} />}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <span className="product-detail__row-value product-detail__labels-empty">
+                        {t('products.detailModal.noLabels')}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Almacén */}
+                  <div className="product-detail__row">
+                    <span className="product-detail__row-label">{t('products.detailModal.warehouse')}</span>
+                    {isEditing ? (
+                      <div className="product-detail__row-value product-detail__row-value--form">
+                        <div className="product-detail__stock-edit">
+                          <label className="product-detail__stock-toggle">
+                            <input
+                              type="checkbox"
+                              checked={!!editData?.trackStock}
+                              onChange={(e) => {
+                                if (!editData) return;
+                                setEditData({
+                                  ...editData,
+                                  trackStock: e.target.checked,
+                                  stock: e.target.checked ? (editData.stock ?? 0) : 0,
+                                });
+                              }}
+                            />
+                            <PiPackageBold size={15} />
+                            <span>{t('products.detail.manageStock')}</span>
+                          </label>
+                          <input
+                            type="number"
+                            value={editData?.stock ?? 0}
+                            onChange={(e) => {
+                              if (!editData) return;
+                              setEditData({ ...editData, stock: Math.max(0, parseInt(e.target.value) || 0) });
+                            }}
+                            className="product-detail__input product-detail__input--stock"
+                            min="0"
+                            step="1"
+                            disabled={!editData?.trackStock}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="product-detail__row-value">
+                        {product.trackStock ? (
+                          (product.stock ?? 0) === 0
+                            ? t('products.detailModal.noStock')
+                            : t('products.detailModal.stockUnits', { count: product.stock })
+                        ) : (
+                          t('products.detailModal.noStockControl')
+                        )}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Descuento: fila final, solo en edición */}
+                  {isEditing && (
+                    <div className="product-detail__row product-detail__row--align-start">
+                      <span className="product-detail__row-label product-detail__row-label--discount">{t('products.detail.discount')}</span>
+                      <div className="product-detail__row-value product-detail__row-value--form">
+                        <div className="product-detail__price-edit-discount">
+                          <div className="product-detail__price-edit-row">
+                            <div className="product-detail__discount-input-wrapper">
+                              <input
+                                type="number"
+                                value={editData?.discount || ''}
+                                onChange={(e) => {
+                                  const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+                                  updateField('discount', val);
+                                }}
+                                placeholder="0"
+                                className="product-detail__input product-detail__input--discount"
+                                min="0"
+                                max="100"
+                                step="1"
+                              />
+                              <span className="product-detail__discount-percent">%</span>
+                            </div>
+                            <input
+                              type="date"
+                              value={editData?.discountEndDate as string || ''}
+                              onChange={(e) => updateField('discountEndDate', e.target.value)}
+                              className="product-detail__input product-detail__input--date"
+                            />
+                            {editData?.discount && editData.discount > 0 && (
+                              <button
+                                type="button"
+                                className="product-detail__cancel-discount"
+                                onClick={() => {
+                                  if (!editData) return;
+                                  setEditData({ ...editData, discount: 0, discountEndDate: '' });
+                                }}
+                              >
+                                {t('products.detail.cancelDiscount')}
+                              </button>
+                            )}
+                          </div>
+                          {editData?.discount && editData.discount > 0 && (
+                            <div className="product-detail__price-edit-preview">
+                              <span className="product-detail__price-original">
+                                {format(editData?.price || product.price)}
+                              </span>
+                              <span className="product-detail__price-final">
+                                {format(getDiscountedPrice(editData?.price || product.price, editData.discount))}
+                              </span>
+                            </div>
                           )}
                         </div>
-                        {editData?.discount && editData.discount > 0 && (
-                          <div className="product-detail__price-edit-preview">
-                            <span className="product-detail__price-original">
-                              {format(editData?.price || product.price)}
-                            </span>
-                            <span className="product-detail__price-final">
-                              {format(getDiscountedPrice(editData?.price || product.price, editData.discount))}
-                            </span>
-                          </div>
-                        )}
                       </div>
                     </div>
-                  ) : isDiscountActive(product) ? (
-                    <div className="product-detail__price-discount">
-                      <span className="product-detail__price-badge">-{product.discount}%</span>
-                      <span className="product-detail__price-original">{format(product.price)}</span>
-                      <span className="product-detail__price-final">
-                        {format(getDiscountedPrice(product.price, product.discount!))}
-                      </span>
-                      {product.discountEndDate && (
-                        <span className="product-detail__price-expiry">
-                          {t('products.detail.validUntil', { date: formatDate(product.discountEndDate) })}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    format(product.price)
                   )}
+
                 </div>
-
-                {!isEditing && !!product.costPrice && (() => {
-                  const effectivePrice = isDiscountActive(product)
-                    ? getDiscountedPrice(product.price, product.discount!)
-                    : product.price;
-                  const profit = effectivePrice - product.costPrice;
-                  const margin = effectivePrice > 0 ? (profit / effectivePrice) * 100 : 0;
-                  return (
-                    <div className="product-detail__cost-info">
-                      <span className="product-detail__cost-price">
-                        {t('products.detailModal.costPrice')}: {format(product.costPrice)}
-                      </span>
-                      <span className={`product-detail__margin${profit < 0 ? ' product-detail__margin--negative' : ''}`}>
-                        {t('products.detailModal.profit')}: {format(profit)} ({margin.toFixed(1)}%)
-                      </span>
-                    </div>
-                  );
-                })()}
-
-                {/* Etiquetas */}
-                <div className="product-detail__header-labels">
-                  <div className="product-detail__header-labels-row">
-                    {isEditing ? (
-                      <LabelEditSection
-                        labels={labels}
-                        selectedIds={editData?.labels || []}
-                        limitReached={limitReached}
-                        confirmDeleteId={confirmDeleteLabelId}
-                        maxLabels={MAX_LABELS}
-                        onToggle={toggleLabel}
-                        onDeleteRequest={setConfirmDeleteLabelId}
-                        onDeleteConfirm={handleDeleteLabel}
-                        onDeleteCancel={() => setConfirmDeleteLabelId(null)}
-                        onCreate={handleCreateLabel}
-                      />
-                    ) : productLabels.length > 0 ? (
-                      productLabels.map(l => {
-                        const iconData = LABEL_ICONS[l.icon];
-                        const Icon = iconData?.icon;
-                        return (
-                          <span
-                            key={l.id}
-                            className="product-detail__label"
-                            style={{ backgroundColor: l.color }}
-                            title={l.name}
-                          >
-                            {Icon && <Icon size={12} />}
-                          </span>
-                        );
-                      })
-                    ) : (
-                      <span className="product-detail__labels-empty">{t('products.detail.noLabels')}</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Almacén */}
-                {isEditing ? (
-                  <div className="product-detail__stock-edit">
-                    <label className="product-detail__stock-toggle">
-                      <input
-                        type="checkbox"
-                        checked={!!editData?.trackStock}
-                        onChange={(e) => {
-                          if (!editData) return;
-                          setEditData({
-                            ...editData,
-                            trackStock: e.target.checked,
-                            stock: e.target.checked ? (editData.stock ?? 0) : 0,
-                          });
-                        }}
-                      />
-                      <PiPackageBold size={15} />
-                      <span>{t('products.detail.manageStock')}</span>
-                    </label>
-                    <div className="product-detail__stock-input-row">
-                      <span className="product-detail__info-label">{t('products.detail.inWarehouse')}</span>
-                      <input
-                        type="number"
-                        value={editData?.stock ?? 0}
-                        onChange={(e) => {
-                          if (!editData) return;
-                          setEditData({ ...editData, stock: Math.max(0, parseInt(e.target.value) || 0) });
-                        }}
-                        className="product-detail__input product-detail__input--stock"
-                        min="0"
-                        step="1"
-                        disabled={!editData?.trackStock}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="product-detail__stock-display">
-                    <PiPackageBold size={15} className="product-detail__header-meta-icon" />
-                    {product.trackStock ? (
-                      <span className="product-detail__stock-badge">
-                        {(product.stock ?? 0) === 0
-                          ? t('products.detail.noStock')
-                          : t('products.detail.stockUnits', { count: product.stock })}
-                      </span>
-                    ) : (
-                      <span className="product-detail__stock-untracked">
-                        {t('products.detail.noStockControl')}
-                      </span>
-                    )}
-                  </div>
-                )}
-
               </div>
             </div>
 
@@ -533,6 +615,12 @@ const ProductDetail = () => {
             </div>
 
             <div className="product-detail__footer-meta">
+              <PiClockCounterClockwiseBold size={13} className="product-detail__header-meta-icon" />
+              <span className="product-detail__info-label">{t('products.detail.lastEdited')}</span>
+              <span className="product-detail__info-value">
+                {formatDate(product.updatedAt ?? product.createdAt)}
+              </span>
+              <span className="product-detail__footer-meta-sep">·</span>
               <PiCalendarBold size={13} className="product-detail__header-meta-icon" />
               <span className="product-detail__info-label">{t('products.detail.addedOn')}</span>
               <span className="product-detail__info-value">{formatDate(product.createdAt)}</span>

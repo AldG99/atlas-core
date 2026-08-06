@@ -32,6 +32,7 @@ export interface Product {
   unitQuantity?: number;
   userId: string;
   createdAt: Date;
+  updatedAt?: Date;
 }
 
 export interface ProductFormData {

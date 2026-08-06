@@ -1,14 +1,37 @@
-import i18n from 'i18next';
+import i18n, { type BackendModule } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-import esLatam from './locales/es-419.json';
-import esSpain from './locales/es-ES.json';
+// en-US va empaquetado de forma síncrona porque es el fallback final de
+// toda la cadena (ver `fallbackLng.default` abajo) y porque hay llamadas a
+// i18n.t() fuera de React (orderService.ts, planLimits.ts) que no pueden
+// esperar una carga async. El resto de idiomas se descarga solo cuando se
+// activan (detectado o elegido por el usuario).
 import enUS from './locales/en-US.json';
-import enGB from './locales/en-GB.json';
-import pt from './locales/pt.json';
-import fr from './locales/fr.json';
-import it from './locales/it.json';
+
+const localeLoaders: Record<string, () => Promise<{ default: Record<string, unknown> }>> = {
+  'es-419': () => import('./locales/es-419.json'),
+  'es-ES': () => import('./locales/es-ES.json'),
+  'en-GB': () => import('./locales/en-GB.json'),
+  pt: () => import('./locales/pt.json'),
+  fr: () => import('./locales/fr.json'),
+  it: () => import('./locales/it.json'),
+};
+
+const lazyBackend: BackendModule = {
+  type: 'backend',
+  init: () => {},
+  read: (language, _namespace, callback) => {
+    const loader = localeLoaders[language];
+    if (!loader) {
+      callback(new Error(`Unsupported language: ${language}`), null);
+      return;
+    }
+    loader()
+      .then((mod) => callback(null, mod.default))
+      .catch((err) => callback(err, null));
+  },
+};
 
 const updateMetaDescription = () => {
   const description = i18n.t('auth.tagline');
@@ -16,18 +39,16 @@ const updateMetaDescription = () => {
 };
 
 i18n
+  .use(lazyBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources: {
-      'es-419': { translation: esLatam },
-      'es-ES': { translation: esSpain },
       'en-US': { translation: enUS },
-      'en-GB': { translation: enGB },
-      pt: { translation: pt },
-      fr: { translation: fr },
-      it: { translation: it },
     },
+    // Sin esto, i18next asume que `resources` ya cubre todo y NUNCA llama
+    // al backend para el resto de idiomas (ver i18next#loadResources).
+    partialBundledLanguages: true,
     fallbackLng: {
       'es-ES': ['es-419', 'en-US'],
       'en-GB': ['en-US'],

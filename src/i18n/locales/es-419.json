@@ -629,6 +629,7 @@
       "description": "Descripción",
       "noDescription": "Sin descripción",
       "addedOn": "Producto agregado",
+      "lastEdited": "Última edición",
       "noUnit": "---",
       "noStock": "Sin existencias",
       "stockUnits": "{{count}} uds",
@@ -636,6 +637,7 @@
       "manageStock": "Gestionar existencias",
       "inWarehouse": "En almacén",
       "specifyUnit": "Especificar unidad de medida",
+      "discount": "Descuento",
       "cancelDiscount": "Cancelar descuento",
       "validUntil": "Hasta {{date}}",
       "deleteModal": {

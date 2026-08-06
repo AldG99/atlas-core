@@ -77,6 +77,7 @@ export const getProducts = async (userId: string): Promise<Product[]> => {
       id: docSnap.id,
       ...data,
       createdAt: data.createdAt?.toDate() || new Date(),
+      updatedAt: (data.updatedAt as Timestamp)?.toDate?.() || undefined,
       discountEndDate: expired ? undefined : (endDate || undefined),
       discount: expired ? 0 : (discount || 0),
       discountHistory: parseHistory(data.discountHistory)
@@ -118,6 +119,7 @@ export const getProductById = async (id: string): Promise<Product | null> => {
     id: docSnap.id,
     ...data,
     createdAt: data.createdAt?.toDate() || new Date(),
+    updatedAt: (data.updatedAt as Timestamp)?.toDate?.() || undefined,
     discountEndDate: expired ? undefined : (endDate || undefined),
     discount: expired ? 0 : (discount || 0),
     discountHistory: parseHistory(data.discountHistory)
@@ -144,13 +146,19 @@ export interface CancelDiscountInfo {
 export const updateProduct = async (
   id: string,
   data: Partial<ProductFormData>,
-  cancelledDiscount?: CancelDiscountInfo
+  cancelledDiscount?: CancelDiscountInfo,
+  // "Última edición" no debe moverse solo por agregar/quitar un descuento —
+  // el llamador decide si el resto de los datos del producto cambió.
+  recordEdit = true
 ): Promise<void> => {
   const docRef = doc(db, COLLECTION_NAME, id);
   // Firestore rechaza valores undefined — solo incluir campos definidos
   const updateData: Record<string, unknown> = Object.fromEntries(
     Object.entries(data).filter(([, v]) => v !== undefined)
   );
+  if (recordEdit) {
+    updateData.updatedAt = Timestamp.now();
+  }
   if (data.discountEndDate) {
     updateData.discountEndDate = Timestamp.fromDate(
       typeof data.discountEndDate === 'string'

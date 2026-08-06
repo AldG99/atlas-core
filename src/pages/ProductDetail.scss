@@ -136,6 +136,11 @@ $topbar-height: 52px;
     gap: $spacing-md;
     flex: 1;
     min-width: 0;
+    // Alto fijo (= alto de la imagen) con scroll interno: así el card no
+    // cambia de tamaño al entrar/salir de edición, sin importar cuánto
+    // contenido agreguen los campos de edición (unidad, descuento, etc.).
+    max-height: 420px;
+    overflow-y: auto;
 
     @include md {
       padding: $spacing-lg $spacing-xl;
@@ -152,9 +157,15 @@ $topbar-height: 52px;
   &__footer-meta {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: $spacing-xs;
     padding: $spacing-sm $spacing-md;
     border-top: 1px solid $color-gray-100;
+  }
+
+  &__footer-meta-sep {
+    color: $color-gray-300;
+    margin: 0 $spacing-xs;
   }
 
   &__header-meta-icon {
@@ -229,12 +240,6 @@ $topbar-height: 52px;
     }
   }
 
-  &__title-section {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
-  }
-
   &__sku {
     display: inline-block;
     padding: 2px 8px;
@@ -247,17 +252,59 @@ $topbar-height: 52px;
     width: fit-content;
   }
 
-  &__name {
-    font-size: $font-size-lg;
-    font-weight: 600;
-    color: $color-gray-800;
-    margin: 0;
+  // Filas de info (Clave, Nombre, Unidad, Costo, Precio, Ganancia, Etiquetas, Almacén)
+  // — mismo patrón visual que el modal de producto en detalles del pedido
+  // (ver ProductDetailModal.tsx / OrderDetail.scss `&__modal-row`).
+  &__info-rows {
+    display: flex;
+    flex-direction: column;
   }
 
-  &__price {
-    font-size: $font-size-xl;
-    font-weight: 700;
-    color: $color-success;
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-xs 0;
+    border-bottom: 1px solid $color-gray-100;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--align-start {
+      align-items: flex-start;
+    }
+  }
+
+  &__row-label {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+    font-weight: 500;
+    flex-shrink: 0;
+
+    // Mismo color que el resto de la app usa para descuentos (ver DiscountHistoryModal.scss)
+    &--discount {
+      color: $color-warning;
+      font-weight: 600;
+    }
+  }
+
+  &__row-value {
+    font-size: $font-size-sm;
+    color: $color-gray-800;
+    font-weight: 600;
+    text-align: right;
+    flex: 1;
+    min-width: 0;
+
+    &--form {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: $spacing-sm;
+      text-align: left;
+    }
   }
 
   &__price-edit {
@@ -269,19 +316,6 @@ $topbar-height: 52px;
 
   &__input--cost {
     color: $color-gray-500;
-  }
-
-  &__cost-info {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: $spacing-sm;
-  }
-
-  &__cost-price {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
-    font-weight: 500;
   }
 
   &__margin {
@@ -364,11 +398,6 @@ $topbar-height: 52px;
     color: $color-success;
   }
 
-  &__price-expiry {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
-  }
-
   // Info label/value (shared)
   &__info-label {
     font-size: $font-size-sm;
@@ -403,13 +432,6 @@ $topbar-height: 52px;
     strong {
       color: $color-gray-800;
     }
-  }
-
-  // Etiquetas en header (encima de fecha de creación)
-  &__header-labels {
-    margin-top: auto;
-    padding-top: $spacing-sm;
-    border-top: 1px solid $color-gray-100;
   }
 
   &__header-labels-row {
@@ -579,7 +601,12 @@ $topbar-height: 52px;
     &--sku {
       font-family: monospace;
       width: 120px;
-      font-weight: 600;
+      font-weight: 700;
+      color: $color-primary;
+      background-color: rgba($color-primary, 0.1);
+      border-color: transparent;
+      border-radius: 4px;
+      padding: 2px 8px;
     }
 
     &--name {
@@ -650,24 +677,6 @@ $topbar-height: 52px;
   }
 
   // Stock / Almacén
-  &__stock-display {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-  }
-
-  &__stock-untracked {
-    font-size: $font-size-sm;
-    color: $color-gray-400;
-    font-style: italic;
-  }
-
-  &__stock-badge {
-    font-size: $font-size-sm;
-    font-weight: 600;
-    color: $color-gray-800;
-  }
-
   &__stock-edit {
     display: flex;
     flex-direction: column;
@@ -693,12 +702,6 @@ $topbar-height: 52px;
     }
   }
 
-  &__stock-input-row {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-  }
-
   &__input--stock {
     width: 90px;
     text-align: center;
@@ -709,12 +712,6 @@ $topbar-height: 52px;
       cursor: not-allowed;
       background-color: $color-gray-100;
     }
-  }
-
-  &__unit-display {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
-    font-weight: 500;
   }
 
   &__unit-edit {
