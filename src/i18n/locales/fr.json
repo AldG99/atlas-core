@@ -705,6 +705,7 @@
       "profit": "Bénéfice",
       "noCostPrice": "Non renseigné",
       "discountValidUntil": "Remise valable jusqu'au",
+      "noDiscount": "Aucune remise active",
       "labels": "Étiquettes",
       "noLabels": "Aucune étiquette",
       "warehouse": "Entrepôt",

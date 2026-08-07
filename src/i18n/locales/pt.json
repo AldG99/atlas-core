@@ -705,6 +705,7 @@
       "profit": "Lucro",
       "noCostPrice": "Não definido",
       "discountValidUntil": "Desconto válido até",
+      "noDiscount": "Nenhum desconto ativo",
       "labels": "Etiquetas",
       "noLabels": "Sem etiquetas",
       "warehouse": "Depósito",

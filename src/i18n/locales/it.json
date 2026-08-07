@@ -705,6 +705,7 @@
       "profit": "Profitto",
       "noCostPrice": "Non impostato",
       "discountValidUntil": "Sconto valido fino al",
+      "noDiscount": "Nessuno sconto attivo",
       "labels": "Etichette",
       "noLabels": "Nessuna etichetta",
       "warehouse": "Magazzino",

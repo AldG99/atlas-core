@@ -705,6 +705,7 @@
       "profit": "Ganancia",
       "noCostPrice": "Sin registrar",
       "discountValidUntil": "Descuento válido hasta",
+      "noDiscount": "Sin descuento activo",
       "labels": "Etiquetas",
       "noLabels": "Sin etiquetas",
       "warehouse": "Almacén",

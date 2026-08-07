@@ -705,6 +705,7 @@
       "profit": "Profit",
       "noCostPrice": "Not set",
       "discountValidUntil": "Discount valid until",
+      "noDiscount": "No active discount",
       "labels": "Labels",
       "noLabels": "No labels",
       "warehouse": "Warehouse",

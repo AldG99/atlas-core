@@ -396,6 +396,20 @@ const ProductDetail = () => {
                     )}
                   </div>
 
+                  {/* Descuento válido hasta (solo vista) */}
+                  {!isEditing && (
+                    <div className="product-detail__row">
+                      <span className="product-detail__row-label">{t('products.detailModal.discountValidUntil')}</span>
+                      {isDiscountActive(product) && product.discountEndDate ? (
+                        <span className="product-detail__row-value">{formatDate(product.discountEndDate)}</span>
+                      ) : (
+                        <span className="product-detail__row-value product-detail__row-value--empty">
+                          {t('products.detailModal.noDiscount')}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   {/* Ganancia: en edición siempre visible (vista previa en vivo, igual que ProductModal);
                       en vista solo si hay costo registrado (igual que ProductDetailModal). */}
                   {isEditing ? (() => {
@@ -428,14 +442,6 @@ const ProductDetail = () => {
                       </div>
                     );
                   })()}
-
-                  {/* Descuento válido hasta (solo vista, descuento activo) */}
-                  {!isEditing && isDiscountActive(product) && product.discountEndDate && (
-                    <div className="product-detail__row">
-                      <span className="product-detail__row-label">{t('products.detailModal.discountValidUntil')}</span>
-                      <span className="product-detail__row-value">{formatDate(product.discountEndDate)}</span>
-                    </div>
-                  )}
 
                   {/* Etiquetas */}
                   <div className="product-detail__row product-detail__row--align-start">
@@ -615,15 +621,18 @@ const ProductDetail = () => {
             </div>
 
             <div className="product-detail__footer-meta">
-              <PiClockCounterClockwiseBold size={13} className="product-detail__header-meta-icon" />
-              <span className="product-detail__info-label">{t('products.detail.lastEdited')}</span>
-              <span className="product-detail__info-value">
-                {formatDate(product.updatedAt ?? product.createdAt)}
-              </span>
-              <span className="product-detail__footer-meta-sep">·</span>
-              <PiCalendarBold size={13} className="product-detail__header-meta-icon" />
-              <span className="product-detail__info-label">{t('products.detail.addedOn')}</span>
-              <span className="product-detail__info-value">{formatDate(product.createdAt)}</span>
+              <div className="product-detail__footer-meta-row">
+                <PiClockCounterClockwiseBold size={13} className="product-detail__header-meta-icon" />
+                <span className="product-detail__info-label">{t('products.detail.lastEdited')}</span>
+                <span className="product-detail__info-value">
+                  {formatDate(product.updatedAt ?? product.createdAt)}
+                </span>
+              </div>
+              <div className="product-detail__footer-meta-row">
+                <PiCalendarBold size={13} className="product-detail__header-meta-icon" />
+                <span className="product-detail__info-label">{t('products.detail.addedOn')}</span>
+                <span className="product-detail__info-value">{formatDate(product.createdAt)}</span>
+              </div>
             </div>
           </div>
         </div>
