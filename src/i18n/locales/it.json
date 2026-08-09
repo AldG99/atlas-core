@@ -1009,9 +1009,9 @@
         "name": "Gratuito",
         "description": "Inizia a gestire la tua attività senza costi.",
         "features": [
-          "Fino a 360 ordini al mese",
-          "Fino a 120 clienti",
-          "Fino a 80 prodotti",
+          "Fino a 460 ordini al mese",
+          "Fino a 180 clienti",
+          "Fino a 240 prodotti",
           "Fino a 6 etichette",
           "Esportazione CSV",
           "Esportazione e importazione dati"
@@ -1023,7 +1023,7 @@
         "features": [
           "Fino a 720 ordini al mese",
           "Fino a 240 clienti",
-          "Fino a 160 prodotti",
+          "Fino a 480 prodotti",
           "Fino a 10 etichette",
           "Esportazione CSV",
           "Esportazione e importazione dati"
@@ -1035,7 +1035,7 @@
         "features": [
           "Ordini illimitati",
           "Clienti illimitati",
-          "Fino a 640 prodotti",
+          "Fino a 1260 prodotti",
           "Fino a 16 etichette",
           "Esportazione CSV",
           "Esportazione e importazione dati"

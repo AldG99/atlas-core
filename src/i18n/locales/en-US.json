@@ -1009,9 +1009,9 @@
         "name": "Free",
         "description": "Start managing your business at no cost.",
         "features": [
-          "Up to 360 orders per month",
-          "Up to 120 clients",
-          "Up to 80 products",
+          "Up to 460 orders per month",
+          "Up to 180 clients",
+          "Up to 240 products",
           "Up to 6 labels",
           "CSV export",
           "Export & import data"
@@ -1023,7 +1023,7 @@
         "features": [
           "Up to 720 orders per month",
           "Up to 240 clients",
-          "Up to 160 products",
+          "Up to 480 products",
           "Up to 10 labels",
           "CSV export",
           "Export & import data"
@@ -1035,7 +1035,7 @@
         "features": [
           "Unlimited orders",
           "Unlimited clients",
-          "Up to 640 products",
+          "Up to 1260 products",
           "Up to 16 labels",
           "CSV export",
           "Export & import data"

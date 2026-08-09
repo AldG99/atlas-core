@@ -1009,9 +1009,9 @@
         "name": "Gratuit",
         "description": "Pour commencer à gérer votre entreprise sans frais.",
         "features": [
-          "Jusqu'à 360 commandes par mois",
-          "Jusqu'à 120 clients",
-          "Jusqu'à 80 produits",
+          "Jusqu'à 460 commandes par mois",
+          "Jusqu'à 180 clients",
+          "Jusqu'à 240 produits",
           "Jusqu'à 6 étiquettes",
           "Export CSV",
           "Export et import de données"
@@ -1023,7 +1023,7 @@
         "features": [
           "Jusqu'à 720 commandes par mois",
           "Jusqu'à 240 clients",
-          "Jusqu'à 160 produits",
+          "Jusqu'à 480 produits",
           "Jusqu'à 10 étiquettes",
           "Export CSV",
           "Export et import de données"
@@ -1035,7 +1035,7 @@
         "features": [
           "Commandes illimitées",
           "Clients illimités",
-          "Jusqu'à 640 produits",
+          "Jusqu'à 1260 produits",
           "Jusqu'à 16 étiquettes",
           "Export CSV",
           "Export et import de données"

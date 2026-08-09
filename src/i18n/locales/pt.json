@@ -1009,9 +1009,9 @@
         "name": "Gratuito",
         "description": "Comece a gerenciar seu negócio sem custo.",
         "features": [
-          "Até 360 pedidos por mês",
-          "Até 120 clientes",
-          "Até 80 produtos",
+          "Até 460 pedidos por mês",
+          "Até 180 clientes",
+          "Até 240 produtos",
           "Até 6 etiquetas",
           "Exportar CSV",
           "Exportar e importar dados"
@@ -1023,7 +1023,7 @@
         "features": [
           "Até 720 pedidos por mês",
           "Até 240 clientes",
-          "Até 160 produtos",
+          "Até 480 produtos",
           "Até 10 etiquetas",
           "Exportar CSV",
           "Exportar e importar dados"
@@ -1035,7 +1035,7 @@
         "features": [
           "Pedidos ilimitados",
           "Clientes ilimitados",
-          "Até 640 produtos",
+          "Até 1260 produtos",
           "Até 16 etiquetas",
           "Exportar CSV",
           "Exportar e importar dados"
