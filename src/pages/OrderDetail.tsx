@@ -108,6 +108,8 @@ const OrderDetail = () => {
   }, [id, user, businessUid, navigate, showToast, backRoute, t]);
 
   useEffect(() => {
+    // Falso positivo del compiler: fetch-on-mount vía useCallback. Ver eslint.config.js.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchOrder();
   }, [fetchOrder]);
 

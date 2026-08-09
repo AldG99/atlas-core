@@ -57,6 +57,8 @@ const ProductDetail = () => {
   }, [id, navigate, showToast, t]);
 
   useEffect(() => {
+    // Falso positivo del compiler: fetch-on-mount vía useCallback. Ver eslint.config.js.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProduct();
   }, [fetchProduct]);
 

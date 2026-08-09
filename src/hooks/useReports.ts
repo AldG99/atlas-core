@@ -48,6 +48,8 @@ export const useReports = () => {
     const cached = reportsCache.get(cacheKey);
 
     if (cached && Date.now() - cached.cachedAt < CACHE_TTL) {
+      // Falso positivo del compiler: hidratar desde caché en memoria, no un fetch. Ver eslint.config.js.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentPeriodOrders(cached.current.orders);
       setPreviousPeriodOrders(cached.yearAgo.orders);
       setHasMore(cached.current.hasMore);

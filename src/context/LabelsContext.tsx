@@ -42,6 +42,8 @@ export const LabelsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!user || !businessUid) {
+      // Falso positivo del compiler: reset de estado al cerrar sesión, no un fetch. Ver eslint.config.js.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLabels([]);
       setLoading(false);
       return;

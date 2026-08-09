@@ -40,7 +40,9 @@ const Products = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Falso positivo del compiler: seed de estado desde location.state al navegar, no un fetch. Ver eslint.config.js.
     const state = location.state as Record<string, unknown> | null;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (state?.filterDescuento) setFilterExpiring(true);
   }, [location.state]);
   const [showHistory, setShowHistory] = useState(false);

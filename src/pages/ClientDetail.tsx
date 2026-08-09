@@ -75,6 +75,8 @@ const ClientDetail = () => {
   }, [id, navigate, showToast, t]);
 
   useEffect(() => {
+    // Falso positivo del compiler: fetch-on-mount vía useCallback. Ver eslint.config.js.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchClient();
   }, [fetchClient]);
 
@@ -93,6 +95,8 @@ const ClientDetail = () => {
   }, [user]);
 
   useEffect(() => {
+    // Falso positivo del compiler: fetch-on-mount vía useCallback. Ver eslint.config.js.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (client) fetchOrders(client.phone);
   }, [client, fetchOrders]);
 
