@@ -31,9 +31,6 @@ CASE-STUDY.md
 # functions (solo servidor, no necesario para Vercel)
 functions
 
-# Tests
-src/__tests__
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
