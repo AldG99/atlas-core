@@ -7,11 +7,12 @@ import './LanguageSwitcher.scss';
 const LANGUAGES = [
   { code: 'en-US', label: 'English (US)' },
   { code: 'en-GB', label: 'English (UK)' },
-  { code: 'es-419', label: 'Español (LA)' },
+  { code: 'es-419', label: 'Español' },
   { code: 'es-ES', label: 'Español (ES)' },
   { code: 'pt', label: 'Português' },
   { code: 'fr', label: 'Français' },
   { code: 'it', label: 'Italiano' },
+  { code: 'de', label: 'Deutsch' },
 ];
 
 // En la vista compacta (login) estos dos se ocultan detrás de "Más idiomas...".

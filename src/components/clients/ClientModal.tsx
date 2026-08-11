@@ -203,6 +203,9 @@ const ClientModal = ({ client, onClose, onSave, existingPhones = [] }: ClientMod
                   className={`input ${errors.firstName ? 'input--error' : ''}`}
                   placeholder={t('clients.modal.firstNamePlaceholder')}
                   maxLength={40}
+                  spellCheck
+                  autoCorrect="on"
+                  autoCapitalize="words"
                 />
                 {errors.firstName && <span className="form-error">{errors.firstName}</span>}
               </div>
@@ -218,6 +221,9 @@ const ClientModal = ({ client, onClose, onSave, existingPhones = [] }: ClientMod
                   className={`input ${errors.lastName ? 'input--error' : ''}`}
                   placeholder={t('clients.modal.lastNamePlaceholder')}
                   maxLength={40}
+                  spellCheck
+                  autoCorrect="on"
+                  autoCapitalize="words"
                 />
                 {errors.lastName && <span className="form-error">{errors.lastName}</span>}
               </div>

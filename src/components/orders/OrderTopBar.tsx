@@ -65,6 +65,7 @@ const OrderTopBar = ({
           onClick={onWhatsApp}
           className="order-detail__icon-btn order-detail__icon-btn--whatsapp"
           title={t('orders.detail.whatsapp')}
+          disabled={!order.clientPhone}
         >
           <PiWhatsappLogoBold size={20} />
         </button>

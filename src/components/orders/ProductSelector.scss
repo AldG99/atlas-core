@@ -12,28 +12,11 @@
     pointer-events: none;
   }
 
-  &__label {
-    display: block;
-    font-size: $font-size-sm;
-    font-weight: 600;
-    color: $color-gray-700;
-    margin-bottom: $spacing-xs;
-    padding-top: $spacing-sm;
-    padding-left: $spacing-md;
-    padding-right: $spacing-md;
-  }
-
-  &__label-hint {
-    font-weight: 400;
-    color: $color-gray-400;
-    font-size: $font-size-xs;
-    margin-left: $spacing-sm;
-  }
-
   &__search-row {
     display: flex;
     gap: $spacing-sm;
     position: relative;
+    padding-top: $spacing-md;
     padding-left: $spacing-md;
     padding-right: $spacing-md;
   }

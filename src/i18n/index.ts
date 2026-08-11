@@ -16,6 +16,7 @@ const localeLoaders: Record<string, () => Promise<{ default: Record<string, unkn
   pt: () => import('./locales/pt.json'),
   fr: () => import('./locales/fr.json'),
   it: () => import('./locales/it.json'),
+  de: () => import('./locales/de.json'),
 };
 
 const lazyBackend: BackendModule = {
@@ -54,7 +55,7 @@ i18n
       'en-GB': ['en-US'],
       default: ['en-US'],
     },
-    supportedLngs: ['es-419', 'es-ES', 'en-US', 'en-GB', 'pt', 'fr', 'it'],
+    supportedLngs: ['es-419', 'es-ES', 'en-US', 'en-GB', 'pt', 'fr', 'it', 'de'],
     interpolation: {
       escapeValue: false,
     },

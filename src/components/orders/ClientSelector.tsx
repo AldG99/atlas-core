@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { PiStarFill, PiUserPlusBold, PiMagnifyingGlassBold } from 'react-icons/pi';
+import { PiStarFill, PiUserPlusBold, PiMagnifyingGlassBold, PiCheckBold, PiUserBold, PiUserCheckBold, PiPencilSimpleBold } from 'react-icons/pi';
 import { useClients } from '../../hooks/useClients';
 import { useToast } from '../../hooks/useToast';
 import { formatPhone } from '../../utils/formatters';
@@ -11,6 +11,14 @@ import type { Client, ClientFormData } from '../../types/Client';
 import Avatar from '../ui/Avatar';
 import ClientModal from '../clients/ClientModal';
 import './ClientSelector.scss';
+
+const parseOccasionalName = (raw: string): { firstName: string; lastName: string } => {
+  const parts = raw.trim().split(/\s+/).filter(Boolean);
+  return {
+    firstName: parts[0] ?? '',
+    lastName: parts.slice(1).join(' '),
+  };
+};
 
 interface ClientSelectorProps {
   onSelect: (client: Client | null) => void;
@@ -27,6 +35,9 @@ const ClientSelector = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [mode, setMode] = useState<'occasional' | 'registered'>('occasional');
+  const [occasionalName, setOccasionalName] = useState('');
+  const [occasionalError, setOccasionalError] = useState('');
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -104,6 +115,40 @@ const ClientSelector = ({
     onSelect(null);
   };
 
+  const handleSwitchMode = (next: 'occasional' | 'registered') => {
+    setMode(next);
+    setShowDropdown(false);
+  };
+
+  const handleConfirmOccasional = () => {
+    const { firstName, lastName } = parseOccasionalName(occasionalName);
+    if (!firstName) {
+      setOccasionalError(t('orders.occasionalClientNameRequired'));
+      return;
+    }
+
+    // Cliente sin registrar: nunca se escribe en la colección `clients`, solo
+    // viaja en memoria para que OrderForm lea firstName/lastName/phone igual
+    // que con un cliente real. Ver planLimits — no debe contar cupo de plan.
+    const occasionalClient: Client = {
+      id: `occasional-${Date.now()}`,
+      firstName,
+      lastName,
+      phone: '',
+      street: '',
+      exteriorNumber: '',
+      neighborhood: '',
+      city: '',
+      postalCode: '',
+      userId: '',
+      createdAt: new Date(),
+    };
+
+    onSelect(occasionalClient);
+    setOccasionalName('');
+    setOccasionalError('');
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -127,7 +172,7 @@ const ClientSelector = ({
           </div>
           <div className="client-selector__client-info">
             <span className="client-selector__client-name">
-              {selectedClient.firstName} {selectedClient.lastName}
+              {[selectedClient.firstName, selectedClient.lastName].filter(Boolean).join(' ')}
               {selectedClient.favorite && (
                 <PiStarFill
                   size={12}
@@ -135,11 +180,15 @@ const ClientSelector = ({
                 />
               )}
             </span>
-            <span className="client-selector__client-phone">
-              {selectedClient.phoneCountryCode
-                ? `${getCountryCode(selectedClient.phoneCountryCode)?.code ?? ''} ${formatPhone(selectedClient.phone)}`
-                : formatPhone(selectedClient.phone)}
-            </span>
+            {selectedClient.phone ? (
+              <span className="client-selector__client-phone">
+                {selectedClient.phoneCountryCode
+                  ? `${getCountryCode(selectedClient.phoneCountryCode)?.code ?? ''} ${formatPhone(selectedClient.phone)}`
+                  : formatPhone(selectedClient.phone)}
+              </span>
+            ) : (
+              <span className="client-selector__client-phone">{t('orders.occasionalClientBadge')}</span>
+            )}
           </div>
           <button
             type="button"
@@ -155,36 +204,92 @@ const ClientSelector = ({
 
   return (
     <div className="client-selector" ref={wrapperRef}>
-      <label className="client-selector__label">{t('orders.client')}</label>
-
-      <div className="client-selector__search-row">
-        <div className="client-selector__search-wrapper">
-          <PiMagnifyingGlassBold
-            size={16}
-            className="client-selector__search-icon"
-          />
-          <input
-            type="text"
-            placeholder={t('orders.searchClientPlaceholder')}
-            value={searchTerm}
-            onChange={e => handleSearch(e.target.value)}
-            onFocus={() => searchTerm && setShowDropdown(true)}
-            onKeyDown={handleKeyDown}
-            className="input client-selector__search"
-          />
-          {loading && <span className="client-selector__spinner" />}
-        </div>
+      <div className="client-selector__tabs" role="tablist">
         <button
           type="button"
-          className="btn btn--primary client-selector__add-btn"
-          onClick={() => setShowModal(true)}
-          title={t('orders.addClientTitle')}
+          role="tab"
+          aria-selected={mode === 'occasional'}
+          className={`client-selector__tab client-selector__tab--occasional${mode === 'occasional' ? ' client-selector__tab--active' : ''}`}
+          onClick={() => handleSwitchMode('occasional')}
         >
-          <PiUserPlusBold size={16} />
+          <PiUserBold size={15} />
+          {t('orders.occasionalClientTab')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === 'registered'}
+          className={`client-selector__tab client-selector__tab--registered${mode === 'registered' ? ' client-selector__tab--active' : ''}`}
+          onClick={() => handleSwitchMode('registered')}
+        >
+          <PiUserCheckBold size={15} />
+          {t('orders.registeredClientTab')}
         </button>
       </div>
 
-      {showDropdown && (
+      {mode === 'occasional' ? (
+        <div className="client-selector__occasional-row">
+          <div className="client-selector__search-wrapper">
+            <PiPencilSimpleBold size={16} className="client-selector__search-icon" />
+            <input
+              type="text"
+              autoFocus
+              spellCheck
+              autoCorrect="on"
+              autoCapitalize="words"
+              placeholder={t('orders.occasionalClientNamePlaceholder')}
+              value={occasionalName}
+              onChange={e => {
+                setOccasionalName(e.target.value);
+                if (occasionalError) setOccasionalError('');
+              }}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleConfirmOccasional(); } }}
+              className="input client-selector__search"
+            />
+          </div>
+          <button
+            type="button"
+            className="btn btn--primary client-selector__add-btn"
+            onClick={handleConfirmOccasional}
+            title={t('orders.occasionalClientConfirm')}
+          >
+            <PiCheckBold size={16} />
+          </button>
+        </div>
+      ) : (
+        <div className="client-selector__search-row">
+          <div className="client-selector__search-wrapper">
+            <PiMagnifyingGlassBold
+              size={16}
+              className="client-selector__search-icon"
+            />
+            <input
+              type="text"
+              placeholder={t('orders.searchClientPlaceholder')}
+              value={searchTerm}
+              onChange={e => handleSearch(e.target.value)}
+              onFocus={() => searchTerm && setShowDropdown(true)}
+              onKeyDown={handleKeyDown}
+              className="input client-selector__search"
+            />
+            {loading && <span className="client-selector__spinner" />}
+          </div>
+          <button
+            type="button"
+            className="btn btn--primary client-selector__add-btn"
+            onClick={() => setShowModal(true)}
+            title={t('orders.addClientTitle')}
+          >
+            <PiUserPlusBold size={16} />
+          </button>
+        </div>
+      )}
+
+      {occasionalError && mode === 'occasional' && (
+        <span className="error-message">{occasionalError}</span>
+      )}
+
+      {showDropdown && mode === 'registered' && (
         <div className="client-selector__dropdown" ref={dropdownRef}>
           {filteredClients.length > 0 ? (
             filteredClients.map((client, index) => (

@@ -41,6 +41,8 @@ const NewOrder = () => {
       const msg = err instanceof Error ? err.message : t('orders.createError');
       setError(msg);
       showToast(msg, 'error');
+      // Se relanza para que OrderForm sepa que falló y no limpie el carrito ya capturado.
+      throw err;
     } finally {
       setLoading(false);
     }

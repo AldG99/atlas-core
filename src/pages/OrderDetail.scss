@@ -164,6 +164,12 @@ $topbar-height: 52px;
       color: $color-gray-900;
     }
 
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
     &--whatsapp {
       color: $color-whatsapp;
       &:hover { color: $color-whatsapp-dark; }

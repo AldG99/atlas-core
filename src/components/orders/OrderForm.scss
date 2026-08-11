@@ -11,8 +11,8 @@
     padding-bottom: 0;
 
     &--client {
-      padding: $spacing-sm $spacing-md;
-      border-bottom: 1px solid $color-gray-100;
+      padding: $spacing-md;
+      border-bottom: 1px solid $color-gray-200;
     }
 
     &:last-child {

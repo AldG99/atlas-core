@@ -436,9 +436,11 @@ const OrderDetail = () => {
                   {clientFavorite && <PiStarFill size={14} className="order-detail__fav-icon" />}
                 </div>
                 <span className="order-detail__phone">
-                  {clientData?.phoneCountryCode
-                    ? `${getCountryCode(clientData.phoneCountryCode)?.code ?? ''} ${formatPhone(order.clientPhone)}`
-                    : formatPhone(order.clientPhone)}
+                  {!order.clientPhone
+                    ? '--- --- ----'
+                    : clientData?.phoneCountryCode
+                      ? `${getCountryCode(clientData.phoneCountryCode)?.code ?? ''} ${formatPhone(order.clientPhone)}`
+                      : formatPhone(order.clientPhone)}
                 </span>
               </div>
             </div>

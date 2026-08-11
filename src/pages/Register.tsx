@@ -295,6 +295,9 @@ const Register = () => {
                 className={`input${errors.businessName ? ' input--error' : ''}`}
                 placeholder={t('auth.register.businessNamePlaceholder')}
                 maxLength={60}
+                spellCheck
+                autoCorrect="on"
+                autoCapitalize="words"
               />
               {errors.businessName && <span className="register-form__field-error">{errors.businessName}</span>}
             </div>
@@ -310,6 +313,9 @@ const Register = () => {
                   className={`input${errors.firstName ? ' input--error' : ''}`}
                   placeholder={t('auth.register.firstNamePlaceholder')}
                   maxLength={40}
+                  spellCheck
+                  autoCorrect="on"
+                  autoCapitalize="words"
                 />
                 {errors.firstName && <span className="register-form__field-error">{errors.firstName}</span>}
               </div>
@@ -323,6 +329,9 @@ const Register = () => {
                   className={`input${errors.lastName ? ' input--error' : ''}`}
                   placeholder={t('auth.register.lastNamePlaceholder')}
                   maxLength={40}
+                  spellCheck
+                  autoCorrect="on"
+                  autoCapitalize="words"
                 />
                 {errors.lastName && <span className="register-form__field-error">{errors.lastName}</span>}
               </div>

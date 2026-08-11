@@ -92,7 +92,7 @@ const OrderForm = ({
     });
 
     const data: OrderFormData = {
-      clientName: selectedClient!.firstName + ' ' + selectedClient!.lastName,
+      clientName: [selectedClient!.firstName, selectedClient!.lastName].filter(Boolean).join(' '),
       clientPhone: selectedClient!.phone,
       clientPhoto: selectedClient!.profilePhoto,
       clientPostalCode: selectedClient!.postalCode,
@@ -101,7 +101,13 @@ const OrderForm = ({
       notes
     };
 
-    await onSubmit(data);
+    try {
+      await onSubmit(data);
+    } catch {
+      // El error ya se muestra al usuario en el caller (toast/banner);
+      // se conserva el carrito para no obligar a rehacer el pedido.
+      return;
+    }
 
     setSelectedClient(null);
     setItems([]);

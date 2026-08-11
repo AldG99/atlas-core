@@ -310,6 +310,9 @@ const Profile = () => {
                       className={`input${errors.businessName ? ' input--error' : ''}`}
                       placeholder={t('profile.businessNamePlaceholder')}
                       maxLength={60}
+                      spellCheck
+                      autoCorrect="on"
+                      autoCapitalize="words"
                     />
                     {errors.businessName && <span className="profile__field-error">{errors.businessName}</span>}
                   </>
@@ -331,6 +334,9 @@ const Profile = () => {
                       className={`input${errors.firstName ? ' input--error' : ''}`}
                       placeholder={t('profile.firstName')}
                       maxLength={40}
+                      spellCheck
+                      autoCorrect="on"
+                      autoCapitalize="words"
                     />
                     {errors.firstName && <span className="profile__field-error">{errors.firstName}</span>}
                   </>
@@ -351,6 +357,9 @@ const Profile = () => {
                       className={`input${errors.lastName ? ' input--error' : ''}`}
                       placeholder={t('profile.lastName')}
                       maxLength={40}
+                      spellCheck
+                      autoCorrect="on"
+                      autoCapitalize="words"
                     />
                     {errors.lastName && <span className="profile__field-error">{errors.lastName}</span>}
                   </>

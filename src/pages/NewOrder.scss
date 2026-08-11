@@ -10,6 +10,7 @@
   &__card {
     background-color: $color-white;
     box-shadow: $shadow-sm;
+    border: 1px solid $color-gray-200;
     flex: 1;
     min-height: 0;
     display: flex;
@@ -18,7 +19,7 @@
 
   &__header {
     padding: $spacing-md;
-    border-bottom: 1px solid $color-gray-100;
+    border-bottom: 1px solid $color-gray-200;
     flex-shrink: 0;
     display: flex;
     align-items: center;

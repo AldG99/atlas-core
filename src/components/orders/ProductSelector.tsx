@@ -189,11 +189,6 @@ const ProductSelector = ({
 
   return (
     <div className={`product-selector${disabled ? ' product-selector--disabled' : ''}`}>
-      <label className="product-selector__label">
-        {t('orders.products')}
-        {disabled && <span className="product-selector__label-hint">{t('orders.selectClientFirst')}</span>}
-      </label>
-
       <div className="product-selector__search-row" ref={wrapperRef}>
         <div className="product-selector__search-wrapper">
           <PiMagnifyingGlassBold size={16} className="product-selector__search-icon" />
