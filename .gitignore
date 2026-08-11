@@ -34,9 +34,6 @@ functions
 # Tests
 src/__tests__
 
-# Vite
-vite-env.d.ts
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
