@@ -90,7 +90,9 @@
     > svg {
       color: $color-primary;
       flex-shrink: 0;
-      background-color: rgba($color-primary, 0.08);
+      background-color: rgba($color-primary, 0.1);
+      border: 1px solid rgba($color-primary, 0.15);
+      box-sizing: border-box;
       padding: 8px;
       border-radius: 8px;
       width: 40px;

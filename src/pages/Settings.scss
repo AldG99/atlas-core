@@ -1,19 +1,22 @@
+@use 'sass:color';
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
 .settings-page {
   position: fixed;
   inset: 0;
-  background-color: $color-gray-50;
+  background-color: $color-gray-100;
   z-index: 200;
   overflow: hidden;
+  padding: $spacing-md;
 }
 
 .settings {
   display: flex;
   height: 100%;
   overflow: hidden;
-  background-color: $color-gray-50;
+  background-color: $color-white;
+  border: 1px solid $color-gray-200;
 
   // === Left nav panel ===
   &__nav {
@@ -129,15 +132,51 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    color: $color-white;
+    background-color: $color-gray-100;
+    color: $color-gray-600;
+    border: 1px solid rgba($color-gray-600, 0.15);
 
-    &--blue    { background-color: $color-primary; }
-    &--yellow  { background-color: $color-favorite; }
-    &--green   { background-color: $color-success; }
-    &--gray    { background-color: $color-gray-400; }
-    &--purple  { background-color: $color-badge-purple; }
-    &--teal    { background-color: $color-badge-teal; }
-    &--danger  { background-color: $color-danger; }
+    &--blue {
+      background-color: rgba($color-primary, 0.1);
+      color: $color-primary;
+      border-color: rgba($color-primary, 0.15);
+    }
+
+    &--yellow {
+      background-color: rgba($color-favorite, 0.12);
+      color: color.adjust($color-favorite, $lightness: -12%);
+      border-color: rgba($color-favorite, 0.2);
+    }
+
+    &--green {
+      background-color: rgba($color-success, 0.1);
+      color: $color-success;
+      border-color: rgba($color-success, 0.15);
+    }
+
+    &--gray {
+      background-color: $color-gray-100;
+      color: $color-gray-600;
+      border-color: rgba($color-gray-600, 0.15);
+    }
+
+    &--purple {
+      background-color: rgba($color-badge-purple, 0.1);
+      color: $color-badge-purple;
+      border-color: rgba($color-badge-purple, 0.15);
+    }
+
+    &--teal {
+      background-color: rgba($color-badge-teal, 0.1);
+      color: $color-badge-teal;
+      border-color: rgba($color-badge-teal, 0.15);
+    }
+
+    &--danger {
+      background-color: rgba($color-danger, 0.1);
+      color: $color-danger;
+      border-color: rgba($color-danger, 0.15);
+    }
   }
 
   &__row-title {

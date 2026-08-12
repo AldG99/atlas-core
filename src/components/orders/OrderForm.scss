@@ -18,6 +18,10 @@
     &:last-child {
       padding-bottom: $spacing-md;
     }
+
+    .input {
+      height: 36px;
+    }
   }
 
 &__notes-counter {
@@ -38,5 +42,11 @@
   &__actions {
     display: flex;
     gap: $spacing-sm;
+
+    .btn {
+      height: 36px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
   }
 }
