@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { Product, Label } from '../../types/Product';
 import { LABEL_ICONS } from '../../constants/labelIcons';

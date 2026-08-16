@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { PiListBold, PiXBold, PiClipboardTextBold, PiUsersBold, PiPackageBold, PiChartBarBold, PiArchiveBold, PiLifebuoyBold, PiGearSixBold } from 'react-icons/pi';
 import { ROUTES } from '../../config/routes';

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { PiStarFill } from 'react-icons/pi';
 import type { Client } from '../../types/Client';

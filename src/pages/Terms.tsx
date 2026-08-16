@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { PiArrowLeft } from 'react-icons/pi';
 import { CONTACT_EMAIL, getLegalLang } from '../constants/legal';
 import './Legal.scss';

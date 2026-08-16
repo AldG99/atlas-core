@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
   PiArrowRightBold,

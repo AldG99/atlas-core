@@ -1,6 +1,6 @@
 import type { FormEvent } from 'react';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { PiEyeBold, PiEyeSlashBold } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { PiArrowRightBold, PiMagnifyingGlassBold } from 'react-icons/pi';
 import type { Order, OrderItem } from '../../types/Order';

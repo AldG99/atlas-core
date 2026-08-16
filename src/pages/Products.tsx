@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type SortOption = 'name_asc' | 'name_desc' | 'price_asc' | 'price_desc' | 'registration_desc' | 'registration_asc';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiStackPlusBold, PiDownloadSimpleBold } from 'react-icons/pi';
 import { useProducts } from '../hooks/useProducts';
 import { useLabels } from '../hooks/useLabels';
