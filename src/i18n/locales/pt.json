@@ -695,10 +695,13 @@
         "codeRequired": "O código é obrigatório",
         "nameRequired": "O nome é obrigatório",
         "priceInvalid": "O preço deve ser maior que 0",
-        "costPriceInvalid": "O preço de compra deve ser maior que 0"
+        "costPriceInvalid": "O preço de compra deve ser maior que 0",
+        "stockRangeInvalid": "O estoque mínimo não pode ser maior que o máximo"
       },
       "addSuccess": "Produto adicionado com sucesso",
-      "addError": "Erro ao adicionar produto"
+      "addError": "Erro ao adicionar produto",
+      "minStock": "Estoque mínimo",
+      "maxStock": "Estoque máximo"
     },
     "detailModal": {
       "title": "Detalhes do produto",
@@ -719,7 +722,10 @@
       "stockUnits": "{{count}} unidades",
       "noStockControl": "Sem controle de estoque",
       "description": "Descrição",
-      "noDescription": "Sem descrição"
+      "noDescription": "Sem descrição",
+      "stockRange": "Faixa de estoque",
+      "stockRangeValue": "Mín {{min}} / Máx {{max}}",
+      "notSet": "Não definido"
     },
     "discountModal": {
       "title": "Histórico de descontos",
@@ -781,7 +787,8 @@
       "withControl": "Com controle",
       "empty": "Sem estoque",
       "lowStock": "Estoque baixo",
-      "lowStockLabel": "Estoque baixo (≤5)"
+      "lowStockLabel": "Estoque baixo",
+      "stockOfMin": "{{stock}} (mín {{min}})"
     }
   },
   "archive": {
@@ -950,6 +957,10 @@
         "answer": "Na seção \"Produtos\", edite o produto e defina a porcentagem de desconto junto com uma data de expiração. O desconto é aplicado automaticamente aos pedidos enquanto estiver ativo e é mostrado no detalhe do pedido."
       },
       {
+        "question": "Para que servem o estoque mínimo e máximo?",
+        "answer": "Na seção \"Produtos\", edite um produto com controle de estoque ativado e defina um mínimo e um máximo. O mínimo dispara o alerta de estoque baixo quando o inventário chega a esse nível ou menos (em vez de um limite fixo para todos os produtos); o máximo é um teto de referência para não reabastecer além do que você realmente precisa."
+      },
+      {
         "question": "O que são etiquetas e para que servem?",
         "answer": "Etiquetas são categorias visuais que você pode atribuir aos seus produtos na seção \"Produtos\". Elas aparecem no detalhe de cada pedido ao lado dos produtos, facilitando a identificação rápida por categoria, tipo ou qualquer critério que você defina."
       },
@@ -1079,7 +1090,7 @@
     "lowStock": {
       "title": "{{count}} produto com estoque baixo",
       "title_plural": "{{count}} produtos com estoque baixo",
-      "description": "Menos de {{threshold}} unidades disponíveis"
+      "description": "Abaixo do estoque mínimo"
     }
   },
   "notFound": {

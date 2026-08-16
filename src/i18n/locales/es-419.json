@@ -695,10 +695,13 @@
         "codeRequired": "La clave es requerida",
         "nameRequired": "El nombre es requerido",
         "priceInvalid": "El precio debe ser mayor a 0",
-        "costPriceInvalid": "El precio de compra debe ser mayor a 0"
+        "costPriceInvalid": "El precio de compra debe ser mayor a 0",
+        "stockRangeInvalid": "El stock mínimo no puede ser mayor que el máximo"
       },
       "addSuccess": "Producto agregado correctamente",
-      "addError": "Error al agregar el producto"
+      "addError": "Error al agregar el producto",
+      "minStock": "Stock mínimo",
+      "maxStock": "Stock máximo"
     },
     "detailModal": {
       "title": "Detalles del producto",
@@ -719,7 +722,10 @@
       "stockUnits": "{{count}} uds",
       "noStockControl": "Sin control de inventario",
       "description": "Descripción",
-      "noDescription": "Sin descripción"
+      "noDescription": "Sin descripción",
+      "stockRange": "Rango de stock",
+      "stockRangeValue": "Mín {{min}} / Máx {{max}}",
+      "notSet": "Sin definir"
     },
     "discountModal": {
       "title": "Registro de descuentos",
@@ -781,7 +787,8 @@
       "withControl": "Con control",
       "empty": "Agotados",
       "lowStock": "Stock bajo",
-      "lowStockLabel": "Stock bajo (≤5)"
+      "lowStockLabel": "Stock bajo",
+      "stockOfMin": "{{stock}} (mín {{min}})"
     }
   },
   "archive": {
@@ -950,6 +957,10 @@
         "answer": "En la sección \"Productos\", edita el producto y configura el porcentaje de descuento junto con una fecha de vencimiento. El descuento se aplica automáticamente en los pedidos mientras esté vigente y se muestra en el detalle del pedido."
       },
       {
+        "question": "¿Para qué sirven el stock mínimo y máximo?",
+        "answer": "En la sección \"Productos\", edita un producto con control de stock activado y define un mínimo y un máximo. El mínimo dispara la alerta de stock bajo cuando el inventario llega a ese nivel o menos (en vez de un umbral fijo para todos los productos); el máximo es un tope de referencia para no reabastecer más de lo que realmente necesitas."
+      },
+      {
         "question": "¿Qué son las etiquetas y para qué sirven?",
         "answer": "Las etiquetas son categorías visuales que puedes asignar a tus productos desde la sección \"Productos\". Aparecen en el detalle de cada pedido junto a los productos, facilitando la identificación rápida por categoría, tipo o cualquier criterio que definas."
       },
@@ -1079,7 +1090,7 @@
     "lowStock": {
       "title": "{{count}} producto con stock bajo",
       "title_plural": "{{count}} productos con stock bajo",
-      "description": "Menos de {{threshold}} unidades disponibles"
+      "description": "Por debajo del stock mínimo"
     }
   },
   "notFound": {

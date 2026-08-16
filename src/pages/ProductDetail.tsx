@@ -96,6 +96,8 @@ const ProductDetail = () => {
         : '',
       trackStock: product.trackStock ?? false,
       stock: product.stock ?? 0,
+      minStock: product.minStock,
+      maxStock: product.maxStock,
       unit: product.unit ?? '',
       unitQuantity: product.unitQuantity ?? 1,
     });
@@ -128,7 +130,7 @@ const ProductDetail = () => {
   // excluye a propósito.
   const NON_DISCOUNT_FIELDS: (keyof ProductFormData)[] = [
     'sku', 'name', 'price', 'costPrice', 'description', 'image',
-    'labels', 'trackStock', 'stock', 'unit', 'unitQuantity',
+    'labels', 'trackStock', 'stock', 'minStock', 'maxStock', 'unit', 'unitQuantity',
   ];
 
   const handleSave = async () => {
@@ -521,6 +523,40 @@ const ProductDetail = () => {
                             step="1"
                             disabled={!editData?.trackStock}
                           />
+                          <div className="product-detail__stock-range">
+                            <label>
+                              {t('products.modal.minStock')}
+                              <input
+                                type="number"
+                                value={editData?.minStock ?? ''}
+                                onChange={(e) => {
+                                  if (!editData) return;
+                                  const v = e.target.value;
+                                  setEditData({ ...editData, minStock: v === '' ? undefined : Math.max(0, parseInt(v) || 0) });
+                                }}
+                                className="product-detail__input product-detail__input--stock"
+                                min="0"
+                                step="1"
+                                disabled={!editData?.trackStock}
+                              />
+                            </label>
+                            <label>
+                              {t('products.modal.maxStock')}
+                              <input
+                                type="number"
+                                value={editData?.maxStock ?? ''}
+                                onChange={(e) => {
+                                  if (!editData) return;
+                                  const v = e.target.value;
+                                  setEditData({ ...editData, maxStock: v === '' ? undefined : Math.max(0, parseInt(v) || 0) });
+                                }}
+                                className="product-detail__input product-detail__input--stock"
+                                min="0"
+                                step="1"
+                                disabled={!editData?.trackStock}
+                              />
+                            </label>
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -535,6 +571,18 @@ const ProductDetail = () => {
                       </span>
                     )}
                   </div>
+
+                  {!isEditing && product.trackStock && (
+                    <div className="product-detail__row">
+                      <span className="product-detail__row-label">{t('products.detailModal.stockRange')}</span>
+                      <span className="product-detail__row-value">
+                        {t('products.detailModal.stockRangeValue', {
+                          min: product.minStock ?? t('products.detailModal.notSet'),
+                          max: product.maxStock ?? t('products.detailModal.notSet'),
+                        })}
+                      </span>
+                    </div>
+                  )}
 
                   {/* Descuento: fila final, solo en edición */}
                   {isEditing && (

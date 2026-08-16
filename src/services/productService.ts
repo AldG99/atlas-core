@@ -130,8 +130,12 @@ export const createProduct = async (
   data: ProductFormData,
   userId: string
 ): Promise<string> => {
+  // Firestore rechaza valores undefined (ej. minStock/maxStock sin tocar en el form)
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([, v]) => v !== undefined)
+  );
   const docRef = await addDoc(collection(db, COLLECTION_NAME), {
-    ...data,
+    ...cleanData,
     userId,
     createdAt: Timestamp.now()
   });
@@ -167,6 +171,16 @@ export const updateProduct = async (
     );
   } else if ('discountEndDate' in data) {
     updateData.discountEndDate = null;
+  }
+  // minStock/maxStock son opcionales: si el llamador manda el campo como
+  // undefined (el usuario borró el valor en el form) hay que escribir null
+  // explícito, si no el filtro de arriba lo descarta y el valor viejo queda
+  // huérfano en Firestore.
+  if ('minStock' in data) {
+    updateData.minStock = data.minStock ?? null;
+  }
+  if ('maxStock' in data) {
+    updateData.maxStock = data.maxStock ?? null;
   }
 
   if (cancelledDiscount) {

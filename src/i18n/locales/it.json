@@ -695,10 +695,13 @@
         "codeRequired": "Il codice è obbligatorio",
         "nameRequired": "Il nome è obbligatorio",
         "priceInvalid": "Il prezzo deve essere maggiore di 0",
-        "costPriceInvalid": "Il prezzo di acquisto deve essere maggiore di 0"
+        "costPriceInvalid": "Il prezzo di acquisto deve essere maggiore di 0",
+        "stockRangeInvalid": "La scorta minima non può essere maggiore della massima"
       },
       "addSuccess": "Prodotto aggiunto con successo",
-      "addError": "Errore durante l'aggiunta del prodotto"
+      "addError": "Errore durante l'aggiunta del prodotto",
+      "minStock": "Scorta minima",
+      "maxStock": "Scorta massima"
     },
     "detailModal": {
       "title": "Dettagli prodotto",
@@ -719,7 +722,10 @@
       "stockUnits": "{{count}} unità",
       "noStockControl": "Nessun controllo di inventario",
       "description": "Descrizione",
-      "noDescription": "Nessuna descrizione"
+      "noDescription": "Nessuna descrizione",
+      "stockRange": "Intervallo di scorta",
+      "stockRangeValue": "Min {{min}} / Max {{max}}",
+      "notSet": "Non impostato"
     },
     "discountModal": {
       "title": "Cronologia sconti",
@@ -781,7 +787,8 @@
       "withControl": "Con controllo",
       "empty": "Esaurito",
       "lowStock": "Scorte basse",
-      "lowStockLabel": "Scorte basse (≤5)"
+      "lowStockLabel": "Scorte basse",
+      "stockOfMin": "{{stock}} (min {{min}})"
     }
   },
   "archive": {
@@ -950,6 +957,10 @@
         "answer": "Nella sezione \"Prodotti\", modifica il prodotto e imposta la percentuale di sconto insieme a una data di scadenza. Lo sconto viene applicato automaticamente agli ordini mentre è attivo ed è mostrato nel dettaglio dell'ordine."
       },
       {
+        "question": "A cosa servono la scorta minima e massima?",
+        "answer": "Nella sezione \"Prodotti\", modifica un prodotto con il controllo scorte attivato e imposta un minimo e un massimo. Il minimo attiva l'avviso di scorte basse quando l'inventario scende a quel livello o sotto (invece di una soglia fissa per tutti i prodotti); il massimo è un tetto di riferimento per non rifornire oltre il necessario."
+      },
+      {
         "question": "Cosa sono le etichette e a cosa servono?",
         "answer": "Le etichette sono categorie visive che puoi assegnare ai tuoi prodotti dalla sezione \"Prodotti\". Appaiono nel dettaglio di ogni ordine insieme ai prodotti, facilitando l'identificazione rapida per categoria, tipo o qualsiasi criterio tu definisca."
       },
@@ -1079,7 +1090,7 @@
     "lowStock": {
       "title": "{{count}} prodotto con scorte basse",
       "title_plural": "{{count}} prodotti con scorte basse",
-      "description": "Meno di {{threshold}} unità disponibili"
+      "description": "Sotto la scorta minima"
     }
   },
   "notFound": {

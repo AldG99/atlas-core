@@ -695,10 +695,13 @@
         "codeRequired": "Code ist erforderlich",
         "nameRequired": "Name ist erforderlich",
         "priceInvalid": "Der Preis muss größer als 0 sein",
-        "costPriceInvalid": "Der Einkaufspreis muss größer als 0 sein"
+        "costPriceInvalid": "Der Einkaufspreis muss größer als 0 sein",
+        "stockRangeInvalid": "Der Mindestbestand darf nicht größer als der Höchstbestand sein"
       },
       "addSuccess": "Produkt erfolgreich hinzugefügt",
-      "addError": "Fehler beim Hinzufügen des Produkts"
+      "addError": "Fehler beim Hinzufügen des Produkts",
+      "minStock": "Mindestbestand",
+      "maxStock": "Höchstbestand"
     },
     "detailModal": {
       "title": "Produktdetails",
@@ -719,7 +722,10 @@
       "stockUnits": "{{count}} Einheiten",
       "noStockControl": "Keine Bestandskontrolle",
       "description": "Beschreibung",
-      "noDescription": "Keine Beschreibung"
+      "noDescription": "Keine Beschreibung",
+      "stockRange": "Bestandsbereich",
+      "stockRangeValue": "Min {{min}} / Max {{max}}",
+      "notSet": "Nicht festgelegt"
     },
     "discountModal": {
       "title": "Rabattverlauf",
@@ -781,7 +787,8 @@
       "withControl": "Mit Kontrolle",
       "empty": "Nicht auf Lager",
       "lowStock": "Niedriger Bestand",
-      "lowStockLabel": "Niedriger Bestand (≤5)"
+      "lowStockLabel": "Niedriger Bestand",
+      "stockOfMin": "{{stock}} (min {{min}})"
     }
   },
   "archive": {
@@ -950,6 +957,10 @@
         "answer": "Bearbeiten Sie im Bereich „Produkte“ das Produkt und legen Sie den Rabattprozentsatz zusammen mit einem Ablaufdatum fest. Der Rabatt wird automatisch auf Bestellungen angewendet, solange er aktiv ist, und in den Bestelldetails angezeigt."
       },
       {
+        "question": "Wofür sind Mindest- und Höchstbestand?",
+        "answer": "Bearbeite im Bereich „Produkte“ ein Produkt mit aktivierter Bestandsverfolgung und lege einen Mindest- und Höchstbestand fest. Der Mindestbestand löst die Warnung bei niedrigem Bestand aus, sobald der Lagerbestand diesen Wert erreicht oder unterschreitet (statt eines festen Schwellenwerts für alle Produkte); der Höchstbestand ist eine Obergrenze, damit du nicht mehr nachbestellst, als du tatsächlich brauchst."
+      },
+      {
         "question": "Was sind Etiketten und wofür sind sie gedacht?",
         "answer": "Etiketten sind visuelle Kategorien, die Sie Ihren Produkten im Bereich „Produkte“ zuweisen können. Sie erscheinen in den Details jeder Bestellung neben den Produkten und erleichtern die schnelle Erkennung nach Kategorie, Typ oder einem beliebigen von Ihnen definierten Kriterium."
       },
@@ -1079,7 +1090,7 @@
     "lowStock": {
       "title": "{{count}} Produkt mit niedrigem Bestand",
       "title_plural": "{{count}} Produkte mit niedrigem Bestand",
-      "description": "Weniger als {{threshold}} Einheiten verfügbar"
+      "description": "Unter dem Mindestbestand"
     }
   },
   "notFound": {

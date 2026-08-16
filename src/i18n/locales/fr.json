@@ -695,10 +695,13 @@
         "codeRequired": "Le code est requis",
         "nameRequired": "Le nom est requis",
         "priceInvalid": "Le prix doit être supérieur à 0",
-        "costPriceInvalid": "Le prix d'achat doit être supérieur à 0"
+        "costPriceInvalid": "Le prix d'achat doit être supérieur à 0",
+        "stockRangeInvalid": "Le stock minimum ne peut pas être supérieur au maximum"
       },
       "addSuccess": "Produit ajouté avec succès",
-      "addError": "Erreur lors de l'ajout du produit"
+      "addError": "Erreur lors de l'ajout du produit",
+      "minStock": "Stock minimum",
+      "maxStock": "Stock maximum"
     },
     "detailModal": {
       "title": "Détails du produit",
@@ -719,7 +722,10 @@
       "stockUnits": "{{count}} unités",
       "noStockControl": "Sans contrôle d'inventaire",
       "description": "Description",
-      "noDescription": "Aucune description"
+      "noDescription": "Aucune description",
+      "stockRange": "Plage de stock",
+      "stockRangeValue": "Min {{min}} / Max {{max}}",
+      "notSet": "Non défini"
     },
     "discountModal": {
       "title": "Historique des remises",
@@ -781,7 +787,8 @@
       "withControl": "Avec contrôle",
       "empty": "Épuisés",
       "lowStock": "Stock bas",
-      "lowStockLabel": "Stock bas (≤5)"
+      "lowStockLabel": "Stock bas",
+      "stockOfMin": "{{stock}} (min {{min}})"
     }
   },
   "archive": {
@@ -950,6 +957,10 @@
         "answer": "Dans la section \"Produits\", modifiez le produit et configurez le pourcentage de remise ainsi qu'une date d'expiration. La remise s'applique automatiquement dans les commandes tant qu'elle est valide et s'affiche dans le détail de la commande."
       },
       {
+        "question": "À quoi servent le stock minimum et maximum ?",
+        "answer": "Dans la section « Produits », modifiez un produit avec le suivi de stock activé et définissez un minimum et un maximum. Le minimum déclenche l'alerte de stock bas lorsque l'inventaire atteint ce niveau ou moins (au lieu d'un seuil fixe pour tous les produits) ; le maximum est un plafond de référence pour ne pas réapprovisionner au-delà de ce dont vous avez réellement besoin."
+      },
+      {
         "question": "Que sont les étiquettes et à quoi servent-elles ?",
         "answer": "Les étiquettes sont des catégories visuelles que vous pouvez assigner à vos produits depuis la section \"Produits\". Elles apparaissent dans le détail de chaque commande à côté des produits, facilitant l'identification rapide par catégorie ou type."
       },
@@ -1079,7 +1090,7 @@
     "lowStock": {
       "title": "{{count}} produit avec un stock faible",
       "title_plural": "{{count}} produits avec un stock faible",
-      "description": "Moins de {{threshold}} unités disponibles"
+      "description": "En dessous du stock minimum"
     }
   },
   "notFound": {

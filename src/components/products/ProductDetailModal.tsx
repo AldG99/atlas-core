@@ -160,6 +160,17 @@ const ProductDetailModal = ({ product, labels, onClose }: ProductDetailModalProp
                     <span className="order-detail__modal-empty">{t('products.detailModal.noStockControl')}</span>
                   )}
                 </div>
+                {product.trackStock && (
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.stockRange')}</span>
+                    <span className="order-detail__modal-empty">
+                      {t('products.detailModal.stockRangeValue', {
+                        min: product.minStock ?? t('products.detailModal.notSet'),
+                        max: product.maxStock ?? t('products.detailModal.notSet'),
+                      })}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="order-detail__modal-section">

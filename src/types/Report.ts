@@ -45,6 +45,7 @@ export interface InventoryItem {
   name: string;
   sku?: string;
   stock: number;
+  minStock: number;
 }
 
 export interface InventoryStats {

@@ -695,10 +695,13 @@
         "codeRequired": "Code is required",
         "nameRequired": "Name is required",
         "priceInvalid": "Price must be greater than 0",
-        "costPriceInvalid": "Purchase price must be greater than 0"
+        "costPriceInvalid": "Purchase price must be greater than 0",
+        "stockRangeInvalid": "Minimum stock cannot be greater than maximum stock"
       },
       "addSuccess": "Product added successfully",
-      "addError": "Error adding product"
+      "addError": "Error adding product",
+      "minStock": "Minimum stock",
+      "maxStock": "Maximum stock"
     },
     "detailModal": {
       "title": "Product details",
@@ -719,7 +722,10 @@
       "stockUnits": "{{count}} units",
       "noStockControl": "No inventory control",
       "description": "Description",
-      "noDescription": "No description"
+      "noDescription": "No description",
+      "stockRange": "Stock range",
+      "stockRangeValue": "Min {{min}} / Max {{max}}",
+      "notSet": "Not set"
     },
     "discountModal": {
       "title": "Discount history",
@@ -781,7 +787,8 @@
       "withControl": "With control",
       "empty": "Out of stock",
       "lowStock": "Low stock",
-      "lowStockLabel": "Low stock (≤5)"
+      "lowStockLabel": "Low stock",
+      "stockOfMin": "{{stock}} (min {{min}})"
     }
   },
   "archive": {
@@ -950,6 +957,10 @@
         "answer": "In the \"Products\" section, edit the product and set the discount percentage along with an expiration date. The discount is automatically applied to orders while it is active and is shown in the order detail."
       },
       {
+        "question": "What are minimum and maximum stock for?",
+        "answer": "In the \"Products\" section, edit a product with stock tracking enabled and set a minimum and a maximum. The minimum triggers the low-stock alert when inventory reaches that level or below (instead of a fixed threshold for every product); the maximum is a reference cap so you don't restock beyond what you actually need."
+      },
+      {
         "question": "What are labels and what are they for?",
         "answer": "Labels are visual categories you can assign to your products from the \"Products\" section. They appear in the detail of each order alongside the products, making it easy to quickly identify by category, type, or any criteria you define."
       },
@@ -1079,7 +1090,7 @@
     "lowStock": {
       "title": "{{count}} product with low stock",
       "title_plural": "{{count}} products with low stock",
-      "description": "Fewer than {{threshold}} units available"
+      "description": "Below minimum stock level"
     }
   },
   "notFound": {

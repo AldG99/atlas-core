@@ -1,5 +1,6 @@
 import type { Order, OrderStatus } from '../types/Order';
 import type { Product } from '../types/Product';
+import { DEFAULT_LOW_STOCK_THRESHOLD } from '../constants/stock';
 import type {
   KPIs,
   StatusBreakdownItem,
@@ -271,10 +272,10 @@ export const calculateInventoryStats = (products: Product[]): InventoryStats => 
   const tracked = products.filter((p) => p.trackStock);
   const outOfStock = tracked
     .filter((p) => (p.stock ?? 0) === 0)
-    .map((p) => ({ id: p.id, name: p.name, sku: p.sku, stock: 0 }));
+    .map((p) => ({ id: p.id, name: p.name, sku: p.sku, stock: 0, minStock: p.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD }));
   const lowStock = tracked
-    .filter((p) => (p.stock ?? 0) > 0 && (p.stock ?? 0) <= 5)
-    .map((p) => ({ id: p.id, name: p.name, sku: p.sku, stock: p.stock ?? 0 }));
+    .filter((p) => (p.stock ?? 0) > 0 && (p.stock ?? 0) <= (p.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD))
+    .map((p) => ({ id: p.id, name: p.name, sku: p.sku, stock: p.stock ?? 0, minStock: p.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD }));
 
   return { totalTracked: tracked.length, outOfStock, lowStock };
 };

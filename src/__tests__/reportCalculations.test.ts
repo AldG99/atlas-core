@@ -301,4 +301,19 @@ describe('calculateInventoryStats', () => {
     expect(stats.outOfStock).toHaveLength(0);
     expect(stats.lowStock).toHaveLength(0);
   });
+
+  it('uses a product\'s own minStock instead of the default threshold', () => {
+    const products = [
+      // Sin minStock propio → cae al umbral por defecto (5): 4 es bajo, 8 no.
+      makeProduct({ id: '1', stock: 4, trackStock: true }),
+      makeProduct({ id: '2', stock: 8, trackStock: true }),
+      // Con minStock propio → se usa ese valor en vez del default.
+      makeProduct({ id: '3', stock: 8, trackStock: true, minStock: 10 }),
+      makeProduct({ id: '4', stock: 2, trackStock: true, minStock: 1 }),
+    ];
+    const stats = calculateInventoryStats(products);
+    expect(stats.lowStock.map((p) => p.id)).toEqual(['1', '3']);
+    expect(stats.lowStock.find((p) => p.id === '1')?.minStock).toBe(5);
+    expect(stats.lowStock.find((p) => p.id === '3')?.minStock).toBe(10);
+  });
 });

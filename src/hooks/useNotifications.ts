@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOrders } from './useOrders';
 import { useProducts } from './useProducts';
+import { DEFAULT_LOW_STOCK_THRESHOLD } from '../constants/stock';
 
 export interface Notification {
   id: string;
@@ -16,7 +17,6 @@ const DAYS_PENDING = 2;
 const DAYS_PREPARING = 3;
 const DAYS_PAYMENT = 3;
 const DAYS_DISCOUNT = 7;
-const LOW_STOCK_THRESHOLD = 5;
 
 const daysSince = (date: Date): number =>
   Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24));
@@ -119,16 +119,18 @@ export const useNotifications = () => {
       });
     }
 
-    // 6. Productos con stock bajo (> 0 pero <= umbral)
+    // 6. Productos con stock bajo (> 0 pero <= su mínimo, o el umbral por
+    // defecto si el producto no tiene un mínimo configurado)
     const lowStock = products.filter(p =>
-      p.trackStock && (p.stock ?? 0) > 0 && (p.stock ?? 0) <= LOW_STOCK_THRESHOLD
+      p.trackStock && (p.stock ?? 0) > 0 &&
+      (p.stock ?? 0) <= (p.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD)
     );
     if (lowStock.length > 0) {
       result.push({
         id: 'stock_bajo',
         type: 'info',
         title: t('notifications.lowStock.title', { count: lowStock.length }),
-        description: t('notifications.lowStock.description', { threshold: LOW_STOCK_THRESHOLD }),
+        description: t('notifications.lowStock.description'),
         link: '/products',
         filterState: {},
       });

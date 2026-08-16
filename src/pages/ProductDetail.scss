@@ -728,6 +728,19 @@ $topbar-height: 52px;
     }
   }
 
+  &__stock-range {
+    display: flex;
+    gap: $spacing-md;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
+      font-size: $font-size-xs;
+      color: $color-gray-500;
+    }
+  }
+
   &__unit-edit {
     display: flex;
     flex-direction: column;

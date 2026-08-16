@@ -28,6 +28,8 @@ export interface Product {
   discountHistory?: DiscountHistory[];
   trackStock?: boolean;
   stock?: number;
+  minStock?: number;
+  maxStock?: number;
   unit?: string;
   unitQuantity?: number;
   userId: string;
@@ -47,6 +49,8 @@ export interface ProductFormData {
   discountEndDate?: Date | string;
   trackStock?: boolean;
   stock?: number;
+  minStock?: number;
+  maxStock?: number;
   unit?: string;
   unitQuantity?: number;
 }

@@ -63,7 +63,9 @@ const InventoryStatus = ({ inventory }: InventoryStatusProps) => {
                       <span className="inventory-status__sku">{item.sku}</span>
                     )}
                     <span className="inventory-status__name">{item.name}</span>
-                    <span className="inventory-status__stock">{item.stock}</span>
+                    <span className="inventory-status__stock">
+                      {t('reports.inventory.stockOfMin', { stock: item.stock, min: item.minStock })}
+                    </span>
                   </li>
                 ))}
               </ul>

@@ -5,6 +5,7 @@ import type { ProductFormData, Label } from '../../types/Product';
 import { useLabels } from '../../hooks/useLabels';
 import { useCurrency } from '../../hooks/useCurrency';
 import { LABEL_ICONS, LABEL_COLORS } from '../../constants/labelIcons';
+import { DEFAULT_LOW_STOCK_THRESHOLD } from '../../constants/stock';
 import './ProductModal.scss';
 
 interface ProductModalProps {
@@ -30,6 +31,8 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
       labels: [],
       trackStock: false,
       stock: 0,
+      minStock: undefined,
+      maxStock: undefined,
       unit: '',
       unitQuantity: 1,
     }
@@ -57,6 +60,13 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
     }
     if (formData.costPrice <= 0) {
       newErrors.costPrice = t('products.modal.errors.costPriceInvalid');
+    }
+    if (
+      formData.trackStock &&
+      formData.minStock && formData.maxStock &&
+      formData.minStock > formData.maxStock
+    ) {
+      newErrors.minStock = t('products.modal.errors.stockRangeInvalid');
     }
 
     setErrors(newErrors);
@@ -541,6 +551,37 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                   disabled={!formData.trackStock}
                 />
               </div>
+              <div className="stock-input-row">
+                <label htmlFor="minStock">{t('products.modal.minStock')}</label>
+                <input
+                  type="number"
+                  id="minStock"
+                  name="minStock"
+                  value={formData.minStock ?? ''}
+                  onChange={handleChange}
+                  className={`input stock-input ${errors.minStock ? 'input--error' : ''}`}
+                  min="0"
+                  step="1"
+                  placeholder={String(DEFAULT_LOW_STOCK_THRESHOLD)}
+                  disabled={!formData.trackStock}
+                />
+              </div>
+              <div className="stock-input-row">
+                <label htmlFor="maxStock">{t('products.modal.maxStock')}</label>
+                <input
+                  type="number"
+                  id="maxStock"
+                  name="maxStock"
+                  value={formData.maxStock ?? ''}
+                  onChange={handleChange}
+                  className="input stock-input"
+                  min="0"
+                  step="1"
+                  placeholder="—"
+                  disabled={!formData.trackStock}
+                />
+              </div>
+              {errors.minStock && <span className="form-error">{errors.minStock}</span>}
             </div>
           </div>
 
