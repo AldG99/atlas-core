@@ -788,7 +788,8 @@
       "empty": "Sem estoque",
       "lowStock": "Estoque baixo",
       "lowStockLabel": "Estoque baixo",
-      "stockOfMin": "{{stock}} (mín {{min}})"
+      "stockOfMin": "{{stock}} (mín {{min}})",
+      "restockSuggestion": "Pedir {{count}}"
     }
   },
   "archive": {
@@ -926,7 +927,7 @@
     "faq": [
       {
         "question": "Como crio um novo pedido?",
-        "answer": "Vá para \"Meus Pedidos\" e clique em \"Novo Pedido\". Selecione um cliente, adicione os produtos com suas quantidades e confirme. O pedido receberá um número automático."
+        "answer": "Vá para \"Meus Pedidos\" e clique em \"Novo Pedido\". Selecione um cliente, adicione os produtos com suas quantidades e confirme. O pedido receberá um número automático. Você também pode pressionar Shift + N em qualquer tela para abrir o formulário diretamente."
       },
       {
         "question": "Como altero o status de um pedido?",

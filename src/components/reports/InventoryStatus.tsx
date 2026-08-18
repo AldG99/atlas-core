@@ -45,6 +45,11 @@ const InventoryStatus = ({ inventory }: InventoryStatusProps) => {
                     )}
                     <span className="inventory-status__name">{item.name}</span>
                     <span className="inventory-status__stock">0</span>
+                    {!!item.suggestedRestock && (
+                      <span className="inventory-status__restock">
+                        {t('reports.inventory.restockSuggestion', { count: item.suggestedRestock })}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -66,6 +71,11 @@ const InventoryStatus = ({ inventory }: InventoryStatusProps) => {
                     <span className="inventory-status__stock">
                       {t('reports.inventory.stockOfMin', { stock: item.stock, min: item.minStock })}
                     </span>
+                    {!!item.suggestedRestock && (
+                      <span className="inventory-status__restock">
+                        {t('reports.inventory.restockSuggestion', { count: item.suggestedRestock })}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

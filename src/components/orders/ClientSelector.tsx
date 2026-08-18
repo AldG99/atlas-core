@@ -41,6 +41,10 @@ const ClientSelector = ({
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const occasionalTabRef = useRef<HTMLButtonElement>(null);
+  const registeredTabRef = useRef<HTMLButtonElement>(null);
+  const occasionalInputRef = useRef<HTMLInputElement>(null);
+  const registeredSearchInputRef = useRef<HTMLInputElement>(null);
 
   const filteredClients = clients
     .filter(
@@ -120,6 +124,20 @@ const ClientSelector = ({
     setShowDropdown(false);
   };
 
+  const handleTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      const next = mode === 'occasional' ? 'registered' : 'occasional';
+      handleSwitchMode(next);
+      (next === 'occasional' ? occasionalTabRef : registeredTabRef).current?.focus();
+      return;
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      (mode === 'occasional' ? occasionalInputRef : registeredSearchInputRef).current?.focus();
+    }
+  };
+
   const handleConfirmOccasional = () => {
     const { firstName, lastName } = parseOccasionalName(occasionalName);
     if (!firstName) {
@@ -161,6 +179,12 @@ const ClientSelector = ({
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // El foco inicial va a la pestaña, no al input, para que las flechas
+  // izquierda/derecha funcionen apenas se entra al formulario.
+  useEffect(() => {
+    occasionalTabRef.current?.focus();
   }, []);
 
   if (selectedClient) {
@@ -206,21 +230,25 @@ const ClientSelector = ({
     <div className="client-selector" ref={wrapperRef}>
       <div className="client-selector__tabs" role="tablist">
         <button
+          ref={occasionalTabRef}
           type="button"
           role="tab"
           aria-selected={mode === 'occasional'}
           className={`client-selector__tab client-selector__tab--occasional${mode === 'occasional' ? ' client-selector__tab--active' : ''}`}
           onClick={() => handleSwitchMode('occasional')}
+          onKeyDown={handleTabKeyDown}
         >
           <PiUserBold size={15} />
           {t('orders.occasionalClientTab')}
         </button>
         <button
+          ref={registeredTabRef}
           type="button"
           role="tab"
           aria-selected={mode === 'registered'}
           className={`client-selector__tab client-selector__tab--registered${mode === 'registered' ? ' client-selector__tab--active' : ''}`}
           onClick={() => handleSwitchMode('registered')}
+          onKeyDown={handleTabKeyDown}
         >
           <PiUserCheckBold size={15} />
           {t('orders.registeredClientTab')}
@@ -232,8 +260,8 @@ const ClientSelector = ({
           <div className="client-selector__search-wrapper">
             <PiPencilSimpleBold size={16} className="client-selector__search-icon" />
             <input
+              ref={occasionalInputRef}
               type="text"
-              autoFocus
               spellCheck
               autoCorrect="on"
               autoCapitalize="words"
@@ -264,6 +292,7 @@ const ClientSelector = ({
               className="client-selector__search-icon"
             />
             <input
+              ref={registeredSearchInputRef}
               type="text"
               placeholder={t('orders.searchClientPlaceholder')}
               value={searchTerm}

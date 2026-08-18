@@ -788,7 +788,8 @@
       "empty": "Esaurito",
       "lowStock": "Scorte basse",
       "lowStockLabel": "Scorte basse",
-      "stockOfMin": "{{stock}} (min {{min}})"
+      "stockOfMin": "{{stock}} (min {{min}})",
+      "restockSuggestion": "Ordina {{count}}"
     }
   },
   "archive": {
@@ -926,7 +927,7 @@
     "faq": [
       {
         "question": "Come creo un nuovo ordine?",
-        "answer": "Vai su \"I miei ordini\" e clicca \"Nuovo ordine\". Seleziona un cliente, aggiungi i prodotti con le relative quantità e conferma. L'ordine riceverà un numero automatico."
+        "answer": "Vai su \"I miei ordini\" e clicca \"Nuovo ordine\". Seleziona un cliente, aggiungi i prodotti con le relative quantità e conferma. L'ordine riceverà un numero automatico. Puoi anche premere Maiusc + N da qualsiasi schermata per aprire direttamente il modulo."
       },
       {
         "question": "Come cambio lo stato di un ordine?",

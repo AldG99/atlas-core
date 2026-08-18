@@ -97,6 +97,10 @@
     color: $color-gray-600;
     cursor: pointer;
 
+    &:focus {
+      outline: none;
+    }
+
     &:hover {
       border-color: $color-gray-400;
     }

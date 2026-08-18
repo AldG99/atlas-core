@@ -268,14 +268,27 @@ export const calculateTopProducts = (orders: Order[], limit = 3): TopProduct[] =
     }));
 };
 
+// Cuánto pedir para llegar al máximo configurado. Sin maxStock no hay
+// referencia para sugerir una cantidad.
+const suggestRestock = (p: Product): number | undefined =>
+  p.maxStock !== undefined ? Math.max(0, p.maxStock - (p.stock ?? 0)) : undefined;
+
 export const calculateInventoryStats = (products: Product[]): InventoryStats => {
   const tracked = products.filter((p) => p.trackStock);
   const outOfStock = tracked
     .filter((p) => (p.stock ?? 0) === 0)
-    .map((p) => ({ id: p.id, name: p.name, sku: p.sku, stock: 0, minStock: p.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD }));
+    .map((p) => ({
+      id: p.id, name: p.name, sku: p.sku, stock: 0,
+      minStock: p.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD,
+      suggestedRestock: suggestRestock(p),
+    }));
   const lowStock = tracked
     .filter((p) => (p.stock ?? 0) > 0 && (p.stock ?? 0) <= (p.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD))
-    .map((p) => ({ id: p.id, name: p.name, sku: p.sku, stock: p.stock ?? 0, minStock: p.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD }));
+    .map((p) => ({
+      id: p.id, name: p.name, sku: p.sku, stock: p.stock ?? 0,
+      minStock: p.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD,
+      suggestedRestock: suggestRestock(p),
+    }));
 
   return { totalTracked: tracked.length, outOfStock, lowStock };
 };

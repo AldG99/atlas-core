@@ -788,7 +788,8 @@
       "empty": "Agotados",
       "lowStock": "Stock bajo",
       "lowStockLabel": "Stock bajo",
-      "stockOfMin": "{{stock}} (mín {{min}})"
+      "stockOfMin": "{{stock}} (mín {{min}})",
+      "restockSuggestion": "Pedir {{count}}"
     }
   },
   "archive": {
@@ -926,7 +927,7 @@
     "faq": [
       {
         "question": "¿Cómo creo un nuevo pedido?",
-        "answer": "Ve a \"Mis Pedidos\" y haz clic en \"Nuevo Pedido\". Selecciona un cliente, agrega los productos con su cantidad y confirma. El pedido recibirá un folio automático."
+        "answer": "Ve a \"Mis Pedidos\" y haz clic en \"Nuevo Pedido\". Selecciona un cliente, agrega los productos con su cantidad y confirma. El pedido recibirá un folio automático. También puedes presionar Shift + N desde cualquier pantalla para abrir el formulario directamente."
       },
       {
         "question": "¿Cómo cambio el estado de un pedido?",

@@ -788,7 +788,8 @@
       "empty": "Out of stock",
       "lowStock": "Low stock",
       "lowStockLabel": "Low stock",
-      "stockOfMin": "{{stock}} (min {{min}})"
+      "stockOfMin": "{{stock}} (min {{min}})",
+      "restockSuggestion": "Order {{count}}"
     }
   },
   "archive": {
@@ -926,7 +927,7 @@
     "faq": [
       {
         "question": "How do I create a new order?",
-        "answer": "Go to \"My Orders\" and click \"New Order\". Select a client, add the products with their quantities and confirm. The order will receive an automatic folio number."
+        "answer": "Go to \"My Orders\" and click \"New Order\". Select a client, add the products with their quantities and confirm. The order will receive an automatic folio number. You can also press Shift + N from any screen to open the form directly."
       },
       {
         "question": "How do I change the status of an order?",

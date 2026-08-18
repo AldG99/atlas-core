@@ -788,7 +788,8 @@
       "empty": "Épuisés",
       "lowStock": "Stock bas",
       "lowStockLabel": "Stock bas",
-      "stockOfMin": "{{stock}} (min {{min}})"
+      "stockOfMin": "{{stock}} (min {{min}})",
+      "restockSuggestion": "Commander {{count}}"
     }
   },
   "archive": {
@@ -926,7 +927,7 @@
     "faq": [
       {
         "question": "Comment créer une nouvelle commande ?",
-        "answer": "Allez dans \"Mes Commandes\" et cliquez sur \"Nouvelle Commande\". Sélectionnez un client, ajoutez les produits avec leur quantité et confirmez. La commande recevra une référence automatique."
+        "answer": "Allez dans \"Mes Commandes\" et cliquez sur \"Nouvelle Commande\". Sélectionnez un client, ajoutez les produits avec leur quantité et confirmez. La commande recevra une référence automatique. Vous pouvez aussi appuyer sur Maj + N depuis n'importe quel écran pour ouvrir directement le formulaire."
       },
       {
         "question": "Comment changer le statut d'une commande ?",

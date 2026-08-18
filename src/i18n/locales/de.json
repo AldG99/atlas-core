@@ -788,7 +788,8 @@
       "empty": "Nicht auf Lager",
       "lowStock": "Niedriger Bestand",
       "lowStockLabel": "Niedriger Bestand",
-      "stockOfMin": "{{stock}} (min {{min}})"
+      "stockOfMin": "{{stock}} (min {{min}})",
+      "restockSuggestion": "Bestellen: {{count}}"
     }
   },
   "archive": {
@@ -926,7 +927,7 @@
     "faq": [
       {
         "question": "Wie erstelle ich eine neue Bestellung?",
-        "answer": "Gehen Sie zu „Meine Bestellungen“ und klicken Sie auf „Neue Bestellung“. Wählen Sie einen Kunden aus, fügen Sie die Produkte mit ihren Mengen hinzu und bestätigen Sie. Die Bestellung erhält automatisch eine Belegnummer."
+        "answer": "Gehen Sie zu „Meine Bestellungen“ und klicken Sie auf „Neue Bestellung“. Wählen Sie einen Kunden aus, fügen Sie die Produkte mit ihren Mengen hinzu und bestätigen Sie. Die Bestellung erhält automatisch eine Belegnummer. Sie können auch von jedem Bildschirm aus Umschalt + N drücken, um das Formular direkt zu öffnen."
       },
       {
         "question": "Wie ändere ich den Status einer Bestellung?",

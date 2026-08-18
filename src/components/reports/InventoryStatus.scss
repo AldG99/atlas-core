@@ -135,4 +135,14 @@
     .inventory-status__item--danger & { color: $color-danger; }
     .inventory-status__item--warning & { color: $color-warning; }
   }
+
+  &__restock {
+    font-size: $font-size-xs;
+    font-weight: 600;
+    color: $color-primary;
+    background-color: rgba($color-primary, 0.1);
+    padding: 1px 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
 }

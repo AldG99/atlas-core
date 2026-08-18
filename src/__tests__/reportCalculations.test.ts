@@ -316,4 +316,16 @@ describe('calculateInventoryStats', () => {
     expect(stats.lowStock.find((p) => p.id === '1')?.minStock).toBe(5);
     expect(stats.lowStock.find((p) => p.id === '3')?.minStock).toBe(10);
   });
+
+  it('suggests a restock quantity up to maxStock, only when maxStock is set', () => {
+    const products = [
+      makeProduct({ id: '1', stock: 2, trackStock: true, maxStock: 20 }),
+      makeProduct({ id: '2', stock: 0, trackStock: true, maxStock: 15 }),
+      makeProduct({ id: '3', stock: 3, trackStock: true }), // sin maxStock → sin sugerencia
+    ];
+    const stats = calculateInventoryStats(products);
+    expect(stats.lowStock.find((p) => p.id === '1')?.suggestedRestock).toBe(18);
+    expect(stats.outOfStock.find((p) => p.id === '2')?.suggestedRestock).toBe(15);
+    expect(stats.lowStock.find((p) => p.id === '3')?.suggestedRestock).toBeUndefined();
+  });
 });
