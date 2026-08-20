@@ -250,8 +250,7 @@ const Profile = () => {
   return (
     <div className="profile-page">
       <div className="profile">
-        {/* Controles flotantes */}
-        <div className="profile__controls">
+        <div className="profile__header">
           <button className="profile__back-btn" onClick={() => navigate(-1)}>
             <PiArrowLeftBold size={20} />
           </button>
@@ -259,9 +258,10 @@ const Profile = () => {
         </div>
 
         <div className="profile__body">
+          <div className="profile__col profile__col--left">
 
           {/* Formulario */}
-          <div className="profile__card profile__card--main">
+          <div className="profile__card">
             {/* Avatar dentro del card */}
             <div className="profile__avatar-section">
               <div className="profile__avatar">
@@ -436,6 +436,80 @@ const Profile = () => {
 
           <div className="profile__card">
             <div className="profile__card-header">
+              <PiLockKeyBold size={16} />
+              <span>{t('profile.security')}</span>
+            </div>
+            {!showPasswordForm ? (
+              <div className="profile__password-trigger">
+                <span>{t('profile.password')}</span>
+                <button className="btn btn--outline btn--sm" onClick={() => setShowPasswordForm(true)}>
+                  {t('profile.changePassword')}
+                </button>
+              </div>
+            ) : (
+              <div className="profile__password-form">
+                <div className="profile__password-field">
+                  <label>{t('profile.currentPassword')}</label>
+                  <div className="profile__password-input">
+                    <input
+                      type={showCurrentPwd ? 'text' : 'password'}
+                      className="input"
+                      placeholder="••••••••"
+                      value={passwordData.current}
+                      onChange={e => setPasswordData(p => ({ ...p, current: e.target.value }))}
+                      maxLength={32}
+                    />
+                    <button type="button" onClick={() => setShowCurrentPwd(v => !v)}>
+                      {showCurrentPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="profile__password-field">
+                  <label>{t('profile.newPassword')}</label>
+                  <div className="profile__password-input">
+                    <input
+                      type={showNewPwd ? 'text' : 'password'}
+                      className="input"
+                      placeholder="••••••••"
+                      value={passwordData.new}
+                      onChange={e => setPasswordData(p => ({ ...p, new: e.target.value }))}
+                      maxLength={32}
+                    />
+                    <button type="button" onClick={() => setShowNewPwd(v => !v)}>
+                      {showNewPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="profile__password-field">
+                  <label>{t('profile.confirmNewPassword')}</label>
+                  <div className="profile__password-input">
+                    <input
+                      type="password"
+                      className="input"
+                      placeholder="••••••••"
+                      value={passwordData.confirm}
+                      onChange={e => setPasswordData(p => ({ ...p, confirm: e.target.value }))}
+                      maxLength={32}
+                    />
+                  </div>
+                </div>
+                {passwordError && <span className="profile__field-error">{passwordError}</span>}
+                <div className="profile__password-actions">
+                  <button className="btn btn--outline btn--sm" onClick={() => { setShowPasswordForm(false); setPasswordData({ current: '', new: '', confirm: '' }); setPasswordError(''); }}>
+                    {t('common.cancel')}
+                  </button>
+                  <button className="btn btn--primary btn--sm" onClick={handleChangePassword} disabled={savingPassword}>
+                    {savingPassword ? t('common.saving') : t('common.save')}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          </div>
+
+          <div className="profile__col profile__col--right">
+          <div className="profile__card">
+            <div className="profile__card-header">
               <PiMapPinBold size={16} />
               <span>{t('profile.address')}</span>
             </div>
@@ -594,78 +668,6 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="profile__card">
-            <div className="profile__card-header">
-              <PiLockKeyBold size={16} />
-              <span>{t('profile.security')}</span>
-            </div>
-            {!showPasswordForm ? (
-              <div className="profile__password-trigger">
-                <span>{t('profile.password')}</span>
-                <button className="btn btn--outline btn--sm" onClick={() => setShowPasswordForm(true)}>
-                  {t('profile.changePassword')}
-                </button>
-              </div>
-            ) : (
-              <div className="profile__password-form">
-                <div className="profile__password-field">
-                  <label>{t('profile.currentPassword')}</label>
-                  <div className="profile__password-input">
-                    <input
-                      type={showCurrentPwd ? 'text' : 'password'}
-                      className="input"
-                      placeholder="••••••••"
-                      value={passwordData.current}
-                      onChange={e => setPasswordData(p => ({ ...p, current: e.target.value }))}
-                      maxLength={32}
-                    />
-                    <button type="button" onClick={() => setShowCurrentPwd(v => !v)}>
-                      {showCurrentPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
-                    </button>
-                  </div>
-                </div>
-                <div className="profile__password-field">
-                  <label>{t('profile.newPassword')}</label>
-                  <div className="profile__password-input">
-                    <input
-                      type={showNewPwd ? 'text' : 'password'}
-                      className="input"
-                      placeholder="••••••••"
-                      value={passwordData.new}
-                      onChange={e => setPasswordData(p => ({ ...p, new: e.target.value }))}
-                      maxLength={32}
-                    />
-                    <button type="button" onClick={() => setShowNewPwd(v => !v)}>
-                      {showNewPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
-                    </button>
-                  </div>
-                </div>
-                <div className="profile__password-field">
-                  <label>{t('profile.confirmNewPassword')}</label>
-                  <div className="profile__password-input">
-                    <input
-                      type="password"
-                      className="input"
-                      placeholder="••••••••"
-                      value={passwordData.confirm}
-                      onChange={e => setPasswordData(p => ({ ...p, confirm: e.target.value }))}
-                      maxLength={32}
-                    />
-                  </div>
-                </div>
-                {passwordError && <span className="profile__field-error">{passwordError}</span>}
-                <div className="profile__password-actions">
-                  <button className="btn btn--outline btn--sm" onClick={() => { setShowPasswordForm(false); setPasswordData({ current: '', new: '', confirm: '' }); setPasswordError(''); }}>
-                    {t('common.cancel')}
-                  </button>
-                  <button className="btn btn--primary btn--sm" onClick={handleChangePassword} disabled={savingPassword}>
-                    {savingPassword ? t('common.saving') : t('common.save')}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
           {/* Estadísticas */}
           <div className="profile__stats">
             <div className="profile__stat">
@@ -695,6 +697,7 @@ const Profile = () => {
                 <span className="profile__stat-label">{t('profile.statsProducts')}</span>
               </div>
             </div>
+          </div>
           </div>
         </div>
       </div>

@@ -1,37 +1,31 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
-$topbar-height: 52px;
-
 .profile-page {
   position: fixed;
   inset: 0;
-  background-color: $color-gray-50;
+  background-color: $color-gray-100;
   z-index: 200;
-  overflow-y: auto;
+  overflow: hidden;
+  padding: $spacing-md;
 }
 
 .profile {
-  max-width: 720px;
-  margin: 0 auto;
-  padding-top: 48px;
-  padding-bottom: 12px;
-  min-height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background-color: $color-white;
+  border: 1px solid $color-gray-200;
 
-  // Controles flotantes
-  &__controls {
-    position: fixed;
-    top: $spacing-md;
-    left: $spacing-md;
-    right: $spacing-md;
-    z-index: 201;
+  // Header
+  &__header {
     display: flex;
     align-items: center;
-    pointer-events: none;
-
-    > * { pointer-events: all; }
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 1px solid $color-gray-100;
+    flex-shrink: 0;
   }
 
   &__action-btn {
@@ -59,25 +53,19 @@ $topbar-height: 52px;
     color: $color-gray-600;
     cursor: pointer;
     padding: $spacing-xs;
-    transition: color $transition-fast;
+    flex-shrink: 0;
+    transition: color $transition-base;
 
-    &:hover { color: $color-gray-900; }
+    &:hover {
+      color: $color-gray-900;
+    }
   }
 
   &__title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: $font-size-xl;
+    font-size: $font-size-base;
     font-weight: 700;
-    color: $color-gray-900;
+    color: $color-gray-800;
     margin: 0;
-    pointer-events: none;
-    white-space: nowrap;
-
-    @include sm {
-      font-size: $font-size-2xl;
-    }
   }
 
   &__icon-btn {
@@ -92,16 +80,33 @@ $topbar-height: 52px;
     &:hover { color: $color-gray-800; }
   }
 
-  // Body
+  // Body — distribuido en toda la pantalla (2 columnas), sin scroll de página
   &__body {
-    padding: $spacing-xs $spacing-md;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding: $spacing-md;
     display: flex;
     flex-direction: column;
-    gap: $spacing-xs;
-    flex: 1;
+    gap: $spacing-md;
 
     @include md {
-      padding: $spacing-sm $spacing-lg;
+      padding: $spacing-lg;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: $spacing-md;
+    }
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+
+    @include md {
+      min-height: 0;
+      overflow-y: auto;
     }
   }
 
@@ -195,6 +200,7 @@ $topbar-height: 52px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: $spacing-xs;
+    flex-shrink: 0;
   }
 
   &__stat {
@@ -246,10 +252,6 @@ $topbar-height: 52px;
     border-radius: $border-radius-lg;
     box-shadow: $shadow-sm;
     overflow: hidden;
-
-    &--main {
-      flex: 1;
-    }
   }
 
   &__card-header {

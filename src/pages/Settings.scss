@@ -54,15 +54,13 @@
     justify-content: center;
     background: none;
     border: none;
-    color: $color-gray-500;
+    color: $color-gray-600;
     cursor: pointer;
-    padding: 6px;
-    border-radius: $border-radius-md;
+    padding: $spacing-xs;
     flex-shrink: 0;
-    transition: background-color $transition-fast, color $transition-fast;
+    transition: color $transition-base;
 
     &:hover {
-      background-color: $color-gray-100;
       color: $color-gray-900;
     }
   }

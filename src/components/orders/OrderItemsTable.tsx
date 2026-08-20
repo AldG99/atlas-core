@@ -48,6 +48,7 @@ const OrderItemsTable: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const totalProfit = items.reduce((sum, p) => sum + (itemProfit(p) ?? 0), 0);
+  const totalQuantity = items.reduce((sum, p) => sum + p.quantity, 0);
   const hasIncompleteCost = items.some(p => p.unitCost === undefined);
   const labelsBySku = useMemo(() => {
     const map = new Map<string, Label[]>();
@@ -174,7 +175,7 @@ const OrderItemsTable: React.FC<Props> = ({
             <tfoot className="order-detail__products-tfoot">
               <tr className="order-detail__product-total-row">
                 <td><strong>{t('common.total')}</strong></td>
-                <td></td>
+                <td><strong>{totalQuantity}</strong></td>
                 <td></td>
                 <td></td>
                 <td></td>
