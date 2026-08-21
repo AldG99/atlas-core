@@ -220,6 +220,7 @@ const Archive = () => {
           loading={loading}
           error={error}
           searchTerm={searchTerm}
+          muted
         />
         {hasMore && !searchTerm.trim() && (
           <div className="archive__load-more">

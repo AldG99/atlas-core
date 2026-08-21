@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react';
+import type { FormEvent, KeyboardEvent } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { OrderFormData, OrderItem } from '../../types/Order';
@@ -66,7 +66,31 @@ const OrderForm = ({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    await submitOrder();
+  };
 
+  // Bloquea el envío implícito del navegador al presionar Enter suelto en
+  // cualquier campo del formulario (notas, buscadores, etc.) — el pedido
+  // solo se crea con clic en el botón o con Shift+Enter desde cualquier
+  // punto del formulario. Shift+Espacio cancela, igual que el botón Cancelar.
+  const handleFormKeyDown = (e: KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (e.shiftKey && !loading && selectedClient && items.length > 0) {
+        submitOrder();
+      }
+      return;
+    }
+
+    if (e.key === ' ' && e.shiftKey && !loading) {
+      // preventDefault: sin esto insertaría un espacio en el campo enfocado
+      // (notas, buscadores, nombre de cliente ocasional) antes de cancelar.
+      e.preventDefault();
+      onCancel?.();
+    }
+  };
+
+  const submitOrder = async () => {
     if (!validate()) return;
 
     const orderItems: OrderItem[] = items.map((item) => {
@@ -172,7 +196,7 @@ const OrderForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="order-form">
+    <form onSubmit={handleSubmit} onKeyDown={handleFormKeyDown} className="order-form">
       <div className="order-form__fields order-form__fields--client">
         <ClientSelector
           onSelect={handleClientSelect}

@@ -428,6 +428,7 @@
     },
     "createSuccess": "Pedido criado com sucesso",
     "createError": "Erro ao criar pedido",
+    "cancelSuccess": "Pedido cancelado",
     "updateSuccess": "Pedido atualizado",
     "updateError": "Erro ao atualizar pedido",
     "deleteSuccess": "Pedido excluído",
@@ -980,6 +981,10 @@
       {
         "question": "Existem atalhos de teclado dentro do detalhe de um pedido?",
         "answer": "Sim. Use ↑ e ↓ para navegar entre os produtos e pagamentos do pedido (ao chegar ao último produto, ↓ passa automaticamente para a lista de pagamentos e vice-versa). Com um produto selecionado, pressione Enter para ver sua ficha ou Escape para fechá-la."
+      },
+      {
+        "question": "Quais atalhos de teclado o formulário de Novo Pedido tem?",
+        "answer": "Sim. Ao selecionar um cliente (cadastrado ou de balcão), o foco pula automaticamente para o campo de busca de produtos. Ali, ↑ e ↓ navegam pelas sugestões de busca e Enter as adiciona; com o campo de busca vazio, ↑ e ↓ navegam pelos produtos já adicionados, ← e → ajustam a quantidade, e Enter abre ou fecha a ficha de detalhes. Para finalizar, Shift + Enter cria o pedido e Shift + Espaço o cancela."
       }
     ],
     "contactTitle": "Contato com Suporte",

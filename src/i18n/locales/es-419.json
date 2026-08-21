@@ -428,6 +428,7 @@
     },
     "createSuccess": "Pedido creado correctamente",
     "createError": "Error al crear el pedido",
+    "cancelSuccess": "Pedido cancelado",
     "updateSuccess": "Pedido actualizado",
     "updateError": "Error al actualizar el pedido",
     "deleteSuccess": "Pedido eliminado",
@@ -980,6 +981,10 @@
       {
         "question": "¿Hay atajos de teclado dentro del detalle de un pedido?",
         "answer": "Sí. Usa ↑ y ↓ para navegar entre los productos y los abonos del pedido (al llegar al último producto, ↓ pasa automáticamente a la lista de abonos y viceversa). Con un producto seleccionado, presiona Enter para ver su ficha o Escape para cerrarla."
+      },
+      {
+        "question": "¿Qué atajos de teclado tiene el formulario de Nuevo Pedido?",
+        "answer": "Sí. Al elegir un cliente (registrado o de mostrador), el foco salta automáticamente al buscador de productos. Ahí, ↑ y ↓ navegan las sugerencias de búsqueda y Enter las agrega; con el buscador vacío, ↑ y ↓ navegan los productos ya agregados, ← y → ajustan su cantidad, y Enter abre o cierra la ficha de detalle. Para terminar, Shift + Enter crea el pedido y Shift + Espacio lo cancela."
       }
     ],
     "contactTitle": "Contactar Soporte",

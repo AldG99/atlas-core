@@ -13,14 +13,23 @@ import { useClients } from '../../hooks/useClients';
 import { useCurrency } from '../../hooks/useCurrency';
 import './OrdersTable.scss';
 
+// Gris neutro ($color-gray-400, "íconos/placeholders") para el ícono de
+// estado cuando la tabla está en modo `muted` — evita el mismo verde de
+// $color-success que en la vista activa comunica "entregado".
+const STATUS_COLOR_MUTED = '#ada9a1';
+
 interface OrdersTableProps {
   orders: Order[];
   loading?: boolean;
   error?: string | null;
   searchTerm?: string;
+  // Vista de solo lectura (p. ej. Archivados): apaga el verde de "abonado"/"total"
+  // saldado y del ícono de estado "entregado" a un gris neutro, ya que ahí no
+  // comunican una acción pendiente como en el Dashboard.
+  muted?: boolean;
 }
 
-const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) => {
+const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: OrdersTableProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -111,7 +120,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
         </table>
       </div>
       <div ref={tableContainerRef} className="orders-table-container">
-        <table className="orders-table">
+        <table className={`orders-table${muted ? ' orders-table--muted' : ''}`}>
           <colgroup>
             <col style={{ width: '20%' }} />
             <col style={{ width: '12%' }} />
@@ -211,7 +220,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm }: OrdersTableProps) =
               <td>
                 <PiShoppingBagBold
                   size={18}
-                  style={{ color: ORDER_STATUS_COLORS[order.status], display: 'block', margin: '0 auto' }}
+                  style={{ color: muted ? STATUS_COLOR_MUTED : ORDER_STATUS_COLORS[order.status], display: 'block', margin: '0 auto' }}
                   aria-hidden="true"
                 />
                 <span className="sr-only">{t(`orders.status.${order.status}`)}</span>

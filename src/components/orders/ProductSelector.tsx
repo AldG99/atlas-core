@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { PiPlusBold, PiMinusBold, PiMagnifyingGlassBold, PiXBold, PiStackPlusBold } from 'react-icons/pi';
@@ -52,6 +52,7 @@ const ProductSelector = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const tableScrollRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const isDiscountActive = (p: Product): boolean => {
     if (!p.discount || p.discount <= 0) return false;
@@ -87,29 +88,79 @@ const ProductSelector = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showDropdown || filteredProducts.length === 0) return;
+    if (showDropdown && filteredProducts.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setFocusedIndex(prev => {
+          const next = Math.min(prev + 1, filteredProducts.length - 1);
+          dropdownRef.current?.querySelectorAll<HTMLElement>('.product-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
+          return next;
+        });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setFocusedIndex(prev => {
+          const next = Math.max(prev - 1, 0);
+          dropdownRef.current?.querySelectorAll<HTMLElement>('.product-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
+          return next;
+        });
+      } else if (e.key === 'Enter' && focusedIndex >= 0) {
+        e.preventDefault();
+        handleSelectProduct(filteredProducts[focusedIndex]);
+      } else if (e.key === 'Escape') {
+        setShowDropdown(false);
+        setFocusedIndex(-1);
+      }
+      return;
+    }
+
+    // Sin sugerencias de búsqueda visibles: las flechas navegan la tabla de
+    // productos ya agregados (el buscador queda enfocado tras cada alta, ver
+    // efecto de auto-foco más abajo) en vez de no hacer nada.
+    if (items.length === 0) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setFocusedIndex(prev => {
-        const next = Math.min(prev + 1, filteredProducts.length - 1);
-        dropdownRef.current?.querySelectorAll<HTMLElement>('.product-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
-        return next;
-      });
+      moveFocusedRow(1);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setFocusedIndex(prev => {
-        const next = Math.max(prev - 1, 0);
-        dropdownRef.current?.querySelectorAll<HTMLElement>('.product-selector__dropdown-item')?.[next]?.scrollIntoView({ block: 'nearest' });
-        return next;
-      });
-    } else if (e.key === 'Enter' && focusedIndex >= 0) {
+      moveFocusedRow(-1);
+    } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      handleSelectProduct(filteredProducts[focusedIndex]);
-    } else if (e.key === 'Escape') {
-      setShowDropdown(false);
-      setFocusedIndex(-1);
+      changeFocusedRowQuantity(1);
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      changeFocusedRowQuantity(-1);
+    } else if (e.key === 'Enter' && !e.shiftKey) {
+      // Se previene siempre (aunque no haya fila enfocada) para no disparar
+      // el submit implícito del <form> al presionar Enter con el buscador vacío.
+      // Shift+Enter se deja pasar sin abrir el detalle: OrderForm lo usa
+      // exclusivamente para crear el pedido.
+      e.preventDefault();
+      toggleProductDetail();
+    } else if (e.key === 'Escape' && selectedProduct) {
+      setSelectedProduct(null);
     }
   };
+
+  const moveFocusedRow = useCallback((direction: 1 | -1) => {
+    if (items.length === 0) return;
+    setFocusedRow(prev => {
+      const next = prev === null ? 0 : Math.min(Math.max(prev + direction, 0), items.length - 1);
+      if (selectedProduct) setSelectedProduct(items[next].product);
+      return next;
+    });
+  }, [items, selectedProduct]);
+
+  const toggleProductDetail = useCallback(() => {
+    if (focusedRow === null) return;
+    setSelectedProduct(selectedProduct ? null : items[focusedRow].product);
+  }, [focusedRow, items, selectedProduct]);
+
+  const changeFocusedRowQuantity = useCallback((delta: 1 | -1) => {
+    if (focusedRow === null) return;
+    const item = items[focusedRow];
+    if (delta > 0 && item.product.trackStock && item.quantity >= (item.product.stock ?? 0)) return;
+    onUpdateQuantity(item.product.id, item.quantity + delta);
+  }, [focusedRow, items, onUpdateQuantity]);
 
   const handleSelectProduct = (product: Product) => {
     if (product.trackStock) {
@@ -146,28 +197,28 @@ const ProductSelector = ({
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        const next = focusedRow === null ? 0 : Math.min(focusedRow + 1, items.length - 1);
-        setFocusedRow(next);
-        if (selectedProduct) setSelectedProduct(items[next].product);
+        moveFocusedRow(1);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        const next = focusedRow === null ? 0 : Math.max(focusedRow - 1, 0);
-        setFocusedRow(next);
-        if (selectedProduct) setSelectedProduct(items[next].product);
-      } else if (e.key === 'Enter' && focusedRow !== null) {
+        moveFocusedRow(-1);
+      } else if (e.key === 'ArrowRight') {
         e.preventDefault();
-        if (selectedProduct) {
-          setSelectedProduct(null);
-        } else {
-          setSelectedProduct(items[focusedRow].product);
-        }
+        changeFocusedRowQuantity(1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        changeFocusedRowQuantity(-1);
+      } else if (e.key === 'Enter' && focusedRow !== null && !e.shiftKey) {
+        // Shift+Enter se deja pasar sin abrir el detalle: OrderForm lo usa
+        // exclusivamente para crear el pedido.
+        e.preventDefault();
+        toggleProductDetail();
       } else if (e.key === 'Escape' && selectedProduct) {
         setSelectedProduct(null);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [items, focusedRow, selectedProduct]);
+  }, [items, focusedRow, selectedProduct, moveFocusedRow, toggleProductDetail, changeFocusedRowQuantity]);
 
   useEffect(() => {
     if (focusedRow === null || !tableScrollRef.current) return;
@@ -187,12 +238,22 @@ const ProductSelector = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Al confirmar un cliente (registrado u ocasional), `disabled` pasa de
+  // true a false: se salta el foco al buscador de productos para poder
+  // seguir armando el pedido solo con teclado, sin clic intermedio.
+  useEffect(() => {
+    if (!disabled) {
+      searchInputRef.current?.focus();
+    }
+  }, [disabled]);
+
   return (
     <div className={`product-selector${disabled ? ' product-selector--disabled' : ''}`}>
       <div className="product-selector__search-row" ref={wrapperRef}>
         <div className="product-selector__search-wrapper">
           <PiMagnifyingGlassBold size={16} className="product-selector__search-icon" />
           <input
+            ref={searchInputRef}
             type="text"
             placeholder={t('orders.searchProductPlaceholder')}
             value={searchTerm}

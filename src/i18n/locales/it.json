@@ -428,6 +428,7 @@
     },
     "createSuccess": "Ordine creato con successo",
     "createError": "Errore durante la creazione dell'ordine",
+    "cancelSuccess": "Ordine annullato",
     "updateSuccess": "Ordine aggiornato",
     "updateError": "Errore durante l'aggiornamento dell'ordine",
     "deleteSuccess": "Ordine eliminato",
@@ -980,6 +981,10 @@
       {
         "question": "Ci sono scorciatoie da tastiera all'interno del dettaglio di un ordine?",
         "answer": "Sì. Usa ↑ e ↓ per navigare tra i prodotti e i pagamenti dell'ordine (premendo ↓ sull'ultimo prodotto si passa automaticamente all'elenco dei pagamenti e viceversa). Con una riga di prodotto selezionata, premi Invio per visualizzarne i dettagli o Esc per chiuderla."
+      },
+      {
+        "question": "Quali scorciatoie da tastiera ha il modulo Nuovo Ordine?",
+        "answer": "Sì. Selezionando un cliente (registrato o al banco), il focus passa automaticamente al campo di ricerca prodotti. Lì, ↑ e ↓ navigano tra i suggerimenti di ricerca e Invio li aggiunge; con il campo di ricerca vuoto, ↑ e ↓ navigano tra i prodotti già aggiunti, ← e → ne regolano la quantità, e Invio apre o chiude la scheda dettagli. Per concludere, Maiusc + Invio crea l'ordine e Maiusc + Spazio lo annulla."
       }
     ],
     "contactTitle": "Contatta l'assistenza",

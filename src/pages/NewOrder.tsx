@@ -29,6 +29,11 @@ const NewOrder = () => {
   const defaultClient = locationState?.client;
   const defaultItems = locationState?.items;
 
+  const handleCancel = () => {
+    showToast(t('orders.cancelSuccess'), 'info');
+    navigate(-1);
+  };
+
   const handleSubmit = async (data: OrderFormData) => {
     setLoading(true);
     setError('');
@@ -62,7 +67,7 @@ const NewOrder = () => {
           <div className="new-order__form">
             <OrderForm
               onSubmit={handleSubmit}
-              onCancel={() => navigate(-1)}
+              onCancel={handleCancel}
               loading={loading}
               defaultClient={defaultClient}
               defaultItems={defaultItems}

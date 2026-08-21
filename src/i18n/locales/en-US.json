@@ -428,6 +428,7 @@
     },
     "createSuccess": "Order created successfully",
     "createError": "Error creating order",
+    "cancelSuccess": "Order canceled",
     "updateSuccess": "Order updated",
     "updateError": "Error updating order",
     "deleteSuccess": "Order deleted",
@@ -980,6 +981,10 @@
       {
         "question": "Are there keyboard shortcuts inside an order detail?",
         "answer": "Yes. Use ↑ and ↓ to navigate between the order's products and payments (pressing ↓ on the last product automatically moves to the payments list and vice versa). With a product row selected, press Enter to view its details or Escape to close it."
+      },
+      {
+        "question": "What keyboard shortcuts are available in the New Order form?",
+        "answer": "Yes. After selecting a client (registered or walk-in), focus jumps automatically to the product search box. There, ↑ and ↓ navigate the search suggestions and Enter adds them; with the search box empty, ↑ and ↓ navigate the products already in the cart, ← and → adjust their quantity, and Enter opens or closes the product's detail view. To finish, Shift + Enter creates the order and Shift + Space cancels it."
       }
     ],
     "contactTitle": "Contact Support",

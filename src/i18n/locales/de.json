@@ -428,6 +428,7 @@
     },
     "createSuccess": "Bestellung erfolgreich erstellt",
     "createError": "Fehler beim Erstellen der Bestellung",
+    "cancelSuccess": "Bestellung storniert",
     "updateSuccess": "Bestellung aktualisiert",
     "updateError": "Fehler beim Aktualisieren der Bestellung",
     "deleteSuccess": "Bestellung gelöscht",
@@ -980,6 +981,10 @@
       {
         "question": "Gibt es Tastaturkürzel innerhalb der Bestelldetails?",
         "answer": "Ja. Verwenden Sie ↑ und ↓, um zwischen den Produkten und Zahlungen der Bestellung zu navigieren (durch Drücken von ↓ beim letzten Produkt wechseln Sie automatisch zur Zahlungsliste und umgekehrt). Wenn eine Produktzeile ausgewählt ist, drücken Sie die Eingabetaste, um die Details anzuzeigen, oder Escape, um sie zu schließen."
+      },
+      {
+        "question": "Welche Tastaturkürzel gibt es im Formular „Neue Bestellung“?",
+        "answer": "Ja. Nach der Auswahl eines Kunden (registriert oder Laufkundschaft) springt der Fokus automatisch zum Produktsuchfeld. Dort navigieren ↑ und ↓ durch die Suchvorschläge, und die Eingabetaste fügt sie hinzu; bei leerem Suchfeld navigieren ↑ und ↓ durch die bereits hinzugefügten Produkte, ← und → passen deren Menge an, und die Eingabetaste öffnet oder schließt die Produktdetails. Zum Abschluss erstellt Umschalt + Eingabetaste die Bestellung, und Umschalt + Leertaste bricht sie ab."
       }
     ],
     "contactTitle": "Support kontaktieren",
