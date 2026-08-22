@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiArrowRightBold,
+  PiArrowRight,
   PiStarFill,
-  PiCaretRightBold,
+  PiCaretRight,
 } from 'react-icons/pi';
 import { toPng } from 'html-to-image';
 import OrderCapture from '../components/orders/OrderCapture';
@@ -449,7 +449,7 @@ const OrderDetail = () => {
                 {order.orderNumber && (
                   <>
                     <span className="order-detail__order-number">{order.orderNumber}</span>
-                    <PiCaretRightBold size={12} className="order-detail__order-number-sep" />
+                    <PiCaretRight size={12} className="order-detail__order-number-sep" />
                   </>
                 )}
                 <span
@@ -469,7 +469,7 @@ const OrderDetail = () => {
                 </span>
                 {order.deliveredAt && (
                   <>
-                    <PiArrowRightBold size={12} className="order-detail__date-arrow" />
+                    <PiArrowRight size={12} className="order-detail__date-arrow" />
                     <span className="order-detail__date order-detail__date--delivery">
                       {formatDate(order.deliveredAt)}
                     </span>

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { PiXBold } from 'react-icons/pi';
+import { PiX } from 'react-icons/pi';
 
 interface Props {
   orderNumber?: string;
@@ -20,7 +20,7 @@ const OrderDeleteModal = ({ orderNumber, confirmText, onConfirmTextChange, onCon
         <div className="order-detail__modal-header">
           <h3>{t('orders.deleteModal.title')}</h3>
           <button className="order-detail__modal-close" onClick={onClose}>
-            <PiXBold size={18} />
+            <PiX size={18} />
           </button>
         </div>
         <div className="order-detail__modal-body order-detail__modal-body--confirm">

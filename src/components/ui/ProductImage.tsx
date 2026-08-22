@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiPackageBold } from 'react-icons/pi';
+import { PiPackage } from 'react-icons/pi';
 
 interface Props {
   src?: string | null;
@@ -24,7 +24,7 @@ const ProductImage = ({ src, alt, placeholderClassName, placeholderSize = 48 }: 
   }
   return (
     <div className={placeholderClassName}>
-      <PiPackageBold size={placeholderSize} />
+      <PiPackage size={placeholderSize} />
       <span>{t('common.noImage')}</span>
     </div>
   );

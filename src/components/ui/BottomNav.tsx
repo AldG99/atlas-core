@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiClipboardTextBold,
-  PiUsersBold,
-  PiPackageBold,
-  PiChartBarBold,
-  PiListBold,
+  PiClipboardText,
+  PiUsers,
+  PiPackage,
+  PiChartBar,
+  PiList,
 } from 'react-icons/pi';
 import { ROUTES } from '../../config/routes';
 import './BottomNav.scss';
@@ -25,7 +25,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
       >
-        <PiClipboardTextBold size={22} />
+        <PiClipboardText size={22} />
         <span>{t('nav.orders')}</span>
       </NavLink>
 
@@ -35,7 +35,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
       >
-        <PiUsersBold size={22} />
+        <PiUsers size={22} />
         <span>{t('nav.clients')}</span>
       </NavLink>
 
@@ -45,7 +45,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
       >
-        <PiPackageBold size={22} />
+        <PiPackage size={22} />
         <span>{t('nav.products')}</span>
       </NavLink>
 
@@ -55,7 +55,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
       >
-        <PiChartBarBold size={22} />
+        <PiChartBar size={22} />
         <span>{t('nav.reports')}</span>
       </NavLink>
 
@@ -64,7 +64,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
         onClick={onOpenMenu}
         aria-label={t('nav.openMenu')}
       >
-        <PiListBold size={22} />
+        <PiList size={22} />
         <span>{t('nav.menu')}</span>
       </button>
     </nav>

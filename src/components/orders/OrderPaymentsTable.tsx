@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { PiCheckBold, PiXBold, PiPencilSimpleBold } from 'react-icons/pi';
+import { PiCheck, PiX, PiPencilSimple } from 'react-icons/pi';
 import type { Payment, OrderItem, OrderStatus } from '../../types/Order';
 import { formatDate } from '../../utils/formatters';
 
@@ -118,10 +118,10 @@ const OrderPaymentsTable: React.FC<Props> = ({
                             }}
                           />
                           <button className="order-detail__payment-edit-confirm" onClick={() => onEditConfirm(payment.id)} title={t('common.confirm')}>
-                            <PiCheckBold size={14} />
+                            <PiCheck size={14} />
                           </button>
                           <button className="order-detail__payment-edit-cancel" onClick={onEditCancel} title={t('common.cancel')}>
-                            <PiXBold size={14} />
+                            <PiX size={14} />
                           </button>
                         </div>
                       ) : (
@@ -146,7 +146,7 @@ const OrderPaymentsTable: React.FC<Props> = ({
                           disabled={status === 'delivered' || archived}
                           onClick={() => onEditStart(payment.id, payment.amount)}
                         >
-                          <PiPencilSimpleBold size={14} />
+                          <PiPencilSimple size={14} />
                         </button>
                       )}
                     </td>

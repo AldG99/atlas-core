@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiWarningBold, PiXBold, PiEyeBold, PiEyeSlashBold } from 'react-icons/pi';
+import { PiWarning, PiX, PiEye, PiEyeSlash } from 'react-icons/pi';
 
 interface DangerModalProps {
   type: 'deleteData' | 'deleteAccount';
@@ -39,12 +39,12 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
     <div className="settings__modal-overlay" onClick={onClose}>
       <div className="settings__modal" onClick={e => e.stopPropagation()}>
         <div className="settings__modal-header">
-          <PiWarningBold size={20} className="settings__modal-icon" />
+          <PiWarning size={20} className="settings__modal-icon" />
           <h3>
             {type === 'deleteData' ? t('settings.dangerModal.deleteDataTitle') : t('settings.dangerModal.deleteAccountTitle')}
           </h3>
           <button className="settings__modal-close" onClick={onClose}>
-            <PiXBold size={16} />
+            <PiX size={16} />
           </button>
         </div>
         <div className="settings__modal-body">
@@ -65,13 +65,13 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
                 onKeyDown={e => e.key === 'Enter' && handleConfirm()}
               />
               <button type="button" onClick={() => setShowPwd(v => !v)}>
-                {showPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                {showPwd ? <PiEyeSlash size={16} /> : <PiEye size={16} />}
               </button>
             </div>
           </div>
           {error && (
             <div className="settings__file-error">
-              <PiWarningBold size={14} />
+              <PiWarning size={14} />
               {error}
             </div>
           )}

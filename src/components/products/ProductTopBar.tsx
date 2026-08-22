@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { PiArrowLeftBold, PiPencilBold, PiTrashBold } from 'react-icons/pi';
+import { PiArrowLeft, PiPencil, PiTrash } from 'react-icons/pi';
 
 interface Props {
   isEditing: boolean;
@@ -24,7 +24,7 @@ const ProductTopBar = ({
           onClick={onBack}
           title={t('products.detail.back')}
         >
-          <PiArrowLeftBold size={20} />
+          <PiArrowLeft size={20} />
         </button>
         {isEditing ? (
           <div className="product-detail__top-bar-actions">
@@ -48,17 +48,17 @@ const ProductTopBar = ({
             <span className="product-detail__top-divider" />
             <button
               onClick={onStartEdit}
-              className="product-detail__icon-btn product-detail__icon-btn--primary"
+              className="product-detail__icon-btn"
               title={t('products.detail.editProduct')}
             >
-              <PiPencilBold size={20} />
+              <PiPencil size={20} />
             </button>
             <button
               onClick={onDelete}
-              className="product-detail__icon-btn product-detail__icon-btn--danger"
+              className="product-detail__icon-btn"
               title={t('products.detail.deleteProduct')}
             >
-              <PiTrashBold size={20} />
+              <PiTrash size={20} />
             </button>
           </>
         )}

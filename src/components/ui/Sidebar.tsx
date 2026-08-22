@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { PiListBold, PiXBold, PiClipboardTextBold, PiUsersBold, PiPackageBold, PiChartBarBold, PiArchiveBold, PiLifebuoyBold, PiGearSixBold } from 'react-icons/pi';
+import { PiList, PiX, PiClipboardText, PiUsers, PiPackage, PiChartBar, PiArchive, PiLifebuoy, PiGearSix } from 'react-icons/pi';
 import { ROUTES } from '../../config/routes';
 import './Sidebar.scss';
 
@@ -22,7 +22,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
         aria-expanded={isMobileOpen}
         aria-controls="sidebar"
       >
-        {isMobileOpen ? <PiXBold size={24} /> : <PiListBold size={24} />}
+        {isMobileOpen ? <PiX size={24} /> : <PiList size={24} />}
       </button>
 
       {isMobileOpen && (
@@ -46,7 +46,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
-            <span className="sidebar__link-icon"><PiClipboardTextBold size={22} /></span>
+            <span className="sidebar__link-icon"><PiClipboardText size={22} /></span>
             <span className="sidebar__link-text">{t('nav.orders')}</span>
           </NavLink>
 
@@ -55,7 +55,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
-            <span className="sidebar__link-icon"><PiUsersBold size={22} /></span>
+            <span className="sidebar__link-icon"><PiUsers size={22} /></span>
             <span className="sidebar__link-text">{t('nav.clients')}</span>
           </NavLink>
 
@@ -64,7 +64,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
-            <span className="sidebar__link-icon"><PiPackageBold size={22} /></span>
+            <span className="sidebar__link-icon"><PiPackage size={22} /></span>
             <span className="sidebar__link-text">{t('nav.products')}</span>
           </NavLink>
 
@@ -73,7 +73,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
-            <span className="sidebar__link-icon"><PiChartBarBold size={22} /></span>
+            <span className="sidebar__link-icon"><PiChartBar size={22} /></span>
             <span className="sidebar__link-text">{t('nav.reports')}</span>
           </NavLink>
 
@@ -82,7 +82,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
-            <span className="sidebar__link-icon"><PiArchiveBold size={22} /></span>
+            <span className="sidebar__link-icon"><PiArchive size={22} /></span>
             <span className="sidebar__link-text">{t('nav.archived')}</span>
           </NavLink>
 
@@ -94,7 +94,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
-            <span className="sidebar__link-icon"><PiGearSixBold size={22} /></span>
+            <span className="sidebar__link-icon"><PiGearSix size={22} /></span>
             <span className="sidebar__link-text">{t('nav.settings')}</span>
           </NavLink>
 
@@ -103,7 +103,7 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
-            <span className="sidebar__link-icon"><PiLifebuoyBold size={22} /></span>
+            <span className="sidebar__link-icon"><PiLifebuoy size={22} /></span>
             <span className="sidebar__link-text">{t('nav.support')}</span>
           </NavLink>
         </div>

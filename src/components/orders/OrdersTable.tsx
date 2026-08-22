@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { PiStarFill, PiCaretLeftBold, PiCaretRightBold, PiShoppingBagBold } from 'react-icons/pi';
+import { PiStarFill, PiCaretLeft, PiCaretRight, PiShoppingBag } from 'react-icons/pi';
 
 const PAGE_SIZE = 20;
 import type { Order } from '../../types/Order';
@@ -218,7 +218,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
                 })()}
               </td>
               <td>
-                <PiShoppingBagBold
+                <PiShoppingBag
                   size={18}
                   style={{ color: muted ? STATUS_COLOR_MUTED : ORDER_STATUS_COLORS[order.status], display: 'block', margin: '0 auto' }}
                   aria-hidden="true"
@@ -247,7 +247,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
                 onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
                 disabled={page === 0}
               >
-                <PiCaretLeftBold size={14} />
+                <PiCaretLeft size={14} />
               </button>
               <span className="orders-table__page-info">
                 {page + 1} / {totalPages}
@@ -257,7 +257,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
                 onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
                 disabled={page === totalPages - 1}
               >
-                <PiCaretRightBold size={14} />
+                <PiCaretRight size={14} />
               </button>
             </>
           )}

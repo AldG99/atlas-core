@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiArrowLeftBold,
-  PiPencilBold,
-  PiUserBold,
-  PiUsersBold,
-  PiShoppingBagBold,
-  PiReceiptBold,
-  PiLockKeyBold,
-  PiEyeBold,
-  PiEyeSlashBold,
-  PiMapPinBold,
+  PiArrowLeft,
+  PiPencil,
+  PiUser,
+  PiUsers,
+  PiShoppingBag,
+  PiReceipt,
+  PiLockKey,
+  PiEye,
+  PiEyeSlash,
+  PiMapPin,
 } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -252,7 +252,7 @@ const Profile = () => {
       <div className="profile">
         <div className="profile__header">
           <button className="profile__back-btn" onClick={() => navigate(-1)}>
-            <PiArrowLeftBold size={20} />
+            <PiArrowLeft size={20} />
           </button>
           <h1 className="profile__title">{t('profile.title')}</h1>
         </div>
@@ -276,7 +276,7 @@ const Profile = () => {
             </div>
 
             <div className="profile__card-header">
-              <PiUserBold size={16} />
+              <PiUser size={16} />
               <span>{t('profile.adminInfo')}</span>
               <div className="profile__card-header-actions">
                 {isEditing ? (
@@ -290,7 +290,7 @@ const Profile = () => {
                   </>
                 ) : (
                   <button className="profile__action-btn profile__action-btn--primary" onClick={() => setIsEditing(true)} title={t('profile.editButton')}>
-                    <PiPencilBold size={20} />
+                    <PiPencil size={20} />
                   </button>
                 )}
               </div>
@@ -436,7 +436,7 @@ const Profile = () => {
 
           <div className="profile__card">
             <div className="profile__card-header">
-              <PiLockKeyBold size={16} />
+              <PiLockKey size={16} />
               <span>{t('profile.security')}</span>
             </div>
             {!showPasswordForm ? (
@@ -460,7 +460,7 @@ const Profile = () => {
                       maxLength={32}
                     />
                     <button type="button" onClick={() => setShowCurrentPwd(v => !v)}>
-                      {showCurrentPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                      {showCurrentPwd ? <PiEyeSlash size={16} /> : <PiEye size={16} />}
                     </button>
                   </div>
                 </div>
@@ -476,7 +476,7 @@ const Profile = () => {
                       maxLength={32}
                     />
                     <button type="button" onClick={() => setShowNewPwd(v => !v)}>
-                      {showNewPwd ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                      {showNewPwd ? <PiEyeSlash size={16} /> : <PiEye size={16} />}
                     </button>
                   </div>
                 </div>
@@ -510,7 +510,7 @@ const Profile = () => {
           <div className="profile__col profile__col--right">
           <div className="profile__card">
             <div className="profile__card-header">
-              <PiMapPinBold size={16} />
+              <PiMapPin size={16} />
               <span>{t('profile.address')}</span>
             </div>
 
@@ -672,7 +672,7 @@ const Profile = () => {
           <div className="profile__stats">
             <div className="profile__stat">
               <div className="profile__stat-icon">
-                <PiReceiptBold size={20} />
+                <PiReceipt size={20} />
               </div>
               <div className="profile__stat-info">
                 <span className="profile__stat-value">{orders.length}</span>
@@ -681,7 +681,7 @@ const Profile = () => {
             </div>
             <div className="profile__stat">
               <div className="profile__stat-icon">
-                <PiUsersBold size={20} />
+                <PiUsers size={20} />
               </div>
               <div className="profile__stat-info">
                 <span className="profile__stat-value">{clients.length}</span>
@@ -690,7 +690,7 @@ const Profile = () => {
             </div>
             <div className="profile__stat">
               <div className="profile__stat-icon">
-                <PiShoppingBagBold size={20} />
+                <PiShoppingBag size={20} />
               </div>
               <div className="profile__stat-info">
                 <span className="profile__stat-value">{products.length}</span>

@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { PiXBold } from 'react-icons/pi';
+import { PiX } from 'react-icons/pi';
 import './LanguageSwitcher.scss';
 
 const LANGUAGES = [
@@ -75,7 +75,7 @@ export default function LanguageSwitcher({ className, vertical }: Props) {
             <div className="modal__header">
               <h2>{t('common.moreLanguages')}</h2>
               <button className="modal__close" onClick={() => setShowMore(false)}>
-                <PiXBold size={18} />
+                <PiX size={18} />
               </button>
             </div>
             <div className="modal__body">

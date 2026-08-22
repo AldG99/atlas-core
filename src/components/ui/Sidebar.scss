@@ -127,6 +127,10 @@
     &:hover {
       background-color: $color-gray-200;
       color: $color-gray-900;
+
+      .sidebar__link-icon svg {
+        opacity: 1;
+      }
     }
 
     &--active {

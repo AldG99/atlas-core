@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiPlusBold, PiTrashBold, PiXBold } from 'react-icons/pi';
+import { PiPlus, PiTrash, PiX } from 'react-icons/pi';
 import type { Label } from '../../types/Product';
 import { LABEL_ICONS, LABEL_COLORS } from '../../constants/labelIcons';
 
@@ -77,7 +77,7 @@ const LabelEditSection = ({
                 onClick={() => onDeleteRequest(label.id)}
                 title={t('products.modal.labelDelete')}
               >
-                <PiTrashBold size={9} />
+                <PiTrash size={9} />
               </button>
             )}
           </div>
@@ -94,7 +94,7 @@ const LabelEditSection = ({
           className="label-add-btn"
           onClick={() => setShowNewForm(true)}
         >
-          <PiPlusBold size={12} />
+          <PiPlus size={12} />
           {t('products.modal.labelNew')}
         </button>
       ) : (
@@ -158,7 +158,7 @@ const LabelEditSection = ({
               className="btn btn--sm btn--secondary"
               onClick={() => { setShowNewForm(false); setName(''); }}
             >
-              <PiXBold size={12} />
+              <PiX size={12} />
               {t('common.cancel')}
             </button>
             <button

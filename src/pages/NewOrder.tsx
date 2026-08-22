@@ -5,7 +5,7 @@ import { useOrders } from '../hooks/useOrders';
 import { useToast } from '../hooks/useToast';
 import type { OrderFormData, OrderItem } from '../types/Order';
 import type { Client } from '../types/Client';
-import { PiShoppingBagBold } from 'react-icons/pi';
+import { PiShoppingBag } from 'react-icons/pi';
 import { ROUTES } from '../config/routes';
 import MainLayout from '../layouts/MainLayout';
 import OrderForm from '../components/orders/OrderForm';
@@ -59,7 +59,7 @@ const NewOrder = () => {
         <div className="new-order__card">
           <div className="new-order__header">
             <h1>{t('dashboard.newOrder')}</h1>
-            <PiShoppingBagBold className="new-order__header-icon" size={28} />
+            <PiShoppingBag className="new-order__header-icon" size={28} />
           </div>
 
           {error && <div className="new-order__error">{error}</div>}

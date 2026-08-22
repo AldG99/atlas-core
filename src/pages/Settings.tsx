@@ -2,19 +2,19 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiDownloadSimpleBold,
-  PiCurrencyDollarBold,
-  PiTrashBold,
-  PiUserMinusBold,
-  PiWarningBold,
-  PiChatTextBold,
-  PiBellBold,
-  PiBellSlashBold,
-  PiDownloadBold,
-  PiCaretRightBold,
-  PiArrowLeftBold,
-  PiGearSixBold,
-  PiTranslateBold,
+  PiDownloadSimple,
+  PiCurrencyDollar,
+  PiTrash,
+  PiUserMinus,
+  PiWarning,
+  PiChatText,
+  PiBell,
+  PiBellSlash,
+  PiDownload,
+  PiCaretRight,
+  PiArrowLeft,
+  PiGearSix,
+  PiTranslate,
 } from 'react-icons/pi';
 import { usePWA } from '../hooks/usePWA';
 import { useAuth } from '../hooks/useAuth';
@@ -97,10 +97,10 @@ const Settings = () => {
 
   // ── Nav groups ───────────────────────────────────────
   const preferencesItems: NavItem[] = [
-    { id: 'currency' as Section, icon: <PiCurrencyDollarBold size={16} />, title: t('settings.sections.currency'), color: 'yellow' },
-    { id: 'notifications' as Section, icon: notifPermission === 'granted' ? <PiBellBold size={16} /> : <PiBellSlashBold size={16} />, title: t('settings.sections.notifications'), color: notifPermission === 'granted' ? 'green' : 'gray' },
-    { id: 'language' as Section, icon: <PiTranslateBold size={16} />, title: t('settings.sections.language'), color: 'blue' },
-    ...(canInstall ? [{ id: 'install' as Section, icon: <PiDownloadBold size={16} />, title: t('settings.sections.install'), color: 'teal' }] : []),
+    { id: 'currency' as Section, icon: <PiCurrencyDollar size={16} />, title: t('settings.sections.currency'), color: 'yellow' },
+    { id: 'notifications' as Section, icon: notifPermission === 'granted' ? <PiBell size={16} /> : <PiBellSlash size={16} />, title: t('settings.sections.notifications'), color: notifPermission === 'granted' ? 'green' : 'gray' },
+    { id: 'language' as Section, icon: <PiTranslate size={16} />, title: t('settings.sections.language'), color: 'blue' },
+    ...(canInstall ? [{ id: 'install' as Section, icon: <PiDownload size={16} />, title: t('settings.sections.install'), color: 'teal' }] : []),
   ];
 
   const navGroups: NavGroup[] = [
@@ -108,11 +108,11 @@ const Settings = () => {
     {
       label: t('settings.groups.business'),
       items: [
-        { id: 'templates', icon: <PiChatTextBold size={16} />, title: t('settings.sections.templates'), color: 'purple' },
+        { id: 'templates', icon: <PiChatText size={16} />, title: t('settings.sections.templates'), color: 'purple' },
       ],
     },
-    { label: t('settings.groups.data'), items: [{ id: 'backup', icon: <PiDownloadSimpleBold size={16} />, title: t('settings.sections.backup'), color: 'teal' }] },
-    { label: t('settings.groups.account'), items: [{ id: 'manage', icon: <PiWarningBold size={16} />, title: t('settings.sections.manage'), color: 'gray' }] },
+    { label: t('settings.groups.data'), items: [{ id: 'backup', icon: <PiDownloadSimple size={16} />, title: t('settings.sections.backup'), color: 'teal' }] },
+    { label: t('settings.groups.account'), items: [{ id: 'manage', icon: <PiWarning size={16} />, title: t('settings.sections.manage'), color: 'gray' }] },
   ];
 
   // ── Panel renderer ───────────────────────────────────
@@ -160,7 +160,7 @@ const Settings = () => {
             ) : notifPermission === 'granted' ? (
               <div className="settings__actions">
                 <span className="settings__notif-status settings__notif-status--on">
-                  <PiBellBold size={13} /> {t('settings.notifications.active')}
+                  <PiBell size={13} /> {t('settings.notifications.active')}
                 </span>
                 <button className="btn btn--outline btn--sm" onClick={handleTestNotif}>
                   {t('settings.notifications.test')}
@@ -169,7 +169,7 @@ const Settings = () => {
             ) : (
               <div className="settings__actions">
                 <button className="btn btn--primary btn--sm" onClick={requestNotifPermission}>
-                  <PiBellBold size={15} />
+                  <PiBell size={15} />
                   {t('settings.notifications.activate')}
                 </button>
               </div>
@@ -185,7 +185,7 @@ const Settings = () => {
             </p>
             <div className="settings__actions">
               <button className="btn btn--primary btn--sm" onClick={promptInstall}>
-                <PiDownloadBold size={15} />
+                <PiDownload size={15} />
                 {t('settings.install.button')}
               </button>
             </div>
@@ -208,7 +208,7 @@ const Settings = () => {
               </p>
               <div className="settings__actions">
                 <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteData')}>
-                  <PiTrashBold size={14} />
+                  <PiTrash size={14} />
                   {t('settings.manage.deleteDataButton')}
                 </button>
               </div>
@@ -220,7 +220,7 @@ const Settings = () => {
               </p>
               <div className="settings__actions">
                 <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteAccount')}>
-                  <PiUserMinusBold size={14} />
+                  <PiUserMinus size={14} />
                   {t('settings.manage.deleteAccountButton')}
                 </button>
               </div>
@@ -250,7 +250,7 @@ const Settings = () => {
         <nav className={`settings__nav${activeSection ? ' settings__nav--hidden' : ''}`}>
           <div className="settings__nav-header">
             <button className="settings__back-btn" onClick={() => navigate(-1)}>
-              <PiArrowLeftBold size={20} />
+              <PiArrowLeft size={20} />
             </button>
             <p className="settings__nav-title">{t('settings.title')}</p>
           </div>
@@ -267,7 +267,7 @@ const Settings = () => {
                     {item.icon}
                   </span>
                   <span className="settings__row-title">{item.title}</span>
-                  <PiCaretRightBold size={12} className="settings__row-chevron" />
+                  <PiCaretRight size={12} className="settings__row-chevron" />
                 </button>
               ))}
             </div>
@@ -279,7 +279,7 @@ const Settings = () => {
           {activeSection && (
             <div className="settings__detail-header">
               <button className="settings__back" onClick={() => setActiveSection(null)}>
-                <PiArrowLeftBold size={15} />
+                <PiArrowLeft size={15} />
                 {t('settings.back')}
               </button>
               <h2 className="settings__detail-title">{getSectionTitle(activeSection)}</h2>
@@ -288,7 +288,7 @@ const Settings = () => {
           <div className="settings__detail-inner">
             {activeSection ? renderPanel() : (
               <div className="settings__placeholder">
-                <PiGearSixBold size={36} className="settings__placeholder-icon" />
+                <PiGearSix size={36} className="settings__placeholder-icon" />
                 <p className="settings__placeholder-title">{t('settings.title')}</p>
                 <p className="settings__placeholder-desc">{t('settings.selectOption')}</p>
               </div>

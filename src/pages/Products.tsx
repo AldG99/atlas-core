@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 type SortOption = 'name_asc' | 'name_desc' | 'price_asc' | 'price_desc' | 'registration_desc' | 'registration_asc';
 import { useLocation } from 'react-router';
-import { PiMagnifyingGlassBold, PiClockCounterClockwiseBold, PiWarningBold, PiStackPlusBold, PiDownloadSimpleBold } from 'react-icons/pi';
+import { PiMagnifyingGlass, PiClockCounterClockwise, PiWarning, PiStackPlus, PiDownloadSimple } from 'react-icons/pi';
 import { useProducts } from '../hooks/useProducts';
 import { useLabels } from '../hooks/useLabels';
 import { useToast } from '../hooks/useToast';
@@ -133,21 +133,21 @@ const Products = () => {
               className="btn btn--secondary"
               disabled={products.length === 0}
             >
-              <PiDownloadSimpleBold size={18} />
+              <PiDownloadSimple size={18} />
               {t('common.exportCsv')}
             </button>
             <button
               onClick={() => setShowHistory(true)}
               className="btn btn--outline"
             >
-              <PiClockCounterClockwiseBold size={18} />
+              <PiClockCounterClockwise size={18} />
               {t('products.discountHistory')}
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
               className="btn btn--primary"
             >
-              <PiStackPlusBold size={18} />
+              <PiStackPlus size={18} />
               {t('products.newProduct')}
             </button>
           </div>
@@ -155,7 +155,7 @@ const Products = () => {
 
         <div className="products__controls">
           <div className="products__search">
-            <PiMagnifyingGlassBold size={16} className="products__search-icon" />
+            <PiMagnifyingGlass size={16} className="products__search-icon" />
             <input
               type="text"
               placeholder={t('products.searchPlaceholder')}
@@ -190,7 +190,7 @@ const Products = () => {
 
         {filterExpiring && (
           <div className="products__filter-banner">
-            <PiWarningBold size={16} />
+            <PiWarning size={16} />
             <span>{t('products.filterDiscounting')}</span>
             <button onClick={() => setFilterExpiring(false)}>{t('products.removeFilter')}</button>
           </div>

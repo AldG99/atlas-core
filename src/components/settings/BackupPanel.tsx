@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  PiDownloadSimpleBold,
-  PiUploadSimpleBold,
-  PiFileBold,
-  PiCheckCircleBold,
-  PiWarningBold,
-  PiXBold,
+  PiDownloadSimple,
+  PiUploadSimple,
+  PiFile,
+  PiCheckCircle,
+  PiWarning,
+  PiX,
 } from 'react-icons/pi';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
@@ -93,7 +93,7 @@ const BackupPanel = () => {
             disabled={exporting || !planAllowsBackup}
             title={!planAllowsBackup ? t('settings.backup.upgradePlanToUse') : undefined}
           >
-            <PiDownloadSimpleBold size={15} />
+            <PiDownloadSimple size={15} />
             {exporting ? t('settings.backup.exporting') : t('settings.backup.exportButton')}
           </button>
         </div>
@@ -121,12 +121,12 @@ const BackupPanel = () => {
               disabled={!planAllowsBackup}
               title={!planAllowsBackup ? t('settings.backup.upgradePlanToUse') : undefined}
             >
-              <PiFileBold size={15} />
+              <PiFile size={15} />
               {t('settings.backup.selectFile')}
             </button>
             {fileError && (
               <div className="settings__file-error">
-                <PiWarningBold size={13} />
+                <PiWarning size={13} />
                 {fileError}
               </div>
             )}
@@ -160,11 +160,11 @@ const BackupPanel = () => {
             </div>
             <div className="settings__actions">
               <button className="btn btn--ghost btn--sm" onClick={handleReset}>
-                <PiXBold size={13} />
+                <PiX size={13} />
                 {t('settings.backup.cancel')}
               </button>
               <button className="btn btn--primary btn--sm" onClick={handleImport}>
-                <PiUploadSimpleBold size={13} />
+                <PiUploadSimple size={13} />
                 {t('settings.backup.confirm')}
               </button>
             </div>
@@ -180,7 +180,7 @@ const BackupPanel = () => {
 
         {importStep === 'done' && importResult && (
           <div className="settings__done">
-            <PiCheckCircleBold size={28} className="settings__done-icon" />
+            <PiCheckCircle size={28} className="settings__done-icon" />
             <p className="settings__done-title">{t('settings.backup.doneTitle')}</p>
             <p className="settings__done-desc">
               {t('settings.backup.doneDesc', {

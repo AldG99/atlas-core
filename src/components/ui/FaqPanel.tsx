@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiCaretDownBold } from 'react-icons/pi';
+import { PiCaretDown } from 'react-icons/pi';
 import './FaqPanel.scss';
 
 const FaqPanel = () => {
@@ -20,7 +20,7 @@ const FaqPanel = () => {
             onClick={() => setOpen(open === i ? null : i)}
           >
             <span>{item.question}</span>
-            <PiCaretDownBold size={15} className="faq-panel__icon" />
+            <PiCaretDown size={15} className="faq-panel__icon" />
           </button>
           <div className="faq-panel__answer">
             <p>{item.answer}</p>

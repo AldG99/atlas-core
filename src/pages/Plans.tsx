@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiCheckBold,
-  PiXBold,
-  PiDiamondBold,
-  PiDiamondsFourBold,
-  PiStorefrontBold,
-  PiArrowLeftBold,
-  PiGearBold,
-  PiSpinnerBold,
+  PiCheck,
+  PiX,
+  PiDiamond,
+  PiDiamondsFour,
+  PiStorefront,
+  PiArrowLeft,
+  PiGear,
+  PiSpinner,
 } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
 import { useSubscription } from '../hooks/useSubscription';
@@ -23,7 +23,7 @@ const PLANS_CONFIG = [
     tier: 'free',
     price: null,
     stripePrice: null,
-    icon: <PiStorefrontBold size={22} />,
+    icon: <PiStorefront size={22} />,
     included: [true, true, true, true, true, false, false],
   },
   {
@@ -31,7 +31,7 @@ const PLANS_CONFIG = [
     tier: 'pro',
     price: '$4',
     stripePrice: STRIPE_PRICES.pro,
-    icon: <PiDiamondBold size={22} />,
+    icon: <PiDiamond size={22} />,
     featured: true,
     included: [true, true, true, true, true, true, true],
   },
@@ -40,7 +40,7 @@ const PLANS_CONFIG = [
     tier: 'business',
     price: '$6',
     stripePrice: STRIPE_PRICES.enterprise,
-    icon: <PiDiamondsFourBold size={22} />,
+    icon: <PiDiamondsFour size={22} />,
     included: [true, true, true, true, true, true, true],
   },
 ];
@@ -111,7 +111,7 @@ const Plans = () => {
             onClick={() => navigate(-1)}
             aria-label="Volver"
           >
-            <PiArrowLeftBold size={20} aria-hidden="true" />
+            <PiArrowLeft size={20} aria-hidden="true" />
           </button>
         </div>
 
@@ -128,9 +128,9 @@ const Plans = () => {
               disabled={loading}
             >
               {loading ? (
-                <PiSpinnerBold size={15} className="spin" aria-hidden="true" />
+                <PiSpinner size={15} className="spin" aria-hidden="true" />
               ) : (
-                <PiGearBold size={15} aria-hidden="true" />
+                <PiGear size={15} aria-hidden="true" />
               )}
               {t('plans.manage')}
             </button>
@@ -180,7 +180,7 @@ const Plans = () => {
                       className={`planes__feature${plan.included[i] ? '' : ' planes__feature--no'}`}
                     >
                       <span className="planes__feature-icon" aria-hidden="true">
-                        {plan.included[i] ? <PiCheckBold size={14} /> : <PiXBold size={14} />}
+                        {plan.included[i] ? <PiCheck size={14} /> : <PiX size={14} />}
                       </span>
                       <span>{text}</span>
                     </li>
@@ -198,7 +198,7 @@ const Plans = () => {
                       onClick={manage}
                       disabled={loading || !hasPaidPlan}
                     >
-                      {loading ? <PiSpinnerBold size={14} className="spin" aria-hidden="true" /> : null}
+                      {loading ? <PiSpinner size={14} className="spin" aria-hidden="true" /> : null}
                       {hasPaidPlan ? `${t('plans.changeTo')} ${name}` : t('plans.free')}
                     </button>
                   ) : (
@@ -207,7 +207,7 @@ const Plans = () => {
                       onClick={() => handlePlanAction(plan)}
                       disabled={loading}
                     >
-                      {loading ? <PiSpinnerBold size={14} className="spin" aria-hidden="true" /> : null}
+                      {loading ? <PiSpinner size={14} className="spin" aria-hidden="true" /> : null}
                       {hasPaidPlan ? `${t('plans.changeTo')} ${name}` : `${t('plans.subscribe')} ${name}`}
                     </button>
                   )}

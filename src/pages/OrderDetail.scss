@@ -170,24 +170,9 @@ $topbar-height: 52px;
       pointer-events: none;
     }
 
-    &--whatsapp {
-      color: $color-whatsapp;
-      &:hover { color: $color-whatsapp-dark; }
-    }
-
-    &--primary {
-      color: $color-primary;
-      &:hover { color: $color-primary-dark; }
-    }
-
     &--success {
       color: $color-success;
       &:hover { color: $color-success-dark; }
-    }
-
-    &--danger {
-      color: $color-danger;
-      &:hover { color: $color-danger-dark; }
     }
 
     &--back {

@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import {
-  PiArrowLeftBold,
-  PiWhatsappLogoBold,
-  PiCopyBold,
-  PiCheckBold,
-  PiTrashBold,
-  PiFileArrowDownBold,
+  PiArrowLeft,
+  PiWhatsappLogo,
+  PiCopy,
+  PiCheck,
+  PiTrash,
+  PiFileArrowDown,
 } from 'react-icons/pi';
 import type { Order } from '../../types/Order';
 
@@ -59,15 +59,15 @@ const OrderTopBar = ({
           onClick={onBack}
           title={t('orders.detail.back')}
         >
-          <PiArrowLeftBold size={20} />
+          <PiArrowLeft size={20} />
         </button>
         <button
           onClick={onWhatsApp}
-          className="order-detail__icon-btn order-detail__icon-btn--whatsapp"
+          className="order-detail__icon-btn"
           title={t('orders.detail.whatsapp')}
           disabled={!order.clientPhone}
         >
-          <PiWhatsappLogoBold size={20} />
+          <PiWhatsappLogo size={20} />
         </button>
         <button
           onClick={onDownload}
@@ -75,22 +75,22 @@ const OrderTopBar = ({
           title={t('orders.detail.download')}
           disabled={downloading}
         >
-          <PiFileArrowDownBold size={20} />
+          <PiFileArrowDown size={20} />
         </button>
         <button
           onClick={onCopy}
           className={`order-detail__icon-btn ${copiedId ? 'order-detail__icon-btn--success' : ''}`}
           title={copiedId ? t('orders.detail.copied') : t('orders.detail.copy')}
         >
-          {copiedId ? <PiCheckBold size={20} /> : <PiCopyBold size={20} />}
+          {copiedId ? <PiCheck size={20} /> : <PiCopy size={20} />}
         </button>
         <span className="order-detail__top-divider" />
         <button
           onClick={onDelete}
-          className="order-detail__icon-btn order-detail__icon-btn--danger"
+          className="order-detail__icon-btn"
           title={t('orders.detail.delete')}
         >
-          <PiTrashBold size={20} />
+          <PiTrash size={20} />
         </button>
         {!order.archived && (
           <>

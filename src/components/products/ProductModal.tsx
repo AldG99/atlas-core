@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiXBold, PiImageBold, PiPlusBold, PiTrashBold, PiWarehouseBold } from 'react-icons/pi';
+import { PiX, PiImage, PiPlus, PiTrash, PiWarehouse } from 'react-icons/pi';
 import type { ProductFormData, Label } from '../../types/Product';
 import { useLabels } from '../../hooks/useLabels';
 import { useCurrency } from '../../hooks/useCurrency';
@@ -148,7 +148,7 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
         <div className="modal__header">
           <h2>{product ? t('products.modal.editTitle') : t('products.modal.newTitle')}</h2>
           <button className="modal__close" onClick={onClose}>
-            <PiXBold size={20} />
+            <PiX size={20} />
           </button>
         </div>
 
@@ -163,7 +163,7 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                   <img src={previewImage} alt="Preview" />
                 ) : (
                   <div className="product-image-placeholder">
-                    <PiImageBold size={24} />
+                    <PiImage size={24} />
                   </div>
                 )}
               </div>
@@ -349,7 +349,7 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                           className="label-chip__remove"
                           onClick={() => toggleLabel(label.id)}
                         >
-                          <PiXBold size={10} />
+                          <PiX size={10} />
                         </button>
                       </span>
                       {confirmDeleteId === label.id ? (
@@ -365,7 +365,7 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                           onClick={() => setConfirmDeleteId(label.id)}
                           title={t('products.modal.labelDelete')}
                         >
-                          <PiTrashBold size={10} />
+                          <PiTrash size={10} />
                         </button>
                       )}
                     </div>
@@ -415,7 +415,7 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                             onClick={() => setConfirmDeleteId(label.id)}
                             title={t('products.modal.labelDelete')}
                           >
-                            <PiTrashBold size={10} />
+                            <PiTrash size={10} />
                           </button>
                         )}
                       </div>
@@ -430,7 +430,7 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                   className="label-add-btn"
                   onClick={() => setShowNewLabel(true)}
                 >
-                  <PiPlusBold size={14} />
+                  <PiPlus size={14} />
                   {t('products.modal.labelNew')}
                 </button>
               ) : (
@@ -533,7 +533,7 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
                     }))
                   }
                 />
-                <PiWarehouseBold size={16} />
+                <PiWarehouse size={16} />
                 <span>{t('products.modal.warehouseManage')}</span>
               </label>
               <div className="stock-input-row">

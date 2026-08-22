@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { PiShoppingBagBold, PiCurrencyDollarBold, PiCheckCircleBold, PiCloudArrowUpBold, PiMagnifyingGlassBold, PiDownloadSimpleBold, PiPlusBold, PiWalletBold, PiWarningBold } from 'react-icons/pi';
+import { PiShoppingBag, PiCurrencyDollar, PiCheckCircle, PiCloudArrowUp, PiMagnifyingGlass, PiDownloadSimple, PiPlus, PiWallet, PiWarning } from 'react-icons/pi';
 import { useOrders } from '../hooks/useOrders';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -155,7 +155,7 @@ const Dashboard = () => {
               className="btn btn--secondary"
               disabled={orders.length === 0}
             >
-              <PiDownloadSimpleBold size={18} />
+              <PiDownloadSimple size={18} />
               {t('dashboard.exportCsv')}
             </button>
             <button
@@ -164,11 +164,11 @@ const Dashboard = () => {
               title={t('dashboard.googleDrive')}
               disabled={uploadingDrive}
             >
-              <PiCloudArrowUpBold size={18} />
+              <PiCloudArrowUp size={18} />
               {uploadingDrive ? t('dashboard.uploading') : t('dashboard.googleDrive')}
             </button>
             <Link to={ROUTES.NEW_ORDER} className="btn btn--primary dashboard__new-order-btn">
-              <PiPlusBold size={18} />
+              <PiPlus size={18} />
               {t('dashboard.newOrder')}
             </Link>
           </div>
@@ -177,7 +177,7 @@ const Dashboard = () => {
         <div className="dashboard__today-summary">
             <div className="dashboard__summary-card">
               <div className="dashboard__summary-icon">
-                <PiShoppingBagBold size={20} />
+                <PiShoppingBag size={20} />
               </div>
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.ordersToday')}</span>
@@ -186,7 +186,7 @@ const Dashboard = () => {
             </div>
             <div className="dashboard__summary-card">
               <div className="dashboard__summary-icon dashboard__summary-icon--primary">
-                <PiCurrencyDollarBold size={20} />
+                <PiCurrencyDollar size={20} />
               </div>
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.salesToday')}</span>
@@ -197,7 +197,7 @@ const Dashboard = () => {
             </div>
             <div className="dashboard__summary-card">
               <div className="dashboard__summary-icon dashboard__summary-icon--success">
-                <PiCheckCircleBold size={20} />
+                <PiCheckCircle size={20} />
               </div>
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.delivered')}</span>
@@ -208,7 +208,7 @@ const Dashboard = () => {
             </div>
             <div className="dashboard__summary-card">
               <div className="dashboard__summary-icon dashboard__summary-icon--chart">
-                <PiWalletBold size={20} />
+                <PiWallet size={20} />
               </div>
               <div className="dashboard__summary-content">
                 <span className="dashboard__summary-label">{t('dashboard.profitToday')}</span>
@@ -216,7 +216,7 @@ const Dashboard = () => {
                   {format(animatedProfit)}
                   {todaySummary.hasIncompleteCost && (
                     <span className="dashboard__summary-warning" title={t('reports.kpi.profitIncompleteHint')}>
-                      <PiWarningBold size={12} />
+                      <PiWarning size={12} />
                     </span>
                   )}
                 </span>
@@ -226,7 +226,7 @@ const Dashboard = () => {
 
         <div className="dashboard__controls">
           <div className="dashboard__search">
-            <PiMagnifyingGlassBold size={16} className="dashboard__search-icon" />
+            <PiMagnifyingGlass size={16} className="dashboard__search-icon" />
             <input
               type="text"
               placeholder={t('dashboard.searchPlaceholder')}

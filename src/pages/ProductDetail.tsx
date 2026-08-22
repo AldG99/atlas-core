@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiPackageBold,
-  PiCalendarBold,
-  PiClockCounterClockwiseBold,
+  PiPackage,
+  PiCalendar,
+  PiClockCounterClockwise,
 } from 'react-icons/pi';
 import type { Product, ProductFormData } from '../types/Product';
 import { getProductById, updateProduct } from '../services/productService';
@@ -508,7 +508,7 @@ const ProductDetail = () => {
                                 });
                               }}
                             />
-                            <PiPackageBold size={15} />
+                            <PiPackage size={15} />
                             <span>{t('products.detail.manageStock')}</span>
                           </label>
                           <input
@@ -672,14 +672,14 @@ const ProductDetail = () => {
 
             <div className="product-detail__footer-meta">
               <div className="product-detail__footer-meta-row">
-                <PiClockCounterClockwiseBold size={13} className="product-detail__header-meta-icon" />
+                <PiClockCounterClockwise size={13} className="product-detail__header-meta-icon" />
                 <span className="product-detail__info-label">{t('products.detail.lastEdited')}</span>
                 <span className="product-detail__info-value">
                   {formatDate(product.updatedAt ?? product.createdAt)}
                 </span>
               </div>
               <div className="product-detail__footer-meta-row">
-                <PiCalendarBold size={13} className="product-detail__header-meta-icon" />
+                <PiCalendar size={13} className="product-detail__header-meta-icon" />
                 <span className="product-detail__info-label">{t('products.detail.addedOn')}</span>
                 <span className="product-detail__info-value">{formatDate(product.createdAt)}</span>
               </div>

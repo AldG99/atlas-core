@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiXBold, PiDownloadSimpleBold } from 'react-icons/pi';
+import { PiX, PiDownloadSimple } from 'react-icons/pi';
 import type { Product, DiscountHistory } from '../../types/Product';
 import './DiscountHistoryModal.scss';
 
@@ -110,11 +110,11 @@ const DiscountHistoryModal = ({ products, onClose }: DiscountHistoryModalProps) 
               onClick={handleExportCSV}
               disabled={rows.length === 0}
             >
-              <PiDownloadSimpleBold size={15} />
+              <PiDownloadSimple size={15} />
               {t('products.discountModal.export')}
             </button>
             <button className="modal__close" onClick={onClose}>
-              <PiXBold size={24} />
+              <PiX size={24} />
             </button>
           </div>
         </div>

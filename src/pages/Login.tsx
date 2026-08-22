@@ -3,12 +3,12 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiEyeBold,
-  PiEyeSlashBold,
-  PiEnvelopeSimpleBold,
-  PiLockSimpleBold,
-  PiWarningCircleBold,
-  PiCheckCircleBold,
+  PiEye,
+  PiEyeSlash,
+  PiEnvelopeSimple,
+  PiLockSimple,
+  PiWarningCircle,
+  PiCheckCircle,
 } from 'react-icons/pi';
 import { useAuth } from '../hooks/useAuth';
 import { ROUTES } from '../config/routes';
@@ -122,14 +122,14 @@ const Login = () => {
 
           {resetSent ? (
             <div className="login-form__success">
-              <PiCheckCircleBold size={16} />
+              <PiCheckCircle size={16} />
               {t('auth.login.resetSentSuccess')}
             </div>
           ) : (
             <>
               {resetError && (
                 <div className="login-form__error">
-                  <PiWarningCircleBold size={16} />
+                  <PiWarningCircle size={16} />
                   {resetError}
                 </div>
               )}
@@ -137,7 +137,7 @@ const Login = () => {
                 <div className="form-group">
                   <label htmlFor="resetEmail">{t('auth.login.email')}</label>
                   <div className="login-form__input-wrapper">
-                    <PiEnvelopeSimpleBold size={16} className="login-form__input-icon" />
+                    <PiEnvelopeSimple size={16} className="login-form__input-icon" />
                     <input
                       type="email"
                       id="resetEmail"
@@ -177,7 +177,7 @@ const Login = () => {
 
         {error && (
           <div className="login-form__error">
-            <PiWarningCircleBold size={16} />
+            <PiWarningCircle size={16} />
             {error}
           </div>
         )}
@@ -186,7 +186,7 @@ const Login = () => {
           <div className="form-group">
             <label htmlFor="email">{t('auth.login.email')}</label>
             <div className="login-form__input-wrapper">
-              <PiEnvelopeSimpleBold size={16} className="login-form__input-icon" />
+              <PiEnvelopeSimple size={16} className="login-form__input-icon" />
               <input
                 type="email"
                 id="email"
@@ -202,7 +202,7 @@ const Login = () => {
           <div className="form-group">
             <label htmlFor="password">{t('auth.login.password')}</label>
             <div className="login-form__pwd-wrapper">
-              <PiLockSimpleBold size={16} className="login-form__input-icon" />
+              <PiLockSimple size={16} className="login-form__input-icon" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
@@ -218,7 +218,7 @@ const Login = () => {
                 onClick={() => setShowPassword(v => !v)}
                 tabIndex={-1}
               >
-                {showPassword ? <PiEyeSlashBold size={16} /> : <PiEyeBold size={16} />}
+                {showPassword ? <PiEyeSlash size={16} /> : <PiEye size={16} />}
               </button>
             </div>
           </div>

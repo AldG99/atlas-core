@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 type SortOption = 'name_asc' | 'name_desc' | 'postal_asc' | 'postal_desc' | 'registration_desc' | 'registration_asc';
 
 import {
-  PiMagnifyingGlassBold,
-  PiUserPlusBold,
-  PiDownloadSimpleBold,
+  PiMagnifyingGlass,
+  PiUserPlus,
+  PiDownloadSimple,
 } from 'react-icons/pi';
 import { useClients } from '../hooks/useClients';
 import { useToast } from '../hooks/useToast';
@@ -112,14 +112,14 @@ const Clients = () => {
               className="btn btn--secondary"
               disabled={clients.length === 0}
             >
-              <PiDownloadSimpleBold size={18} />
+              <PiDownloadSimple size={18} />
               {t('common.exportCsv')}
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
               className="btn btn--primary"
             >
-              <PiUserPlusBold size={18} />
+              <PiUserPlus size={18} />
               {t('clients.newClient')}
             </button>
           </div>
@@ -127,7 +127,7 @@ const Clients = () => {
 
         <div className="clients__controls">
           <div className="clients__search">
-            <PiMagnifyingGlassBold size={16} className="clients__search-icon" />
+            <PiMagnifyingGlass size={16} className="clients__search-icon" />
             <input
               type="text"
               placeholder={t('clients.searchPlaceholder')}

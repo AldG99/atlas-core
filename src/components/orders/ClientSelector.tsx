@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { PiStarFill, PiUserPlusBold, PiMagnifyingGlassBold, PiCheckBold, PiUserBold, PiUserCheckBold, PiPencilSimpleBold } from 'react-icons/pi';
+import { PiStarFill, PiUserPlus, PiMagnifyingGlass, PiCheck, PiUser, PiUserCheck, PiPencilSimple } from 'react-icons/pi';
 import { useClients } from '../../hooks/useClients';
 import { useToast } from '../../hooks/useToast';
 import { formatPhone } from '../../utils/formatters';
@@ -238,7 +238,7 @@ const ClientSelector = ({
           onClick={() => handleSwitchMode('occasional')}
           onKeyDown={handleTabKeyDown}
         >
-          <PiUserBold size={15} />
+          <PiUser size={15} />
           {t('orders.occasionalClientTab')}
         </button>
         <button
@@ -250,7 +250,7 @@ const ClientSelector = ({
           onClick={() => handleSwitchMode('registered')}
           onKeyDown={handleTabKeyDown}
         >
-          <PiUserCheckBold size={15} />
+          <PiUserCheck size={15} />
           {t('orders.registeredClientTab')}
         </button>
       </div>
@@ -258,7 +258,7 @@ const ClientSelector = ({
       {mode === 'occasional' ? (
         <div className="client-selector__occasional-row">
           <div className="client-selector__search-wrapper">
-            <PiPencilSimpleBold size={16} className="client-selector__search-icon" />
+            <PiPencilSimple size={16} className="client-selector__search-icon" />
             <input
               ref={occasionalInputRef}
               type="text"
@@ -281,13 +281,13 @@ const ClientSelector = ({
             onClick={handleConfirmOccasional}
             title={t('orders.occasionalClientConfirm')}
           >
-            <PiCheckBold size={16} />
+            <PiCheck size={16} />
           </button>
         </div>
       ) : (
         <div className="client-selector__search-row">
           <div className="client-selector__search-wrapper">
-            <PiMagnifyingGlassBold
+            <PiMagnifyingGlass
               size={16}
               className="client-selector__search-icon"
             />
@@ -309,7 +309,7 @@ const ClientSelector = ({
             onClick={() => setShowModal(true)}
             title={t('orders.addClientTitle')}
           >
-            <PiUserPlusBold size={16} />
+            <PiUserPlus size={16} />
           </button>
         </div>
       )}
