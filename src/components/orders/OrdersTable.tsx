@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { PiStarFill, PiCaretLeft, PiCaretRight, PiShoppingBag } from 'react-icons/pi';
+import { Star, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
 
 const PAGE_SIZE = 20;
 import type { Order } from '../../types/Order';
@@ -169,7 +169,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
                   <span className="orders-table__name" title={order.clientName}>
                     {order.clientName}
                   </span>
-                  {favorite && <PiStarFill size={14} className="orders-table__fav-icon" />}
+                  {favorite && <Star fill="currentColor" size={14} className="orders-table__fav-icon" />}
                 </div>
               </td>
               <td>
@@ -218,7 +218,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
                 })()}
               </td>
               <td>
-                <PiShoppingBag
+                <ShoppingBag
                   size={18}
                   style={{ color: muted ? STATUS_COLOR_MUTED : ORDER_STATUS_COLORS[order.status], display: 'block', margin: '0 auto' }}
                   aria-hidden="true"
@@ -247,7 +247,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
                 onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
                 disabled={page === 0}
               >
-                <PiCaretLeft size={14} />
+                <ChevronLeft size={14} />
               </button>
               <span className="orders-table__page-info">
                 {page + 1} / {totalPages}
@@ -257,7 +257,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
                 onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
                 disabled={page === totalPages - 1}
               >
-                <PiCaretRight size={14} />
+                <ChevronRight size={14} />
               </button>
             </>
           )}

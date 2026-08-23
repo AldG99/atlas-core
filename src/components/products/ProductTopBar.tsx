@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { PiArrowLeft, PiPencil, PiTrash } from 'react-icons/pi';
+import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 
 interface Props {
   isEditing: boolean;
@@ -24,7 +24,7 @@ const ProductTopBar = ({
           onClick={onBack}
           title={t('products.detail.back')}
         >
-          <PiArrowLeft size={20} />
+          <ArrowLeft size={20} />
         </button>
         {isEditing ? (
           <div className="product-detail__top-bar-actions">
@@ -51,14 +51,14 @@ const ProductTopBar = ({
               className="product-detail__icon-btn"
               title={t('products.detail.editProduct')}
             >
-              <PiPencil size={20} />
+              <Pencil size={20} />
             </button>
             <button
               onClick={onDelete}
               className="product-detail__icon-btn"
               title={t('products.detail.deleteProduct')}
             >
-              <PiTrash size={20} />
+              <Trash2 size={20} />
             </button>
           </>
         )}

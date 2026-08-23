@@ -1,12 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import {
-  PiArrowLeft,
-  PiWhatsappLogo,
-  PiCopy,
-  PiCheck,
-  PiTrash,
-  PiFileArrowDown,
-} from 'react-icons/pi';
+import { ArrowLeft, Copy, Check, Trash2, FileDown } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import type { Order } from '../../types/Order';
 
 interface Props {
@@ -59,7 +53,7 @@ const OrderTopBar = ({
           onClick={onBack}
           title={t('orders.detail.back')}
         >
-          <PiArrowLeft size={20} />
+          <ArrowLeft size={20} />
         </button>
         <button
           onClick={onWhatsApp}
@@ -67,7 +61,7 @@ const OrderTopBar = ({
           title={t('orders.detail.whatsapp')}
           disabled={!order.clientPhone}
         >
-          <PiWhatsappLogo size={20} />
+          <FaWhatsapp size={20} />
         </button>
         <button
           onClick={onDownload}
@@ -75,14 +69,14 @@ const OrderTopBar = ({
           title={t('orders.detail.download')}
           disabled={downloading}
         >
-          <PiFileArrowDown size={20} />
+          <FileDown size={20} />
         </button>
         <button
           onClick={onCopy}
           className={`order-detail__icon-btn ${copiedId ? 'order-detail__icon-btn--success' : ''}`}
           title={copiedId ? t('orders.detail.copied') : t('orders.detail.copy')}
         >
-          {copiedId ? <PiCheck size={20} /> : <PiCopy size={20} />}
+          {copiedId ? <Check size={20} /> : <Copy size={20} />}
         </button>
         <span className="order-detail__top-divider" />
         <button
@@ -90,7 +84,7 @@ const OrderTopBar = ({
           className="order-detail__icon-btn"
           title={t('orders.detail.delete')}
         >
-          <PiTrash size={20} />
+          <Trash2 size={20} />
         </button>
         {!order.archived && (
           <>

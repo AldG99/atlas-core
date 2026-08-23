@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiPlus, PiTrash, PiX } from 'react-icons/pi';
+import { Plus, Trash2, X } from 'lucide-react';
 import type { Label } from '../../types/Product';
 import { LABEL_ICONS, LABEL_COLORS } from '../../constants/labelIcons';
 
@@ -77,7 +77,7 @@ const LabelEditSection = ({
                 onClick={() => onDeleteRequest(label.id)}
                 title={t('products.modal.labelDelete')}
               >
-                <PiTrash size={9} />
+                <Trash2 size={9} />
               </button>
             )}
           </div>
@@ -94,7 +94,7 @@ const LabelEditSection = ({
           className="label-add-btn"
           onClick={() => setShowNewForm(true)}
         >
-          <PiPlus size={12} />
+          <Plus size={12} />
           {t('products.modal.labelNew')}
         </button>
       ) : (
@@ -158,7 +158,7 @@ const LabelEditSection = ({
               className="btn btn--sm btn--secondary"
               onClick={() => { setShowNewForm(false); setName(''); }}
             >
-              <PiX size={12} />
+              <X size={12} />
               {t('common.cancel')}
             </button>
             <button

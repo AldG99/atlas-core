@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { PiX } from 'react-icons/pi';
+import { X } from 'lucide-react';
 import type { Product, Label } from '../../types/Product';
 import { LABEL_ICONS } from '../../constants/labelIcons';
 import { useCurrency } from '../../hooks/useCurrency';
@@ -45,7 +45,7 @@ const ProductDetailModal = ({ product, labels, onClose }: ProductDetailModalProp
         <div className="order-detail__modal-header">
           <h3>{t('products.detailModal.title')}</h3>
           <button className="order-detail__modal-close" onClick={onClose}>
-            <PiX size={18} />
+            <X size={18} />
           </button>
         </div>
         <div className="order-detail__modal-body">

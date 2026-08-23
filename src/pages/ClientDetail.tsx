@@ -2,18 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiArrowLeft,
-  PiWhatsappLogo,
-  PiPencil,
-  PiTrash,
-  PiStarFill,
-  PiStar,
-  PiX,
-  PiMapPin,
-  PiPhone,
-  PiEnvelopeSimple,
-  PiNote,
-} from 'react-icons/pi';
+  ArrowLeft,
+  Pencil,
+  Trash2,
+  Star,
+  X,
+  MapPin,
+  Phone,
+  Mail,
+  StickyNote,
+} from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import type { Client, ClientFormData } from '../types/Client';
 import type { Order } from '../types/Order';
 import { getClientById, deleteClient, updateClient, toggleClientFavorite } from '../services/clientService';
@@ -252,7 +251,7 @@ const ClientDetail = () => {
               onClick={() => navigate(ROUTES.CLIENTS)}
               title={t('common.back')}
             >
-              <PiArrowLeft size={20} />
+              <ArrowLeft size={20} />
             </button>
             {isEditing ? (
               <div className="client-detail__top-bar-actions">
@@ -266,7 +265,7 @@ const ClientDetail = () => {
             ) : (
               <>
                 <button onClick={handleWhatsApp} className="client-detail__icon-btn" title={t('orders.detail.whatsapp')}>
-                  <PiWhatsappLogo size={20} />
+                  <FaWhatsapp size={20} />
                 </button>
                 <span className="client-detail__top-divider" />
                 <button
@@ -274,13 +273,13 @@ const ClientDetail = () => {
                   className={`client-detail__icon-btn ${client.favorite ? 'client-detail__icon-btn--fav-active' : ''}`}
                   title={client.favorite ? t('clients.detail.removeFavorite') : t('clients.detail.addFavorite')}
                 >
-                  {client.favorite ? <PiStarFill size={20} /> : <PiStar size={20} />}
+                  {client.favorite ? <Star fill="currentColor" size={20} /> : <Star size={20} />}
                 </button>
                 <button onClick={startEditing} className="client-detail__icon-btn" title={t('common.edit')}>
-                  <PiPencil size={20} />
+                  <Pencil size={20} />
                 </button>
                 <button onClick={handleDelete} className="client-detail__icon-btn" title={t('common.delete')}>
-                  <PiTrash size={20} />
+                  <Trash2 size={20} />
                 </button>
               </>
             )}
@@ -318,7 +317,7 @@ const ClientDetail = () => {
 
               <div className="client-detail__header-fields">
                 <div className="client-detail__header-field">
-                  <span className="client-detail__info-label"><PiMapPin size={12} />{t('clients.detail.address')}</span>
+                  <span className="client-detail__info-label"><MapPin size={12} />{t('clients.detail.address')}</span>
                   {isEditing ? (
                     <>
                       <div className="client-detail__address-row">
@@ -345,7 +344,7 @@ const ClientDetail = () => {
                 </div>
                 <div className="client-detail__header-contact">
                   <div className="client-detail__header-field">
-                    <span className="client-detail__info-label"><PiPhone size={12} />{t('clients.detail.phone')}</span>
+                    <span className="client-detail__info-label"><Phone size={12} />{t('clients.detail.phone')}</span>
                     {isEditing ? (
                       <PhoneInput
                         value={editData?.phone || ''}
@@ -362,7 +361,7 @@ const ClientDetail = () => {
                     )}
                   </div>
                   <div className="client-detail__header-field">
-                    <span className="client-detail__info-label"><PiEnvelopeSimple size={12} />{t('clients.detail.email')}</span>
+                    <span className="client-detail__info-label"><Mail size={12} />{t('clients.detail.email')}</span>
                     {isEditing ? (
                       <input type="email" value={editData?.email || ''} onChange={(e) => updateField('email', e.target.value)} placeholder="Correo electrónico" className="client-detail__input" />
                     ) : (
@@ -372,7 +371,7 @@ const ClientDetail = () => {
                     )}
                   </div>
                   <div className="client-detail__header-field client-detail__header-field--full">
-                    <span className="client-detail__info-label"><PiNote size={12} />{t('clients.detail.reference')}</span>
+                    <span className="client-detail__info-label"><StickyNote size={12} />{t('clients.detail.reference')}</span>
                     {isEditing ? (
                       <>
                         <textarea value={editData?.reference || ''} onChange={(e) => updateField('reference', e.target.value)} placeholder="Referencia..." className="client-detail__textarea client-detail__textarea--small" rows={2} maxLength={140} style={{ resize: 'none' }} />
@@ -409,7 +408,7 @@ const ClientDetail = () => {
             <div className="client-detail__modal-header">
               <h3>{t('clients.detail.deleteModal.title')}</h3>
               <button className="client-detail__modal-close" onClick={() => setShowDeleteModal(false)}>
-                <PiX size={18} />
+                <X size={18} />
               </button>
             </div>
             <div className="client-detail__modal-body">

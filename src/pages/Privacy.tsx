@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { PiArrowLeft } from 'react-icons/pi';
+import { ArrowLeft } from 'lucide-react';
 import { CONTACT_EMAIL, getLegalLang } from '../constants/legal';
 import './Legal.scss';
 
@@ -1118,7 +1118,7 @@ const Privacy = () => {
         </div>
         <div className="legal-page__nav">
           <button className="legal-page__back" onClick={() => navigate(-1)}>
-            <PiArrowLeft size={16} /> Volver
+            <ArrowLeft size={16} /> Volver
           </button>
         </div>
         <div className="legal-page__card">

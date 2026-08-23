@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { PiStarFill, PiUserPlus, PiMagnifyingGlass, PiCheck, PiUser, PiUserCheck, PiPencilSimple } from 'react-icons/pi';
+import { Star, UserPlus, Search, Check, User, UserCheck, PenLine } from 'lucide-react';
 import { useClients } from '../../hooks/useClients';
 import { useToast } from '../../hooks/useToast';
 import { formatPhone } from '../../utils/formatters';
@@ -198,7 +198,7 @@ const ClientSelector = ({
             <span className="client-selector__client-name">
               {[selectedClient.firstName, selectedClient.lastName].filter(Boolean).join(' ')}
               {selectedClient.favorite && (
-                <PiStarFill
+                <Star fill="currentColor"
                   size={12}
                   className="client-selector__dropdown-fav"
                 />
@@ -238,7 +238,7 @@ const ClientSelector = ({
           onClick={() => handleSwitchMode('occasional')}
           onKeyDown={handleTabKeyDown}
         >
-          <PiUser size={15} />
+          <User size={15} />
           {t('orders.occasionalClientTab')}
         </button>
         <button
@@ -250,7 +250,7 @@ const ClientSelector = ({
           onClick={() => handleSwitchMode('registered')}
           onKeyDown={handleTabKeyDown}
         >
-          <PiUserCheck size={15} />
+          <UserCheck size={15} />
           {t('orders.registeredClientTab')}
         </button>
       </div>
@@ -258,7 +258,7 @@ const ClientSelector = ({
       {mode === 'occasional' ? (
         <div className="client-selector__occasional-row">
           <div className="client-selector__search-wrapper">
-            <PiPencilSimple size={16} className="client-selector__search-icon" />
+            <PenLine size={16} className="client-selector__search-icon" />
             <input
               ref={occasionalInputRef}
               type="text"
@@ -281,13 +281,13 @@ const ClientSelector = ({
             onClick={handleConfirmOccasional}
             title={t('orders.occasionalClientConfirm')}
           >
-            <PiCheck size={16} />
+            <Check size={16} />
           </button>
         </div>
       ) : (
         <div className="client-selector__search-row">
           <div className="client-selector__search-wrapper">
-            <PiMagnifyingGlass
+            <Search
               size={16}
               className="client-selector__search-icon"
             />
@@ -309,7 +309,7 @@ const ClientSelector = ({
             onClick={() => setShowModal(true)}
             title={t('orders.addClientTitle')}
           >
-            <PiUserPlus size={16} />
+            <UserPlus size={16} />
           </button>
         </div>
       )}
@@ -341,7 +341,7 @@ const ClientSelector = ({
                   <span className="client-selector__dropdown-name">
                     {client.firstName} {client.lastName}
                     {client.favorite && (
-                      <PiStarFill
+                      <Star fill="currentColor"
                         size={12}
                         className="client-selector__dropdown-fav"
                       />

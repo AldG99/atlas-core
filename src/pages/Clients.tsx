@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 type SortOption = 'name_asc' | 'name_desc' | 'postal_asc' | 'postal_desc' | 'registration_desc' | 'registration_asc';
 
 import {
-  PiMagnifyingGlass,
-  PiUserPlus,
-  PiDownloadSimple,
-} from 'react-icons/pi';
+  Search,
+  UserPlus,
+  DownloadCloud,
+} from 'lucide-react';
 import { useClients } from '../hooks/useClients';
 import { useToast } from '../hooks/useToast';
 import type { ClientFormData } from '../types/Client';
@@ -112,14 +112,14 @@ const Clients = () => {
               className="btn btn--secondary"
               disabled={clients.length === 0}
             >
-              <PiDownloadSimple size={18} />
+              <DownloadCloud size={18} />
               {t('common.exportCsv')}
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
               className="btn btn--primary"
             >
-              <PiUserPlus size={18} />
+              <UserPlus size={18} />
               {t('clients.newClient')}
             </button>
           </div>
@@ -127,7 +127,7 @@ const Clients = () => {
 
         <div className="clients__controls">
           <div className="clients__search">
-            <PiMagnifyingGlass size={16} className="clients__search-icon" />
+            <Search size={16} className="clients__search-icon" />
             <input
               type="text"
               placeholder={t('clients.searchPlaceholder')}

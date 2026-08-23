@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiX } from 'react-icons/pi';
+import { X } from 'lucide-react';
 import { useToast } from '../../hooks/useToast';
 import { deleteProduct } from '../../services/productService';
 import type { Product } from '../../types/Product';
@@ -41,7 +41,7 @@ const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalP
         <div className="product-detail__modal-header">
           <h3>{t('products.detail.deleteModal.title')}</h3>
           <button className="product-detail__modal-close" onClick={onClose}>
-            <PiX size={18} />
+            <X size={18} />
           </button>
         </div>
         <div className="product-detail__modal-body">

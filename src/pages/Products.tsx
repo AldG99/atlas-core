@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 type SortOption = 'name_asc' | 'name_desc' | 'price_asc' | 'price_desc' | 'registration_desc' | 'registration_asc';
 import { useLocation } from 'react-router';
-import { PiMagnifyingGlass, PiClockCounterClockwise, PiWarning, PiStackPlus, PiDownloadSimple } from 'react-icons/pi';
+import { Search, History, TriangleAlert, LayersPlus, DownloadCloud } from 'lucide-react';
 import { useProducts } from '../hooks/useProducts';
 import { useLabels } from '../hooks/useLabels';
 import { useToast } from '../hooks/useToast';
@@ -133,21 +133,21 @@ const Products = () => {
               className="btn btn--secondary"
               disabled={products.length === 0}
             >
-              <PiDownloadSimple size={18} />
+              <DownloadCloud size={18} />
               {t('common.exportCsv')}
             </button>
             <button
               onClick={() => setShowHistory(true)}
               className="btn btn--outline"
             >
-              <PiClockCounterClockwise size={18} />
+              <History size={18} />
               {t('products.discountHistory')}
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
               className="btn btn--primary"
             >
-              <PiStackPlus size={18} />
+              <LayersPlus size={18} />
               {t('products.newProduct')}
             </button>
           </div>
@@ -155,7 +155,7 @@ const Products = () => {
 
         <div className="products__controls">
           <div className="products__search">
-            <PiMagnifyingGlass size={16} className="products__search-icon" />
+            <Search size={16} className="products__search-icon" />
             <input
               type="text"
               placeholder={t('products.searchPlaceholder')}
@@ -190,7 +190,7 @@ const Products = () => {
 
         {filterExpiring && (
           <div className="products__filter-banner">
-            <PiWarning size={16} />
+            <TriangleAlert size={16} />
             <span>{t('products.filterDiscounting')}</span>
             <button onClick={() => setFilterExpiring(false)}>{t('products.removeFilter')}</button>
           </div>

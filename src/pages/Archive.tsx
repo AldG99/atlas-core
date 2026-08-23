@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { QueryDocumentSnapshot } from 'firebase/firestore';
-import { PiMagnifyingGlass, PiDownloadSimple } from 'react-icons/pi';
+import { Search, DownloadCloud } from 'lucide-react';
 import type { Order } from '../types/Order';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -170,7 +170,7 @@ const Archive = () => {
               className="btn btn--secondary"
               disabled={orders.length === 0}
             >
-              <PiDownloadSimple size={18} />
+              <DownloadCloud size={18} />
               {t('common.exportCsv')}
             </button>
           </div>
@@ -178,7 +178,7 @@ const Archive = () => {
 
         <div className="archive__controls">
           <div className="archive__search">
-            <PiMagnifyingGlass size={16} className="archive__search-icon" />
+            <Search size={16} className="archive__search-icon" />
             <input
               type="text"
               placeholder={t('archive.searchPlaceholder')}

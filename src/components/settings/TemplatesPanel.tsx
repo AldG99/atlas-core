@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiArrowCounterClockwise } from 'react-icons/pi';
+import { RotateCcw } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 
 type TemplateKey = 'confirmation' | 'preparing' | 'delivery';
@@ -51,7 +51,7 @@ const TemplatesPanel = () => {
           onClick={resetToDefaults}
           title={t('settings.templates.restore')}
         >
-          <PiArrowCounterClockwise size={14} />
+          <RotateCcw size={14} />
           {t('settings.templates.restore')}
         </button>
         <button

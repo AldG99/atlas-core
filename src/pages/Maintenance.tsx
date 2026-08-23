@@ -1,4 +1,4 @@
-import { PiWrench } from 'react-icons/pi';
+import { Wrench } from 'lucide-react';
 import './Maintenance.scss';
 
 const Maintenance = () => {
@@ -8,7 +8,7 @@ const Maintenance = () => {
       <div className="maintenance__center">
         <div className="maintenance__content">
           <div className="maintenance__icon">
-            <PiWrench size={40} />
+            <Wrench size={40} />
           </div>
           <h1 className="maintenance__title">Maintenance in progress</h1>
           <p className="maintenance__desc">

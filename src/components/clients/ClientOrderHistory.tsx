@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { PiArrowRight, PiMagnifyingGlass } from 'react-icons/pi';
+import { ArrowRight, Search } from 'lucide-react';
 import type { Order, OrderItem } from '../../types/Order';
 import type { Product, Label } from '../../types/Product';
 import { LABEL_ICONS } from '../../constants/labelIcons';
@@ -150,7 +150,7 @@ const ClientOrderHistory: React.FC<Props> = ({
       {/* Filtros */}
       <div className="client-detail__orders-filters">
         <div className="client-detail__orders-search">
-          <PiMagnifyingGlass size={16} />
+          <Search size={16} />
           <input
             type="text"
             placeholder={t('clients.detail.searchPlaceholder')}
@@ -238,7 +238,7 @@ const ClientOrderHistory: React.FC<Props> = ({
                             )}
                             <span className="client-detail__orders-date-main">{formatOrderDate(order.createdAt)}</span>
                             {order.deliveredAt && (
-                              <PiArrowRight size={12} className="client-detail__orders-date-arrow" />
+                              <ArrowRight size={12} className="client-detail__orders-date-arrow" />
                             )}
                             {order.deliveredAt && (
                               <span className="client-detail__orders-date-delivery">
@@ -250,7 +250,7 @@ const ClientOrderHistory: React.FC<Props> = ({
                               onClick={() => navigate(ROUTES.ORDER_DETAIL.replace(':id', order.id), { state: { from: `/clients/${clientId}` } })}
                               title={t('clients.detail.viewOrderDetail')}
                             >
-                              <PiArrowRight size={14} />
+                              <ArrowRight size={14} />
                             </button>
                           </div>
                         </td>

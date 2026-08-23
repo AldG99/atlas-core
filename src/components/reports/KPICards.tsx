@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { PiCurrencyDollar, PiHash, PiTrendUp, PiArrowUp, PiArrowDown, PiWallet, PiWarning } from 'react-icons/pi';
+import { DollarSign, Hash, TrendingUp, ArrowUp, ArrowDown, Wallet, TriangleAlert } from 'lucide-react';
 import type { KPIs } from '../../types/Report';
 import { useCurrency } from '../../hooks/useCurrency';
 import { useAnimatedNumber } from '../../hooks/useAnimatedNumber';
@@ -40,7 +40,7 @@ const KPICard = ({ card }: { card: CardData }) => {
           {card.formatValue(animatedValue)}
           {card.warning && (
             <span className="kpi-card__warning" title={card.warning}>
-              <PiWarning size={12} />
+              <TriangleAlert size={12} />
             </span>
           )}
         </div>
@@ -48,7 +48,7 @@ const KPICard = ({ card }: { card: CardData }) => {
           <span className="kpi-card__label">{card.label}</span>
           {delta !== null && delta !== 0 && (
             <div className={`kpi-card__delta kpi-card__delta--${delta > 0 ? 'up' : 'down'}`}>
-              {delta > 0 ? <PiArrowUp size={9} /> : <PiArrowDown size={9} />}
+              {delta > 0 ? <ArrowUp size={9} /> : <ArrowDown size={9} />}
               <span>{Math.abs(delta).toFixed(1)}%</span>
             </div>
           )}
@@ -63,7 +63,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
   const { format } = useCurrency();
   const allCards: CardData[] = [
     {
-      icon: <PiCurrencyDollar size={24} />,
+      icon: <DollarSign size={24} />,
       rawValue: kpis.totalSales,
       formatValue: format,
       comparisonValue: comparisonKPIs?.totalSales,
@@ -71,7 +71,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       className: 'kpi-card--sales'
     },
     {
-      icon: <PiHash size={24} />,
+      icon: <Hash size={24} />,
       rawValue: kpis.totalOrders,
       formatValue: (value) => Math.round(value).toString(),
       comparisonValue: comparisonKPIs?.totalOrders,
@@ -79,7 +79,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       className: 'kpi-card--orders'
     },
     {
-      icon: <PiTrendUp size={24} />,
+      icon: <TrendingUp size={24} />,
       rawValue: kpis.averageTicket,
       formatValue: format,
       comparisonValue: comparisonKPIs?.averageTicket,
@@ -87,7 +87,7 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       className: 'kpi-card--ticket'
     },
     {
-      icon: <PiWallet size={24} />,
+      icon: <Wallet size={24} />,
       rawValue: kpis.totalProfit,
       formatValue: format,
       comparisonValue: comparisonKPIs?.totalProfit,

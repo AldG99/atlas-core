@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiCheck, PiX, PiWarning, PiInfo } from 'react-icons/pi';
+import { Check, X, TriangleAlert, Info } from 'lucide-react';
 import { useToast } from '../../hooks/useToast';
 import './Toast.scss';
 
 const ICONS = {
-  success: <PiCheck size={16} />,
-  error: <PiX size={16} />,
-  warning: <PiWarning size={16} />,
-  info: <PiInfo size={16} />,
+  success: <Check size={16} />,
+  error: <X size={16} />,
+  warning: <TriangleAlert size={16} />,
+  info: <Info size={16} />,
 };
 
 const Toast = () => {
@@ -44,7 +44,7 @@ const Toast = () => {
             onClick={() => removeToast(toast.id)}
             aria-label={t('common.closeNotification')}
           >
-            <PiX size={14} />
+            <X size={14} />
           </button>
         </div>
       ))}

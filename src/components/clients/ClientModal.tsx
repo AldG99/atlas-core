@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiX } from 'react-icons/pi';
+import { X } from 'lucide-react';
 import type { ClientFormData } from '../../types/Client';
 import { isValidPhone } from '../../utils/validators';
 import PhoneInput from './PhoneInput';
@@ -183,7 +183,7 @@ const ClientModal = ({ client, onClose, onSave, existingPhones = [] }: ClientMod
         <div className="modal__header">
           <h2>{client ? t('clients.modal.editTitle') : t('clients.modal.newTitle')}</h2>
           <button className="modal__close" onClick={onClose}>
-            <PiX size={24} />
+            <X size={24} />
           </button>
         </div>
 

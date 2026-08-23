@@ -66,9 +66,12 @@ $topbar-height: 52px;
     display: flex;
     gap: $spacing-xs;
     align-items: center;
+    height: 36px;
+    box-sizing: border-box;
     background-color: $color-gray-100;
+    border: 1px solid $color-gray-200;
     border-radius: 0;
-    padding: 2px;
+    padding: 0 2px;
 
     select,
     input {
@@ -110,11 +113,12 @@ $topbar-height: 52px;
     }
   }
 
-  // Botones de acción — misma altura
+  // Botones de acción — misma altura que la barra de abono
   &__top-bar-payment-group > .btn,
   &__top-bar-inner > .order-detail__btn-delivered {
     height: 36px;
     min-height: 36px;
+    box-sizing: border-box;
     border-radius: 0;
     font-size: $font-size-sm;
     font-weight: 600;
@@ -122,6 +126,11 @@ $topbar-height: 52px;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
+  }
+
+  // Borde de cada botón combinado con su propio color
+  &__top-bar-payment-group > .btn--primary {
+    border: 1px solid $color-primary-dark;
   }
 
   &__top-bar-payment-group > .btn {
@@ -813,7 +822,7 @@ $topbar-height: 52px;
     min-height: 32px;
     font-size: $font-size-xs;
     font-weight: 600;
-    border: none;
+    border: 1px solid $color-gray-300;
     border-radius: 0;
     background-color: $color-gray-200;
     color: $color-gray-400;
@@ -823,6 +832,7 @@ $topbar-height: 52px;
 
     &--active {
       background-color: $color-success;
+      border-color: $color-success-dark;
       color: $color-white;
       cursor: pointer;
 
@@ -833,6 +843,7 @@ $topbar-height: 52px;
 
     &--done {
       background-color: rgba($color-success, 0.12);
+      border-color: rgba($color-success, 0.4);
       color: $color-success;
       cursor: default;
     }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { PiStarFill } from 'react-icons/pi';
+import { Star } from 'lucide-react';
 import type { Client } from '../../types/Client';
 import { getCountryCode } from '../../data/countryCodes';
 import { formatPhone } from '../../utils/formatters';
@@ -122,7 +122,7 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
                   <span className="clients-table__name" title={`${client.firstName} ${client.lastName}`}>
                     {client.firstName} {client.lastName}
                   </span>
-                  {client.favorite && <PiStarFill size={14} className="clients-table__fav-icon" />}
+                  {client.favorite && <Star fill="currentColor" size={14} className="clients-table__fav-icon" />}
                 </div>
               </td>
               <td>

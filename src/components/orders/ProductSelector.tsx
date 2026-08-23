@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { PiPlus, PiMinus, PiMagnifyingGlass, PiX, PiStackPlus } from 'react-icons/pi';
+import { Plus, Minus, Search, X, LayersPlus } from 'lucide-react';
 import ProductDetailModal from '../products/ProductDetailModal';
 import ProductModal from '../products/ProductModal';
 import { useProducts } from '../../hooks/useProducts';
@@ -251,7 +251,7 @@ const ProductSelector = ({
     <div className={`product-selector${disabled ? ' product-selector--disabled' : ''}`}>
       <div className="product-selector__search-row" ref={wrapperRef}>
         <div className="product-selector__search-wrapper">
-          <PiMagnifyingGlass size={16} className="product-selector__search-icon" />
+          <Search size={16} className="product-selector__search-icon" />
           <input
             ref={searchInputRef}
             type="text"
@@ -337,7 +337,7 @@ const ProductSelector = ({
           title={t('orders.addProductTitle')}
           disabled={disabled}
         >
-          <PiStackPlus size={18} />
+          <LayersPlus size={18} />
         </button>
       </div>
 
@@ -431,7 +431,7 @@ const ProductSelector = ({
                             onUpdateQuantity(item.product.id, item.quantity - 1)
                           }
                         >
-                          <PiMinus size={10} />
+                          <Minus size={10} />
                         </button>
                         <span className="product-selector__quantity-value">
                           {item.quantity}
@@ -444,7 +444,7 @@ const ProductSelector = ({
                           }
                           disabled={item.product.trackStock && item.quantity >= (item.product.stock ?? 0)}
                         >
-                          <PiPlus size={10} />
+                          <Plus size={10} />
                         </button>
                       </div>
                     </td>
@@ -526,7 +526,7 @@ const ProductSelector = ({
                         onClick={() => onRemoveItem(item.product.id)}
                         title={t('common.delete')}
                       >
-                        <PiX size={12} />
+                        <X size={12} />
                       </button>
                     </td>
                   </tr>

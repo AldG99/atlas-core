@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { PiBell, PiCaretDown, PiUser, PiSignOut, PiStorefront, PiWarning, PiInfo, PiShieldCheck } from 'react-icons/pi';
+import { Bell, ChevronDown, User, LogOut, Store, TriangleAlert, Info, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import type { Notification } from '../../hooks/useNotifications';
@@ -77,7 +77,7 @@ const Header = ({ notifications }: HeaderProps) => {
             aria-haspopup="true"
             aria-expanded={showNotifications}
           >
-            <PiBell size={20} />
+            <Bell size={20} />
             {notifications.length > 0 && (
               <span className="header__notification-badge" aria-hidden="true">{notifications.length > 99 ? '99+' : notifications.length}</span>
             )}
@@ -102,8 +102,8 @@ const Header = ({ notifications }: HeaderProps) => {
                     >
                       <div className="header__notification-icon">
                         {n.type === 'warning'
-                          ? <PiWarning size={16} />
-                          : <PiInfo size={16} />
+                          ? <TriangleAlert size={16} />
+                          : <Info size={16} />
                         }
                       </div>
                       <div className="header__notification-text">
@@ -123,7 +123,7 @@ const Header = ({ notifications }: HeaderProps) => {
           onClick={() => navigate(ROUTES.FAQ)}
           aria-label={t('nav.faq')}
         >
-          <PiInfo size={20} />
+          <Info size={20} />
         </button>
 
         {/* Profile */}
@@ -150,10 +150,10 @@ const Header = ({ notifications }: HeaderProps) => {
                     ? `${user.firstName} ${user.lastName}`
                     : t('auth.login.adminTab')}
                 </span>
-                <PiShieldCheck size={11} color="#F8A800" />
+                <ShieldCheck size={11} color="#F8A800" />
               </div>
             </div>
-            <PiCaretDown size={16} />
+            <ChevronDown size={16} />
           </button>
 
           {showProfileMenu && (
@@ -166,7 +166,7 @@ const Header = ({ notifications }: HeaderProps) => {
                     navigate(ROUTES.PROFILE);
                   }}
                 >
-                  <PiUser size={18} />
+                  <User size={18} />
                   <span>{t('nav.profile')}</span>
                 </button>
                 <button
@@ -176,12 +176,12 @@ const Header = ({ notifications }: HeaderProps) => {
                     navigate(ROUTES.PLANS);
                   }}
                 >
-                  <PiStorefront size={18} />
+                  <Store size={18} />
                   <span>{t('nav.plan', { plan: user?.plan === 'pro' ? 'Pro' : user?.plan === 'enterprise' ? 'Enterprise' : t('plans.free') })}</span>
                 </button>
                 <div className="header__dropdown-divider"></div>
                 <button className="header__dropdown-item header__dropdown-item--danger" onClick={handleLogout}>
-                  <PiSignOut size={18} />
+                  <LogOut size={18} />
                   <span>{t('nav.logout')}</span>
                 </button>
               </div>

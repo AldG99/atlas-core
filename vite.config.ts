@@ -31,7 +31,7 @@ export default defineConfig({
           ) return 'vendor-react';
           if (id.includes('i18next')) return 'vendor-i18n';
           if (id.includes('@dicebear')) return 'vendor-dicebear';
-          if (id.includes('react-icons')) return 'vendor-icons';
+          if (id.includes('react-icons') || id.includes('lucide-react')) return 'vendor-icons';
           return 'vendor';
         },
       },

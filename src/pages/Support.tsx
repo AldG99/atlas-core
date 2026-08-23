@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiPaperPlaneRight, PiBookOpen } from 'react-icons/pi';
+import { Send, BookOpen } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -141,7 +141,7 @@ const Support = () => {
           <section className="support__section">
             <div className="support__contact-card">
               <div className="support__contact-info">
-                <PiBookOpen size={24} />
+                <BookOpen size={24} />
                 <div>
                   <h3>{t('support.contactInfo')}</h3>
                   <p>{t('support.contactSubtitle')}</p>
@@ -193,7 +193,7 @@ const Support = () => {
                       t('support.waitButton', { time: formatCooldown(cooldownRemaining) })
                     ) : (
                       <>
-                        <PiPaperPlaneRight size={18} />
+                        <Send size={18} />
                         {t('support.send')}
                       </>
                     )}

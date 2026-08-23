@@ -3,7 +3,7 @@ import { useReports } from '../hooks/useReports';
 import { useToast } from '../hooks/useToast';
 import { useClients } from '../hooks/useClients';
 import { getCountryCode } from '../data/countryCodes';
-import { PiDownloadSimple } from 'react-icons/pi';
+import { DownloadCloud } from 'lucide-react';
 import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
 import KPICards from '../components/reports/KPICards';
@@ -52,7 +52,7 @@ const Reports = () => {
             className="btn btn--secondary"
             disabled={filteredOrders.length === 0}
           >
-            <PiDownloadSimple size={18} />
+            <DownloadCloud size={18} />
             {t('reports.export')}
           </button>
         </div>

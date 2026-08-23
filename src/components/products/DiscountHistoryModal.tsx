@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PiX, PiDownloadSimple } from 'react-icons/pi';
+import { X, DownloadCloud } from 'lucide-react';
 import type { Product, DiscountHistory } from '../../types/Product';
 import './DiscountHistoryModal.scss';
 
@@ -110,11 +110,11 @@ const DiscountHistoryModal = ({ products, onClose }: DiscountHistoryModalProps) 
               onClick={handleExportCSV}
               disabled={rows.length === 0}
             >
-              <PiDownloadSimple size={15} />
+              <DownloadCloud size={15} />
               {t('products.discountModal.export')}
             </button>
             <button className="modal__close" onClick={onClose}>
-              <PiX size={24} />
+              <X size={24} />
             </button>
           </div>
         </div>

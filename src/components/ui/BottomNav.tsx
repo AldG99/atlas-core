@@ -1,12 +1,12 @@
 import { NavLink } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiClipboardText,
-  PiUsers,
-  PiPackage,
-  PiChartBar,
-  PiList,
-} from 'react-icons/pi';
+  ClipboardList,
+  Users,
+  Package,
+  ChartBar,
+  List,
+} from 'lucide-react';
 import { ROUTES } from '../../config/routes';
 import './BottomNav.scss';
 
@@ -25,7 +25,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
       >
-        <PiClipboardText size={22} />
+        <ClipboardList size={22} />
         <span>{t('nav.orders')}</span>
       </NavLink>
 
@@ -35,7 +35,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
       >
-        <PiUsers size={22} />
+        <Users size={22} />
         <span>{t('nav.clients')}</span>
       </NavLink>
 
@@ -45,7 +45,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
       >
-        <PiPackage size={22} />
+        <Package size={22} />
         <span>{t('nav.products')}</span>
       </NavLink>
 
@@ -55,7 +55,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
       >
-        <PiChartBar size={22} />
+        <ChartBar size={22} />
         <span>{t('nav.reports')}</span>
       </NavLink>
 
@@ -64,7 +64,7 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
         onClick={onOpenMenu}
         aria-label={t('nav.openMenu')}
       >
-        <PiList size={22} />
+        <List size={22} />
         <span>{t('nav.menu')}</span>
       </button>
     </nav>

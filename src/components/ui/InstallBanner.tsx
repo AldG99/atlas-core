@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { PiDownloadSimple, PiX } from 'react-icons/pi';
+import { DownloadCloud, X } from 'lucide-react';
 import { usePWA } from '../../hooks/usePWA';
 import './InstallBanner.scss';
 
@@ -23,7 +23,7 @@ const InstallBanner = () => {
           className="install-banner__btn install-banner__btn--primary"
           onClick={promptInstall}
         >
-          <PiDownloadSimple size={15} />
+          <DownloadCloud size={15} />
           {t('settings.install.bannerButton')}
         </button>
         <button
@@ -31,7 +31,7 @@ const InstallBanner = () => {
           onClick={() => {/* el banner desaparece al instalar o al navegar */}}
           aria-label={t('settings.install.bannerClose')}
         >
-          <PiX size={14} />
+          <X size={14} />
         </button>
       </div>
     </div>

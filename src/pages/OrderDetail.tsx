@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
-  PiArrowRight,
-  PiStarFill,
-  PiCaretRight,
-} from 'react-icons/pi';
+  ArrowRight,
+  Star,
+  ChevronRight,
+} from 'lucide-react';
 import { toPng } from 'html-to-image';
 import OrderCapture from '../components/orders/OrderCapture';
 import type { Order, OrderStatus } from '../types/Order';
@@ -433,7 +433,7 @@ const OrderDetail = () => {
               <div className="order-detail__client-info">
                 <div className="order-detail__name-row">
                   <h1 className="order-detail__name">{order.clientName}</h1>
-                  {clientFavorite && <PiStarFill size={14} className="order-detail__fav-icon" />}
+                  {clientFavorite && <Star fill="currentColor" size={14} className="order-detail__fav-icon" />}
                 </div>
                 <span className="order-detail__phone">
                   {!order.clientPhone
@@ -449,7 +449,7 @@ const OrderDetail = () => {
                 {order.orderNumber && (
                   <>
                     <span className="order-detail__order-number">{order.orderNumber}</span>
-                    <PiCaretRight size={12} className="order-detail__order-number-sep" />
+                    <ChevronRight size={12} className="order-detail__order-number-sep" />
                   </>
                 )}
                 <span
@@ -469,7 +469,7 @@ const OrderDetail = () => {
                 </span>
                 {order.deliveredAt && (
                   <>
-                    <PiArrowRight size={12} className="order-detail__date-arrow" />
+                    <ArrowRight size={12} className="order-detail__date-arrow" />
                     <span className="order-detail__date order-detail__date--delivery">
                       {formatDate(order.deliveredAt)}
                     </span>
