@@ -96,6 +96,7 @@
     "orders": "Pedidos",
     "clients": "Clientes",
     "products": "Productos",
+    "inventory": "Inventario",
     "reports": "Reportes",
     "archived": "Archivados",
     "settings": "Configuración",
@@ -612,8 +613,7 @@
       "unit": "Unidad",
       "price": "Precio",
       "labels": "Etiquetas",
-      "stock": "Stock",
-      "registration": "Registro"
+      "stock": "Stock"
     },
     "stockEmpty": "Sin stock",
     "noLabels": "—",
@@ -782,15 +782,20 @@
       "empty": "No hay ventas en este período",
       "sold": "vendidos",
       "profit": "ganancia"
-    },
-    "inventory": {
-      "title": "Estado del inventario",
-      "withControl": "Con control",
-      "empty": "Agotados",
-      "lowStock": "Stock bajo",
-      "lowStockLabel": "Stock bajo",
-      "stockOfMin": "{{stock}} (mín {{min}})",
-      "restockSuggestion": "Pedir {{count}}"
+    }
+  },
+  "inventory": {
+    "title": "Inventario",
+    "withControl": "Con control",
+    "totalValue": "Valor en stock",
+    "empty": "Agotados",
+    "lowStock": "Stock bajo",
+    "ok": "Bien",
+    "restockSuggestion": "Pedir {{count}}",
+    "filterAll": "Todos",
+    "table": {
+      "minMax": "Mín/Máx",
+      "value": "Valor"
     }
   },
   "archive": {

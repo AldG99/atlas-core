@@ -146,5 +146,9 @@
     @include sm {
       grid-template-columns: 1fr 1fr;
     }
+
+    @include lg {
+      grid-column: 1 / -1;
+    }
   }
 }

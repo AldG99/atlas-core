@@ -74,7 +74,7 @@ export const useNotifications = () => {
         type: 'info',
         title: t('notifications.expiringDiscounts.title', { count: expiringDiscounts.length }),
         description: t('notifications.expiringDiscounts.description', { days: DAYS_DISCOUNT }),
-        link: '/products',
+        link: '/inventory',
         filterState: { filterDescuento: true },
       });
     }
@@ -114,8 +114,8 @@ export const useNotifications = () => {
           name: outOfStock[0].name,
           remaining: outOfStock.length - 1,
         }),
-        link: '/products',
-        filterState: {},
+        link: '/inventory',
+        filterState: { statusFilter: 'out' },
       });
     }
 
@@ -131,8 +131,8 @@ export const useNotifications = () => {
         type: 'info',
         title: t('notifications.lowStock.title', { count: lowStock.length }),
         description: t('notifications.lowStock.description'),
-        link: '/products',
-        filterState: {},
+        link: '/inventory',
+        filterState: { statusFilter: 'low' },
       });
     }
 

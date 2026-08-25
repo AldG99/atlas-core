@@ -96,6 +96,7 @@
     "orders": "Ordini",
     "clients": "Clienti",
     "products": "Prodotti",
+    "inventory": "Inventario",
     "reports": "Report",
     "archived": "Archiviati",
     "settings": "Impostazioni",
@@ -612,8 +613,7 @@
       "unit": "Unità",
       "price": "Prezzo",
       "labels": "Etichette",
-      "stock": "Stock",
-      "registration": "Registrazione"
+      "stock": "Stock"
     },
     "stockEmpty": "Esaurito",
     "noLabels": "—",
@@ -782,15 +782,20 @@
       "empty": "Nessuna vendita in questo periodo",
       "sold": "venduti",
       "profit": "profitto"
-    },
-    "inventory": {
-      "title": "Stato inventario",
-      "withControl": "Con controllo",
-      "empty": "Esaurito",
-      "lowStock": "Scorte basse",
-      "lowStockLabel": "Scorte basse",
-      "stockOfMin": "{{stock}} (min {{min}})",
-      "restockSuggestion": "Ordina {{count}}"
+    }
+  },
+  "inventory": {
+    "title": "Inventario",
+    "withControl": "Con controllo",
+    "totalValue": "Valore in magazzino",
+    "empty": "Esaurito",
+    "lowStock": "Scorte basse",
+    "ok": "OK",
+    "restockSuggestion": "Ordina {{count}}",
+    "filterAll": "Tutti",
+    "table": {
+      "minMax": "Min/Max",
+      "value": "Valore"
     }
   },
   "archive": {

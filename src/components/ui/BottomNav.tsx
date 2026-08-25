@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ClipboardList,
   Users,
-  Package,
+  Warehouse,
   ChartBar,
   List,
 } from 'lucide-react';
@@ -40,13 +40,13 @@ const BottomNav = ({ onOpenMenu }: BottomNavProps) => {
       </NavLink>
 
       <NavLink
-        to={ROUTES.PRODUCTS}
+        to={ROUTES.INVENTORY}
         className={({ isActive }) =>
           `bottom-nav__item${isActive ? ' bottom-nav__item--active' : ''}`
         }
       >
-        <Package size={22} />
-        <span>{t('nav.products')}</span>
+        <Warehouse size={22} />
+        <span>{t('nav.inventory')}</span>
       </NavLink>
 
       <NavLink

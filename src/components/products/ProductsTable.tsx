@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { Product, Label } from '../../types/Product';
 import { LABEL_ICONS } from '../../constants/labelIcons';
+import { DEFAULT_LOW_STOCK_THRESHOLD } from '../../constants/stock';
+import { getStockStatus, suggestRestock } from '../../utils/inventoryCalculations';
+import { useCurrency } from '../../hooks/useCurrency';
 import './ProductsTable.scss';
 
 interface ProductsTableProps {
@@ -14,26 +17,12 @@ interface ProductsTableProps {
 }
 
 const ProductsTable = ({ products, labels, loading, error, searchTerm }: ProductsTableProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { format: formatValue } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(i18n.language, {
-      style: 'currency',
-      currency: 'MXN'
-    }).format(price);
-  };
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat(i18n.language, {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    }).format(date);
-  };
 
   const isDiscountActive = (p: Product): boolean => {
     if (!p.discount || p.discount <= 0) return false;
@@ -81,13 +70,14 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
 
   const colgroup = (
     <colgroup>
-      <col style={{ width: '14%' }} />
-      <col style={{ width: '14%' }} />
       <col style={{ width: '11%' }} />
-      <col style={{ width: '23%' }} />
+      <col style={{ width: '20%' }} />
+      <col style={{ width: '9%' }} />
       <col style={{ width: '16%' }} />
-      <col style={{ width: '8%' }} />
-      <col style={{ width: '14%' }} />
+      <col style={{ width: '13%' }} />
+      <col style={{ width: '10%' }} />
+      <col style={{ width: '11%' }} />
+      <col style={{ width: '10%' }} />
     </colgroup>
   );
 
@@ -104,7 +94,8 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
               <th>{t('products.table.price')}</th>
               <th>{t('products.table.labels')}</th>
               <th>{t('products.table.stock')}</th>
-              <th className="products-table__col--right">{t('products.table.registration')}</th>
+              <th>{t('inventory.table.minMax')}</th>
+              <th>{t('inventory.table.value')}</th>
             </tr>
           </thead>
         </table>
@@ -115,19 +106,19 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
           <tbody>
           {loading ? (
             <tr>
-              <td colSpan={7} className="products-table__empty">
+              <td colSpan={8} className="products-table__empty">
                 {t('products.loadingProducts')}
               </td>
             </tr>
           ) : error ? (
             <tr>
-              <td colSpan={7} className="products-table__empty products-table__empty--error">
+              <td colSpan={8} className="products-table__empty products-table__empty--error">
                 {error}
               </td>
             </tr>
           ) : products.length === 0 ? (
             <tr>
-              <td colSpan={7} className="products-table__empty">
+              <td colSpan={8} className="products-table__empty">
                 {searchTerm?.trim() ? t('products.noProductsSearch', { term: searchTerm }) : t('products.noProducts')}
               </td>
             </tr>
@@ -157,11 +148,11 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
                   {isDiscountActive(product) ? (
                     <div className="products-table__price-cell">
                       <span className="products-table__price-badge">-{product.discount}%</span>
-                      <span className="products-table__price-original">{formatPrice(product.price)}</span>
-                      <span className="products-table__price">{formatPrice(getDiscountedPrice(product.price, product.discount!))}</span>
+                      <span className="products-table__price-original">{formatValue(product.price)}</span>
+                      <span className="products-table__price">{formatValue(getDiscountedPrice(product.price, product.discount!))}</span>
                     </div>
                   ) : (
-                    <span className="products-table__price">{formatPrice(product.price)}</span>
+                    <span className="products-table__price">{formatValue(product.price)}</span>
                   )}
                 </td>
                 <td>
@@ -186,15 +177,31 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
                 </td>
                 <td>
                   {product.trackStock ? (
-                    <span className={(product.stock ?? 0) === 0 ? 'products-table__stock--empty' : 'products-table__stock'}>
-                      {(product.stock ?? 0) === 0 ? t('products.stockEmpty') : product.stock}
-                    </span>
+                    <div className="products-table__stock-cell">
+                      <span className={`products-table__stock products-table__stock--${getStockStatus(product)}`}>
+                        {(product.stock ?? 0) === 0 ? t('products.stockEmpty') : product.stock}
+                      </span>
+                      {getStockStatus(product) !== 'ok' && suggestRestock(product) !== undefined && (
+                        <span className="products-table__restock-badge">
+                          {t('inventory.restockSuggestion', { count: suggestRestock(product) })}
+                        </span>
+                      )}
+                    </div>
                   ) : (
                     <span className="products-table__no-labels">—</span>
                   )}
                 </td>
-                <td className="products-table__col--right">
-                  <span className="products-table__date">{formatDate(product.createdAt)}</span>
+                <td>
+                  <span className="products-table__minmax">
+                    {product.trackStock
+                      ? `${product.minStock ?? DEFAULT_LOW_STOCK_THRESHOLD} / ${product.maxStock ?? '—'}`
+                      : '—'}
+                  </span>
+                </td>
+                <td>
+                  <span className="products-table__value">
+                    {product.trackStock ? formatValue((product.stock ?? 0) * product.costPrice) : '—'}
+                  </span>
                 </td>
               </tr>
             );

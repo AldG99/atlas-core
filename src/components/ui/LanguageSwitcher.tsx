@@ -13,6 +13,7 @@ const LANGUAGES = [
   { code: 'fr', label: 'Français' },
   { code: 'it', label: 'Italiano' },
   { code: 'de', label: 'Deutsch' },
+  { code: 'id', label: 'Bahasa Indonesia' },
 ];
 
 // En la vista compacta (login) estos dos se ocultan detrás de "Más idiomas...".

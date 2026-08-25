@@ -96,6 +96,7 @@
     "orders": "Orders",
     "clients": "Clients",
     "products": "Products",
+    "inventory": "Inventory",
     "reports": "Reports",
     "archived": "Archived",
     "settings": "Settings",
@@ -612,8 +613,7 @@
       "unit": "Unit",
       "price": "Price",
       "labels": "Labels",
-      "stock": "Stock",
-      "registration": "Registration"
+      "stock": "Stock"
     },
     "stockEmpty": "Out of stock",
     "noLabels": "—",
@@ -782,15 +782,20 @@
       "empty": "No sales in this period",
       "sold": "sold",
       "profit": "profit"
-    },
-    "inventory": {
-      "title": "Inventory status",
-      "withControl": "With control",
-      "empty": "Out of stock",
-      "lowStock": "Low stock",
-      "lowStockLabel": "Low stock",
-      "stockOfMin": "{{stock}} (min {{min}})",
-      "restockSuggestion": "Order {{count}}"
+    }
+  },
+  "inventory": {
+    "title": "Inventory",
+    "withControl": "With control",
+    "totalValue": "Stock value",
+    "empty": "Out of stock",
+    "lowStock": "Low stock",
+    "ok": "OK",
+    "restockSuggestion": "Order {{count}}",
+    "filterAll": "All",
+    "table": {
+      "minMax": "Min/Max",
+      "value": "Value"
     }
   },
   "archive": {

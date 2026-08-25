@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import type { PeriodType, ReportData } from '../types/Report';
 import type { Order } from '../types/Order';
 import { useAuth } from './useAuth';
-import { useProducts } from './useProducts';
 import { getOrdersByDateRange } from '../services/orderService';
 import {
   getDateRange,
@@ -12,7 +11,6 @@ import {
   calculateStatusBreakdown,
   calculateTopClients,
   calculateTopProducts,
-  calculateInventoryStats,
   calculateChartData,
 } from '../utils/reportCalculations';
 
@@ -30,7 +28,6 @@ const getCacheKey = (businessUid: string, start: Date, end: Date) =>
 
 export const useReports = () => {
   const { businessUid } = useAuth();
-  const { products } = useProducts();
   const { i18n } = useTranslation();
   const [period, setPeriod] = useState<PeriodType>('week');
   const [currentPeriodOrders, setCurrentPeriodOrders] = useState<Order[]>([]);
@@ -94,8 +91,7 @@ export const useReports = () => {
     topClients: calculateTopClients(currentPeriodOrders),
     topProducts: calculateTopProducts(currentPeriodOrders),
     chartData: calculateChartData(currentPeriodOrders, period, dateRange, i18n.language),
-    inventory: calculateInventoryStats(products),
-  }), [currentPeriodOrders, previousPeriodOrders, period, dateRange, products, i18n.language]);
+  }), [currentPeriodOrders, previousPeriodOrders, period, dateRange, i18n.language]);
 
   return {
     reportData,

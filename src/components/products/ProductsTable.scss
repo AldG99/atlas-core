@@ -52,7 +52,7 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  min-width: 700px;
+  min-width: 920px;
 
   thead {
     background-color: $color-gray-100;
@@ -195,12 +195,6 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
     color: $color-gray-400;
   }
 
-  &__date {
-    font-size: $font-size-sm;
-    color: $color-gray-500;
-    white-space: nowrap;
-  }
-
   &__pagination {
     display: flex;
     align-items: center;
@@ -218,21 +212,49 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
     color: $color-gray-600;
   }
 
+  &__stock-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
   &__stock {
     font-weight: 600;
+
+    &--out {
+      color: $color-danger;
+    }
+
+    &--low {
+      color: $color-warning;
+    }
+  }
+
+  &__restock-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background-color: rgba($color-primary, 0.1);
+    color: $color-primary;
+    font-size: 10px;
+    font-weight: 600;
+    width: fit-content;
+    white-space: nowrap;
+  }
+
+  &__minmax {
+    font-size: $font-size-sm;
+    color: $color-gray-600;
+  }
+
+  &__value {
+    font-weight: 600;
+    color: $color-gray-800;
   }
 
   &__unit {
     font-size: $font-size-sm;
     color: $color-gray-600;
-  }
-
-  &__col--right {
-    text-align: right !important;
-  }
-
-  &__stock--empty {
-    color: $color-gray-400;
-    font-weight: 600;
   }
 }

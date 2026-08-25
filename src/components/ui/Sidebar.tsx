@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { List, X, ClipboardList, Users, Package, ChartBar, Archive, LifeBuoy, Settings2 } from 'lucide-react';
+import { List, X, ClipboardList, Users, Warehouse, ChartBar, Archive, LifeBuoy, Settings2 } from 'lucide-react';
 import { ROUTES } from '../../config/routes';
 import './Sidebar.scss';
 
@@ -60,12 +60,12 @@ const Sidebar = ({ isMobileOpen, onToggle, onClose }: SidebarProps) => {
           </NavLink>
 
           <NavLink
-            to={ROUTES.PRODUCTS}
+            to={ROUTES.INVENTORY}
             className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
             onClick={onClose}
           >
-            <span className="sidebar__link-icon"><Package size={22} /></span>
-            <span className="sidebar__link-text">{t('nav.products')}</span>
+            <span className="sidebar__link-icon"><Warehouse size={22} /></span>
+            <span className="sidebar__link-text">{t('nav.inventory')}</span>
           </NavLink>
 
           <NavLink

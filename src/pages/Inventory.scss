@@ -2,12 +2,11 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
-.products {
+.inventory-page {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
 
   &__header {
     display: flex;
@@ -69,6 +68,17 @@
     }
   }
 
+  &__loading,
+  &__error {
+    text-align: center;
+    padding: $spacing-xl;
+    font-size: $font-size-sm;
+  }
+
+  &__error {
+    color: $color-danger;
+  }
+
   &__controls {
     display: flex;
     flex-direction: column;
@@ -104,12 +114,14 @@
 
   &__selects {
     display: flex;
+    flex-wrap: wrap;
     gap: $spacing-sm;
 
     .select {
       font-size: $font-size-sm;
       flex: 1;
       height: 36px;
+      min-width: 140px;
 
       @include sm {
         flex: none;
@@ -129,6 +141,7 @@
     color: $color-warning;
     font-size: $font-size-sm;
     flex-shrink: 0;
+    margin-bottom: $spacing-md;
 
     span {
       flex: 1;

@@ -96,6 +96,7 @@
     "orders": "Bestellungen",
     "clients": "Kunden",
     "products": "Produkte",
+    "inventory": "Lager",
     "reports": "Berichte",
     "archived": "Archiviert",
     "settings": "Einstellungen",
@@ -612,8 +613,7 @@
       "unit": "Einheit",
       "price": "Preis",
       "labels": "Etiketten",
-      "stock": "Bestand",
-      "registration": "Registrierung"
+      "stock": "Bestand"
     },
     "stockEmpty": "Nicht auf Lager",
     "noLabels": "—",
@@ -782,15 +782,20 @@
       "empty": "Keine Verkäufe in diesem Zeitraum",
       "sold": "verkauft",
       "profit": "Gewinn"
-    },
-    "inventory": {
-      "title": "Lagerstatus",
-      "withControl": "Mit Kontrolle",
-      "empty": "Nicht auf Lager",
-      "lowStock": "Niedriger Bestand",
-      "lowStockLabel": "Niedriger Bestand",
-      "stockOfMin": "{{stock}} (min {{min}})",
-      "restockSuggestion": "Bestellen: {{count}}"
+    }
+  },
+  "inventory": {
+    "title": "Lager",
+    "withControl": "Mit Kontrolle",
+    "totalValue": "Lagerwert",
+    "empty": "Nicht auf Lager",
+    "lowStock": "Niedriger Bestand",
+    "ok": "OK",
+    "restockSuggestion": "Bestellen: {{count}}",
+    "filterAll": "Alle",
+    "table": {
+      "minMax": "Min/Max",
+      "value": "Wert"
     }
   },
   "archive": {

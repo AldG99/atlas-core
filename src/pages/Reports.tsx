@@ -12,7 +12,6 @@ import SalesChart from '../components/reports/SalesChart';
 import StatusBreakdown from '../components/reports/StatusBreakdown';
 import TopClients from '../components/reports/TopClients';
 import TopProducts from '../components/reports/TopProducts';
-import InventoryStatus from '../components/reports/InventoryStatus';
 import './Reports.scss';
 
 const Reports = () => {
@@ -98,7 +97,6 @@ const Reports = () => {
                 <TopClients clients={reportData.topClients} />
                 <TopProducts products={reportData.topProducts} />
               </div>
-              <InventoryStatus inventory={reportData.inventory} />
             </div>
           )}
         </div>

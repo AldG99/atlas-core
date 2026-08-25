@@ -40,23 +40,6 @@ export interface TopProduct {
   profit?: number;
 }
 
-export interface InventoryItem {
-  id: string;
-  name: string;
-  sku?: string;
-  stock: number;
-  minStock: number;
-  // Cuánto pedir para llegar al máximo configurado — solo si el producto
-  // tiene maxStock definido, si no no hay forma de sugerir una cantidad.
-  suggestedRestock?: number;
-}
-
-export interface InventoryStats {
-  totalTracked: number;
-  outOfStock: InventoryItem[];
-  lowStock: InventoryItem[];
-}
-
 export interface ReportData {
   kpis: KPIs;
   comparisonKPIs: KPIs;
@@ -64,5 +47,4 @@ export interface ReportData {
   topClients: TopClient[];
   topProducts: TopProduct[];
   chartData: ChartDataPoint[];
-  inventory: InventoryStats;
 }

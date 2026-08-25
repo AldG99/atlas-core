@@ -44,13 +44,13 @@ const ProductDetail = () => {
       const data = await getProductById(id);
       if (!data) {
         showToast(t('products.detail.notFound'), 'error');
-        navigate(ROUTES.PRODUCTS);
+        navigate(ROUTES.INVENTORY);
         return;
       }
       setProduct(data);
     } catch {
       showToast(t('products.detail.loadError'), 'error');
-      navigate(ROUTES.PRODUCTS);
+      navigate(ROUTES.INVENTORY);
     } finally {
       setLoading(false);
     }
@@ -233,7 +233,7 @@ const ProductDetail = () => {
         <ProductTopBar
           isEditing={isEditing}
           saving={saving}
-          onBack={() => navigate(ROUTES.PRODUCTS)}
+          onBack={() => navigate(ROUTES.INVENTORY)}
           onStartEdit={startEditing}
           onDelete={handleDelete}
           onSave={handleSave}
@@ -692,7 +692,7 @@ const ProductDetail = () => {
         <ProductDeleteModal
           product={product}
           onClose={() => setShowDeleteModal(false)}
-          onDeleted={() => navigate(ROUTES.PRODUCTS)}
+          onDeleted={() => navigate(ROUTES.INVENTORY)}
         />
       )}
     </MainLayout>

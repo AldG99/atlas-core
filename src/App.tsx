@@ -24,8 +24,8 @@ const NewOrder       = lazy(() => import('./pages/NewOrder'));
 const OrderDetail    = lazy(() => import('./pages/OrderDetail'));
 const Clients        = lazy(() => import('./pages/Clients'));
 const ClientDetail   = lazy(() => import('./pages/ClientDetail'));
-const Products       = lazy(() => import('./pages/Products'));
 const ProductDetail  = lazy(() => import('./pages/ProductDetail'));
+const Inventory      = lazy(() => import('./pages/Inventory'));
 const Reports        = lazy(() => import('./pages/Reports'));
 const Profile        = lazy(() => import('./pages/Profile'));
 const Settings       = lazy(() => import('./pages/Settings'));
@@ -43,8 +43,8 @@ const PROTECTED_ROUTES = [
   { path: ROUTES.ORDER_DETAIL,   component: OrderDetail    },
   { path: ROUTES.CLIENTS,        component: Clients        },
   { path: ROUTES.CLIENT_DETAIL,  component: ClientDetail   },
-  { path: ROUTES.PRODUCTS,       component: Products       },
   { path: ROUTES.PRODUCT_DETAIL, component: ProductDetail  },
+  { path: ROUTES.INVENTORY,      component: Inventory      },
   { path: ROUTES.REPORTS,        component: Reports        },
   { path: ROUTES.ARCHIVE,         component: Archive        },
   { path: ROUTES.PROFILE,          component: Profile        },
