@@ -351,68 +351,129 @@ const ProductDetail = () => {
                     )}
                   </div>
 
-                  {/* Costo de producción */}
-                  <div className="product-detail__row">
-                    <span className="product-detail__row-label">{t('products.detailModal.costPrice')}</span>
-                    {isEditing ? (
-                      <div className="product-detail__row-value product-detail__row-value--form">
-                        <input
-                          type="number"
-                          value={editData?.costPrice || 0}
-                          onChange={(e) => updateField('costPrice', parseFloat(e.target.value) || 0)}
-                          className="product-detail__input product-detail__input--cost"
-                          step="0.01"
-                          min="0"
-                        />
+                  {isEditing ? (
+                    /* Costo de producción + Precio de venta: en edición, en horizontal */
+                    <div className="product-detail__row product-detail__row--align-start">
+                      <div className="product-detail__stock-fields">
+                        <div className="product-detail__stock-input-row">
+                          <label htmlFor="costPrice">{t('products.detailModal.costPrice')}</label>
+                          <input
+                            type="number"
+                            id="costPrice"
+                            value={editData?.costPrice || 0}
+                            onChange={(e) => updateField('costPrice', parseFloat(e.target.value) || 0)}
+                            className="product-detail__input product-detail__input--cost"
+                            step="0.01"
+                            min="0"
+                          />
+                        </div>
+                        <div className="product-detail__stock-input-row">
+                          <label htmlFor="price">{t('products.detailModal.price')}</label>
+                          <input
+                            type="number"
+                            id="price"
+                            value={editData?.price || 0}
+                            onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
+                            placeholder="Precio"
+                            className="product-detail__input product-detail__input--price"
+                            step="0.01"
+                            min="0"
+                          />
+                        </div>
                       </div>
-                    ) : (
-                      <span className="product-detail__row-value">
-                        {product.costPrice ? format(product.costPrice) : t('products.detailModal.noCostPrice')}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Precio de venta */}
-                  <div className="product-detail__row">
-                    <span className="product-detail__row-label">{t('products.detailModal.price')}</span>
-                    {isEditing ? (
-                      <div className="product-detail__row-value product-detail__row-value--form">
-                        <input
-                          type="number"
-                          value={editData?.price || 0}
-                          onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
-                          placeholder="Precio"
-                          className="product-detail__input product-detail__input--price"
-                          step="0.01"
-                          min="0"
-                        />
-                      </div>
-                    ) : isDiscountActive(product) ? (
-                      <span className="product-detail__row-value product-detail__price-discount">
-                        <span className="product-detail__price-badge">-{product.discount}%</span>
-                        <span className="product-detail__price-original">{format(product.price)}</span>
-                        <span className="product-detail__price-final">
-                          {format(getDiscountedPrice(product.price, product.discount!))}
-                        </span>
-                      </span>
-                    ) : (
-                      <span className="product-detail__row-value">{format(product.price)}</span>
-                    )}
-                  </div>
-
-                  {/* Descuento válido hasta (solo vista) */}
-                  {!isEditing && (
-                    <div className="product-detail__row">
-                      <span className="product-detail__row-label">{t('products.detailModal.discountValidUntil')}</span>
-                      {isDiscountActive(product) && product.discountEndDate ? (
-                        <span className="product-detail__row-value">{formatDate(product.discountEndDate)}</span>
-                      ) : (
-                        <span className="product-detail__row-value product-detail__row-value--empty">
-                          {t('products.detailModal.noDiscount')}
-                        </span>
-                      )}
                     </div>
+                  ) : (
+                    <>
+                      {/* Costo de producción */}
+                      <div className="product-detail__row">
+                        <span className="product-detail__row-label">{t('products.detailModal.costPrice')}</span>
+                        <span className="product-detail__row-value">
+                          {product.costPrice ? format(product.costPrice) : t('products.detailModal.noCostPrice')}
+                        </span>
+                      </div>
+
+                      {/* Precio de venta */}
+                      <div className="product-detail__row">
+                        <span className="product-detail__row-label">{t('products.detailModal.price')}</span>
+                        {isDiscountActive(product) ? (
+                          <span className="product-detail__row-value product-detail__price-discount">
+                            <span className="product-detail__price-badge">-{product.discount}%</span>
+                            <span className="product-detail__price-original">{format(product.price)}</span>
+                            <span className="product-detail__price-final">
+                              {format(getDiscountedPrice(product.price, product.discount!))}
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="product-detail__row-value">{format(product.price)}</span>
+                        )}
+                      </div>
+                    </>
                   )}
+
+                  {/* Descuento: misma fila alterna vista/edición, igual que el resto de campos */}
+                  <div className="product-detail__row product-detail__row--align-start">
+                    <span className={`product-detail__row-label${isEditing ? ' product-detail__row-label--discount' : ''}`}>
+                      {t(isEditing ? 'products.detail.discount' : 'products.detailModal.discountValidUntil')}
+                    </span>
+                    {isEditing ? (
+                      <div className="product-detail__row-value product-detail__row-value--form">
+                        <div className="product-detail__price-edit-discount">
+                          <div className="product-detail__price-edit-row">
+                            <div className="product-detail__discount-input-wrapper">
+                              <input
+                                type="number"
+                                value={editData?.discount || ''}
+                                onChange={(e) => {
+                                  const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+                                  updateField('discount', val);
+                                }}
+                                placeholder="0"
+                                className="product-detail__input product-detail__input--discount"
+                                min="0"
+                                max="100"
+                                step="1"
+                              />
+                              <span className="product-detail__discount-percent">%</span>
+                            </div>
+                            <input
+                              type="date"
+                              value={editData?.discountEndDate as string || ''}
+                              onChange={(e) => updateField('discountEndDate', e.target.value)}
+                              className="product-detail__input product-detail__input--date"
+                            />
+                            {editData?.discount && editData.discount > 0 && (
+                              <button
+                                type="button"
+                                className="product-detail__cancel-discount"
+                                onClick={() => {
+                                  if (!editData) return;
+                                  setEditData({ ...editData, discount: 0, discountEndDate: '' });
+                                }}
+                              >
+                                {t('products.detail.cancelDiscount')}
+                              </button>
+                            )}
+                          </div>
+                          {editData?.discount && editData.discount > 0 && (
+                            <div className="product-detail__price-edit-preview">
+                              <span className="product-detail__price-original">
+                                {format(editData?.price || product.price)}
+                              </span>
+                              <span className="product-detail__price-final">
+                                {format(getDiscountedPrice(editData?.price || product.price, editData.discount))}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : isDiscountActive(product) && product.discountEndDate ? (
+                      <span className="product-detail__row-value">{formatDate(product.discountEndDate)}</span>
+                    ) : (
+                      <span className="product-detail__row-value product-detail__row-value--empty">
+                        {t('products.detailModal.noDiscount')}
+                      </span>
+                    )}
+                  </div>
 
                   {/* Ganancia: en edición siempre visible (vista previa en vivo, igual que ProductModal);
                       en vista solo si hay costo registrado (igual que ProductDetailModal). */}
@@ -490,44 +551,51 @@ const ProductDetail = () => {
                   </div>
 
                   {/* Almacén */}
-                  <div className="product-detail__row">
+                  <div className={`product-detail__row${isEditing ? ' product-detail__row--align-start' : ''}`}>
                     <span className="product-detail__row-label">{t('products.detailModal.warehouse')}</span>
                     {isEditing ? (
                       <div className="product-detail__row-value product-detail__row-value--form">
                         <div className="product-detail__stock-edit">
-                          <label className="product-detail__stock-toggle">
-                            <input
-                              type="checkbox"
-                              checked={!!editData?.trackStock}
-                              onChange={(e) => {
-                                if (!editData) return;
-                                setEditData({
-                                  ...editData,
-                                  trackStock: e.target.checked,
-                                  stock: e.target.checked ? (editData.stock ?? 0) : 0,
-                                });
-                              }}
-                            />
-                            <Package size={15} />
-                            <span>{t('products.detail.manageStock')}</span>
-                          </label>
-                          <input
-                            type="number"
-                            value={editData?.stock ?? 0}
-                            onChange={(e) => {
-                              if (!editData) return;
-                              setEditData({ ...editData, stock: Math.max(0, parseInt(e.target.value) || 0) });
-                            }}
-                            className="product-detail__input product-detail__input--stock"
-                            min="0"
-                            step="1"
-                            disabled={!editData?.trackStock}
-                          />
-                          <div className="product-detail__stock-range">
-                            <label>
-                              {t('products.modal.minStock')}
+                          <div className="product-detail__stock-fields">
+                            <label className="product-detail__stock-toggle">
+                              <input
+                                type="checkbox"
+                                checked={!!editData?.trackStock}
+                                onChange={(e) => {
+                                  if (!editData) return;
+                                  setEditData({
+                                    ...editData,
+                                    trackStock: e.target.checked,
+                                    stock: e.target.checked ? (editData.stock ?? 0) : 0,
+                                  });
+                                }}
+                              />
+                              <Package size={15} />
+                              <span>{t('products.detail.manageStock')}</span>
+                            </label>
+                            <div className="product-detail__stock-input-row">
+                              <label htmlFor="stock">{t('products.modal.warehouseUnits')}</label>
                               <input
                                 type="number"
+                                id="stock"
+                                value={editData?.stock ?? 0}
+                                onChange={(e) => {
+                                  if (!editData) return;
+                                  setEditData({ ...editData, stock: Math.max(0, parseInt(e.target.value) || 0) });
+                                }}
+                                className="product-detail__input product-detail__input--stock"
+                                min="0"
+                                step="1"
+                                disabled={!editData?.trackStock}
+                              />
+                            </div>
+                          </div>
+                          <div className="product-detail__stock-fields">
+                            <div className="product-detail__stock-input-row">
+                              <label htmlFor="minStock">{t('products.modal.minStock')}</label>
+                              <input
+                                type="number"
+                                id="minStock"
                                 value={editData?.minStock ?? ''}
                                 onChange={(e) => {
                                   if (!editData) return;
@@ -539,11 +607,12 @@ const ProductDetail = () => {
                                 step="1"
                                 disabled={!editData?.trackStock}
                               />
-                            </label>
-                            <label>
-                              {t('products.modal.maxStock')}
+                            </div>
+                            <div className="product-detail__stock-input-row">
+                              <label htmlFor="maxStock">{t('products.modal.maxStock')}</label>
                               <input
                                 type="number"
+                                id="maxStock"
                                 value={editData?.maxStock ?? ''}
                                 onChange={(e) => {
                                   if (!editData) return;
@@ -555,7 +624,7 @@ const ProductDetail = () => {
                                 step="1"
                                 disabled={!editData?.trackStock}
                               />
-                            </label>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -581,63 +650,6 @@ const ProductDetail = () => {
                           max: product.maxStock ?? t('products.detailModal.notSet'),
                         })}
                       </span>
-                    </div>
-                  )}
-
-                  {/* Descuento: fila final, solo en edición */}
-                  {isEditing && (
-                    <div className="product-detail__row product-detail__row--align-start">
-                      <span className="product-detail__row-label product-detail__row-label--discount">{t('products.detail.discount')}</span>
-                      <div className="product-detail__row-value product-detail__row-value--form">
-                        <div className="product-detail__price-edit-discount">
-                          <div className="product-detail__price-edit-row">
-                            <div className="product-detail__discount-input-wrapper">
-                              <input
-                                type="number"
-                                value={editData?.discount || ''}
-                                onChange={(e) => {
-                                  const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
-                                  updateField('discount', val);
-                                }}
-                                placeholder="0"
-                                className="product-detail__input product-detail__input--discount"
-                                min="0"
-                                max="100"
-                                step="1"
-                              />
-                              <span className="product-detail__discount-percent">%</span>
-                            </div>
-                            <input
-                              type="date"
-                              value={editData?.discountEndDate as string || ''}
-                              onChange={(e) => updateField('discountEndDate', e.target.value)}
-                              className="product-detail__input product-detail__input--date"
-                            />
-                            {editData?.discount && editData.discount > 0 && (
-                              <button
-                                type="button"
-                                className="product-detail__cancel-discount"
-                                onClick={() => {
-                                  if (!editData) return;
-                                  setEditData({ ...editData, discount: 0, discountEndDate: '' });
-                                }}
-                              >
-                                {t('products.detail.cancelDiscount')}
-                              </button>
-                            )}
-                          </div>
-                          {editData?.discount && editData.discount > 0 && (
-                            <div className="product-detail__price-edit-preview">
-                              <span className="product-detail__price-original">
-                                {format(editData?.price || product.price)}
-                              </span>
-                              <span className="product-detail__price-final">
-                                {format(getDiscountedPrice(editData?.price || product.price, editData.discount))}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
                     </div>
                   )}
 

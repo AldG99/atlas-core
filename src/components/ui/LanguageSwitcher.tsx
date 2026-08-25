@@ -14,10 +14,11 @@ const LANGUAGES = [
   { code: 'it', label: 'Italiano' },
   { code: 'de', label: 'Deutsch' },
   { code: 'id', label: 'Bahasa Indonesia' },
+  { code: 'nl', label: 'Nederlands' },
 ];
 
 // En la vista compacta (login) estos dos se ocultan detrás de "Más idiomas...".
-const SECONDARY_CODES = ['en-GB', 'es-ES'];
+const SECONDARY_CODES = ['en-GB', 'es-ES', 'de', 'id', 'nl'];
 
 interface Props {
   className?: string;
