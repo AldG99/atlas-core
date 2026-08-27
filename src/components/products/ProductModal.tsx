@@ -10,11 +10,12 @@ import './ProductModal.scss';
 
 interface ProductModalProps {
   product?: ProductFormData;
+  existingSkus: string[];
   onClose: () => void;
   onSave: (data: ProductFormData) => void;
 }
 
-const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
+const ProductModal = ({ product, existingSkus, onClose, onSave }: ProductModalProps) => {
   const { t } = useTranslation();
   const { labels: allLabels, addLabel, removeLabel } = useLabels();
   const { format } = useCurrency();
@@ -51,6 +52,8 @@ const ProductModal = ({ product, onClose, onSave }: ProductModalProps) => {
 
     if (!formData.sku.trim()) {
       newErrors.sku = t('products.modal.errors.codeRequired');
+    } else if (existingSkus.includes(formData.sku.trim().toLowerCase())) {
+      newErrors.sku = t('products.modal.errors.codeDuplicate');
     }
     if (!formData.name.trim()) {
       newErrors.name = t('products.modal.errors.nameRequired');

@@ -49,134 +49,136 @@ const ProductDetailModal = ({ product, labels, onClose }: ProductDetailModalProp
           </button>
         </div>
         <div className="order-detail__modal-body">
-          <div className="order-detail__modal-image">
-            <ProductImage
-              src={product.image}
-              alt={product.name}
-              placeholderClassName="order-detail__modal-placeholder"
-            />
-          </div>
-          <div className="order-detail__modal-right">
-            <div className="order-detail__modal-section">
-              <h4>{t('products.detailModal.info')}</h4>
-              <div className="order-detail__modal-info">
-                {product.sku && (
-                  <div className="order-detail__modal-row">
-                    <span className="order-detail__modal-label">{t('products.detailModal.code')}</span>
-                    <span className="order-detail__modal-value">{product.sku}</span>
-                  </div>
-                )}
-                <div className="order-detail__modal-row">
-                  <span className="order-detail__modal-label">{t('products.detailModal.name')}</span>
-                  <span className="order-detail__modal-value">{product.name}</span>
-                </div>
-                <div className="order-detail__modal-row">
-                  <span className="order-detail__modal-label">{t('products.detailModal.unit')}</span>
-                  <span className="order-detail__modal-value">
-                    {product.unit
-                      ? `${product.unitQuantity ? `${product.unitQuantity} ` : ''}${product.unit}`
-                      : '—'}
-                  </span>
-                </div>
-                <div className="order-detail__modal-row">
-                  <span className="order-detail__modal-label">{t('products.detailModal.costPrice')}</span>
-                  <span className="order-detail__modal-value">
-                    {product.costPrice ? format(product.costPrice) : t('products.detailModal.noCostPrice')}
-                  </span>
-                </div>
-                <div className="order-detail__modal-row">
-                  <span className="order-detail__modal-label">{t('products.detailModal.price')}</span>
-                  {isDiscountActive(product) ? (
-                    <span className="order-detail__modal-price-discount">
-                      <span className="order-detail__modal-price-badge">
-                        -{product.discount}%
-                      </span>
-                      <span className="order-detail__modal-price-original">
-                        {format(product.price)}
-                      </span>
-                      <span className="order-detail__modal-value">
-                        {format(getDiscountedPrice(product.price, product.discount!))}
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="order-detail__modal-value">{format(product.price)}</span>
-                  )}
-                </div>
-                {!!product.costPrice && (() => {
-                  const effectivePrice = isDiscountActive(product)
-                    ? getDiscountedPrice(product.price, product.discount!)
-                    : product.price;
-                  const profit = effectivePrice - product.costPrice;
-                  const margin = effectivePrice > 0 ? (profit / effectivePrice) * 100 : 0;
-                  return (
+          <div className="order-detail__modal-top">
+            <div className="order-detail__modal-image">
+              <ProductImage
+                src={product.image}
+                alt={product.name}
+                placeholderClassName="order-detail__modal-placeholder"
+              />
+            </div>
+            <div className="order-detail__modal-right">
+              <div className="order-detail__modal-section">
+                <h4>{t('products.detailModal.info')}</h4>
+                <div className="order-detail__modal-info">
+                  {product.sku && (
                     <div className="order-detail__modal-row">
-                      <span className="order-detail__modal-label">{t('products.detailModal.profit')}</span>
-                      <span className={`order-detail__product-profit${profit < 0 ? ' order-detail__product-profit--negative' : ''}`}>
-                        {format(profit)} ({margin.toFixed(1)}%)
-                      </span>
+                      <span className="order-detail__modal-label">{t('products.detailModal.code')}</span>
+                      <span className="order-detail__sku">{product.sku}</span>
                     </div>
-                  );
-                })()}
-                {isDiscountActive(product) && product.discountEndDate && (
+                  )}
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.name')}</span>
+                    <span className="order-detail__modal-value">{product.name}</span>
+                  </div>
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.unit')}</span>
+                    <span className={product.unit ? 'order-detail__modal-value' : 'order-detail__modal-empty'}>
+                      {product.unit
+                        ? `${product.unitQuantity ? `${product.unitQuantity} ` : ''}${product.unit}`
+                        : t('products.detailModal.noUnit')}
+                    </span>
+                  </div>
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.costPrice')}</span>
+                    <span className="order-detail__modal-value">
+                      {product.costPrice ? format(product.costPrice) : t('products.detailModal.noCostPrice')}
+                    </span>
+                  </div>
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.price')}</span>
+                    {isDiscountActive(product) ? (
+                      <span className="order-detail__modal-price-discount">
+                        <span className="order-detail__modal-price-badge">
+                          -{product.discount}%
+                        </span>
+                        <span className="order-detail__modal-price-original">
+                          {format(product.price)}
+                        </span>
+                        <span className="order-detail__modal-value">
+                          {format(getDiscountedPrice(product.price, product.discount!))}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="order-detail__modal-value">{format(product.price)}</span>
+                    )}
+                  </div>
                   <div className="order-detail__modal-row">
                     <span className="order-detail__modal-label">{t('products.detailModal.discountValidUntil')}</span>
-                    <span className="order-detail__modal-value">
-                      {formatDate(product.discountEndDate)}
-                    </span>
+                    {isDiscountActive(product) && product.discountEndDate ? (
+                      <span className="order-detail__modal-value">
+                        {formatDate(product.discountEndDate)}
+                      </span>
+                    ) : (
+                      <span className="order-detail__modal-empty">{t('products.detailModal.noDiscount')}</span>
+                    )}
                   </div>
-                )}
-                <div className="order-detail__modal-row">
-                  <span className="order-detail__modal-label">{t('products.detailModal.labels')}</span>
-                  {productLabels.length === 0 ? (
-                    <span className="order-detail__modal-empty">{t('products.detailModal.noLabels')}</span>
-                  ) : (
-                    <div className="order-detail__labels">
-                      {productLabels.map(label => {
-                        const iconData = LABEL_ICONS[label.icon];
-                        const Icon = iconData?.icon;
-                        return (
-                          <span
-                            key={label.id}
-                            className="order-detail__label"
-                            style={{ backgroundColor: label.color }}
-                            title={label.name}
-                          >
-                            {Icon && <Icon size={12} />}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-                <div className="order-detail__modal-row">
-                  <span className="order-detail__modal-label">{t('products.detailModal.warehouse')}</span>
-                  {product.trackStock ? (
-                    <span className="order-detail__modal-stock-badge">
-                      {(product.stock ?? 0) === 0
-                        ? t('products.detailModal.noStock')
-                        : t('products.detailModal.stockUnits', { count: product.stock })}
-                    </span>
-                  ) : (
-                    <span className="order-detail__modal-empty">{t('products.detailModal.noStockControl')}</span>
-                  )}
-                </div>
-                {product.trackStock && (
+                  {!!product.costPrice && (() => {
+                    const effectivePrice = isDiscountActive(product)
+                      ? getDiscountedPrice(product.price, product.discount!)
+                      : product.price;
+                    const profit = effectivePrice - product.costPrice;
+                    const margin = effectivePrice > 0 ? (profit / effectivePrice) * 100 : 0;
+                    return (
+                      <div className="order-detail__modal-row">
+                        <span className="order-detail__modal-label">{t('products.detailModal.profit')}</span>
+                        <span className={`order-detail__product-profit${profit < 0 ? ' order-detail__product-profit--negative' : ''}`}>
+                          {format(profit)} ({margin.toFixed(1)}%)
+                        </span>
+                      </div>
+                    );
+                  })()}
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.labels')}</span>
+                    {productLabels.length === 0 ? (
+                      <span className="order-detail__modal-empty">{t('products.detailModal.noLabels')}</span>
+                    ) : (
+                      <div className="order-detail__labels">
+                        {productLabels.map(label => {
+                          const iconData = LABEL_ICONS[label.icon];
+                          const Icon = iconData?.icon;
+                          return (
+                            <span
+                              key={label.id}
+                              className="order-detail__label"
+                              style={{ backgroundColor: label.color }}
+                              title={label.name}
+                            >
+                              {Icon && <Icon size={12} />}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  <div className="order-detail__modal-row">
+                    <span className="order-detail__modal-label">{t('products.detailModal.warehouse')}</span>
+                    {product.trackStock ? (
+                      <span className="order-detail__modal-stock-badge">
+                        {(product.stock ?? 0) === 0
+                          ? t('products.detailModal.noStock')
+                          : t('products.detailModal.stockUnits', { count: product.stock })}
+                      </span>
+                    ) : (
+                      <span className="order-detail__modal-empty">{t('products.detailModal.noStockControl')}</span>
+                    )}
+                  </div>
                   <div className="order-detail__modal-row">
                     <span className="order-detail__modal-label">{t('products.detailModal.stockRange')}</span>
-                    <span className="order-detail__modal-empty">
+                    <span className={product.minStock == null && product.maxStock == null ? 'order-detail__modal-empty' : 'order-detail__modal-value'}>
                       {t('products.detailModal.stockRangeValue', {
                         min: product.minStock ?? t('products.detailModal.notSet'),
                         max: product.maxStock ?? t('products.detailModal.notSet'),
                       })}
                     </span>
                   </div>
-                )}
+                </div>
               </div>
             </div>
-            <div className="order-detail__modal-section">
-              <h4>{t('products.detailModal.description')}</h4>
-              <p>{product.description || t('products.detailModal.noDescription')}</p>
-            </div>
+          </div>
+          <div className="order-detail__modal-section order-detail__modal-description">
+            <h4>{t('products.detailModal.description')}</h4>
+            <p>{product.description || t('products.detailModal.noDescription')}</p>
           </div>
         </div>
       </div>

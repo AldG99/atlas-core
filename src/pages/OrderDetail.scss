@@ -682,6 +682,7 @@ $topbar-height: 52px;
   }
 
   &__product-profit {
+    font-size: $font-size-sm;
     color: $color-success;
     font-weight: 500;
 
@@ -877,9 +878,9 @@ $topbar-height: 52px;
     }
 
     &--product {
-      width: min(880px, 90vw);
+      width: min(980px, 92vw);
       max-width: none;
-      height: min(481px, 90vh);
+      height: min(560px, 90vh);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -895,6 +896,14 @@ $topbar-height: 52px;
         padding: 0;
         overflow: hidden;
         gap: 0;
+      }
+
+      .order-detail__modal-top {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
 
         @include md {
           flex-direction: row;
@@ -912,18 +921,27 @@ $topbar-height: 52px;
         justify-content: center;
 
         @include md {
-          width: 420px;
-          height: auto;
+          width: auto;
+          height: 100%;
+          aspect-ratio: 1 / 1;
           border-bottom: none;
           border-right: 1px solid $color-gray-200;
         }
 
         img {
           width: 100%;
-          aspect-ratio: 1 / 1;
-          height: auto;
+          height: 100%;
           object-fit: cover;
         }
+      }
+
+      .order-detail__modal-description {
+        flex-shrink: 0;
+        height: 120px;
+        overflow-y: auto;
+        padding: $spacing-md;
+        border-top: 1px solid $color-gray-200;
+        box-sizing: border-box;
       }
 
       .order-detail__modal-footer {

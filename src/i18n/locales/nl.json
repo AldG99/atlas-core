@@ -694,6 +694,7 @@
       "uploadingImage": "Afbeelding verifiëren...",
       "errors": {
         "codeRequired": "Code is verplicht",
+        "codeDuplicate": "Deze code wordt al gebruikt door een ander product",
         "nameRequired": "Naam is verplicht",
         "priceInvalid": "Prijs moet groter zijn dan 0",
         "costPriceInvalid": "Inkoopprijs moet groter zijn dan 0",
@@ -710,6 +711,7 @@
       "code": "Code",
       "name": "Naam",
       "unit": "Eenheid",
+      "noUnit": "Geen eenheid",
       "price": "Verkoopprijs",
       "costPrice": "Productiekosten",
       "profit": "Winst",

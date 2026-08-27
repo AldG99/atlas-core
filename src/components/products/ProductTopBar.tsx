@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, History, Pencil, Trash2 } from 'lucide-react';
 
 interface Props {
   isEditing: boolean;
@@ -9,11 +9,12 @@ interface Props {
   onDelete: () => void;
   onSave: () => void;
   onCancel: () => void;
+  onShowDiscountHistory: () => void;
 }
 
 const ProductTopBar = ({
   isEditing, saving,
-  onBack, onStartEdit, onDelete, onSave, onCancel,
+  onBack, onStartEdit, onDelete, onSave, onCancel, onShowDiscountHistory,
 }: Props) => {
   const { t } = useTranslation();
   return (
@@ -59,6 +60,13 @@ const ProductTopBar = ({
               title={t('products.detail.deleteProduct')}
             >
               <Trash2 size={20} />
+            </button>
+            <button
+              onClick={onShowDiscountHistory}
+              className="product-detail__icon-btn"
+              title={t('products.discountHistory')}
+            >
+              <History size={20} />
             </button>
           </>
         )}

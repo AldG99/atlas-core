@@ -694,6 +694,7 @@
       "uploadingImage": "Verificando imagen...",
       "errors": {
         "codeRequired": "La clave es requerida",
+        "codeDuplicate": "Esta clave ya está en uso por otro producto",
         "nameRequired": "El nombre es requerido",
         "priceInvalid": "El precio debe ser mayor a 0",
         "costPriceInvalid": "El precio de compra debe ser mayor a 0",
@@ -710,6 +711,7 @@
       "code": "Clave",
       "name": "Nombre",
       "unit": "Unidad",
+      "noUnit": "Sin unidad",
       "price": "Precio de venta",
       "costPrice": "Costo de producción",
       "profit": "Ganancia",

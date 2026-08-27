@@ -343,6 +343,7 @@ const ProductSelector = ({
 
       {showModal && createPortal(
         <ProductModal
+          existingSkus={products.map(p => p.sku.trim().toLowerCase())}
           onClose={() => setShowModal(false)}
           onSave={handleSaveProduct}
         />,

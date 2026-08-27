@@ -59,6 +59,13 @@ const Inventory = () => {
 
   const inventory = useMemo(() => calculateInventoryStats(products), [products]);
 
+  const existingSkus = useMemo(
+    () => products
+      .filter(p => p.id !== editingProduct?.id)
+      .map(p => p.sku.trim().toLowerCase()),
+    [products, editingProduct]
+  );
+
   const filteredProducts = useMemo(() => {
     let result = searchTerm.trim()
       ? products.filter(p =>
@@ -247,6 +254,7 @@ const Inventory = () => {
 
         {isModalOpen && (
           <ProductModal
+            existingSkus={existingSkus}
             onClose={() => setIsModalOpen(false)}
             onSave={handleAdd}
           />
@@ -255,6 +263,7 @@ const Inventory = () => {
         {editingProduct && (
           <ProductModal
             product={editingProduct.data}
+            existingSkus={existingSkus}
             onClose={() => setEditingProduct(null)}
             onSave={handleEdit}
           />

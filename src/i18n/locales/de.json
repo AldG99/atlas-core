@@ -694,6 +694,7 @@
       "uploadingImage": "Bild wird überprüft...",
       "errors": {
         "codeRequired": "Code ist erforderlich",
+        "codeDuplicate": "Dieser Code wird bereits von einem anderen Produkt verwendet",
         "nameRequired": "Name ist erforderlich",
         "priceInvalid": "Der Preis muss größer als 0 sein",
         "costPriceInvalid": "Der Einkaufspreis muss größer als 0 sein",
@@ -710,6 +711,7 @@
       "code": "Code",
       "name": "Name",
       "unit": "Einheit",
+      "noUnit": "Keine Einheit",
       "price": "Verkaufspreis",
       "costPrice": "Herstellungskosten",
       "profit": "Gewinn",

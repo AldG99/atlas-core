@@ -694,6 +694,7 @@
       "uploadingImage": "Memverifikasi gambar...",
       "errors": {
         "codeRequired": "Kode wajib diisi",
+        "codeDuplicate": "Kode ini sudah digunakan oleh produk lain",
         "nameRequired": "Nama wajib diisi",
         "priceInvalid": "Harga harus lebih besar dari 0",
         "costPriceInvalid": "Harga beli harus lebih besar dari 0",
@@ -710,6 +711,7 @@
       "code": "Kode",
       "name": "Nama",
       "unit": "Satuan",
+      "noUnit": "Tanpa satuan",
       "price": "Harga jual",
       "costPrice": "Biaya produksi",
       "profit": "Keuntungan",

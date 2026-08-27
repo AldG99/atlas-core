@@ -448,12 +448,6 @@ $topbar-height: 52px;
     gap: $spacing-xs;
   }
 
-  &__labels-empty {
-    font-size: $font-size-sm;
-    color: $color-gray-400;
-    font-style: italic;
-  }
-
   // Etiquetas en sección separada (modo vista sin edición)
   &__labels {
     display: flex;
@@ -606,14 +600,8 @@ $topbar-height: 52px;
     }
 
     &--sku {
-      font-family: monospace;
       width: 120px;
       font-weight: 700;
-      color: $color-primary;
-      background-color: rgba($color-primary, 0.1);
-      border-color: transparent;
-      border-radius: 4px;
-      padding: 2px 8px;
     }
 
     &--name {

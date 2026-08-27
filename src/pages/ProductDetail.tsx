@@ -10,6 +10,7 @@ import type { Product, ProductFormData } from '../types/Product';
 import { getProductById, updateProduct } from '../services/productService';
 import type { CancelDiscountInfo } from '../services/productService';
 import { useLabels } from '../hooks/useLabels';
+import { useProducts } from '../hooks/useProducts';
 import { useToast } from '../hooks/useToast';
 import { useCurrency } from '../hooks/useCurrency';
 import { ROUTES } from '../config/routes';
@@ -18,6 +19,7 @@ import ProductImage from '../components/ui/ProductImage';
 import ProductDeleteModal from '../components/orders/ProductDeleteModal';
 import ProductTopBar from '../components/products/ProductTopBar';
 import LabelEditSection from '../components/labels/LabelEditSection';
+import DiscountHistoryModal from '../components/products/DiscountHistoryModal';
 import MainLayout from '../layouts/MainLayout';
 import './ProductDetail.scss';
 
@@ -27,6 +29,7 @@ const ProductDetail = () => {
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
   const { labels, addLabel, removeLabel } = useLabels();
+  const { products } = useProducts();
   const { format } = useCurrency();
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -36,6 +39,7 @@ const ProductDetail = () => {
   const [confirmDeleteLabelId, setConfirmDeleteLabelId] = useState<string | null>(null);
   const [editData, setEditData] = useState<ProductFormData | null>(null);
   const [saving, setSaving] = useState(false);
+  const [showDiscountHistory, setShowDiscountHistory] = useState(false);
 
   const fetchProduct = useCallback(async () => {
     if (!id) return;
@@ -135,6 +139,16 @@ const ProductDetail = () => {
 
   const handleSave = async () => {
     if (!product || !editData) return;
+
+    const trimmedSku = editData.sku.trim().toLowerCase();
+    const isDuplicateSku = products.some(
+      p => p.id !== product.id && p.sku.trim().toLowerCase() === trimmedSku
+    );
+    if (isDuplicateSku) {
+      showToast(t('products.modal.errors.codeDuplicate'), 'error');
+      return;
+    }
+
     try {
       const dataToSave = { ...editData };
 
@@ -226,6 +240,7 @@ const ProductDetail = () => {
   if (!product) return null;
 
   const productLabels = getLabelsForProduct(product);
+  const hasDiscountHistory = isDiscountActive(product) || !!product.discountHistory?.length;
 
   return (
     <MainLayout>
@@ -238,6 +253,7 @@ const ProductDetail = () => {
           onDelete={handleDelete}
           onSave={handleSave}
           onCancel={cancelEditing}
+          onShowDiscountHistory={() => setShowDiscountHistory(true)}
         />
 
         {/* Content */}
@@ -343,10 +359,10 @@ const ProductDetail = () => {
                         </div>
                       </div>
                     ) : (
-                      <span className="product-detail__row-value">
+                      <span className={`product-detail__row-value${!product.unit ? ' product-detail__row-value--empty' : ''}`}>
                         {product.unit
                           ? `${product.unitQuantity ?? ''} ${product.unit}`.trim()
-                          : '—'}
+                          : t('products.detailModal.noUnit')}
                       </span>
                     )}
                   </div>
@@ -412,9 +428,18 @@ const ProductDetail = () => {
 
                   {/* Descuento: misma fila alterna vista/edición, igual que el resto de campos */}
                   <div className="product-detail__row product-detail__row--align-start">
-                    <span className={`product-detail__row-label${isEditing ? ' product-detail__row-label--discount' : ''}`}>
-                      {t(isEditing ? 'products.detail.discount' : 'products.detailModal.discountValidUntil')}
-                    </span>
+                    {isEditing ? (
+                      <label
+                        htmlFor="discount"
+                        className="product-detail__row-label product-detail__row-label--discount"
+                      >
+                        {t('products.detail.discount')}
+                      </label>
+                    ) : (
+                      <span className="product-detail__row-label">
+                        {t('products.detailModal.discountValidUntil')}
+                      </span>
+                    )}
                     {isEditing ? (
                       <div className="product-detail__row-value product-detail__row-value--form">
                         <div className="product-detail__price-edit-discount">
@@ -422,6 +447,7 @@ const ProductDetail = () => {
                             <div className="product-detail__discount-input-wrapper">
                               <input
                                 type="number"
+                                id="discount"
                                 value={editData?.discount || ''}
                                 onChange={(e) => {
                                   const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
@@ -440,6 +466,7 @@ const ProductDetail = () => {
                               value={editData?.discountEndDate as string || ''}
                               onChange={(e) => updateField('discountEndDate', e.target.value)}
                               className="product-detail__input product-detail__input--date"
+                              min={new Date().toISOString().split('T')[0]}
                             />
                             {editData?.discount && editData.discount > 0 && (
                               <button
@@ -451,6 +478,17 @@ const ProductDetail = () => {
                                 }}
                               >
                                 {t('products.detail.cancelDiscount')}
+                              </button>
+                            )}
+                            {hasDiscountHistory && (
+                              <button
+                                type="button"
+                                className="product-detail__icon-btn"
+                                title={t('products.discountHistory')}
+                                aria-label={t('products.discountHistory')}
+                                onClick={() => setShowDiscountHistory(true)}
+                              >
+                                <History size={15} />
                               </button>
                             )}
                           </div>
@@ -544,7 +582,7 @@ const ProductDetail = () => {
                         })}
                       </div>
                     ) : (
-                      <span className="product-detail__row-value product-detail__labels-empty">
+                      <span className="product-detail__row-value product-detail__row-value--empty">
                         {t('products.detailModal.noLabels')}
                       </span>
                     )}
@@ -629,7 +667,7 @@ const ProductDetail = () => {
                         </div>
                       </div>
                     ) : (
-                      <span className="product-detail__row-value">
+                      <span className={`product-detail__row-value${!product.trackStock ? ' product-detail__row-value--empty' : ''}`}>
                         {product.trackStock ? (
                           (product.stock ?? 0) === 0
                             ? t('products.detailModal.noStock')
@@ -641,10 +679,10 @@ const ProductDetail = () => {
                     )}
                   </div>
 
-                  {!isEditing && product.trackStock && (
+                  {!isEditing && (
                     <div className="product-detail__row">
                       <span className="product-detail__row-label">{t('products.detailModal.stockRange')}</span>
-                      <span className="product-detail__row-value">
+                      <span className={`product-detail__row-value${product.minStock == null && product.maxStock == null ? ' product-detail__row-value--empty' : ''}`}>
                         {t('products.detailModal.stockRangeValue', {
                           min: product.minStock ?? t('products.detailModal.notSet'),
                           max: product.maxStock ?? t('products.detailModal.notSet'),
@@ -705,6 +743,13 @@ const ProductDetail = () => {
           product={product}
           onClose={() => setShowDeleteModal(false)}
           onDeleted={() => navigate(ROUTES.INVENTORY)}
+        />
+      )}
+
+      {showDiscountHistory && (
+        <DiscountHistoryModal
+          products={[product]}
+          onClose={() => setShowDiscountHistory(false)}
         />
       )}
     </MainLayout>
