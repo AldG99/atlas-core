@@ -755,7 +755,9 @@
     "period": {
       "today": "Hoje",
       "week": "Últimos 7 dias",
-      "month": "Este mês"
+      "month": "Este mês",
+      "previousMonth": "Mês anterior",
+      "nextMonth": "Próximo mês"
     },
     "kpi": {
       "totalSales": "Vendas totais",
@@ -765,9 +767,6 @@
       "profitIncompleteHint": "Alguns produtos não têm preço de compra registrado, o lucro real pode ser menor"
     },
     "chart": {
-      "totalSales": "Vendas totais",
-      "orders": "Pedidos",
-      "average": "Média",
       "noData": "Sem dados para exibir"
     },
     "statusBreakdown": {
@@ -776,12 +775,10 @@
       "orders": "pedidos"
     },
     "topClients": {
-      "title": "Melhores Clientes",
-      "empty": "Sem clientes neste período"
+      "title": "Melhores Clientes"
     },
     "topProducts": {
       "title": "Produtos mais vendidos",
-      "empty": "Sem vendas neste período",
       "sold": "vendidos",
       "profit": "lucro"
     }

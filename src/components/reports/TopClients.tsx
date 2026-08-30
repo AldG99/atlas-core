@@ -10,6 +10,12 @@ interface TopClientsProps {
   clients: TopClient[];
 }
 
+// Cuántas filas se muestran siempre — debe coincidir con el límite que pide
+// useReports (calculateTopClients(..., 5)). Si hay menos clientes que esto,
+// las filas restantes se dibujan vacías mantiendo su numeración, para que la
+// tarjeta no cambie de alto entre períodos con distinta cantidad de datos.
+const DISPLAY_COUNT = 5;
+
 const TopClients = ({ clients }: TopClientsProps) => {
   const { t } = useTranslation();
   const { clients: clientsData } = useClients();
@@ -21,28 +27,29 @@ const TopClients = ({ clients }: TopClientsProps) => {
     return getCountryCode(client.phoneCountryCode)?.code ?? '';
   };
 
+  const rows = Array.from({ length: DISPLAY_COUNT }, (_, i) => clients[i]);
+
   return (
     <div className="top-clients">
       <h3 className="top-clients__title">{t('reports.topClients.title')}</h3>
 
-      {clients.length === 0 ? (
-        <p className="top-clients__empty">{t('reports.topClients.empty')}</p>
-      ) : (
-        <ul className="top-clients__list">
-          {clients.map((client, index) => (
-            <li key={client.phone || client.name} className="top-clients__item">
-              <div className="top-clients__rank">#{index + 1}</div>
-              <div className="top-clients__info">
-                <span className="top-clients__name">{client.name}</span>
-                <span className="top-clients__phone">
-                  {getDialCode(client.phone)}{getDialCode(client.phone) ? ' ' : ''}{formatPhone(client.phone)}
-                </span>
-              </div>
-              <span className="top-clients__total">{format(client.total)}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className="top-clients__list">
+        {rows.map((client, index) => (
+          <li
+            key={client ? (client.phone || client.name) : `empty-${index}`}
+            className={`top-clients__item${client ? '' : ' top-clients__item--empty'}`}
+          >
+            <span className="top-clients__rank">#{index + 1}</span>
+            <span className="top-clients__name">{client ? client.name : '—'}</span>
+            <span className="top-clients__phone">
+              {client
+                ? `${getDialCode(client.phone)}${getDialCode(client.phone) ? ' ' : ''}${formatPhone(client.phone)}`
+                : ''}
+            </span>
+            <span className="top-clients__total">{client ? format(client.total) : ''}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

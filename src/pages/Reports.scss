@@ -141,7 +141,8 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: $spacing-md;
-    min-height: 160px;
+    // Calibrado para 5 filas de Top Clientes/Productos (antes 160px para 3).
+    min-height: 220px;
 
     @include sm {
       grid-template-columns: 1fr 1fr;

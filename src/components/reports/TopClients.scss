@@ -19,13 +19,6 @@
     flex-shrink: 0;
   }
 
-  &__empty {
-    color: $color-gray-500;
-    font-size: $font-size-sm;
-    text-align: center;
-    padding: $spacing-md 0;
-  }
-
   &__list {
     list-style: none;
     padding: 0;
@@ -38,8 +31,15 @@
     min-height: 0;
   }
 
+  // Columnas de ancho fijo (no auto/fr-por-fila) para que rango, nombre,
+  // teléfono y total queden alineados verticalmente entre todas las filas —
+  // cada <li> es su propio grid, pero al compartir el mismo template siempre
+  // resuelven a los mismos anchos en píxeles. Teléfono y total tienen
+  // prioridad sobre el nombre: se quedan con el ancho que necesiten y el
+  // nombre (minmax(0, 1fr)) es el que se trunca primero si falta espacio.
   &__item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) 130px 90px;
     align-items: center;
     gap: $spacing-sm;
     padding: $spacing-xs $spacing-sm;
@@ -50,27 +50,21 @@
     &:hover {
       background-color: $color-gray-200;
     }
+
+    &--empty {
+      opacity: 0.4;
+
+      &:hover {
+        background-color: $color-gray-100;
+      }
+    }
   }
 
   &__rank {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: $color-gray-400;
-    color: $color-white;
+    color: $color-gray-500;
     font-size: $font-size-xs;
     font-weight: 600;
-    @include flex-center;
-    flex-shrink: 0;
-  }
-
-
-  &__info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    line-height: 1.25;
+    text-align: center;
   }
 
   &__name {
@@ -80,16 +74,17 @@
     @include truncate;
   }
 
-  &__total {
-    font-size: $font-size-sm;
-    font-weight: 600;
-    color: $color-success;
-    white-space: nowrap;
-  }
-
   &__phone {
     font-size: $font-size-xs;
     color: $color-gray-500;
     @include truncate;
+  }
+
+  &__total {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-success;
+    text-align: right;
+    white-space: nowrap;
   }
 }

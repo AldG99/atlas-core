@@ -46,12 +46,18 @@ const KPICard = ({ card }: { card: CardData }) => {
         </div>
         <div className="kpi-card__bottom">
           <span className="kpi-card__label">{card.label}</span>
-          {delta !== null && delta !== 0 && (
-            <div className={`kpi-card__delta kpi-card__delta--${delta > 0 ? 'up' : 'down'}`}>
-              {delta > 0 ? <ArrowUp size={9} /> : <ArrowDown size={9} />}
-              <span>{Math.abs(delta).toFixed(1)}%</span>
-            </div>
-          )}
+          {/* Se reserva el espacio aunque no haya delta (p. ej. un mes sin
+              pedidos en el período anterior) para que la tarjeta no cambie de
+              alto al navegar entre meses — con la página fija al viewport,
+              esa diferencia empuja el resto de las tarjetas de Reportes. */}
+          <div
+            className={`kpi-card__delta kpi-card__delta--${delta !== null && delta > 0 ? 'up' : 'down'}${
+              delta === null || delta === 0 ? ' kpi-card__delta--placeholder' : ''
+            }`}
+          >
+            {delta !== null && delta > 0 ? <ArrowUp size={9} /> : <ArrowDown size={9} />}
+            <span>{delta !== null ? Math.abs(delta).toFixed(1) : '0.0'}%</span>
+          </div>
         </div>
       </div>
     </div>
@@ -61,6 +67,10 @@ const KPICard = ({ card }: { card: CardData }) => {
 const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
   const { t } = useTranslation();
   const { format } = useCurrency();
+  // Orden pensado para el dueño del negocio: primero cuánto vendió (la
+  // cabecera), luego cuánto de eso realmente se quedó de ganancia — las dos
+  // cifras de dinero, juntas. Pedidos y ticket promedio (volumen y una
+  // métrica derivada, menos urgente) quedan después como datos de contexto.
   const allCards: CardData[] = [
     {
       icon: <DollarSign size={24} />,
@@ -69,6 +79,15 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       comparisonValue: comparisonKPIs?.totalSales,
       label: t('reports.kpi.totalSales'),
       className: 'kpi-card--sales'
+    },
+    {
+      icon: <Wallet size={24} />,
+      rawValue: kpis.totalProfit,
+      formatValue: format,
+      comparisonValue: comparisonKPIs?.totalProfit,
+      label: `${t('reports.kpi.profit')} · ${kpis.profitMargin.toFixed(1)}%`,
+      className: 'kpi-card--profit',
+      warning: kpis.hasIncompleteCost ? t('reports.kpi.profitIncompleteHint') : undefined
     },
     {
       icon: <Hash size={24} />,
@@ -85,15 +104,6 @@ const KPICards = ({ kpis, comparisonKPIs, variant }: KPICardsProps) => {
       comparisonValue: comparisonKPIs?.averageTicket,
       label: t('reports.kpi.avgTicket'),
       className: 'kpi-card--ticket'
-    },
-    {
-      icon: <Wallet size={24} />,
-      rawValue: kpis.totalProfit,
-      formatValue: format,
-      comparisonValue: comparisonKPIs?.totalProfit,
-      label: `${t('reports.kpi.profit')} · ${kpis.profitMargin.toFixed(1)}%`,
-      className: 'kpi-card--profit',
-      warning: kpis.hasIncompleteCost ? t('reports.kpi.profitIncompleteHint') : undefined
     }
   ];
 

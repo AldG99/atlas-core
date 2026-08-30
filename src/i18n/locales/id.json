@@ -755,7 +755,9 @@
     "period": {
       "today": "Hari ini",
       "week": "7 hari terakhir",
-      "month": "Bulan ini"
+      "month": "Bulan ini",
+      "previousMonth": "Bulan sebelumnya",
+      "nextMonth": "Bulan berikutnya"
     },
     "kpi": {
       "totalSales": "Total penjualan",
@@ -765,9 +767,6 @@
       "profitIncompleteHint": "Beberapa produk belum memiliki harga beli yang diatur, keuntungan riil bisa lebih rendah"
     },
     "chart": {
-      "totalSales": "Total penjualan",
-      "orders": "Pesanan",
-      "average": "Rata-rata",
       "noData": "Tidak ada data untuk ditampilkan"
     },
     "statusBreakdown": {
@@ -776,12 +775,10 @@
       "orders": "pesanan"
     },
     "topClients": {
-      "title": "Pelanggan Teratas",
-      "empty": "Tidak ada pelanggan pada periode ini"
+      "title": "Pelanggan Teratas"
     },
     "topProducts": {
       "title": "Produk terlaris",
-      "empty": "Tidak ada penjualan pada periode ini",
       "sold": "terjual",
       "profit": "keuntungan"
     }

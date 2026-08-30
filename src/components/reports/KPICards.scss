@@ -123,6 +123,10 @@
     &--down {
       color: $color-gray-400;
     }
+
+    &--placeholder {
+      visibility: hidden;
+    }
   }
 
   &--sales .kpi-card__icon {

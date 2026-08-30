@@ -1,13 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import type { ChartDataPoint } from '../../types/Report';
 import { useCurrency } from '../../hooks/useCurrency';
-import { useAnimatedNumber } from '../../hooks/useAnimatedNumber';
 import './SalesChart.scss';
 
 interface SalesChartProps {
   data: ChartDataPoint[];
+  // Solo se usa para forzar el remount de las barras (y así repetir la
+  // animación de entrada) cuando cambian los totales del período — el
+  // resumen de ventas/pedidos/promedio ya vive en las tarjetas de arriba.
   totalSales: number;
-  totalOrders: number;
 }
 
 const formatAxisValue = (value: number, symbol: string): string => {
@@ -17,16 +18,9 @@ const formatAxisValue = (value: number, symbol: string): string => {
   return `${symbol}${Math.round(value)}`;
 };
 
-const SalesChart = ({ data, totalSales, totalOrders }: SalesChartProps) => {
+const SalesChart = ({ data, totalSales }: SalesChartProps) => {
   const { t } = useTranslation();
-  const { format, symbol } = useCurrency();
-  const averageTarget = totalOrders > 0 ? totalSales / totalOrders : 0;
-  const animatedTotalSales = useAnimatedNumber(totalSales);
-  const animatedTotalOrders = useAnimatedNumber(totalOrders);
-  const animatedAverage = useAnimatedNumber(averageTarget);
-  // Reserva el ancho final de cada valor para que ninguno se desplace mientras el otro cuenta.
-  const ordersMinWidth = `${totalOrders.toString().length}ch`;
-  const averageMinWidth = `${format(averageTarget).length}ch`;
+  const { symbol } = useCurrency();
 
   if (data.length === 0) {
     return (
@@ -40,27 +34,6 @@ const SalesChart = ({ data, totalSales, totalOrders }: SalesChartProps) => {
 
   return (
     <div className="sales-chart">
-      <div className="sales-chart__header">
-        <div className="sales-chart__totals">
-          <span className="sales-chart__label">{t('reports.chart.totalSales')}</span>
-          <span className="sales-chart__amount">{format(animatedTotalSales)}</span>
-        </div>
-        <div className="sales-chart__stats">
-          <div className="sales-chart__stat">
-            <span className="sales-chart__stat-value" style={{ minWidth: ordersMinWidth }}>
-              {Math.round(animatedTotalOrders)}
-            </span>
-            <span className="sales-chart__stat-label">{t('reports.chart.orders')}</span>
-          </div>
-          <div className="sales-chart__stat">
-            <span className="sales-chart__stat-value" style={{ minWidth: averageMinWidth }}>
-              {format(animatedAverage)}
-            </span>
-            <span className="sales-chart__stat-label">{t('reports.chart.average')}</span>
-          </div>
-        </div>
-      </div>
-
       <div className="sales-chart__chart-area">
         <div className="sales-chart__grid">
           {[100, 75, 50, 25, 0].map((pct) => (

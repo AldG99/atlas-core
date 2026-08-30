@@ -3,7 +3,8 @@
 
 .period-filter {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
   gap: $spacing-sm;
 
   &__buttons {
@@ -39,6 +40,58 @@
         background-color: $color-primary-dark;
         border-color: $color-primary-dark;
       }
+    }
+  }
+
+  &__month-nav {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding-left: $spacing-sm;
+    border-left: 1px solid $color-gray-200;
+  }
+
+  &__month-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: $border-radius-full;
+    background-color: $color-white;
+    color: $color-gray-700;
+    border: 1px solid $color-gray-200;
+    transition: all $transition-fast;
+
+    &:hover:not(:disabled) {
+      border-color: $color-gray-300;
+      background-color: $color-gray-100;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+
+  &__month-label {
+    // Ancho fijo (no min-width) para que las flechas no se muevan al navegar
+    // entre meses con nombres de distinta longitud ("Mayo 2026" vs "Septiembre
+    // de 2026", el más largo entre los 10 locales soportados).
+    width: 19ch;
+    flex-shrink: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: $color-gray-700;
+    opacity: 0.55;
+
+    .period-filter__month-nav--active & {
+      opacity: 1;
     }
   }
 

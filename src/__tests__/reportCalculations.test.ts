@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   getDateRange,
+  getPreviousPeriodDateRange,
   filterOrdersByDate,
   calculateKPIs,
   calculateStatusBreakdown,
@@ -57,6 +58,47 @@ describe('getDateRange', () => {
     const { start } = getDateRange('anio' as any);
     expect(start.getDate()).toBe(1);
     expect(start.getHours()).toBe(0);
+  });
+});
+
+// ── getPreviousPeriodDateRange ────────────────────────────────────────────────
+
+describe('getPreviousPeriodDateRange', () => {
+  it('hoy: previous period is exactly yesterday', () => {
+    const range = {
+      start: new Date('2024-06-15T00:00:00'),
+      end: new Date('2024-06-15T23:59:59'),
+    };
+    const prev = getPreviousPeriodDateRange(range);
+    expect(prev.start).toEqual(new Date('2024-06-14T00:00:00'));
+    expect(prev.end.getFullYear()).toBe(2024);
+    expect(prev.end.getMonth()).toBe(5);
+    expect(prev.end.getDate()).toBe(14);
+    expect(prev.end.getHours()).toBe(23);
+  });
+
+  it('semana: previous period is the 7 days immediately before', () => {
+    const range = {
+      start: new Date('2024-06-09T00:00:00'), // Sun
+      end: new Date('2024-06-15T23:59:59'),   // Sat, 7 days total
+    };
+    const prev = getPreviousPeriodDateRange(range);
+    expect(prev.start).toEqual(new Date('2024-06-02T00:00:00'));
+    expect(prev.end.getDate()).toBe(8);
+    const days = Math.round((prev.end.getTime() - prev.start.getTime()) / (1000 * 60 * 60 * 24));
+    expect(days).toBe(7); // same 7-day span as the current period
+  });
+
+  it('mes-a-la-fecha: previous period has the same number of elapsed days, ending the day before day 1', () => {
+    const range = {
+      start: new Date('2024-08-01T00:00:00'),
+      end: new Date('2024-08-27T23:59:59'), // 27 days elapsed
+    };
+    const prev = getPreviousPeriodDateRange(range);
+    expect(prev.end.getMonth()).toBe(6); // July
+    expect(prev.end.getDate()).toBe(31);
+    expect(prev.start.getMonth()).toBe(6); // July
+    expect(prev.start.getDate()).toBe(5);
   });
 });
 

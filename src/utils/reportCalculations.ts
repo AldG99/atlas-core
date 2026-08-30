@@ -13,7 +13,11 @@ export interface DateRange {
   end: Date;
 }
 
-export const getDateRange = (period: PeriodType): DateRange => {
+// `referenceMonth` solo aplica a period === 'month': cualquier fecha dentro del
+// mes que se quiere ver (por defecto, el mes actual). Para el mes en curso el
+// rango sigue siendo "mes a la fecha" (como antes); para un mes pasado, el
+// rango cubre el mes completo.
+export const getDateRange = (period: PeriodType, referenceMonth?: Date): DateRange => {
   const now = new Date();
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
@@ -29,19 +33,35 @@ export const getDateRange = (period: PeriodType): DateRange => {
       return { start, end };
     }
     case 'month': {
-      const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
-      return { start, end };
+      const ref = referenceMonth ?? now;
+      const start = new Date(ref.getFullYear(), ref.getMonth(), 1, 0, 0, 0);
+      const isCurrentMonth = ref.getFullYear() === now.getFullYear() && ref.getMonth() === now.getMonth();
+      if (isCurrentMonth) return { start, end };
+      const monthEnd = new Date(ref.getFullYear(), ref.getMonth() + 1, 0, 23, 59, 59);
+      return { start, end: monthEnd };
     }
     default:
-      return getDateRange('month');
+      return getDateRange('month', referenceMonth);
   }
 };
 
-export const getYearAgoDateRange = (dateRange: DateRange): DateRange => {
-  const start = new Date(dateRange.start);
-  const end = new Date(dateRange.end);
-  start.setFullYear(start.getFullYear() - 1);
-  end.setFullYear(end.getFullYear() - 1);
+// Rango inmediatamente anterior, de la misma duración que dateRange (hoy → ayer,
+// esta semana → los 7 días previos, este mes-a-la-fecha → los N días previos al
+// día 1, donde N son los días transcurridos del mes actual). Reemplaza la
+// comparación año-contra-año: con esa, un negocio con menos de un año de datos
+// nunca veía el indicador de tendencia en KPICards (previous siempre en cero).
+export const getPreviousPeriodDateRange = (dateRange: DateRange): DateRange => {
+  const dayMs = 24 * 60 * 60 * 1000;
+  const days = Math.round((dateRange.end.getTime() - dateRange.start.getTime()) / dayMs);
+
+  const end = new Date(dateRange.start);
+  end.setDate(end.getDate() - 1);
+  end.setHours(23, 59, 59, 999);
+
+  const start = new Date(end);
+  start.setDate(start.getDate() - (days - 1));
+  start.setHours(0, 0, 0, 0);
+
   return { start, end };
 };
 

@@ -22,6 +22,7 @@ import {
 import { db } from './firebase';
 import type { Order, OrderFormData, OrderStatus, OrderItem, Payment } from '../types/Order';
 import i18n from '../i18n';
+import { invalidateReportsCache } from './reportsCache';
 
 // Firestore rechaza valores undefined — los elimina recursivamente
 const stripUndefined = <T extends Record<string, unknown>>(obj: T): T => {
@@ -121,6 +122,8 @@ export const createOrder = async (data: OrderFormData, userId: string): Promise<
     });
   });
 
+  invalidateReportsCache();
+
   return {
     id: newDocRef.id,
     orderNumber,
@@ -217,6 +220,7 @@ export const updateOrderStatus = async (orderId: string, status: OrderStatus): P
     updateData.deliveredAt = Timestamp.now();
   }
   await updateDoc(orderRef, updateData);
+  invalidateReportsCache();
 };
 
 
@@ -241,6 +245,7 @@ export const deleteOrder = async (orderId: string): Promise<void> => {
   }
 
   await batch.commit();
+  invalidateReportsCache();
 };
 
 export const getOrderById = async (orderId: string, userId: string): Promise<Order | null> => {

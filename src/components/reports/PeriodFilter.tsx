@@ -1,23 +1,53 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { PeriodType } from '../../types/Report';
 import './PeriodFilter.scss';
 
 interface PeriodFilterProps {
   period: PeriodType;
   onPeriodChange: (period: PeriodType) => void;
+  viewedMonth: Date;
+  onPreviousMonth: () => void;
+  onNextMonth: () => void;
+  canGoPreviousMonth: boolean;
+  canGoNextMonth: boolean;
 }
 
 const PERIOD_VALUES: PeriodType[] = ['today', 'week', 'month'];
 
-const PeriodFilter = ({ period, onPeriodChange }: PeriodFilterProps) => {
-  const { t } = useTranslation();
+const capitalize = (s: string): string => s.replace(/^\w/, (c) => c.toUpperCase());
+
+const PeriodFilter = ({
+  period,
+  onPeriodChange,
+  viewedMonth,
+  onPreviousMonth,
+  onNextMonth,
+  canGoPreviousMonth,
+  canGoNextMonth,
+}: PeriodFilterProps) => {
+  const { t, i18n } = useTranslation();
+  const monthLabel = capitalize(
+    new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric' }).format(viewedMonth)
+  );
 
   const PERIODS: { value: PeriodType; label: string }[] = [
     { value: 'today',    label: t('reports.period.today') },
     { value: 'week', label: t('reports.period.week') },
     { value: 'month',    label: t('reports.period.month') },
   ];
+
+  // Navegar de mes funciona sin importar qué pestaña esté activa — si no
+  // estabas en "Mes", te cambia a esa vista para mostrar el mes elegido.
+  const handlePreviousMonth = () => {
+    if (period !== 'month') onPeriodChange('month');
+    onPreviousMonth();
+  };
+  const handleNextMonth = () => {
+    if (period !== 'month') onPeriodChange('month');
+    onNextMonth();
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -47,6 +77,26 @@ const PeriodFilter = ({ period, onPeriodChange }: PeriodFilterProps) => {
             {p.label}
           </button>
         ))}
+      </div>
+
+      <div className={`period-filter__month-nav${period === 'month' ? ' period-filter__month-nav--active' : ''}`}>
+        <button
+          className="period-filter__month-btn"
+          onClick={handlePreviousMonth}
+          disabled={!canGoPreviousMonth}
+          aria-label={t('reports.period.previousMonth')}
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <span className="period-filter__month-label">{monthLabel}</span>
+        <button
+          className="period-filter__month-btn"
+          onClick={handleNextMonth}
+          disabled={!canGoNextMonth}
+          aria-label={t('reports.period.nextMonth')}
+        >
+          <ChevronRight size={16} />
+        </button>
       </div>
     </div>
   );

@@ -1,6 +1,12 @@
 @use '../../styles/abstracts/variables' as *;
 @use '../../styles/abstracts/mixins' as *;
 
+// La etiqueta del valor del eje (__grid-value) se dibuja centrada sobre su
+// línea, así que sobresale esta misma cantidad por encima de la línea "100%"
+// — sin compensarlo, el espacio visible arriba queda más chico que el de
+// abajo (que sí respeta el padding del card completo, sin nada que lo coma).
+$grid-value-offset: 10px;
+
 .sales-chart {
   background-color: $color-white;
   border-radius: $border-radius-lg;
@@ -17,38 +23,11 @@
     font-size: $font-size-sm;
   }
 
-  &__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: $spacing-md;
-    margin-bottom: $spacing-lg;
-  }
-
-  &__totals {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &__label {
-    font-size: $font-size-xs;
-    color: $color-gray-400;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  &__amount {
-    font-size: 28px;
-    font-weight: 700;
-    color: $color-gray-900;
-    letter-spacing: -1.5px;
-    line-height: 1.1;
-  }
-
   &__chart-area {
     flex: 1;
     min-height: 130px;
+    margin-top: $grid-value-offset;
+    margin-right: $grid-value-offset;
     position: relative;
     padding-left: 58px;
   }
@@ -67,16 +46,16 @@
   }
 
   &__grid-line {
-    border-bottom: 1px solid rgba($color-gray-200, 0.8);
+    border-bottom: 1px solid $color-gray-300;
     position: relative;
   }
 
   &__grid-value {
     position: absolute;
     left: -62px;
-    top: -10px;
+    top: -$grid-value-offset;
     font-size: 10px;
-    color: $color-gray-400;
+    color: $color-gray-600;
     font-weight: 400;
     white-space: nowrap;
     text-align: right;
@@ -114,7 +93,8 @@
 
   &__fill {
     width: 100%;
-    background-color: $color-chart;
+    // Mismo color que la tarjeta "Ventas totales" (kpi-card--sales) en KPICards.
+    background-color: $color-success;
     border-radius: 3px 3px 0 0;
     transform-origin: bottom;
     animation: sales-bar-grow 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -122,7 +102,7 @@
 
   &__day {
     font-size: 10px;
-    color: $color-gray-400;
+    color: $color-gray-600;
     white-space: nowrap;
     height: 20px;
     line-height: 20px;
@@ -130,34 +110,6 @@
     letter-spacing: -0.2px;
   }
 
-  &__stats {
-    display: flex;
-    gap: $spacing-xl;
-    flex-shrink: 0;
-  }
-
-  &__stat {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 1px;
-  }
-
-  &__stat-value {
-    display: inline-block;
-    font-size: $font-size-base;
-    font-weight: 600;
-    color: $color-gray-900;
-    letter-spacing: -0.3px;
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-  }
-
-  &__stat-label {
-    font-size: $font-size-xs;
-    color: $color-gray-400;
-    font-weight: 400;
-  }
 }
 
 @keyframes sales-bar-grow {

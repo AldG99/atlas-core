@@ -23,7 +23,12 @@ const Reports = () => {
     loading,
     error,
     hasMore,
-    setPeriod
+    setPeriod,
+    viewedMonth,
+    goToPreviousMonth,
+    goToNextMonth,
+    canGoPreviousMonth,
+    canGoNextMonth
   } = useReports();
   const { showToast } = useToast();
   const { clients } = useClients();
@@ -37,7 +42,12 @@ const Reports = () => {
       ...o,
       clientCountryCode: getCountryCode(clients.find(c => c.phone === o.clientPhone)?.phoneCountryCode ?? '')?.code
     }));
-    exportToCSV(ordersWithCode, `report_${period}`);
+    // Para "mes" el filename incluye el mes navegado (p. ej. 2025-08), no solo
+    // "month" — si no, exportar julio y agosto genera el mismo nombre de archivo.
+    const fileSuffix = period === 'month'
+      ? `${viewedMonth.getFullYear()}-${(viewedMonth.getMonth() + 1).toString().padStart(2, '0')}`
+      : period;
+    exportToCSV(ordersWithCode, `report_${fileSuffix}`);
     showToast(t('reports.export'), 'success');
   };
 
@@ -60,6 +70,11 @@ const Reports = () => {
           <PeriodFilter
             period={period}
             onPeriodChange={setPeriod}
+            viewedMonth={viewedMonth}
+            onPreviousMonth={goToPreviousMonth}
+            onNextMonth={goToNextMonth}
+            canGoPreviousMonth={canGoPreviousMonth}
+            canGoNextMonth={canGoNextMonth}
           />
           {hasMore && (
             <p className="reports__limit-warning">{t('reports.limitWarning')}</p>
@@ -89,7 +104,6 @@ const Reports = () => {
                 <SalesChart
                   data={reportData.chartData}
                   totalSales={reportData.kpis.totalSales}
-                  totalOrders={reportData.kpis.totalOrders}
                 />
               </div>
               <StatusBreakdown breakdown={reportData.statusBreakdown} />

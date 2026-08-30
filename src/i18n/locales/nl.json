@@ -755,7 +755,9 @@
     "period": {
       "today": "Vandaag",
       "week": "Laatste 7 dagen",
-      "month": "Deze maand"
+      "month": "Deze maand",
+      "previousMonth": "Vorige maand",
+      "nextMonth": "Volgende maand"
     },
     "kpi": {
       "totalSales": "Totale omzet",
@@ -765,9 +767,6 @@
       "profitIncompleteHint": "Sommige producten hebben geen inkoopprijs ingesteld, de werkelijke winst kan lager zijn"
     },
     "chart": {
-      "totalSales": "Totale omzet",
-      "orders": "Bestellingen",
-      "average": "Gemiddelde",
       "noData": "Geen gegevens om weer te geven"
     },
     "statusBreakdown": {
@@ -776,12 +775,10 @@
       "orders": "bestellingen"
     },
     "topClients": {
-      "title": "Topklanten",
-      "empty": "Geen klanten in deze periode"
+      "title": "Topklanten"
     },
     "topProducts": {
       "title": "Best verkopende producten",
-      "empty": "Geen verkopen in deze periode",
       "sold": "verkocht",
       "profit": "winst"
     }
