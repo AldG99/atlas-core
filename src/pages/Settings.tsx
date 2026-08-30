@@ -19,13 +19,15 @@ import {
 import { usePWA } from '../hooks/usePWA';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
+import { ROUTES } from '../config/routes';
+import { hasRecentBackup } from '../utils/backupReminder';
 import LanguageSwitcher from '../components/ui/LanguageSwitcher';
 import DangerModal from '../components/settings/DangerModal';
 import BackupPanel from '../components/settings/BackupPanel';
 import TemplatesPanel from '../components/settings/TemplatesPanel';
 import './Settings.scss';
 
-type Section = 'currency' | 'notifications' | 'install' | 'templates' | 'backup' | 'manage' | 'language';
+type Section = 'currency' | 'notifications' | 'install' | 'templates' | 'backup' | 'deleteData' | 'deleteAccount' | 'language';
 
 const CURRENCY_SYMBOLS = ['$', '€', '£', '¥', 'S/', 'R$', 'Q', '₩'];
 
@@ -44,7 +46,8 @@ const Settings = () => {
       case 'install':      return t('settings.sections.install');
       case 'templates':    return t('settings.sections.templates');
       case 'backup':      return t('settings.sections.backup');
-      case 'manage':       return t('settings.sections.manage');
+      case 'deleteData':   return t('settings.manage.deleteDataTitle');
+      case 'deleteAccount': return t('settings.manage.deleteAccountTitle');
       case 'language':        return t('settings.sections.language');
     }
   };
@@ -87,13 +90,29 @@ const Settings = () => {
   // ── Zona de peligro ─────────────────────────────────
   const handleDeleteData = async (password: string) => {
     await deleteAllData(password);
-    showToast(t('settings.dangerModal.deleteDataSuccess'), 'success');
-    setDangerModal(null);
+    // Recarga dura: los contextos (Orders/Clients/Products) siguen en memoria
+    // con los datos ya borrados; volver al Dashboard desde cero los rehidrata
+    // vacíos. Cualquier throw se propaga a DangerModal (no llegamos aquí).
+    window.location.assign(ROUTES.DASHBOARD);
   };
 
   const handleDeleteAccount = async (password: string) => {
     await deleteAccount(password);
   };
+
+  // Gate de respaldo: si el plan permite backup, no se puede borrar datos ni
+  // cuenta sin un respaldo reciente (últimos 7 días, por dispositivo). Los planes
+  // sin backup no pueden cumplirlo, así que ahí solo aplica el password del modal.
+  const canBackup = user?.plan === 'pro' || user?.plan === 'enterprise';
+  const backupGateOk = !canBackup || hasRecentBackup();
+  const backupGateShortcut = canBackup && !backupGateOk && (
+    <div className="settings__actions">
+      <button className="btn btn--outline btn--sm" onClick={() => setActiveSection('backup')}>
+        <DownloadCloud size={14} />
+        {t('settings.sections.backup')}
+      </button>
+    </div>
+  );
 
   // ── Nav groups ───────────────────────────────────────
   const preferencesItems: NavItem[] = [
@@ -111,8 +130,14 @@ const Settings = () => {
         { id: 'templates', icon: <MessageSquareText size={16} />, title: t('settings.sections.templates'), color: 'purple' },
       ],
     },
-    { label: t('settings.groups.data'), items: [{ id: 'backup', icon: <DownloadCloud size={16} />, title: t('settings.sections.backup'), color: 'teal' }] },
-    { label: t('settings.groups.account'), items: [{ id: 'manage', icon: <TriangleAlert size={16} />, title: t('settings.sections.manage'), color: 'gray' }] },
+    {
+      label: t('settings.groups.data'),
+      items: [
+        { id: 'backup', icon: <DownloadCloud size={16} />, title: t('settings.sections.backup'), color: 'teal' },
+        { id: 'deleteData', icon: <Trash2 size={16} />, title: t('settings.manage.deleteDataTitle'), color: 'gray' },
+      ],
+    },
+    { label: t('settings.groups.account'), items: [{ id: 'deleteAccount', icon: <TriangleAlert size={16} />, title: t('settings.manage.deleteAccountTitle'), color: 'gray' }] },
   ];
 
   // ── Panel renderer ───────────────────────────────────
@@ -198,28 +223,39 @@ const Settings = () => {
       case 'backup':
         return <BackupPanel />;
 
-      case 'manage':
+      case 'deleteData':
         return (
           <div className="settings__backup-blocks">
             <div className="settings__backup-block">
-              <p className="settings__backup-title">{t('settings.manage.deleteDataTitle')}</p>
-              <p className="settings__desc">
-                {t('settings.manage.deleteDataDesc')}
-              </p>
+              <p className="settings__desc">{t('settings.manage.deleteDataDesc')}</p>
+              {backupGateShortcut}
               <div className="settings__actions">
-                <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteData')}>
+                <button
+                  className="btn btn--danger btn--sm"
+                  onClick={() => setDangerModal('deleteData')}
+                  disabled={!backupGateOk}
+                >
                   <Trash2 size={14} />
                   {t('settings.manage.deleteDataButton')}
                 </button>
               </div>
             </div>
+          </div>
+        );
+
+      case 'deleteAccount':
+        return (
+          <div className="settings__backup-blocks">
             <div className="settings__backup-block">
-              <p className="settings__backup-title">{t('settings.manage.deleteAccountTitle')}</p>
-              <p className="settings__desc">
-                {t('settings.manage.deleteAccountDesc')}
-              </p>
+              <p className="settings__desc">{t('settings.manage.deleteAccountDesc')}</p>
+              <p className="settings__note">{t('settings.dangerModal.deleteAccountText')}</p>
+              {backupGateShortcut}
               <div className="settings__actions">
-                <button className="btn btn--danger btn--sm" onClick={() => setDangerModal('deleteAccount')}>
+                <button
+                  className="btn btn--danger btn--sm"
+                  onClick={() => setDangerModal('deleteAccount')}
+                  disabled={!backupGateOk}
+                >
                   <UserMinus size={14} />
                   {t('settings.manage.deleteAccountButton')}
                 </button>

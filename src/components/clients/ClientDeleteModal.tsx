@@ -1,12 +1,16 @@
-import { useState, useRef, type KeyboardEvent, type ClipboardEvent } from 'react';
+import {
+  useState,
+  useRef,
+  type KeyboardEvent,
+  type ClipboardEvent,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { useToast } from '../../hooks/useToast';
-import { deleteProduct } from '../../services/productService';
-import type { Product } from '../../types/Product';
+import { deleteClient } from '../../services/clientService';
 
-interface ProductDeleteModalProps {
-  product: Product;
+interface ClientDeleteModalProps {
+  clientId: string;
   onClose: () => void;
   onDeleted: () => void;
 }
@@ -20,11 +24,17 @@ const generateDeleteCode = () =>
     () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]
   ).join('');
 
-const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalProps) => {
+const ClientDeleteModal = ({
+  clientId,
+  onClose,
+  onDeleted,
+}: ClientDeleteModalProps) => {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const [deleteCode] = useState(generateDeleteCode);
-  const [chars, setChars] = useState<string[]>(() => Array<string>(CODE_LENGTH).fill(''));
+  const [chars, setChars] = useState<string[]>(() =>
+    Array<string>(CODE_LENGTH).fill('')
+  );
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
   const isMatch = chars.join('') === deleteCode;
@@ -48,11 +58,11 @@ const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalP
     if (!isMatch) return;
     onClose();
     try {
-      await deleteProduct(product.id);
-      showToast(t('products.detail.deleteSuccess'), 'success');
+      await deleteClient(clientId);
+      showToast(t('clients.detail.deleted'), 'success');
       onDeleted();
     } catch {
-      showToast(t('products.detail.deleteError'), 'error');
+      showToast(t('clients.detail.deleteError'), 'error');
     }
   };
 
@@ -90,7 +100,10 @@ const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalP
 
   const handlePaste = (i: number, e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pasted = e.clipboardData.getData('text').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    const pasted = e.clipboardData
+      .getData('text')
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .toUpperCase();
     if (!pasted) return;
     setChars(prev => {
       const next = [...prev];
@@ -103,36 +116,38 @@ const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalP
   };
 
   return (
-    <div className="product-detail__modal-overlay" onClick={onClose}>
-      <div className="product-detail__modal" onClick={e => e.stopPropagation()}>
-        <div className="product-detail__modal-header">
-          <h3>{t('products.detail.deleteModal.title')}</h3>
-          <button className="product-detail__modal-close" onClick={onClose}>
+    <div className="client-detail__modal-overlay" onClick={onClose}>
+      <div className="client-detail__modal" onClick={e => e.stopPropagation()}>
+        <div className="client-detail__modal-header">
+          <h3>{t('clients.detail.deleteModal.title')}</h3>
+          <button className="client-detail__modal-close" onClick={onClose}>
             <X size={18} />
           </button>
         </div>
-        <div className="product-detail__modal-body">
-          <p>{t('products.detail.deleteModal.warning')}</p>
-          <p className="product-detail__delete-label">
-            {t('products.detail.deleteModal.instruction')}
+        <div className="client-detail__modal-body">
+          <p>{t('clients.detail.deleteModal.warning')}</p>
+          <p className="client-detail__delete-label">
+            {t('clients.detail.deleteModal.instruction')}
           </p>
           <code
-            className="product-detail__delete-code"
+            className="client-detail__delete-code"
             onCopy={e => e.preventDefault()}
             onContextMenu={e => e.preventDefault()}
           >
             {deleteCode}
           </code>
           <div
-            className="product-detail__code-cells"
+            className="client-detail__code-cells"
             role="group"
-            aria-label={t('products.detail.deleteModal.placeholder')}
+            aria-label={t('clients.detail.deleteModal.placeholder')}
           >
             {chars.map((c, i) => (
               <input
                 key={i}
-                ref={el => { inputsRef.current[i] = el; }}
-                className="product-detail__code-cell"
+                ref={el => {
+                  inputsRef.current[i] = el;
+                }}
+                className="client-detail__code-cell"
                 type="text"
                 inputMode="text"
                 autoComplete="off"
@@ -149,16 +164,16 @@ const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalP
             ))}
           </div>
         </div>
-        <div className="product-detail__modal-footer">
+        <div className="client-detail__modal-footer">
           <button className="btn btn--secondary btn--sm" onClick={onClose}>
-            {t('products.detail.deleteModal.cancel')}
+            {t('clients.detail.deleteModal.cancel')}
           </button>
           <button
             className="btn btn--danger btn--sm"
             onClick={handleConfirm}
             disabled={!isMatch}
           >
-            {t('products.detail.deleteModal.delete')}
+            {t('clients.detail.deleteModal.delete')}
           </button>
         </div>
       </div>
@@ -166,4 +181,4 @@ const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalP
   );
 };
 
-export default ProductDeleteModal;
+export default ClientDeleteModal;

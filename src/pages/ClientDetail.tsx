@@ -6,7 +6,6 @@ import {
   Pencil,
   Trash2,
   Star,
-  X,
   MapPin,
   Phone,
   Mail,
@@ -15,10 +14,11 @@ import {
 import { FaWhatsapp } from 'react-icons/fa';
 import type { Client, ClientFormData } from '../types/Client';
 import type { Order } from '../types/Order';
-import { getClientById, deleteClient, updateClient, toggleClientFavorite } from '../services/clientService';
+import { getClientById, updateClient, toggleClientFavorite } from '../services/clientService';
 import Avatar from '../components/ui/Avatar';
 import PhoneInput from '../components/clients/PhoneInput';
 import ClientOrderHistory from '../components/clients/ClientOrderHistory';
+import ClientDeleteModal from '../components/clients/ClientDeleteModal';
 import { getOrdersByClientPhone } from '../services/orderService';
 import { getCountryCode } from '../data/countryCodes';
 import { getInitials } from '../utils/avatar';
@@ -45,8 +45,6 @@ const ClientDetail = () => {
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteConfirmText, setDeleteConfirmText] = useState('');
-  const [deleteCode, setDeleteCode] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ClientFormData | null>(null);
   const [saving, setSaving] = useState(false);
@@ -128,27 +126,9 @@ const ClientDetail = () => {
     window.open(`https://wa.me/${dialCode}${cleanPhone}`, '_blank');
   };
 
-  const generateDeleteCode = () =>
-    Array.from({ length: 10 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
-
   const handleDelete = () => {
     if (!client) return;
-    setDeleteConfirmText('');
-    setDeleteCode(generateDeleteCode());
     setShowDeleteModal(true);
-  };
-
-  const confirmDelete = async () => {
-    if (!client) return;
-    if (deleteConfirmText !== deleteCode) return;
-    setShowDeleteModal(false);
-    try {
-      await deleteClient(client.id);
-      showToast(t('clients.detail.deleted'), 'success');
-      navigate(ROUTES.CLIENTS);
-    } catch {
-      showToast(t('clients.detail.deleteError'), 'error');
-    }
   };
 
   const handleToggleFavorite = async () => {
@@ -402,42 +382,12 @@ const ClientDetail = () => {
         </div>
       </div>
 
-      {showDeleteModal && (
-        <div className="client-detail__modal-overlay" onClick={() => setShowDeleteModal(false)}>
-          <div className="client-detail__modal" onClick={e => e.stopPropagation()}>
-            <div className="client-detail__modal-header">
-              <h3>{t('clients.detail.deleteModal.title')}</h3>
-              <button className="client-detail__modal-close" onClick={() => setShowDeleteModal(false)}>
-                <X size={18} />
-              </button>
-            </div>
-            <div className="client-detail__modal-body">
-              <p>{t('clients.detail.deleteModal.warning')}</p>
-              <p className="client-detail__delete-label">
-                {t('clients.detail.deleteModal.instruction')}
-              </p>
-              <code className="client-detail__delete-code">{deleteCode}</code>
-              <input
-                type="text"
-                className="input"
-                placeholder={t('clients.detail.deleteModal.placeholder')}
-                value={deleteConfirmText}
-                onChange={e => setDeleteConfirmText(e.target.value.toUpperCase())}
-                autoComplete="off"
-              />
-            </div>
-            <div className="client-detail__modal-footer">
-              <button className="btn btn--secondary btn--sm" onClick={() => setShowDeleteModal(false)}>{t('clients.detail.deleteModal.cancel')}</button>
-              <button
-                className="btn btn--danger btn--sm"
-                onClick={confirmDelete}
-                disabled={deleteConfirmText !== deleteCode}
-              >
-                {t('clients.detail.deleteModal.delete')}
-              </button>
-            </div>
-          </div>
-        </div>
+      {showDeleteModal && client && (
+        <ClientDeleteModal
+          clientId={client.id}
+          onClose={() => setShowDeleteModal(false)}
+          onDeleted={() => navigate(ROUTES.CLIENTS)}
+        />
       )}
     </MainLayout>
   );

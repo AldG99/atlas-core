@@ -20,7 +20,8 @@ export const formatDate = (date: Date): string => {
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    hourCycle: 'h23'
   }).format(date);
 };
 
@@ -29,7 +30,8 @@ export const formatShortDate = (date: Date): string => {
     day: '2-digit',
     month: 'short',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    hourCycle: 'h23'
   }).format(date);
 };
 

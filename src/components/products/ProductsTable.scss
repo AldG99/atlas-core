@@ -66,6 +66,8 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
       font-weight: 600;
       color: $color-gray-600;
       white-space: nowrap;
+
+      &:nth-child(8) { text-align: right; } // Valor
     }
   }
 
@@ -80,6 +82,8 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
       font-size: $font-size-sm;
       color: $color-gray-700;
       vertical-align: middle;
+
+      &:nth-child(8) { text-align: right; } // Valor
     }
   }
 

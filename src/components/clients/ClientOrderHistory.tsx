@@ -297,12 +297,16 @@ const ClientOrderHistory: React.FC<Props> = ({
                       {(() => {
                         const orderProfit = order.items.reduce((sum, item) => sum + (itemProfit(item) ?? 0), 0);
                         const orderHasIncompleteCost = order.items.some(item => item.unitCost === undefined);
+                        const orderQuantity = order.items.reduce((sum, item) => sum + item.quantity, 0);
                         return (
                           <tr
                             className={`client-detail__orders-total-row${focusedRow === totalIdx ? ' client-detail__orders-total-row--focused' : ''}`}
                             onMouseEnter={() => setFocusedRow(totalIdx)}
                           >
-                            <td colSpan={4} className="client-detail__orders-total-label">{t('clients.detail.historyTotal')}</td>
+                            <td className="client-detail__orders-total-label">{t('clients.detail.historyTotal')}</td>
+                            <td className="client-detail__orders-total-qty">{orderQuantity}</td>
+                            <td />
+                            <td />
                             <td className="client-detail__orders-total-value">{format(order.total)}</td>
                             <td className="client-detail__orders-accumulated-value">{format(accumulatedMap.get(order.id) ?? 0)}</td>
                             <td className="client-detail__orders-total-profit">

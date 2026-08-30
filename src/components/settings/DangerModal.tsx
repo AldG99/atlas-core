@@ -29,8 +29,16 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
       } else {
         await onDeleteAccount(password);
       }
-    } catch {
-      setError(t('settings.dangerModal.wrongPassword'));
+    } catch (err) {
+      const code = (err as { code?: string }).code;
+      const wrongPassword = code === 'auth/wrong-password' || code === 'auth/invalid-credential';
+      setError(
+        wrongPassword
+          ? t('settings.dangerModal.wrongPassword')
+          // El re-auth pasó pero el borrado falló a mitad (red, permisos…):
+          // no es "contraseña incorrecta", parte de los datos ya puede estar borrada.
+          : t(type === 'deleteData' ? 'errors.deleteDataError' : 'errors.deleteAccountError')
+      );
       setLoading(false);
     }
   };

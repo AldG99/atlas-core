@@ -22,12 +22,12 @@ interface Props {
 
 const Colgroup = () => (
   <colgroup>
-    <col style={{ width: '8%' }} />
-    <col style={{ width: '30%' }} />
-    <col style={{ width: '15%' }} />
-    <col style={{ width: '7%' }} />
-    <col style={{ width: '10%' }} />
-    <col style={{ width: '30%' }} />
+    <col style={{ width: '13%' }} />  {/* Clave — alinea con Clave + Cant. de la tabla de ítems */}
+    <col style={{ width: '15%' }} />  {/* Producto — alinea con Producto de la tabla de ítems */}
+    <col style={{ width: '31%' }} />  {/* Monto — borde derecho a 59%, alinea con "Abonado" de la tabla de ítems */}
+    <col style={{ width: '7%' }} />   {/* Botón editar — pegado al Monto */}
+    <col style={{ width: '9%' }} />   {/* Marca "editado" */}
+    <col style={{ width: '25%' }} />  {/* Fecha */}
   </colgroup>
 );
 
@@ -128,16 +128,6 @@ const OrderPaymentsTable: React.FC<Props> = ({
                         <span>{format(payment.amount)}</span>
                       )}
                     </td>
-                    <td>
-                      {payment.originalAmount && (
-                        <span
-                          className="order-detail__payment-edited"
-                          title={`${format(payment.originalAmount)}${payment.editedAt ? ` · ${formatDate(payment.editedAt)}` : ''}`}
-                        >
-                          {t('common.edit')}
-                        </span>
-                      )}
-                    </td>
                     <td onClick={e => e.stopPropagation()}>
                       {editingPaymentId !== payment.id && (
                         <button
@@ -148,6 +138,16 @@ const OrderPaymentsTable: React.FC<Props> = ({
                         >
                           <PenLine size={14} />
                         </button>
+                      )}
+                    </td>
+                    <td>
+                      {payment.originalAmount && (
+                        <span
+                          className="order-detail__payment-edited"
+                          title={`${format(payment.originalAmount)}${payment.editedAt ? ` · ${formatDate(payment.editedAt)}` : ''}`}
+                        >
+                          {t('common.edit')}
+                        </span>
                       )}
                     </td>
                     <td>{formatDate(payment.date)}</td>

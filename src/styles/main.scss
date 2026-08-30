@@ -80,16 +80,6 @@
     }
   }
 
-  &--whatsapp {
-    background-color: $color-whatsapp;
-    color: $color-white;
-
-    &:hover:not(:disabled) {
-      background-color: $color-whatsapp-dark;
-      color: $color-white;
-    }
-  }
-
   &--full {
     width: 100%;
   }
@@ -215,13 +205,6 @@
     }
   }
 
-  &--whatsapp {
-    color: $color-whatsapp;
-
-    &:hover {
-      background-color: rgba($color-whatsapp, 0.1);
-    }
-  }
 
   &--success {
     color: $color-success;

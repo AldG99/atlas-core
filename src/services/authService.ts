@@ -10,7 +10,7 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import type { User as FirebaseUser } from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, writeBatch, Timestamp, deleteField } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, writeBatch, Timestamp, deleteField, documentId, type DocumentReference } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 import { auth, db, storage } from './firebase';
 import type { User, LoginCredentials, RegisterCredentials, Templates } from '../types/User';
@@ -188,19 +188,40 @@ export const deleteAllUserData = async (uid: string): Promise<void> => {
   }
 
   // Delete Firestore docs, reusing already-fetched snaps for clients y products
-  const deleteSnap = async (snap: typeof clientsSnap) => {
-    for (let i = 0; i < snap.docs.length; i += 400) {
+  const deleteRefs = async (refs: DocumentReference[]) => {
+    for (let i = 0; i < refs.length; i += 400) {
       const batch = writeBatch(db);
-      snap.docs.slice(i, i + 400).forEach(d => batch.delete(d.ref));
+      refs.slice(i, i + 400).forEach(r => batch.delete(r));
       await batch.commit();
     }
   };
+  const deleteSnap = (snap: { docs: { ref: DocumentReference }[] }) =>
+    deleteRefs(snap.docs.map(d => d.ref));
 
   await Promise.all([deleteSnap(clientsSnap), deleteSnap(productsSnap)]);
 
-  for (const col of ['orders', 'labels', 'orderCounters']) {
+  // Colecciones con campo userId
+  for (const col of ['orders', 'labels', 'supportMessages']) {
     const snap = await getDocs(query(collection(db, col), where('userId', '==', uid)));
     await deleteSnap(snap);
+  }
+
+  // Colecciones cuyos docs se identifican por prefijo de id (`${uid}_...`):
+  // - orderCounters: los creados antes de la migración no guardan userId.
+  // - supportRateLimits: nunca guarda userId (id = `${uid}_${fecha}`).
+  // Se barre por campo Y por rango de id, y se deduplican los refs.
+  for (const col of ['orderCounters', 'supportRateLimits']) {
+    const refs = new Map<string, DocumentReference>();
+    const [byField, byId] = await Promise.all([
+      getDocs(query(collection(db, col), where('userId', '==', uid))),
+      getDocs(query(
+        collection(db, col),
+        where(documentId(), '>=', `${uid}_`),
+        where(documentId(), '<', `${uid}_`),
+      )),
+    ]);
+    for (const d of [...byField.docs, ...byId.docs]) refs.set(d.ref.path, d.ref);
+    await deleteRefs([...refs.values()]);
   }
 
   // Best-effort: delete Storage files (no falla el proceso si Storage falla)

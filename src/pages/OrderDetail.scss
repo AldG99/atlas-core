@@ -535,14 +535,24 @@ $topbar-height: 52px;
       &:nth-child(5) { text-align: right; }    // Precio
       &:nth-child(6) { text-align: right; }    // Abonado
       &:nth-child(7) { text-align: right; }    // Subtotal
-      &:nth-child(8) { text-align: center; }   // Estado
-      &:last-child { text-align: center; }     // Acciones
+      &:nth-child(8) { text-align: right; }    // Ganancia
+      &:last-child {                           // Estado
+        text-align: right;
+        padding-right: $spacing-md;
+      }
     }
 
     tbody td {
       &:nth-child(2) { font-weight: 600; }     // Cant.
       &:nth-child(6) { font-weight: 600; }     // Abonado
       &:nth-child(7) { font-weight: 600; }     // Subtotal
+    }
+
+    // Subtotal en verde (señal de ingreso). El original tachado y el badge de
+    // descuento conservan su color propio, solo se tiñe la cifra final.
+    tbody td:nth-child(7),
+    tfoot td:nth-child(7) {
+      color: $color-success;
     }
   }
 
@@ -683,8 +693,8 @@ $topbar-height: 52px;
 
   &__product-profit {
     font-size: $font-size-sm;
-    color: $color-success;
-    font-weight: 500;
+    color: $color-profit;
+    font-weight: 600;
 
     &--unknown {
       color: $color-gray-400;

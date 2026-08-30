@@ -39,7 +39,9 @@ $topbar-height: 52px;
 
     @include lg {
       left: $sidebar-width;
-      padding: 0 $spacing-lg;
+      // Mismo padding que el del contenido en MainLayout, para que el borde
+      // interno de la barra coincida con el borde izquierdo del card.
+      padding: 0 $spacing-md;
     }
   }
 
@@ -92,7 +94,12 @@ $topbar-height: 52px;
 
     &--back {
       flex-shrink: 0;
-      margin-right: $spacing-sm;
+      // Cancela el padding izquierdo propio del botón para que la flecha
+      // quede alineada con el borde izquierdo del card (arrastra con ella al
+      // resto de iconos de la barra). Sin margin-right extra: así la línea
+      // divisora queda a la misma distancia del botón volver y de los iconos
+      // de la derecha.
+      margin-left: -$spacing-xs;
     }
   }
 
@@ -154,7 +161,8 @@ $topbar-height: 52px;
     flex-direction: column;
     gap: $spacing-xs;
     padding: $spacing-sm $spacing-md;
-    border-top: 1px solid $color-gray-100;
+    border-top: 1px solid $color-gray-200; // mismo color que el borde del card
+    background-color: $color-gray-100; // igual que la cabecera de detalle de cliente
   }
 
   &__footer-meta-row {
@@ -164,8 +172,12 @@ $topbar-height: 52px;
     gap: $spacing-xs;
 
     &:not(:last-child) {
-      padding-bottom: $spacing-xs;
-      border-bottom: 1px solid $color-gray-100;
+      // Sangría negativa para que la línea divisora llegue de borde a borde
+      // del card, igual que el border-bottom de la cabecera.
+      margin-left: -$spacing-md;
+      margin-right: -$spacing-md;
+      padding: 0 $spacing-md $spacing-xs;
+      border-bottom: 1px solid $color-gray-200; // mismo color que el borde del card
     }
   }
 
@@ -310,6 +322,7 @@ $topbar-height: 52px;
     &--empty {
       color: $color-gray-400;
       font-weight: 500;
+      font-style: italic;
     }
   }
 
@@ -770,7 +783,8 @@ $topbar-height: 52px;
 .product-detail__modal {
   background-color: $color-white;
   width: 100%;
-  max-width: 320px;
+  // Ancho suficiente para las 10 celdas del código en una sola fila.
+  max-width: 420px;
   border-radius: $border-radius-lg;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   overflow: hidden;
@@ -823,10 +837,6 @@ $topbar-height: 52px;
   color: $color-gray-700;
 }
 
-.product-detail__modal-body .input {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
 
 .product-detail__delete-code {
   display: block;
@@ -839,7 +849,40 @@ $topbar-height: 52px;
   background-color: rgba($color-danger, 0.06);
   border: 1px dashed rgba($color-danger, 0.3);
   padding: $spacing-sm $spacing-md;
-  user-select: all;
+  // No se puede seleccionar/copiar: hay que teclear el código a mano.
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+// Entrada del código carácter por carácter, una celda por carácter (estilo OTP).
+.product-detail__code-cells {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $spacing-xs;
+  margin-top: $spacing-xs;
+}
+
+.product-detail__code-cell {
+  width: 32px;
+  height: 40px;
+  padding: 0;
+  text-align: center;
+  font-family: monospace;
+  font-size: $font-size-lg;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: $color-gray-900;
+  background-color: $color-white;
+  border: 1px solid $color-gray-300;
+  caret-color: $color-primary;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.15);
+  }
 }
 
 .product-detail__modal-footer {

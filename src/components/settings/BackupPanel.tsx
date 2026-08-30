@@ -17,6 +17,7 @@ import {
   type BackupData,
   type ImportSummary,
 } from '../../services/backupService';
+import { markBackupExported } from '../../utils/backupReminder';
 
 type ImportStep = 'idle' | 'preview' | 'importing' | 'done';
 
@@ -37,6 +38,7 @@ const BackupPanel = () => {
     setExporting(true);
     try {
       await exportBackup(user.uid);
+      markBackupExported();
       showToast(t('settings.backup.exportSuccess'), 'success');
     } catch {
       showToast(t('settings.backup.exportError'), 'error');

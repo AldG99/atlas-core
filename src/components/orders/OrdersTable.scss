@@ -92,6 +92,11 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
       &:nth-child(6) {
         text-align: center;
       }
+
+      // Fecha
+      &:nth-child(7) {
+        text-align: right;
+      }
     }
   }
 
@@ -130,6 +135,11 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
       // Estado
       &:nth-child(6) {
         text-align: center;
+      }
+
+      // Fecha
+      &:nth-child(7) {
+        text-align: right;
       }
     }
   }

@@ -140,7 +140,7 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
                 <td style={{ textAlign: 'right' }}><span className="orders-table__skeleton orders-table__skeleton--medium" /></td>
                 <td style={{ textAlign: 'right' }}><span className="orders-table__skeleton orders-table__skeleton--medium" /></td>
                 <td style={{ textAlign: 'center' }}><span className="orders-table__skeleton orders-table__skeleton--status" /></td>
-                <td><span className="orders-table__skeleton orders-table__skeleton--medium" /></td>
+                <td style={{ textAlign: 'right' }}><span className="orders-table__skeleton orders-table__skeleton--medium" /></td>
               </tr>
             ))
           ) : error ? (
