@@ -90,7 +90,7 @@ const BackupPanel = () => {
         <p className="settings__note">{t('settings.backup.exportNote')}</p>
         <div className="settings__actions">
           <button
-            className="btn btn--primary btn--sm"
+            className="btn btn--primary"
             onClick={handleExport}
             disabled={exporting || !planAllowsBackup}
             title={!planAllowsBackup ? t('settings.backup.upgradePlanToUse') : undefined}
@@ -118,7 +118,7 @@ const BackupPanel = () => {
         {importStep === 'idle' && (
           <div className="settings__actions">
             <button
-              className="btn btn--outline btn--sm"
+              className="btn btn--outline"
               onClick={() => fileInputRef.current?.click()}
               disabled={!planAllowsBackup}
               title={!planAllowsBackup ? t('settings.backup.upgradePlanToUse') : undefined}
@@ -161,11 +161,11 @@ const BackupPanel = () => {
               </div>
             </div>
             <div className="settings__actions">
-              <button className="btn btn--ghost btn--sm" onClick={handleReset}>
+              <button className="btn btn--ghost" onClick={handleReset}>
                 <X size={13} />
                 {t('settings.backup.cancel')}
               </button>
-              <button className="btn btn--primary btn--sm" onClick={handleImport}>
+              <button className="btn btn--primary" onClick={handleImport}>
                 <Upload size={13} />
                 {t('settings.backup.confirm')}
               </button>
@@ -193,7 +193,7 @@ const BackupPanel = () => {
               })}
               {importResult.skipped > 0 && t('settings.backup.doneOmitted', { count: importResult.skipped })}
             </p>
-            <button className="btn btn--outline btn--sm" onClick={handleReset}>
+            <button className="btn btn--outline" onClick={handleReset}>
               {t('settings.backup.accept')}
             </button>
           </div>

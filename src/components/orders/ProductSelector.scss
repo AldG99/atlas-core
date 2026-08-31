@@ -369,7 +369,8 @@
 
     // Cantidad col
     thead th:nth-child(2),
-    tbody td:nth-child(2) {
+    tbody td:nth-child(2),
+    tfoot td:nth-child(2) {
       text-align: center;
     }
 
@@ -385,6 +386,13 @@
     tfoot td:nth-child(8) {
       text-align: right;
       font-weight: 600;
+    }
+
+    // Subtotal en verde (señal de ingreso), igual que en el detalle del pedido.
+    // Va por nth-child para ganarle en especificidad a `tbody td { color: … }`.
+    tbody td:nth-child(8),
+    tfoot td:nth-child(8) {
+      color: $color-success;
     }
 
     // Ganancia col
@@ -489,12 +497,12 @@
 
   &__table-subtotal {
     font-weight: 600;
-    color: $color-primary;
+    color: $color-success;
   }
 
   &__table-profit {
-    color: $color-success;
-    font-weight: 500;
+    color: $color-profit;
+    font-weight: 700;
 
     &--unknown {
       color: $color-gray-400;

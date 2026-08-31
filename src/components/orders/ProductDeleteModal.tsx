@@ -2,7 +2,7 @@ import { useState, useRef, type KeyboardEvent, type ClipboardEvent } from 'react
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { useToast } from '../../hooks/useToast';
-import { deleteProduct } from '../../services/productService';
+import { useProducts } from '../../hooks/useProducts';
 import type { Product } from '../../types/Product';
 
 interface ProductDeleteModalProps {
@@ -23,6 +23,7 @@ const generateDeleteCode = () =>
 const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalProps) => {
   const { t } = useTranslation();
   const { showToast } = useToast();
+  const { removeProduct } = useProducts();
   const [deleteCode] = useState(generateDeleteCode);
   const [chars, setChars] = useState<string[]>(() => Array<string>(CODE_LENGTH).fill(''));
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
@@ -48,7 +49,7 @@ const ProductDeleteModal = ({ product, onClose, onDeleted }: ProductDeleteModalP
     if (!isMatch) return;
     onClose();
     try {
-      await deleteProduct(product.id);
+      await removeProduct(product.id);
       showToast(t('products.detail.deleteSuccess'), 'success');
       onDeleted();
     } catch {

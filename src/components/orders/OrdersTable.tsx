@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Star, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 50;
 import type { Order } from '../../types/Order';
 import type { Client } from '../../types/Client';
 import { ORDER_STATUS_COLORS } from '../../constants/orderStatus';
@@ -240,27 +240,23 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
           <span className="orders-table__page-info orders-table__page-info--total">
             {orders.length} {t('nav.orders').toLowerCase()}
           </span>
-          {totalPages > 1 && (
-            <>
-              <button
-                className="orders-table__page-btn"
-                onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
-                disabled={page === 0}
-              >
-                <ChevronLeft size={14} />
-              </button>
-              <span className="orders-table__page-info">
-                {page + 1} / {totalPages}
-              </span>
-              <button
-                className="orders-table__page-btn"
-                onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
-                disabled={page === totalPages - 1}
-              >
-                <ChevronRight size={14} />
-              </button>
-            </>
-          )}
+          <button
+            className="orders-table__page-btn"
+            onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
+            disabled={page === 0}
+          >
+            <ChevronLeft size={14} />
+          </button>
+          <span className="orders-table__page-info">
+            {page + 1} / {Math.max(totalPages, 1)}
+          </span>
+          <button
+            className="orders-table__page-btn"
+            onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
+            disabled={page >= totalPages - 1}
+          >
+            <ChevronRight size={14} />
+          </button>
         </div>
       )}
     </div>

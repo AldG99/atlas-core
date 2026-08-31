@@ -7,8 +7,9 @@ import {
   History,
 } from 'lucide-react';
 import type { Product, ProductFormData } from '../types/Product';
-import { getProductById, updateProduct } from '../services/productService';
+import { getProductById } from '../services/productService';
 import type { CancelDiscountInfo } from '../services/productService';
+import { isDiscountActive, getDiscountedPrice } from '../utils/discount';
 import { useLabels } from '../hooks/useLabels';
 import { useProducts } from '../hooks/useProducts';
 import { useToast } from '../hooks/useToast';
@@ -23,13 +24,22 @@ import DiscountHistoryModal from '../components/products/DiscountHistoryModal';
 import MainLayout from '../layouts/MainLayout';
 import './ProductDetail.scss';
 
+const MAX_LABELS = 4;
+
+// Campos que cuentan como "edición del producto" para la fecha de última
+// edición — el descuento (agregarlo, quitarlo o que expire) se excluye.
+const NON_DISCOUNT_FIELDS: (keyof ProductFormData)[] = [
+  'sku', 'name', 'price', 'costPrice', 'description', 'image',
+  'labels', 'trackStock', 'stock', 'minStock', 'maxStock', 'unit', 'unitQuantity',
+];
+
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
   const { labels, addLabel, removeLabel } = useLabels();
-  const { products } = useProducts();
+  const { products, editProduct } = useProducts();
   const { format } = useCurrency();
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -71,7 +81,7 @@ const ProductDetail = () => {
       day: '2-digit',
       month: 'long',
       year: 'numeric'
-    }).format(new Date(date));
+    }).format(date);
 
   const getLabelsForProduct = (p: Product) => {
     return (p.labels || [])
@@ -129,34 +139,54 @@ const ProductDetail = () => {
     }
   };
 
-  // Campos que cuentan como "edición del producto" para efectos de la fecha
-  // de última edición — el descuento (agregarlo, quitarlo o que expire) se
-  // excluye a propósito.
-  const NON_DISCOUNT_FIELDS: (keyof ProductFormData)[] = [
-    'sku', 'name', 'price', 'costPrice', 'description', 'image',
-    'labels', 'trackStock', 'stock', 'minStock', 'maxStock', 'unit', 'unitQuantity',
-  ];
-
   const handleSave = async () => {
     if (!product || !editData) return;
 
-    const trimmedSku = editData.sku.trim().toLowerCase();
-    const isDuplicateSku = products.some(
-      p => p.id !== product.id && p.sku.trim().toLowerCase() === trimmedSku
-    );
-    if (isDuplicateSku) {
+    const sku = editData.sku.trim();
+    const name = editData.name.trim();
+    const trimmedSku = sku.toLowerCase();
+
+    // Mismas validaciones que ProductModal (reutiliza sus claves i18n).
+    if (!sku) {
+      showToast(t('products.modal.errors.codeRequired'), 'error');
+      return;
+    }
+    if (products.some(p => p.id !== product.id && p.sku.trim().toLowerCase() === trimmedSku)) {
       showToast(t('products.modal.errors.codeDuplicate'), 'error');
+      return;
+    }
+    if (!name) {
+      showToast(t('products.modal.errors.nameRequired'), 'error');
+      return;
+    }
+    if ((editData.price ?? 0) <= 0) {
+      showToast(t('products.modal.errors.priceInvalid'), 'error');
+      return;
+    }
+    if ((editData.costPrice ?? 0) <= 0) {
+      showToast(t('products.modal.errors.costPriceInvalid'), 'error');
+      return;
+    }
+    if (
+      editData.trackStock &&
+      editData.minStock != null && editData.maxStock != null &&
+      editData.minStock > editData.maxStock
+    ) {
+      showToast(t('products.modal.errors.stockRangeInvalid'), 'error');
       return;
     }
 
     try {
-      const dataToSave = { ...editData };
+      const dataToSave = { ...editData, sku, name };
 
       setSaving(true);
 
       let cancelledDiscount: CancelDiscountInfo | undefined;
       const hadDiscount = product.discount && product.discount > 0 && product.discountEndDate;
-      const removingDiscount = !dataToSave.discount || dataToSave.discount <= 0;
+      // Un descuento sin fecha de fin es inerte (todo depende de discountEndDate);
+      // se trata como "sin descuento" para no dejar datos zombie.
+      const removingDiscount =
+        !dataToSave.discount || dataToSave.discount <= 0 || !dataToSave.discountEndDate;
 
       if (hadDiscount && removingDiscount) {
         cancelledDiscount = {
@@ -174,7 +204,7 @@ const ProductDetail = () => {
         (field) => JSON.stringify(product[field] ?? null) !== JSON.stringify(dataToSave[field] ?? null)
       );
 
-      await updateProduct(product.id, dataToSave, cancelledDiscount, hasOtherChanges);
+      await editProduct(product.id, dataToSave, cancelledDiscount, hasOtherChanges);
 
       if (cancelledDiscount) {
         await fetchProduct();
@@ -198,22 +228,11 @@ const ProductDetail = () => {
     }
   };
 
-  const isDiscountActive = (p: Product): boolean => {
-    if (!p.discount || p.discount <= 0) return false;
-    if (!p.discountEndDate) return false;
-    return new Date(p.discountEndDate) >= new Date(new Date().toDateString());
-  };
-
-  const getDiscountedPrice = (price: number, discount: number): number => {
-    return price * (1 - discount / 100);
-  };
 
   const updateField = (field: keyof ProductFormData, value: string | number | string[]) => {
     if (!editData) return;
     setEditData({ ...editData, [field]: value });
   };
-
-  const MAX_LABELS = 4;
 
   const toggleLabel = (labelId: string) => {
     if (!editData) return;
@@ -377,7 +396,7 @@ const ProductDetail = () => {
                             type="number"
                             id="costPrice"
                             value={editData?.costPrice || 0}
-                            onChange={(e) => updateField('costPrice', parseFloat(e.target.value) || 0)}
+                            onChange={(e) => updateField('costPrice', Math.max(0, parseFloat(e.target.value) || 0))}
                             className="product-detail__input product-detail__input--cost"
                             step="0.01"
                             min="0"
@@ -389,8 +408,8 @@ const ProductDetail = () => {
                             type="number"
                             id="price"
                             value={editData?.price || 0}
-                            onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
-                            placeholder="Precio"
+                            onChange={(e) => updateField('price', Math.max(0, parseFloat(e.target.value) || 0))}
+                            placeholder={t('products.detailModal.price')}
                             className="product-detail__input product-detail__input--price"
                             step="0.01"
                             min="0"

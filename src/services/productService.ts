@@ -17,17 +17,34 @@ import type { Product, ProductFormData, DiscountHistory } from '../types/Product
 
 const COLLECTION_NAME = 'products';
 
-const parseHistory = (raw: unknown[]): DiscountHistory[] => {
+const toValidDate = (v: unknown): Date | null => {
+  const d = (v as Timestamp)?.toDate?.()
+    ?? (typeof v === 'string' || typeof v === 'number' || v instanceof Date ? new Date(v) : null);
+  return d && !Number.isNaN(d.getTime()) ? d : null;
+};
+
+// Descarta entradas corruptas (motivo desconocido, porcentaje no numérico,
+// fechas inválidas) en vez de dejar que lleguen a la tabla como "undefined" o
+// "Invalid Date".
+const parseHistory = (raw: unknown): DiscountHistory[] => {
   if (!Array.isArray(raw)) return [];
-  return raw.map((entry) => {
+  return raw.flatMap((entry): DiscountHistory[] => {
     const e = entry as Record<string, unknown>;
-    return {
-      percentage: e.percentage as number,
-      startDate: (e.startDate as Timestamp)?.toDate?.() || new Date(e.startDate as string),
-      endDate: (e.endDate as Timestamp)?.toDate?.() || new Date(e.endDate as string),
-      closedAt: (e.closedAt as Timestamp)?.toDate?.() || new Date(e.closedAt as string),
-      reason: e.reason as 'cancelled' | 'expired'
-    };
+    const reason = e.reason;
+    if (reason !== 'cancelled' && reason !== 'expired') return [];
+
+    const percentage = Number(e.percentage);
+    const endDate = toValidDate(e.endDate);
+    const closedAt = toValidDate(e.closedAt);
+    if (!Number.isFinite(percentage) || percentage <= 0 || !endDate || !closedAt) return [];
+
+    return [{
+      percentage,
+      startDate: toValidDate(e.startDate) ?? endDate,
+      endDate,
+      closedAt,
+      reason,
+    }];
   });
 };
 

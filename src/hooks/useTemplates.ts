@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './useAuth';
 import { useToast } from './useToast';
-import { saveTemplates } from '../services/templateService';
 import { type Templates, DEFAULT_TEMPLATES } from '../types/User';
 
 export const useTemplates = () => {
@@ -35,7 +34,8 @@ export const useTemplates = () => {
     if (!user) return;
     setSaving(true);
     try {
-      await saveTemplates(user.uid, draft);
+      // updateProfile ya persiste `templates` en el doc del usuario y refresca
+      // el estado local — no hace falta un updateDoc aparte.
       await updateProfile({ templates: draft });
       showToast(t('settings.templates.saveSuccess'), 'success');
     } catch {

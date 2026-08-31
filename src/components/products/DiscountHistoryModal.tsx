@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, DownloadCloud } from 'lucide-react';
 import type { Product, DiscountHistory } from '../../types/Product';
+import { isDiscountActive } from '../../utils/discount';
+import { csvValue } from '../../utils/formatters';
 import './DiscountHistoryModal.scss';
 
 interface DiscountHistoryModalProps {
@@ -40,13 +42,13 @@ const DiscountHistoryModal = ({ products, onClose }: DiscountHistoryModalProps) 
     const result: HistoryRow[] = [];
 
     for (const product of products) {
-      // Active discount
-      if (product.discount && product.discount > 0 && product.discountEndDate) {
+      // Active discount — solo si la fecha de fin no ha pasado.
+      if (isDiscountActive(product)) {
         result.push({
           sku: product.sku,
           name: product.name,
-          percentage: product.discount,
-          endDate: product.discountEndDate,
+          percentage: product.discount!,
+          endDate: product.discountEndDate!,
           closedAt: null,
           reason: 'active'
         });
@@ -89,7 +91,9 @@ const DiscountHistoryModal = ({ products, onClose }: DiscountHistoryModalProps) 
       r.closedAt ? formatDate(r.closedAt) : '',
       REASON_LABEL[r.reason],
     ]);
-    const csv = [headers, ...csvRows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+    const csv = [headers, ...csvRows]
+      .map(row => row.map(csvValue).join(','))
+      .join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -106,11 +110,11 @@ const DiscountHistoryModal = ({ products, onClose }: DiscountHistoryModalProps) 
           <h2>{t('products.discountModal.title')}</h2>
           <div className="modal__header-actions">
             <button
-              className="btn btn--secondary btn--sm"
+              className="btn btn--secondary"
               onClick={handleExportCSV}
               disabled={rows.length === 0}
             >
-              <DownloadCloud size={15} />
+              <DownloadCloud size={18} />
               {t('products.discountModal.export')}
             </button>
             <button className="modal__close" onClick={onClose}>
@@ -125,22 +129,31 @@ const DiscountHistoryModal = ({ products, onClose }: DiscountHistoryModalProps) 
           ) : (
             <div className="history-modal__table-wrapper">
               <table className="history-modal__table">
+                <colgroup>
+                  <col style={{ width: '13%' }} />
+                  <col style={{ width: '24%' }} />
+                  <col style={{ width: '13%' }} />
+                  <col style={{ width: '16%' }} />
+                  <col style={{ width: '16%' }} />
+                  <col style={{ width: '18%' }} />
+                </colgroup>
                 <thead>
                   <tr>
-                    <th>{t('products.discountModal.table.product')}</th>
-                    <th>{t('products.discountModal.table.discount')}</th>
-                    <th>{t('products.discountModal.table.endDate')}</th>
-                    <th>{t('products.discountModal.table.closeDate')}</th>
-                    <th>{t('products.discountModal.table.status')}</th>
+                    <th scope="col">{t('products.table.code')}</th>
+                    <th scope="col">{t('products.discountModal.table.product')}</th>
+                    <th scope="col">{t('products.discountModal.table.discount')}</th>
+                    <th scope="col">{t('products.discountModal.table.endDate')}</th>
+                    <th scope="col">{t('products.discountModal.table.closeDate')}</th>
+                    <th scope="col">{t('products.discountModal.table.status')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((row, idx) => (
-                    <tr key={idx}>
+                    <tr key={`${row.sku}-${row.reason}-${row.closedAt?.getTime() ?? 'active'}-${idx}`}>
                       <td>
-                        <span className="history-modal__sku">{row.sku}</span>
-                        <span className="history-modal__name">{row.name}</span>
+                        <span className="history-modal__sku" title={row.sku}>{row.sku}</span>
                       </td>
+                      <td className="history-modal__name" title={row.name}>{row.name}</td>
                       <td className="history-modal__percentage">-{row.percentage}%</td>
                       <td>{formatDate(row.endDate)}</td>
                       <td>{row.closedAt ? formatDate(row.closedAt) : '—'}</td>

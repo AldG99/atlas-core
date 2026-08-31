@@ -24,6 +24,7 @@ const ProductTopBar = ({
           className="product-detail__icon-btn product-detail__icon-btn--back"
           onClick={onBack}
           title={t('products.detail.back')}
+          aria-label={t('products.detail.back')}
         >
           <ArrowLeft size={20} />
         </button>
@@ -51,6 +52,7 @@ const ProductTopBar = ({
               onClick={onStartEdit}
               className="product-detail__icon-btn"
               title={t('products.detail.editProduct')}
+              aria-label={t('products.detail.editProduct')}
             >
               <Pencil size={20} />
             </button>
@@ -58,6 +60,7 @@ const ProductTopBar = ({
               onClick={onDelete}
               className="product-detail__icon-btn"
               title={t('products.detail.deleteProduct')}
+              aria-label={t('products.detail.deleteProduct')}
             >
               <Trash2 size={20} />
             </button>
@@ -65,6 +68,7 @@ const ProductTopBar = ({
               onClick={onShowDiscountHistory}
               className="product-detail__icon-btn"
               title={t('products.discountHistory')}
+              aria-label={t('products.discountHistory')}
             >
               <History size={20} />
             </button>

@@ -6,22 +6,46 @@
   gap: $spacing-sm;
 }
 
+// Un poco más ancho y algo más bajo que el modal--large estándar.
+.modal--large.history-modal {
+  width: min(860px, 92vw);
+  height: min(600px, 85vh);
+}
+
 .history-modal {
+  // La X de cerrar sin fondo al pasar el cursor (solo cambia el color).
+  .modal__close:hover {
+    background-color: transparent;
+  }
+
+  // La tabla ocupa todo el cuerpo del modal: sin padding ni borde propios,
+  // y el scroll vive en el wrapper (para que la cabecera sticky funcione).
+  .modal__body {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
   &__empty {
+    margin: auto;
     text-align: center;
     color: $color-gray-500;
-    padding: $spacing-xl 0;
-    margin: 0;
+    padding: $spacing-xl $spacing-lg;
   }
 
   &__table-wrapper {
-    overflow-x: auto;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
 
   &__table {
     width: 100%;
+    min-width: 640px;
     border-collapse: collapse;
+    table-layout: fixed;
     font-size: $font-size-sm;
 
     th,
@@ -29,15 +53,21 @@
       padding: $spacing-sm $spacing-md;
       text-align: left;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
       font-weight: 600;
       color: $color-gray-500;
       font-size: $font-size-xs;
       text-transform: uppercase;
       letter-spacing: 0.3px;
-      border-bottom: 2px solid $color-gray-200;
+      background-color: $color-gray-100;
+      border-bottom: 1px solid $color-gray-200;
     }
 
     td {
@@ -52,14 +82,17 @@
 
   &__sku {
     display: inline-block;
+    max-width: 100%;
     padding: 1px 6px;
     font-size: $font-size-xs;
     font-weight: 600;
     color: $color-primary;
     background-color: rgba($color-primary, 0.1);
     font-family: monospace;
-    margin-right: $spacing-xs;
     border-radius: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
   }
 
   &__name {

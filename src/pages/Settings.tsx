@@ -107,7 +107,7 @@ const Settings = () => {
   const backupGateOk = !canBackup || hasRecentBackup();
   const backupGateShortcut = canBackup && !backupGateOk && (
     <div className="settings__actions">
-      <button className="btn btn--outline btn--sm" onClick={() => setActiveSection('backup')}>
+      <button className="btn btn--outline" onClick={() => setActiveSection('backup')}>
         <DownloadCloud size={14} />
         {t('settings.sections.backup')}
       </button>
@@ -160,7 +160,7 @@ const Settings = () => {
                 ))}
               </select>
               <button
-                className="btn btn--primary btn--sm"
+                className="btn btn--primary"
                 onClick={handleSaveCurrency}
                 disabled={savingCurrency || currency === (LEGACY_MAP[rawCurrency] ?? rawCurrency)}
               >
@@ -187,13 +187,13 @@ const Settings = () => {
                 <span className="settings__notif-status settings__notif-status--on">
                   <Bell size={13} /> {t('settings.notifications.active')}
                 </span>
-                <button className="btn btn--outline btn--sm" onClick={handleTestNotif}>
+                <button className="btn btn--outline" onClick={handleTestNotif}>
                   {t('settings.notifications.test')}
                 </button>
               </div>
             ) : (
               <div className="settings__actions">
-                <button className="btn btn--primary btn--sm" onClick={requestNotifPermission}>
+                <button className="btn btn--primary" onClick={requestNotifPermission}>
                   <Bell size={15} />
                   {t('settings.notifications.activate')}
                 </button>
@@ -209,7 +209,7 @@ const Settings = () => {
               {t('settings.install.desc')}
             </p>
             <div className="settings__actions">
-              <button className="btn btn--primary btn--sm" onClick={promptInstall}>
+              <button className="btn btn--primary" onClick={promptInstall}>
                 <Download size={15} />
                 {t('settings.install.button')}
               </button>
@@ -231,7 +231,7 @@ const Settings = () => {
               {backupGateShortcut}
               <div className="settings__actions">
                 <button
-                  className="btn btn--danger btn--sm"
+                  className="btn btn--danger-soft"
                   onClick={() => setDangerModal('deleteData')}
                   disabled={!backupGateOk}
                 >
@@ -252,7 +252,7 @@ const Settings = () => {
               {backupGateShortcut}
               <div className="settings__actions">
                 <button
-                  className="btn btn--danger btn--sm"
+                  className="btn btn--danger-soft"
                   onClick={() => setDangerModal('deleteAccount')}
                   disabled={!backupGateOk}
                 >

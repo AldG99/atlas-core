@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Star } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Client } from '../../types/Client';
 import { getCountryCode } from '../../data/countryCodes';
 import { formatPhone } from '../../utils/formatters';
 import './ClientsTable.scss';
+
+const PAGE_SIZE = 50;
 
 interface ClientsTableProps {
   clients: Client[];
@@ -19,7 +21,18 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
   const navigate = useNavigate();
   const location = useLocation();
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [prevClients, setPrevClients] = useState(clients);
+
+  if (prevClients !== clients) {
+    setPrevClients(clients);
+    if (page !== 0) setPage(0);
+    if (focusedRow !== null) setFocusedRow(null);
+  }
+
+  const totalPages = Math.ceil(clients.length / PAGE_SIZE);
+  const paginatedClients = clients.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat(i18n.language, {
@@ -30,25 +43,25 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
   };
 
   useEffect(() => {
-    if (!clients.length) return;
+    if (!paginatedClients.length) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName.toLowerCase();
       if (['input', 'select', 'textarea'].includes(tag)) return;
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, clients.length - 1));
+        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, paginatedClients.length - 1));
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
       } else if (e.key === 'Enter' && focusedRow !== null) {
         e.preventDefault();
-        navigate(`/clients/${clients[focusedRow].id}`, { state: { from: location.pathname } });
+        navigate(`/clients/${paginatedClients[focusedRow].id}`, { state: { from: location.pathname } });
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [clients, focusedRow, navigate, location.pathname]);
+  }, [paginatedClients, focusedRow, navigate, location.pathname]);
 
   useEffect(() => {
     if (focusedRow === null || !tableContainerRef.current) return;
@@ -110,7 +123,7 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
                 {searchTerm?.trim() ? t('clients.noClientsSearch', { term: searchTerm }) : t('clients.noClients')}
               </td>
             </tr>
-          ) : clients.map((client, index) => (
+          ) : paginatedClients.map((client, index) => (
             <tr
               key={client.id}
               className={`clients-table__row${focusedRow === index ? ' clients-table__row--focused' : ''}`}
@@ -156,11 +169,28 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
       </table>
     </div>
 
-      {clients.length > 0 && (
+      {!loading && clients.length > 0 && (
         <div className="clients-table__pagination">
-          <span className="clients-table__page-info">
+          <span className="clients-table__page-info clients-table__page-info--total">
             {t('clients.count', { count: clients.length })}
           </span>
+          <button
+            className="clients-table__page-btn"
+            onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
+            disabled={page === 0}
+          >
+            <ChevronLeft size={14} />
+          </button>
+          <span className="clients-table__page-info">
+            {page + 1} / {Math.max(totalPages, 1)}
+          </span>
+          <button
+            className="clients-table__page-btn"
+            onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
+            disabled={page >= totalPages - 1}
+          >
+            <ChevronRight size={14} />
+          </button>
         </div>
       )}
     </div>

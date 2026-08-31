@@ -151,12 +151,17 @@ interface OrderForCSV {
   createdAt: Date;
 }
 
-const escapeCSV = (value: string): string => {
+export const escapeCSV = (value: string): string => {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
     return `"${value.replace(/"/g, '""')}"`;
   }
   return value;
 };
+
+// Como escapeCSV, pero además antepone `'` a las celdas que empiezan por
+// = + - @, que Excel/Sheets interpretarían como fórmula (CSV injection).
+export const csvValue = (value: string): string =>
+  escapeCSV(/^[=+\-@]/.test(value) ? `'${value}` : value);
 
 export const generateCSVContent = (orders: OrderForCSV[]): string => {
   const headers = i18n.t('common.csvHeaders.orders', { returnObjects: true }) as string[];

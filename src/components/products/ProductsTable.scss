@@ -202,7 +202,9 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
   &__pagination {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
+    position: relative;
+    gap: $spacing-sm;
     padding: $spacing-xs $spacing-md;
     height: $table-row-height;
     border-top: 1px solid $color-gray-200;
@@ -214,6 +216,43 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
     font-size: $font-size-sm;
     font-weight: 500;
     color: $color-gray-600;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  &__page-info--total {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 0;
+    pointer-events: none;
+  }
+
+  &__page-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: none;
+    color: $color-gray-600;
+    cursor: pointer;
+    transition: color $transition-fast;
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 2px;
+    }
+
+    &:hover:not(:disabled) {
+      color: $color-gray-900;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
   }
 
   &__stock-cell {

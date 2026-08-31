@@ -668,6 +668,7 @@ $topbar-height: 52px;
         white-space: nowrap;
 
         &:first-child { padding-left: $spacing-md; }
+        &:nth-child(2) { text-align: center; }  // Cant.
         &:nth-child(4) { text-align: left; }    // Etiquetas
         &:nth-child(5) { text-align: right; }   // Importe
         &:nth-child(6) { text-align: right; }   // Acumulado
@@ -693,6 +694,7 @@ $topbar-height: 52px;
         white-space: nowrap;
 
         &:first-child { padding-left: $spacing-md; }
+        &:nth-child(2) { text-align: center; }                     // Cant.
         &:nth-child(3) { white-space: normal; }                    // Producto
         &:nth-child(4) { text-align: left; }                       // Etiquetas
         &:nth-child(5) { text-align: right; }                      // Importe

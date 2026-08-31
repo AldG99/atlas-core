@@ -85,11 +85,11 @@ const DangerModal = ({ type, onClose, onDeleteData, onDeleteAccount }: DangerMod
           )}
         </div>
         <div className="settings__modal-actions">
-          <button className="btn btn--outline btn--sm" onClick={onClose} disabled={loading}>
+          <button className="btn btn--outline" onClick={onClose} disabled={loading}>
             {t('settings.dangerModal.cancel')}
           </button>
           <button
-            className="btn btn--danger btn--sm"
+            className="btn btn--danger"
             onClick={handleConfirm}
             disabled={loading}
           >

@@ -47,7 +47,7 @@ const TemplatesPanel = () => {
       />
       <div className="settings__actions">
         <button
-          className="btn btn--outline btn--sm"
+          className="btn btn--outline"
           onClick={resetToDefaults}
           title={t('settings.templates.restore')}
         >
@@ -55,14 +55,14 @@ const TemplatesPanel = () => {
           {t('settings.templates.restore')}
         </button>
         <button
-          className="btn btn--outline btn--sm"
+          className="btn btn--outline"
           onClick={reset}
           disabled={!isDirty}
         >
           {t('settings.templates.cancel')}
         </button>
         <button
-          className="btn btn--primary btn--sm"
+          className="btn btn--primary"
           onClick={save}
           disabled={saving || !isDirty}
         >

@@ -6,6 +6,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  type CancelDiscountInfo,
 } from '../services/productService';
 import { getPlanLimits, checkPlanLimit } from '../constants/planLimits';
 import i18n from '../i18n';
@@ -15,7 +16,12 @@ interface ProductsContextType {
   loading: boolean;
   error: string | null;
   addProduct: (data: ProductFormData) => Promise<Product | undefined>;
-  editProduct: (id: string, data: Partial<ProductFormData>) => Promise<void>;
+  editProduct: (
+    id: string,
+    data: Partial<ProductFormData>,
+    cancelledDiscount?: CancelDiscountInfo,
+    recordEdit?: boolean,
+  ) => Promise<void>;
   removeProduct: (id: string) => Promise<void>;
   fetchProducts: () => Promise<void>;
 }
@@ -64,11 +70,16 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     return newProduct;
   };
 
-  const editProduct = async (id: string, data: Partial<ProductFormData>) => {
+  const editProduct = async (
+    id: string,
+    data: Partial<ProductFormData>,
+    cancelledDiscount?: CancelDiscountInfo,
+    recordEdit?: boolean,
+  ) => {
     const snapshot = products;
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, ...data } as typeof p : p)));
     try {
-      await updateProduct(id, data);
+      await updateProduct(id, data, cancelledDiscount, recordEdit);
     } catch (err) {
       setProducts(snapshot);
       throw err;

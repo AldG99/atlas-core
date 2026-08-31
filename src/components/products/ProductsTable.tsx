@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product, Label } from '../../types/Product';
 import { LABEL_ICONS } from '../../constants/labelIcons';
 import { DEFAULT_LOW_STOCK_THRESHOLD } from '../../constants/stock';
 import { getStockStatus, suggestRestock } from '../../utils/inventoryCalculations';
 import { useCurrency } from '../../hooks/useCurrency';
 import './ProductsTable.scss';
+
+const PAGE_SIZE = 50;
 
 interface ProductsTableProps {
   products: Product[];
@@ -22,7 +25,18 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
   const navigate = useNavigate();
   const location = useLocation();
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [prevProducts, setPrevProducts] = useState(products);
+
+  if (prevProducts !== products) {
+    setPrevProducts(products);
+    if (page !== 0) setPage(0);
+    if (focusedRow !== null) setFocusedRow(null);
+  }
+
+  const totalPages = Math.ceil(products.length / PAGE_SIZE);
+  const paginatedProducts = products.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   const isDiscountActive = (p: Product): boolean => {
     if (!p.discount || p.discount <= 0) return false;
@@ -41,25 +55,25 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
   };
 
   useEffect(() => {
-    if (!products.length) return;
+    if (!paginatedProducts.length) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName.toLowerCase();
       if (['input', 'select', 'textarea'].includes(tag)) return;
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, products.length - 1));
+        setFocusedRow(prev => prev === null ? 0 : Math.min(prev + 1, paginatedProducts.length - 1));
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setFocusedRow(prev => prev === null ? 0 : Math.max(prev - 1, 0));
       } else if (e.key === 'Enter' && focusedRow !== null) {
         e.preventDefault();
-        navigate(`/products/${products[focusedRow].id}`, { state: { from: location.pathname } });
+        navigate(`/products/${paginatedProducts[focusedRow].id}`, { state: { from: location.pathname } });
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [products, focusedRow, navigate, location.pathname]);
+  }, [paginatedProducts, focusedRow, navigate, location.pathname]);
 
   useEffect(() => {
     if (focusedRow === null || !tableContainerRef.current) return;
@@ -122,7 +136,7 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
                 {searchTerm?.trim() ? t('products.noProductsSearch', { term: searchTerm }) : t('products.noProducts')}
               </td>
             </tr>
-          ) : products.map((product, index) => {
+          ) : paginatedProducts.map((product, index) => {
             const productLabels = getLabelsForProduct(product);
             return (
               <tr
@@ -210,11 +224,28 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
         </table>
       </div>
 
-      {products.length > 0 && (
+      {!loading && products.length > 0 && (
         <div className="products-table__pagination">
-          <span className="products-table__page-info">
+          <span className="products-table__page-info products-table__page-info--total">
             {t('products.count', { count: products.length })}
           </span>
+          <button
+            className="products-table__page-btn"
+            onClick={() => { setPage(p => p - 1); setFocusedRow(null); }}
+            disabled={page === 0}
+          >
+            <ChevronLeft size={14} />
+          </button>
+          <span className="products-table__page-info">
+            {page + 1} / {Math.max(totalPages, 1)}
+          </span>
+          <button
+            className="products-table__page-btn"
+            onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}
+            disabled={page >= totalPages - 1}
+          >
+            <ChevronRight size={14} />
+          </button>
         </div>
       )}
     </div>

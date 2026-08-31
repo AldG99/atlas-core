@@ -5,9 +5,6 @@ import {
   ArrowLeft,
   Pencil,
   User,
-  Users,
-  ShoppingBag,
-  Receipt,
   Lock,
   Eye,
   EyeOff,
@@ -15,9 +12,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { useClients } from '../hooks/useClients';
-import { useProducts } from '../hooks/useProducts';
-import { useOrders } from '../hooks/useOrders';
 import PhoneInput from '../components/clients/PhoneInput';
 import { formatPhone } from '../utils/formatters';
 import { getCountryCode } from '../data/countryCodes';
@@ -39,7 +33,9 @@ const isFakePhone = (phone: string): boolean => {
 
 const getAge = (birthDate: string): number => {
   const today = new Date();
-  const birth = new Date(birthDate);
+  // Interpretar 'YYYY-MM-DD' en hora local (no UTC) para que coincida con
+  // `today` y con cómo se muestra la fecha más abajo.
+  const birth = new Date(birthDate + 'T00:00:00');
   let age = today.getFullYear() - birth.getFullYear();
   const month = today.getMonth() - birth.getMonth();
   if (month < 0 || (month === 0 && today.getDate() < birth.getDate())) age--;
@@ -63,9 +59,6 @@ const Profile = () => {
   const { t } = useTranslation();
   const { user, updateProfile, changePassword } = useAuth();
   const { showToast } = useToast();
-  const { clients } = useClients();
-  const { products } = useProducts();
-  const { orders } = useOrders();
   const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -103,9 +96,7 @@ const Profile = () => {
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.businessName.trim()) {
-      newErrors.businessName = t('profile.errors.firstNameShort');
-    } else if (formData.businessName.trim().length < 2) {
+    if (formData.businessName.trim().length < 2) {
       newErrors.businessName = t('profile.errors.firstNameShort');
     }
 
@@ -139,33 +130,26 @@ const Profile = () => {
       }
     }
 
-    if (!formData.street.trim()) {
-      newErrors.street = t('clients.modal.errors.streetRequired');
-    } else if (formData.street.trim().length < 3) {
+    // La dirección es opcional en el perfil del administrador: solo se valida el
+    // formato de los campos que tengan algo escrito, igual que birthDate/phone.
+    // Así corregir el nombre no obliga a rellenar una dirección completa.
+    if (formData.street.trim() && formData.street.trim().length < 3) {
       newErrors.street = t('clients.modal.errors.streetShort');
     }
 
-    if (!formData.exteriorNumber.trim()) {
-      newErrors.exteriorNumber = t('clients.modal.errors.exteriorNumberRequired');
-    } else if (!/\d/.test(formData.exteriorNumber)) {
+    if (formData.exteriorNumber.trim() && !/\d/.test(formData.exteriorNumber)) {
       newErrors.exteriorNumber = t('clients.modal.errors.exteriorNumberInvalid');
     }
 
-    if (!formData.neighborhood.trim()) {
-      newErrors.neighborhood = t('clients.modal.errors.colonyRequired');
-    } else if (formData.neighborhood.trim().length < 3) {
+    if (formData.neighborhood.trim() && formData.neighborhood.trim().length < 3) {
       newErrors.neighborhood = t('clients.modal.errors.colonyShort');
     }
 
-    if (!formData.city.trim()) {
-      newErrors.city = t('clients.modal.errors.cityRequired');
-    } else if (formData.city.trim().length < 3) {
+    if (formData.city.trim() && formData.city.trim().length < 3) {
       newErrors.city = t('clients.modal.errors.cityShort');
     }
 
-    if (!formData.postalCode.trim()) {
-      newErrors.postalCode = t('clients.modal.errors.postalRequired');
-    } else if (!/^\d{5}$/.test(formData.postalCode.trim())) {
+    if (formData.postalCode.trim() && !/^\d{5}$/.test(formData.postalCode.trim())) {
       newErrors.postalCode = t('clients.modal.errors.postalInvalid');
     }
 
@@ -185,14 +169,15 @@ const Profile = () => {
         birthDate: formData.birthDate,
         phone: formData.phone,
         phoneCountryCode: formData.phoneCountryCode,
-        country: formData.country.trim(),
-        state: formData.state.trim(),
-        city: formData.city.trim(),
-        neighborhood: formData.neighborhood.trim(),
-        street: formData.street.trim(),
-        exteriorNumber: formData.exteriorNumber.trim(),
-        interiorNumber: formData.interiorNumber.trim(),
-        postalCode: formData.postalCode.trim(),
+        // La dirección se guarda en mayúsculas, igual que en el detalle del cliente.
+        country: formData.country.trim().toUpperCase(),
+        state: formData.state.trim().toUpperCase(),
+        city: formData.city.trim().toUpperCase(),
+        neighborhood: formData.neighborhood.trim().toUpperCase(),
+        street: formData.street.trim().toUpperCase(),
+        exteriorNumber: formData.exteriorNumber.trim().toUpperCase(),
+        interiorNumber: formData.interiorNumber.trim().toUpperCase(),
+        postalCode: formData.postalCode.trim().toUpperCase(),
       });
       setIsEditing(false);
       showToast(t('profile.updateSuccess'), 'success');
@@ -235,8 +220,17 @@ const Profile = () => {
       showToast(t('profile.passwordUpdateSuccess'), 'success');
       setShowPasswordForm(false);
       setPasswordData({ current: '', new: '', confirm: '' });
-    } catch {
-      setPasswordError(t('profile.errors.passwordWrongCurrent'));
+    } catch (err) {
+      const code = (err as { code?: string }).code;
+      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        setPasswordError(t('profile.errors.passwordWrongCurrent'));
+      } else if (code === 'auth/weak-password') {
+        setPasswordError(t('errors.passwordTooShort'));
+      } else {
+        // Re-auth OK pero updatePassword falló (red, requires-recent-login…):
+        // no confundir con "contraseña actual incorrecta".
+        setPasswordError(t('errors.passwordChangeError'));
+      }
     } finally {
       setSavingPassword(false);
     }
@@ -251,26 +245,103 @@ const Profile = () => {
     <div className="profile-page">
       <div className="profile">
         <div className="profile__header">
-          <button className="profile__back-btn" onClick={() => navigate(-1)}>
+          <button className="profile__back-btn" onClick={() => navigate(-1)} aria-label={t('common.back')}>
             <ArrowLeft size={20} />
           </button>
           <h1 className="profile__title">{t('profile.title')}</h1>
         </div>
 
         <div className="profile__body">
-          <div className="profile__col profile__col--left">
 
           {/* Formulario */}
           <div className="profile__card">
-            {/* Avatar dentro del card */}
-            <div className="profile__avatar-section">
+            {/* Identidad: foto a la izquierda, datos a la derecha */}
+            <div className="profile__identity">
               <div className="profile__avatar">
-                <Avatar src={user?.profilePhoto} seed={user?.uid ?? ''} alt="Foto de perfil" />
+                <Avatar src={user?.profilePhoto} seed={user?.uid ?? ''} alt={t('profile.profilePhoto')} />
               </div>
-              {!isEditing && (
-                <div className="profile__avatar-name">
-                  <span className="profile__business">{user?.businessName}</span>
-                  <span className="profile__email">{user?.email}</span>
+
+              {isEditing ? (
+                <div className="profile__identity-fields">
+                  <div className="profile__field profile__field--plain">
+                    <label htmlFor="pf-businessName">{t('profile.businessName')}</label>
+                    <input
+                      id="pf-businessName"
+                      type="text"
+                      name="businessName"
+                      value={formData.businessName}
+                      onChange={handleChange}
+                      className={`input${errors.businessName ? ' input--error' : ''}`}
+                      placeholder={t('profile.businessNamePlaceholder')}
+                      maxLength={60}
+                      spellCheck
+                      autoCorrect="on"
+                      autoCapitalize="words"
+                    />
+                    {errors.businessName && <span className="profile__field-error">{errors.businessName}</span>}
+                  </div>
+
+                  <div className="profile__identity-row">
+                    <div className="profile__field profile__field--plain">
+                      <label htmlFor="pf-firstName">{t('profile.firstName')}</label>
+                      <input
+                        id="pf-firstName"
+                        type="text"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        className={`input${errors.firstName ? ' input--error' : ''}`}
+                        placeholder={t('profile.firstName')}
+                        maxLength={40}
+                        spellCheck
+                        autoCorrect="on"
+                        autoCapitalize="words"
+                      />
+                      {errors.firstName && <span className="profile__field-error">{errors.firstName}</span>}
+                    </div>
+
+                    <div className="profile__field profile__field--plain">
+                      <label htmlFor="pf-lastName">{t('profile.lastName')}</label>
+                      <input
+                        id="pf-lastName"
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className={`input${errors.lastName ? ' input--error' : ''}`}
+                        placeholder={t('profile.lastName')}
+                        maxLength={40}
+                        spellCheck
+                        autoCorrect="on"
+                        autoCapitalize="words"
+                      />
+                      {errors.lastName && <span className="profile__field-error">{errors.lastName}</span>}
+                    </div>
+                  </div>
+
+                  <div className="profile__field profile__field--plain">
+                    <label>{t('profile.phone')}</label>
+                    <PhoneInput
+                      value={formData.phone}
+                      countryCode={formData.phoneCountryCode}
+                      onChange={(number, iso) => setFormData(prev => ({ ...prev, phone: number, phoneCountryCode: iso }))}
+                      hasError={!!errors.phone}
+                      placeholder={t('profile.phonePlaceholder')}
+                    />
+                    {errors.phone && <span className="profile__field-error">{errors.phone}</span>}
+                  </div>
+                </div>
+              ) : (
+                <div className="profile__identity-info">
+                  <span className="profile__business">{user?.businessName || '—'}</span>
+                  <span className="profile__person">
+                    {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || '—'}
+                  </span>
+                  <span className="profile__phone">
+                    {user?.phone
+                      ? `${user.phoneCountryCode ? `${getCountryCode(user.phoneCountryCode)?.code ?? ''} ` : ''}${formatPhone(user.phone)}`
+                      : '—'}
+                  </span>
                 </div>
               )}
             </div>
@@ -289,91 +360,21 @@ const Profile = () => {
                     </button>
                   </>
                 ) : (
-                  <button className="profile__action-btn profile__action-btn--primary" onClick={() => setIsEditing(true)} title={t('profile.editButton')}>
+                  <button className="profile__action-btn profile__action-btn--primary" onClick={() => setIsEditing(true)} title={t('profile.editButton')} aria-label={t('profile.editButton')}>
                     <Pencil size={20} />
                   </button>
                 )}
               </div>
             </div>
 
-            <div className="profile__fields">
-              {/* Nombre del negocio */}
-              <div className="profile__field profile__field--full">
-                <label>{t('profile.businessName')}</label>
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      name="businessName"
-                      value={formData.businessName}
-                      onChange={handleChange}
-                      className={`input${errors.businessName ? ' input--error' : ''}`}
-                      placeholder={t('profile.businessNamePlaceholder')}
-                      maxLength={60}
-                      spellCheck
-                      autoCorrect="on"
-                      autoCapitalize="words"
-                    />
-                    {errors.businessName && <span className="profile__field-error">{errors.businessName}</span>}
-                  </>
-                ) : (
-                  <p>{user?.businessName || '—'}</p>
-                )}
-              </div>
-
-              {/* Nombre y Apellido */}
-              <div className="profile__field">
-                <label>{t('profile.firstName')}</label>
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className={`input${errors.firstName ? ' input--error' : ''}`}
-                      placeholder={t('profile.firstName')}
-                      maxLength={40}
-                      spellCheck
-                      autoCorrect="on"
-                      autoCapitalize="words"
-                    />
-                    {errors.firstName && <span className="profile__field-error">{errors.firstName}</span>}
-                  </>
-                ) : (
-                  <p>{user?.firstName || '—'}</p>
-                )}
-              </div>
-
-              <div className="profile__field">
-                <label>{t('profile.lastName')}</label>
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className={`input${errors.lastName ? ' input--error' : ''}`}
-                      placeholder={t('profile.lastName')}
-                      maxLength={40}
-                      spellCheck
-                      autoCorrect="on"
-                      autoCapitalize="words"
-                    />
-                    {errors.lastName && <span className="profile__field-error">{errors.lastName}</span>}
-                  </>
-                ) : (
-                  <p>{user?.lastName || '—'}</p>
-                )}
-              </div>
-
+            <div className="profile__fields profile__fields--admin">
               {/* Fecha de nacimiento */}
-              <div className="profile__field">
-                <label>{t('profile.dob')}</label>
+              <div className="profile__field profile__field--full">
+                <label htmlFor="pf-birthDate">{t('profile.dob')}</label>
                 {isEditing ? (
                   <>
                     <input
+                      id="pf-birthDate"
                       type="date"
                       name="birthDate"
                       value={formData.birthDate}
@@ -393,43 +394,188 @@ const Profile = () => {
                 )}
               </div>
 
-              {/* Teléfono */}
+              {/* Correo electrónico y Miembro desde — solo lectura, misma fila */}
               <div className="profile__field">
-                <label>{t('profile.phone')}</label>
-                {isEditing ? (
-                  <>
-                    <PhoneInput
-                      value={formData.phone}
-                      countryCode={formData.phoneCountryCode}
-                      onChange={(number, iso) => setFormData(prev => ({ ...prev, phone: number, phoneCountryCode: iso }))}
-                      hasError={!!errors.phone}
-                      placeholder={t('profile.phonePlaceholder')}
-                    />
-                    {errors.phone && <span className="profile__field-error">{errors.phone}</span>}
-                  </>
-                ) : (
-                  <p>
-                    {user?.phone
-                      ? `${user.phoneCountryCode ? `${getCountryCode(user.phoneCountryCode)?.code ?? ''} ` : ''}${formatPhone(user.phone)}`
-                      : '—'}
-                  </p>
-                )}
-              </div>
-
-              {/* Email — solo lectura */}
-              <div className="profile__field profile__field--full">
                 <label>{t('profile.email')} <span className="profile__readonly-badge">{t('common.readOnly')}</span></label>
                 <p className="profile__readonly">{user?.email || '—'}</p>
               </div>
 
-              {/* Fecha de registro — solo lectura */}
-              <div className="profile__field profile__field--full">
+              <div className="profile__field">
                 <label>{t('profile.memberSince')} <span className="profile__readonly-badge">{t('common.readOnly')}</span></label>
                 <p className="profile__readonly">
                   {user?.registeredAt
                     ? new Date(user.registeredAt).toLocaleDateString(undefined, { day: '2-digit', month: 'long', year: 'numeric' })
                     : '—'}
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Dirección — debajo de Información del administrador */}
+          <div className="profile__card">
+            <div className="profile__card-header">
+              <MapPin size={16} />
+              <span>{t('profile.address')}</span>
+            </div>
+
+            <div className="profile__fields">
+              <div className="profile__field">
+                <label htmlFor="pf-country">{t('clients.modal.country')}</label>
+                {isEditing ? (
+                  <input
+                    id="pf-country"
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="input"
+                    placeholder={t('clients.modal.countryPlaceholder')}
+                    maxLength={40}
+                  />
+                ) : (
+                  <p>{user?.country || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label htmlFor="pf-state">{t('clients.modal.state')}</label>
+                {isEditing ? (
+                  <input
+                    id="pf-state"
+                    type="text"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    className="input"
+                    placeholder={t('clients.modal.statePlaceholder')}
+                    maxLength={60}
+                  />
+                ) : (
+                  <p>{user?.state || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label htmlFor="pf-city">{t('clients.modal.city')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      id="pf-city"
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className={`input${errors.city ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.cityPlaceholder')}
+                      maxLength={60}
+                    />
+                    {errors.city && <span className="profile__field-error">{errors.city}</span>}
+                  </>
+                ) : (
+                  <p>{user?.city || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label htmlFor="pf-neighborhood">{t('clients.modal.colony')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      id="pf-neighborhood"
+                      type="text"
+                      name="neighborhood"
+                      value={formData.neighborhood}
+                      onChange={handleChange}
+                      className={`input${errors.neighborhood ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.colonyPlaceholder')}
+                      maxLength={60}
+                    />
+                    {errors.neighborhood && <span className="profile__field-error">{errors.neighborhood}</span>}
+                  </>
+                ) : (
+                  <p>{user?.neighborhood || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field profile__field--full">
+                <label htmlFor="pf-street">{t('clients.modal.street')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      id="pf-street"
+                      type="text"
+                      name="street"
+                      value={formData.street}
+                      onChange={handleChange}
+                      className={`input${errors.street ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.streetPlaceholder')}
+                      maxLength={80}
+                    />
+                    {errors.street && <span className="profile__field-error">{errors.street}</span>}
+                  </>
+                ) : (
+                  <p>{user?.street || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label htmlFor="pf-exteriorNumber">{t('clients.modal.exteriorNumber')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      id="pf-exteriorNumber"
+                      type="text"
+                      name="exteriorNumber"
+                      value={formData.exteriorNumber}
+                      onChange={handleChange}
+                      className={`input${errors.exteriorNumber ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.exteriorNumberPlaceholder')}
+                      maxLength={10}
+                    />
+                    {errors.exteriorNumber && <span className="profile__field-error">{errors.exteriorNumber}</span>}
+                  </>
+                ) : (
+                  <p>{user?.exteriorNumber || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label htmlFor="pf-interiorNumber">{t('clients.modal.interiorNumber')}</label>
+                {isEditing ? (
+                  <input
+                    id="pf-interiorNumber"
+                    type="text"
+                    name="interiorNumber"
+                    value={formData.interiorNumber}
+                    onChange={handleChange}
+                    className="input"
+                    placeholder={t('clients.modal.interiorNumberPlaceholder')}
+                    maxLength={20}
+                  />
+                ) : (
+                  <p>{user?.interiorNumber || '—'}</p>
+                )}
+              </div>
+
+              <div className="profile__field">
+                <label htmlFor="pf-postalCode">{t('clients.modal.postal')}</label>
+                {isEditing ? (
+                  <>
+                    <input
+                      id="pf-postalCode"
+                      type="text"
+                      name="postalCode"
+                      value={formData.postalCode}
+                      onChange={handleChange}
+                      className={`input${errors.postalCode ? ' input--error' : ''}`}
+                      placeholder={t('clients.modal.postalPlaceholder')}
+                      maxLength={5}
+                    />
+                    {errors.postalCode && <span className="profile__field-error">{errors.postalCode}</span>}
+                  </>
+                ) : (
+                  <p>{user?.postalCode || '—'}</p>
+                )}
               </div>
             </div>
           </div>
@@ -449,9 +595,11 @@ const Profile = () => {
             ) : (
               <div className="profile__password-form">
                 <div className="profile__password-field">
-                  <label>{t('profile.currentPassword')}</label>
+                  <label htmlFor="pf-currentPassword">{t('profile.currentPassword')}</label>
                   <div className="profile__password-input">
                     <input
+                      id="pf-currentPassword"
+                      autoComplete="current-password"
                       type={showCurrentPwd ? 'text' : 'password'}
                       className="input"
                       placeholder="••••••••"
@@ -459,15 +607,17 @@ const Profile = () => {
                       onChange={e => setPasswordData(p => ({ ...p, current: e.target.value }))}
                       maxLength={32}
                     />
-                    <button type="button" onClick={() => setShowCurrentPwd(v => !v)}>
+                    <button type="button" onClick={() => setShowCurrentPwd(v => !v)} aria-label={t('profile.currentPassword')} aria-pressed={showCurrentPwd}>
                       {showCurrentPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
                 <div className="profile__password-field">
-                  <label>{t('profile.newPassword')}</label>
+                  <label htmlFor="pf-newPassword">{t('profile.newPassword')}</label>
                   <div className="profile__password-input">
                     <input
+                      id="pf-newPassword"
+                      autoComplete="new-password"
                       type={showNewPwd ? 'text' : 'password'}
                       className="input"
                       placeholder="••••••••"
@@ -475,15 +625,17 @@ const Profile = () => {
                       onChange={e => setPasswordData(p => ({ ...p, new: e.target.value }))}
                       maxLength={32}
                     />
-                    <button type="button" onClick={() => setShowNewPwd(v => !v)}>
+                    <button type="button" onClick={() => setShowNewPwd(v => !v)} aria-label={t('profile.newPassword')} aria-pressed={showNewPwd}>
                       {showNewPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
                 <div className="profile__password-field">
-                  <label>{t('profile.confirmNewPassword')}</label>
+                  <label htmlFor="pf-confirmPassword">{t('profile.confirmNewPassword')}</label>
                   <div className="profile__password-input">
                     <input
+                      id="pf-confirmPassword"
+                      autoComplete="new-password"
                       type="password"
                       className="input"
                       placeholder="••••••••"
@@ -504,200 +656,6 @@ const Profile = () => {
                 </div>
               </div>
             )}
-          </div>
-          </div>
-
-          <div className="profile__col profile__col--right">
-          <div className="profile__card">
-            <div className="profile__card-header">
-              <MapPin size={16} />
-              <span>{t('profile.address')}</span>
-            </div>
-
-            <div className="profile__fields">
-              <div className="profile__field">
-                <label>{t('clients.modal.country')}</label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    className="input"
-                    placeholder={t('clients.modal.countryPlaceholder')}
-                    maxLength={40}
-                  />
-                ) : (
-                  <p>{user?.country || '—'}</p>
-                )}
-              </div>
-
-              <div className="profile__field">
-                <label>{t('clients.modal.state')}</label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleChange}
-                    className="input"
-                    placeholder={t('clients.modal.statePlaceholder')}
-                    maxLength={60}
-                  />
-                ) : (
-                  <p>{user?.state || '—'}</p>
-                )}
-              </div>
-
-              <div className="profile__field">
-                <label>{t('clients.modal.city')}</label>
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleChange}
-                      className={`input${errors.city ? ' input--error' : ''}`}
-                      placeholder={t('clients.modal.cityPlaceholder')}
-                      maxLength={60}
-                    />
-                    {errors.city && <span className="profile__field-error">{errors.city}</span>}
-                  </>
-                ) : (
-                  <p>{user?.city || '—'}</p>
-                )}
-              </div>
-
-              <div className="profile__field">
-                <label>{t('clients.modal.colony')}</label>
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      name="neighborhood"
-                      value={formData.neighborhood}
-                      onChange={handleChange}
-                      className={`input${errors.neighborhood ? ' input--error' : ''}`}
-                      placeholder={t('clients.modal.colonyPlaceholder')}
-                      maxLength={60}
-                    />
-                    {errors.neighborhood && <span className="profile__field-error">{errors.neighborhood}</span>}
-                  </>
-                ) : (
-                  <p>{user?.neighborhood || '—'}</p>
-                )}
-              </div>
-
-              <div className="profile__field profile__field--full">
-                <label>{t('clients.modal.street')}</label>
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      name="street"
-                      value={formData.street}
-                      onChange={handleChange}
-                      className={`input${errors.street ? ' input--error' : ''}`}
-                      placeholder={t('clients.modal.streetPlaceholder')}
-                      maxLength={80}
-                    />
-                    {errors.street && <span className="profile__field-error">{errors.street}</span>}
-                  </>
-                ) : (
-                  <p>{user?.street || '—'}</p>
-                )}
-              </div>
-
-              <div className="profile__field">
-                <label>{t('clients.modal.exteriorNumber')}</label>
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      name="exteriorNumber"
-                      value={formData.exteriorNumber}
-                      onChange={handleChange}
-                      className={`input${errors.exteriorNumber ? ' input--error' : ''}`}
-                      placeholder={t('clients.modal.exteriorNumberPlaceholder')}
-                      maxLength={10}
-                    />
-                    {errors.exteriorNumber && <span className="profile__field-error">{errors.exteriorNumber}</span>}
-                  </>
-                ) : (
-                  <p>{user?.exteriorNumber || '—'}</p>
-                )}
-              </div>
-
-              <div className="profile__field">
-                <label>{t('clients.modal.interiorNumber')}</label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="interiorNumber"
-                    value={formData.interiorNumber}
-                    onChange={handleChange}
-                    className="input"
-                    placeholder={t('clients.modal.interiorNumberPlaceholder')}
-                    maxLength={20}
-                  />
-                ) : (
-                  <p>{user?.interiorNumber || '—'}</p>
-                )}
-              </div>
-
-              <div className="profile__field">
-                <label>{t('clients.modal.postal')}</label>
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      name="postalCode"
-                      value={formData.postalCode}
-                      onChange={handleChange}
-                      className={`input${errors.postalCode ? ' input--error' : ''}`}
-                      placeholder={t('clients.modal.postalPlaceholder')}
-                      maxLength={5}
-                    />
-                    {errors.postalCode && <span className="profile__field-error">{errors.postalCode}</span>}
-                  </>
-                ) : (
-                  <p>{user?.postalCode || '—'}</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Estadísticas */}
-          <div className="profile__stats">
-            <div className="profile__stat">
-              <div className="profile__stat-icon">
-                <Receipt size={20} />
-              </div>
-              <div className="profile__stat-info">
-                <span className="profile__stat-value">{orders.length}</span>
-                <span className="profile__stat-label">{t('profile.statsOrders')}</span>
-              </div>
-            </div>
-            <div className="profile__stat">
-              <div className="profile__stat-icon">
-                <Users size={20} />
-              </div>
-              <div className="profile__stat-info">
-                <span className="profile__stat-value">{clients.length}</span>
-                <span className="profile__stat-label">{t('profile.statsClients')}</span>
-              </div>
-            </div>
-            <div className="profile__stat">
-              <div className="profile__stat-icon">
-                <ShoppingBag size={20} />
-              </div>
-              <div className="profile__stat-info">
-                <span className="profile__stat-value">{products.length}</span>
-                <span className="profile__stat-label">{t('profile.statsProducts')}</span>
-              </div>
-            </div>
-          </div>
           </div>
         </div>
       </div>

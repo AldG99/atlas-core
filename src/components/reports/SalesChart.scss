@@ -93,8 +93,7 @@ $grid-value-offset: 10px;
 
   &__fill {
     width: 100%;
-    // Mismo color que la tarjeta "Ventas totales" (kpi-card--sales) en KPICards.
-    background-color: $color-success;
+    background-color: $color-chart;
     border-radius: 3px 3px 0 0;
     transform-origin: bottom;
     animation: sales-bar-grow 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
