@@ -40,14 +40,14 @@
     border-radius: $border-radius-lg;
     border: 1px solid $color-gray-200;
     overflow-y: auto;
-    scrollbar-color: $color-gray-300 $color-white;
+    scrollbar-color: $color-gray-200 $color-white;
 
     &::-webkit-scrollbar {
       width: 6px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: $color-gray-300;
+      background: $color-gray-200;
       border-radius: 0;
     }
   }

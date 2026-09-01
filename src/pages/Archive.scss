@@ -177,7 +177,7 @@
     flex: 1;
     min-height: 0;
     scrollbar-gutter: stable;
-    scrollbar-color: $color-gray-300 $color-white;
+    scrollbar-color: $color-gray-200 $color-white;
 
     &::-webkit-scrollbar {
       width: 8px;
@@ -185,7 +185,7 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: $color-gray-300;
+      background: $color-gray-200;
       border-radius: 0;
 
       &:hover {

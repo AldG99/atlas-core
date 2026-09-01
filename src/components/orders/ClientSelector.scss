@@ -53,7 +53,7 @@
     transform: translateY(-50%);
     width: 16px;
     height: 16px;
-    border: 2px solid $color-gray-300;
+    border: 2px solid $color-gray-200;
     border-top-color: $color-primary;
     border-radius: 0;
     animation: spin 0.8s linear infinite;
@@ -91,7 +91,7 @@
     height: 36px;
     padding: 0 $spacing-md;
     background-color: $color-white;
-    border: 1px solid $color-gray-300;
+    border: 1px solid $color-gray-200;
     font-size: $font-size-sm;
     font-weight: 500;
     color: $color-gray-600;
@@ -129,7 +129,7 @@
     left: 0;
     right: 0;
     background-color: $color-white;
-    border: 1px solid $color-gray-300;
+    border: 1px solid $color-gray-200;
     border-radius: $border-radius-md;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     max-height: 250px;

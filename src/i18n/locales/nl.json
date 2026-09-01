@@ -935,16 +935,24 @@
         "answer": "Ga naar \"Mijn bestellingen\" en klik op \"Nieuwe bestelling\". Selecteer een klant, voeg de producten met hun aantallen toe en bevestig. De bestelling krijgt automatisch een bestelnummer. Je kunt ook Shift + N indrukken vanaf elk scherm om het formulier direct te openen."
       },
       {
-        "question": "Hoe wijzig ik de status van een bestelling?",
-        "answer": "Open het detail van de bestelling. In de onderste balk vind je de knop \"Leveren\", beschikbaar wanneer de bestelling de status \"In voorbereiding\" heeft. De status wijzigt ook automatisch naar \"Geleverd\" wanneer de betalingen volledig zijn vereffend."
+        "question": "Wat is het verschil tussen een eenmalige klant en een geregistreerde klant?",
+        "answer": "In het formulier Nieuwe bestelling kies je tussen de tabbladen \"Eenmalige klant\" en \"Geregistreerde klant\". Een geregistreerde klant wordt opgeslagen in de sectie \"Klanten\" met telefoon, adres en foto: je kunt deze hergebruiken bij andere bestellingen, de bestelgeschiedenis bekijken, en hij telt mee voor de klantlimiet van je abonnement. Een eenmalige klant is alleen een naam voor een eenmalige verkoop: die wordt niet opgeslagen, verbruikt geen abonnementslimiet en — omdat er geen telefoonnummer is — kan de bestelling niet via WhatsApp worden verzonden en is ze niet gekoppeld aan een klantgeschiedenis."
       },
       {
         "question": "Hoe registreer ik een betaling op een bestelling?",
-        "answer": "Open het detail van de bestelling. In de bovenste balk vind je het veld om het betalingsbedrag in te voeren. Je kunt dit toepassen op de bestelling in het algemeen of op een specifiek product. De bestelling wordt automatisch gemarkeerd als \"Geleverd\" zodra de volledige betaling is voltooid."
+        "answer": "Open het detail van de bestelling. In de bovenste balk vind je het veld om het betalingsbedrag in te voeren. Je kunt dit toepassen op de bestelling in het algemeen of op een specifiek product. Zodra de volledige betaling is voltooid, gaat de bestelling automatisch naar de status \"In voorbereiding\"."
+      },
+      {
+        "question": "Hoe wijzig ik de status van een bestelling?",
+        "answer": "Open het detail van de bestelling. In de bovenste balk vind je de knop \"Leveren\", die actief wordt wanneer de bestelling de status \"In voorbereiding\" heeft. Wanneer de betalingen volledig zijn vereffend, gaat de bestelling automatisch naar de status \"In voorbereiding\"; als \"Geleverd\" markeren doe je altijd handmatig."
       },
       {
         "question": "Hoe verstuur ik een bestelling via WhatsApp?",
         "answer": "Open het detail van de bestelling en gebruik de WhatsApp-knop in de bovenste balk. WhatsApp opent met een voorgeformatteerd bericht dat de volledige samenvatting van de bestelling bevat."
+      },
+      {
+        "question": "Kan ik een afbeelding van de bestelling downloaden?",
+        "answer": "Ja. Open het detail van de bestelling en gebruik de downloadknop in de bovenste balk. Er wordt een PNG-afbeelding gegenereerd met de volledige samenvatting van de bestelling, klaar om te delen."
       },
       {
         "question": "Hoe zoek en filter ik mijn bestellingen?",
@@ -956,23 +964,19 @@
       },
       {
         "question": "Wat is de sectie Archief?",
-        "answer": "Geleverde bestellingen worden automatisch gearchiveerd na 48 uur. In de sectie \"Archief\" kun je ze bekijken, exporteren naar CSV, of herstellen naar de hoofdlijst indien nodig."
+        "answer": "Geleverde bestellingen worden automatisch gearchiveerd na 48 uur. In de sectie \"Archief\" kun je ze bekijken, exporteren naar CSV."
       },
       {
         "question": "Hoe pas ik een korting toe op een product?",
-        "answer": "Bewerk in de sectie \"Producten\" het product en stel het kortingspercentage in samen met een vervaldatum. De korting wordt automatisch toegepast op bestellingen zolang deze actief is en wordt weergegeven in het detail van de bestelling."
+        "answer": "Bewerk in de sectie \"Voorraad\" het product en stel het kortingspercentage in samen met een vervaldatum. De korting wordt automatisch toegepast op bestellingen zolang deze actief is en wordt weergegeven in het detail van de bestelling."
       },
       {
         "question": "Waar dienen minimale en maximale voorraad voor?",
-        "answer": "Bewerk in de sectie \"Producten\" een product met voorraadbeheer ingeschakeld en stel een minimum en een maximum in. Het minimum activeert de melding voor lage voorraad wanneer de voorraad dat niveau bereikt of eronder komt (in plaats van een vaste drempel voor elk product); het maximum is een referentiegrens zodat je niet meer bijbestelt dan je daadwerkelijk nodig hebt."
+        "answer": "Bewerk in de sectie \"Voorraad\" een product met voorraadbeheer ingeschakeld en stel een minimum en een maximum in. Het minimum activeert de melding voor lage voorraad wanneer de voorraad dat niveau bereikt of eronder komt (in plaats van een vaste drempel voor elk product); het maximum is een referentiegrens zodat je niet meer bijbestelt dan je daadwerkelijk nodig hebt."
       },
       {
         "question": "Wat zijn labels en waar dienen ze voor?",
-        "answer": "Labels zijn visuele categorieën die je aan je producten kunt toewijzen vanuit de sectie \"Producten\". Ze verschijnen in het detail van elke bestelling naast de producten, waardoor je snel kunt identificeren op categorie, type of elk ander criterium dat je definieert."
-      },
-      {
-        "question": "Kan ik een afbeelding van de bestelling downloaden?",
-        "answer": "Ja. Open het detail van de bestelling en gebruik de downloadknop in de bovenste balk. Er wordt een PNG-afbeelding gegenereerd met de volledige samenvatting van de bestelling, klaar om te delen."
+        "answer": "Labels zijn visuele categorieën die je aan je producten kunt toewijzen vanuit de sectie \"Voorraad\". Ze verschijnen in het detail van elke bestelling naast de producten, waardoor je snel kunt identificeren op categorie, type of elk ander criterium dat je definieert."
       },
       {
         "question": "Hoe maak ik een back-up van mijn gegevens?",
@@ -988,7 +992,7 @@
       },
       {
         "question": "Welke sneltoetsen zijn beschikbaar in het formulier Nieuwe bestelling?",
-        "answer": "Ja. Nadat je een klant hebt geselecteerd (geregistreerd of eenmalig), springt de focus automatisch naar het zoekveld voor producten. Daar navigeren ↑ en ↓ door de zoeksuggesties en voegt Enter ze toe; met een leeg zoekveld navigeren ↑ en ↓ door de producten die al in de winkelwagen zitten, passen ← en → hun aantal aan, en opent of sluit Enter de detailweergave van het product. Om af te ronden: Shift + Enter maakt de bestelling aan en Shift + Spatie annuleert deze."
+        "answer": "Nadat je een klant hebt geselecteerd (geregistreerd of eenmalig), springt de focus automatisch naar het zoekveld voor producten. Daar navigeren ↑ en ↓ door de zoeksuggesties en voegt Enter ze toe; met een leeg zoekveld navigeren ↑ en ↓ door de producten die al in de winkelwagen zitten, passen ← en → hun aantal aan, en opent of sluit Enter de detailweergave van het product. Om af te ronden: Shift + Enter maakt de bestelling aan en Shift + Spatie annuleert deze."
       }
     ],
     "contactTitle": "Contact met ondersteuning",

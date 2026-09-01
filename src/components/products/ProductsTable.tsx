@@ -227,7 +227,7 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
       {!loading && products.length > 0 && (
         <div className="products-table__pagination">
           <span className="products-table__page-info products-table__page-info--total">
-            {t('products.count', { count: products.length })}
+            {`${page * PAGE_SIZE + 1}-${Math.min((page + 1) * PAGE_SIZE, products.length)} ${t('common.of')} ${t('products.count', { count: products.length })}`}
           </span>
           <button
             className="products-table__page-btn"
@@ -236,9 +236,6 @@ const ProductsTable = ({ products, labels, loading, error, searchTerm }: Product
           >
             <ChevronLeft size={14} />
           </button>
-          <span className="products-table__page-info">
-            {page + 1} / {Math.max(totalPages, 1)}
-          </span>
           <button
             className="products-table__page-btn"
             onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}

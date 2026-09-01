@@ -935,16 +935,24 @@
         "answer": "Go to \"My Orders\" and click \"New Order\". Select a client, add the products with their quantities and confirm. The order will receive an automatic folio number. You can also press Shift + N from any screen to open the form directly."
       },
       {
-        "question": "How do I change the status of an order?",
-        "answer": "Open the order detail. In the bottom bar you will find the \"Delivered\" button, available when the order is in \"In preparation\" status. The status also changes automatically to \"Delivered\" when the total payments are settled."
+        "question": "What is the difference between a walk-in customer and a registered client?",
+        "answer": "In the New Order form you choose between the \"Walk-in customer\" and \"Registered client\" tabs. A registered client is saved in the \"Clients\" section with phone, address and photo: you can reuse it on other orders, review its order history, and it counts toward your plan's client limit. A walk-in customer is just a name for a one-off sale: it is not saved, does not use up your plan quota, and — having no phone — the order cannot be sent via WhatsApp and is not linked to a client history."
       },
       {
         "question": "How do I register a payment on an order?",
-        "answer": "Open the order detail. In the top bar you will find the field to enter the payment amount. You can apply it to the order in general or to a specific product. The order is automatically marked as \"Delivered\" when the full payment is completed."
+        "answer": "Open the order detail. In the top bar you will find the field to enter the payment amount. You can apply it to the order in general or to a specific product. When the full payment is completed, the order automatically moves to \"In preparation\" status."
+      },
+      {
+        "question": "How do I change the status of an order?",
+        "answer": "Open the order detail. In the top bar you will find the \"Delivered\" button, which becomes active when the order is in \"In preparation\" status. When the total payments are settled, the order automatically moves to \"In preparation\" status; marking it as \"Delivered\" is always manual."
       },
       {
         "question": "How do I send an order via WhatsApp?",
         "answer": "Open the order detail and use the WhatsApp button in the top bar. WhatsApp will open with a pre-formatted message that includes the full order summary."
+      },
+      {
+        "question": "Can I download an image of the order?",
+        "answer": "Yes. Open the order detail and use the download button in the top bar. A PNG image will be generated with the full order summary, ready to share."
       },
       {
         "question": "How do I search and filter my orders?",
@@ -956,23 +964,19 @@
       },
       {
         "question": "What is the Archive section?",
-        "answer": "Delivered orders are automatically archived after 48 hours. In the \"Archive\" section you can view them, export them to CSV, or restore them to the main list if needed."
+        "answer": "Delivered orders are automatically archived after 48 hours. In the \"Archive\" section you can view them, export them to CSV."
       },
       {
         "question": "How do I apply a discount to a product?",
-        "answer": "In the \"Products\" section, edit the product and set the discount percentage along with an expiration date. The discount is automatically applied to orders while it is active and is shown in the order detail."
+        "answer": "In the \"Inventory\" section, edit the product and set the discount percentage along with an expiration date. The discount is automatically applied to orders while it is active and is shown in the order detail."
       },
       {
         "question": "What are minimum and maximum stock for?",
-        "answer": "In the \"Products\" section, edit a product with stock tracking enabled and set a minimum and a maximum. The minimum triggers the low-stock alert when inventory reaches that level or below (instead of a fixed threshold for every product); the maximum is a reference cap so you don't restock beyond what you actually need."
+        "answer": "In the \"Inventory\" section, edit a product with stock tracking enabled and set a minimum and a maximum. The minimum triggers the low-stock alert when inventory reaches that level or below (instead of a fixed threshold for every product); the maximum is a reference cap so you don't restock beyond what you actually need."
       },
       {
         "question": "What are labels and what are they for?",
-        "answer": "Labels are visual categories you can assign to your products from the \"Products\" section. They appear in the detail of each order alongside the products, making it easy to quickly identify by category, type, or any criteria you define."
-      },
-      {
-        "question": "Can I download an image of the order?",
-        "answer": "Yes. Open the order detail and use the download button in the top bar. A PNG image will be generated with the full order summary, ready to share."
+        "answer": "Labels are visual categories you can assign to your products from the \"Inventory\" section. They appear in the detail of each order alongside the products, making it easy to quickly identify by category, type, or any criteria you define."
       },
       {
         "question": "How do I back up my data?",
@@ -988,7 +992,7 @@
       },
       {
         "question": "What keyboard shortcuts are available in the New Order form?",
-        "answer": "Yes. After selecting a client (registered or walk-in), focus jumps automatically to the product search box. There, ↑ and ↓ navigate the search suggestions and Enter adds them; with the search box empty, ↑ and ↓ navigate the products already in the cart, ← and → adjust their quantity, and Enter opens or closes the product's detail view. To finish, Shift + Enter creates the order and Shift + Space cancels it."
+        "answer": "After selecting a client (registered or walk-in), focus jumps automatically to the product search box. There, ↑ and ↓ navigate the search suggestions and Enter adds them; with the search box empty, ↑ and ↓ navigate the products already in the cart, ← and → adjust their quantity, and Enter opens or closes the product's detail view. To finish, Shift + Enter creates the order and Shift + Space cancels it."
       }
     ],
     "contactTitle": "Contact Support",

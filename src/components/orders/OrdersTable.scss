@@ -28,7 +28,7 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
   flex: 1;
   min-height: 0;
   scrollbar-gutter: stable;
-  scrollbar-color: $color-gray-300 $color-white;
+  scrollbar-color: $color-gray-200 $color-white;
 
   @include md {
     overflow-y: scroll;
@@ -40,7 +40,7 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: $color-gray-300;
+    background: $color-gray-200;
     border-radius: 0;
 
     &:hover {
@@ -273,20 +273,12 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    position: relative;
     gap: $spacing-sm;
     padding: $spacing-xs $spacing-md;
     height: $table-row-height; // altura compacta +10%
     border-top: 1px solid $color-gray-200;
     flex-shrink: 0;
     background-color: $color-gray-100;
-  }
-
-  &__page-info--total {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    pointer-events: none;
   }
 
   &__page-btn {
@@ -322,6 +314,14 @@ $table-row-height: calc((#{$font-size-sm} * 1.5 + #{$spacing-xs} * 2) * 1.1);
     color: $color-gray-600;
     min-width: 48px;
     text-align: center;
+  }
+
+  &__page-info--total {
+    min-width: 0;
+    white-space: nowrap;
+    pointer-events: none;
+    font-weight: 500;
+    color: $color-gray-500;
   }
 
   &__skeleton-row {

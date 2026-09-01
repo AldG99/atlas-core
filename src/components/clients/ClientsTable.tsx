@@ -172,7 +172,7 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
       {!loading && clients.length > 0 && (
         <div className="clients-table__pagination">
           <span className="clients-table__page-info clients-table__page-info--total">
-            {t('clients.count', { count: clients.length })}
+            {`${page * PAGE_SIZE + 1}-${Math.min((page + 1) * PAGE_SIZE, clients.length)} ${t('common.of')} ${t('clients.count', { count: clients.length })}`}
           </span>
           <button
             className="clients-table__page-btn"
@@ -181,9 +181,6 @@ const ClientsTable = ({ clients, loading, error, searchTerm }: ClientsTableProps
           >
             <ChevronLeft size={14} />
           </button>
-          <span className="clients-table__page-info">
-            {page + 1} / {Math.max(totalPages, 1)}
-          </span>
           <button
             className="clients-table__page-btn"
             onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}

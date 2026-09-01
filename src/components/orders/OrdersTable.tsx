@@ -238,7 +238,9 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
       {!loading && (
         <div className="orders-table__pagination">
           <span className="orders-table__page-info orders-table__page-info--total">
-            {orders.length} {t('nav.orders').toLowerCase()}
+            {orders.length === 0
+              ? `0 ${t('nav.orders').toLowerCase()}`
+              : `${page * PAGE_SIZE + 1}-${Math.min((page + 1) * PAGE_SIZE, orders.length)} ${t('common.of')} ${orders.length} ${t('nav.orders').toLowerCase()}`}
           </span>
           <button
             className="orders-table__page-btn"
@@ -247,9 +249,6 @@ const OrdersTable = ({ orders, loading, error, searchTerm, muted = false }: Orde
           >
             <ChevronLeft size={14} />
           </button>
-          <span className="orders-table__page-info">
-            {page + 1} / {Math.max(totalPages, 1)}
-          </span>
           <button
             className="orders-table__page-btn"
             onClick={() => { setPage(p => p + 1); setFocusedRow(null); }}

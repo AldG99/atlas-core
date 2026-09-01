@@ -935,16 +935,24 @@
         "answer": "Vai su \"I miei ordini\" e clicca \"Nuovo ordine\". Seleziona un cliente, aggiungi i prodotti con le relative quantità e conferma. L'ordine riceverà un numero automatico. Puoi anche premere Maiusc + N da qualsiasi schermata per aprire direttamente il modulo."
       },
       {
-        "question": "Come cambio lo stato di un ordine?",
-        "answer": "Apri il dettaglio dell'ordine. Nella barra inferiore troverai il pulsante \"Consegnato\", disponibile quando l'ordine è nello stato \"In preparazione\". Lo stato cambia automaticamente anche in \"Consegnato\" quando i pagamenti totali sono saldati."
+        "question": "Qual è la differenza tra un cliente al banco e un cliente registrato?",
+        "answer": "Nel modulo Nuovo Ordine scegli tra le schede \"Cliente al banco\" e \"Cliente registrato\". Un cliente registrato viene salvato nella sezione \"Clienti\" con telefono, indirizzo e foto: puoi riutilizzarlo in altri ordini, consultare il suo storico e conta per il limite di clienti del tuo piano. Un cliente al banco è solo un nome per una vendita occasionale: non viene salvato, non consuma la quota del piano e, non avendo un telefono, l'ordine non può essere inviato via WhatsApp né viene associato a uno storico cliente."
       },
       {
         "question": "Come registro un pagamento su un ordine?",
-        "answer": "Apri il dettaglio dell'ordine. Nella barra superiore troverai il campo per inserire l'importo del pagamento. Puoi applicarlo all'ordine in generale o a un prodotto specifico. L'ordine viene automaticamente contrassegnato come \"Consegnato\" quando il pagamento completo è stato effettuato."
+        "answer": "Apri il dettaglio dell'ordine. Nella barra superiore troverai il campo per inserire l'importo del pagamento. Puoi applicarlo all'ordine in generale o a un prodotto specifico. Quando il pagamento completo è stato effettuato, l'ordine passa automaticamente allo stato \"In preparazione\"."
+      },
+      {
+        "question": "Come cambio lo stato di un ordine?",
+        "answer": "Apri il dettaglio dell'ordine. Nella barra superiore troverai il pulsante \"Consegnato\", che si attiva quando l'ordine è nello stato \"In preparazione\". Quando i pagamenti totali sono saldati, l'ordine passa automaticamente allo stato \"In preparazione\"; contrassegnarlo come \"Consegnato\" è sempre manuale."
       },
       {
         "question": "Come invio un ordine tramite WhatsApp?",
         "answer": "Apri il dettaglio dell'ordine e usa il pulsante WhatsApp nella barra superiore. WhatsApp si aprirà con un messaggio pre-formattato che include il riepilogo completo dell'ordine."
+      },
+      {
+        "question": "Posso scaricare un'immagine dell'ordine?",
+        "answer": "Sì. Apri il dettaglio dell'ordine e usa il pulsante di download nella barra superiore. Verrà generata un'immagine PNG con il riepilogo completo dell'ordine, pronta da condividere."
       },
       {
         "question": "Come cerco e filtro i miei ordini?",
@@ -956,23 +964,19 @@
       },
       {
         "question": "Cos'è la sezione Archivio?",
-        "answer": "Gli ordini consegnati vengono archiviati automaticamente dopo 48 ore. Nella sezione \"Archivio\" puoi visualizzarli, esportarli in CSV o ripristinarli nell'elenco principale se necessario."
+        "answer": "Gli ordini consegnati vengono archiviati automaticamente dopo 48 ore. Nella sezione \"Archivio\" puoi visualizzarli, esportarli in CSV."
       },
       {
         "question": "Come applico uno sconto a un prodotto?",
-        "answer": "Nella sezione \"Prodotti\", modifica il prodotto e imposta la percentuale di sconto insieme a una data di scadenza. Lo sconto viene applicato automaticamente agli ordini mentre è attivo ed è mostrato nel dettaglio dell'ordine."
+        "answer": "Nella sezione \"Inventario\", modifica il prodotto e imposta la percentuale di sconto insieme a una data di scadenza. Lo sconto viene applicato automaticamente agli ordini mentre è attivo ed è mostrato nel dettaglio dell'ordine."
       },
       {
         "question": "A cosa servono la scorta minima e massima?",
-        "answer": "Nella sezione \"Prodotti\", modifica un prodotto con il controllo scorte attivato e imposta un minimo e un massimo. Il minimo attiva l'avviso di scorte basse quando l'inventario scende a quel livello o sotto (invece di una soglia fissa per tutti i prodotti); il massimo è un tetto di riferimento per non rifornire oltre il necessario."
+        "answer": "Nella sezione \"Inventario\", modifica un prodotto con il controllo scorte attivato e imposta un minimo e un massimo. Il minimo attiva l'avviso di scorte basse quando l'inventario scende a quel livello o sotto (invece di una soglia fissa per tutti i prodotti); il massimo è un tetto di riferimento per non rifornire oltre il necessario."
       },
       {
         "question": "Cosa sono le etichette e a cosa servono?",
-        "answer": "Le etichette sono categorie visive che puoi assegnare ai tuoi prodotti dalla sezione \"Prodotti\". Appaiono nel dettaglio di ogni ordine insieme ai prodotti, facilitando l'identificazione rapida per categoria, tipo o qualsiasi criterio tu definisca."
-      },
-      {
-        "question": "Posso scaricare un'immagine dell'ordine?",
-        "answer": "Sì. Apri il dettaglio dell'ordine e usa il pulsante di download nella barra superiore. Verrà generata un'immagine PNG con il riepilogo completo dell'ordine, pronta da condividere."
+        "answer": "Le etichette sono categorie visive che puoi assegnare ai tuoi prodotti dalla sezione \"Inventario\". Appaiono nel dettaglio di ogni ordine insieme ai prodotti, facilitando l'identificazione rapida per categoria, tipo o qualsiasi criterio tu definisca."
       },
       {
         "question": "Come faccio il backup dei miei dati?",
@@ -988,7 +992,7 @@
       },
       {
         "question": "Quali scorciatoie da tastiera ha il modulo Nuovo Ordine?",
-        "answer": "Sì. Selezionando un cliente (registrato o al banco), il focus passa automaticamente al campo di ricerca prodotti. Lì, ↑ e ↓ navigano tra i suggerimenti di ricerca e Invio li aggiunge; con il campo di ricerca vuoto, ↑ e ↓ navigano tra i prodotti già aggiunti, ← e → ne regolano la quantità, e Invio apre o chiude la scheda dettagli. Per concludere, Maiusc + Invio crea l'ordine e Maiusc + Spazio lo annulla."
+        "answer": "Selezionando un cliente (registrato o al banco), il focus passa automaticamente al campo di ricerca prodotti. Lì, ↑ e ↓ navigano tra i suggerimenti di ricerca e Invio li aggiunge; con il campo di ricerca vuoto, ↑ e ↓ navigano tra i prodotti già aggiunti, ← e → ne regolano la quantità, e Invio apre o chiude la scheda dettagli. Per concludere, Maiusc + Invio crea l'ordine e Maiusc + Spazio lo annulla."
       }
     ],
     "contactTitle": "Contatta l'assistenza",

@@ -52,7 +52,7 @@ $topbar-height: 52px;
   &__top-divider {
     width: 1px;
     height: 20px;
-    background-color: $color-gray-300;
+    background-color: $color-gray-200;
     margin: 0 $spacing-xs;
   }
 
@@ -336,7 +336,7 @@ $topbar-height: 52px;
   }
 
   &__order-number-sep {
-    color: $color-gray-300;
+    color: $color-gray-200;
     flex-shrink: 0;
   }
 
@@ -434,7 +434,7 @@ $topbar-height: 52px;
   &__table-scroll {
     overflow-y: scroll;
     scrollbar-gutter: stable;
-    scrollbar-color: $color-gray-300 $color-white;
+    scrollbar-color: $color-gray-200 $color-white;
 
     &::-webkit-scrollbar {
       width: 8px;
@@ -442,7 +442,7 @@ $topbar-height: 52px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: $color-gray-300;
+      background: $color-gray-200;
       border-radius: 0;
 
       &:hover {
@@ -776,7 +776,7 @@ $topbar-height: 52px;
     }
 
     &:disabled {
-      color: $color-gray-300;
+      color: $color-gray-200;
       cursor: not-allowed;
     }
   }
@@ -819,7 +819,7 @@ $topbar-height: 52px;
     color: $color-gray-600;
     padding: 4px;
     cursor: pointer;
-    &:hover { background-color: $color-gray-300; }
+    &:hover { background-color: $color-gray-200; }
   }
 
 
@@ -833,7 +833,7 @@ $topbar-height: 52px;
     min-height: 32px;
     font-size: $font-size-xs;
     font-weight: 600;
-    border: 1px solid $color-gray-300;
+    border: 1px solid $color-gray-200;
     border-radius: 0;
     background-color: $color-gray-200;
     color: $color-gray-400;
@@ -969,14 +969,14 @@ $topbar-height: 52px;
     flex-direction: column;
     gap: $spacing-md;
     min-height: 0;
-    scrollbar-color: $color-gray-300 $color-white;
+    scrollbar-color: $color-gray-200 $color-white;
 
     &::-webkit-scrollbar {
       width: 6px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: $color-gray-300;
+      background: $color-gray-200;
       border-radius: 0;
     }
   }

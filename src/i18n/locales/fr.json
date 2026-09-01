@@ -935,16 +935,24 @@
         "answer": "Allez dans \"Mes Commandes\" et cliquez sur \"Nouvelle Commande\". Sélectionnez un client, ajoutez les produits avec leur quantité et confirmez. La commande recevra une référence automatique. Vous pouvez aussi appuyer sur Maj + N depuis n'importe quel écran pour ouvrir directement le formulaire."
       },
       {
-        "question": "Comment changer le statut d'une commande ?",
-        "answer": "Ouvrez le détail de la commande. Dans la barre inférieure, vous trouverez le bouton \"Livrer\", disponible lorsque la commande est en statut \"En préparation\". Le statut passe aussi automatiquement à \"Livré\" lorsque le total des paiements est soldé."
+        "question": "Quelle est la différence entre un client de comptoir et un client enregistré ?",
+        "answer": "Dans le formulaire Nouvelle Commande, vous choisissez entre les onglets \"Client de comptoir\" et \"Client enregistré\". Un client enregistré est sauvegardé dans la section \"Clients\" avec son téléphone, son adresse et sa photo : vous pouvez le réutiliser sur d'autres commandes, consulter son historique, et il compte pour la limite de clients de votre forfait. Un client de comptoir n'est qu'un nom pour une vente ponctuelle : il n'est pas sauvegardé, ne consomme pas le quota du forfait et, faute de téléphone, la commande ne peut pas être envoyée par WhatsApp ni rattachée à un historique client."
       },
       {
         "question": "Comment enregistrer un paiement partiel ?",
-        "answer": "Ouvrez le détail de la commande. Dans la barre supérieure, vous trouverez le champ pour saisir le montant du paiement. Vous pouvez l'appliquer à la commande en général ou à un produit spécifique. La commande est marquée comme \"Livrée\" automatiquement lorsque le paiement total est complété."
+        "answer": "Ouvrez le détail de la commande. Dans la barre supérieure, vous trouverez le champ pour saisir le montant du paiement. Vous pouvez l'appliquer à la commande en général ou à un produit spécifique. Lorsque le paiement total est complété, la commande passe automatiquement au statut \"En préparation\"."
+      },
+      {
+        "question": "Comment changer le statut d'une commande ?",
+        "answer": "Ouvrez le détail de la commande. Dans la barre supérieure, vous trouverez le bouton \"Livrer\", qui devient actif lorsque la commande est au statut \"En préparation\". Lorsque le total des paiements est soldé, la commande passe automatiquement au statut \"En préparation\" ; la marquer comme \"Livré\" se fait toujours manuellement."
       },
       {
         "question": "Comment envoyer une commande par WhatsApp ?",
         "answer": "Ouvrez le détail de la commande et utilisez le bouton WhatsApp dans la barre supérieure. WhatsApp s'ouvrira avec un message pré-formaté contenant le résumé complet de la commande."
+      },
+      {
+        "question": "Puis-je télécharger une image de la commande ?",
+        "answer": "Oui. Ouvrez le détail de la commande et utilisez le bouton de téléchargement dans la barre supérieure. Une image PNG sera générée avec le résumé complet de la commande, prête à être partagée."
       },
       {
         "question": "Comment rechercher et filtrer mes commandes ?",
@@ -956,23 +964,19 @@
       },
       {
         "question": "Qu'est-ce que la section Archives ?",
-        "answer": "Les commandes livrées sont archivées automatiquement après 48 heures. Dans la section \"Archivés\", vous pouvez les consulter, les exporter en CSV ou les restaurer dans la liste principale si nécessaire."
+        "answer": "Les commandes livrées sont archivées automatiquement après 48 heures. Dans la section \"Archivés\", vous pouvez les consulter, les exporter en CSV."
       },
       {
         "question": "Comment appliquer une remise à un produit ?",
-        "answer": "Dans la section \"Produits\", modifiez le produit et configurez le pourcentage de remise ainsi qu'une date d'expiration. La remise s'applique automatiquement dans les commandes tant qu'elle est valide et s'affiche dans le détail de la commande."
+        "answer": "Dans la section \"Inventaire\", modifiez le produit et configurez le pourcentage de remise ainsi qu'une date d'expiration. La remise s'applique automatiquement dans les commandes tant qu'elle est valide et s'affiche dans le détail de la commande."
       },
       {
         "question": "À quoi servent le stock minimum et maximum ?",
-        "answer": "Dans la section « Produits », modifiez un produit avec le suivi de stock activé et définissez un minimum et un maximum. Le minimum déclenche l'alerte de stock bas lorsque l'inventaire atteint ce niveau ou moins (au lieu d'un seuil fixe pour tous les produits) ; le maximum est un plafond de référence pour ne pas réapprovisionner au-delà de ce dont vous avez réellement besoin."
+        "answer": "Dans la section « Inventaire », modifiez un produit avec le suivi de stock activé et définissez un minimum et un maximum. Le minimum déclenche l'alerte de stock bas lorsque l'inventaire atteint ce niveau ou moins (au lieu d'un seuil fixe pour tous les produits) ; le maximum est un plafond de référence pour ne pas réapprovisionner au-delà de ce dont vous avez réellement besoin."
       },
       {
         "question": "Que sont les étiquettes et à quoi servent-elles ?",
-        "answer": "Les étiquettes sont des catégories visuelles que vous pouvez assigner à vos produits depuis la section \"Produits\". Elles apparaissent dans le détail de chaque commande à côté des produits, facilitant l'identification rapide par catégorie ou type."
-      },
-      {
-        "question": "Puis-je télécharger une image de la commande ?",
-        "answer": "Oui. Ouvrez le détail de la commande et utilisez le bouton de téléchargement dans la barre supérieure. Une image PNG sera générée avec le résumé complet de la commande, prête à être partagée."
+        "answer": "Les étiquettes sont des catégories visuelles que vous pouvez assigner à vos produits depuis la section \"Inventaire\". Elles apparaissent dans le détail de chaque commande à côté des produits, facilitant l'identification rapide par catégorie ou type."
       },
       {
         "question": "Comment sauvegarder mes données ?",
@@ -988,7 +992,7 @@
       },
       {
         "question": "Quels raccourcis clavier propose le formulaire Nouvelle Commande ?",
-        "answer": "Oui. Après avoir sélectionné un client (enregistré ou de comptoir), le focus passe automatiquement au champ de recherche de produits. Là, ↑ et ↓ parcourent les suggestions de recherche et Entrée les ajoute ; avec le champ de recherche vide, ↑ et ↓ parcourent les produits déjà ajoutés, ← et → ajustent leur quantité, et Entrée ouvre ou ferme la fiche détail. Pour terminer, Maj + Entrée crée la commande et Maj + Espace l'annule."
+        "answer": "Après avoir sélectionné un client (enregistré ou de comptoir), le focus passe automatiquement au champ de recherche de produits. Là, ↑ et ↓ parcourent les suggestions de recherche et Entrée les ajoute ; avec le champ de recherche vide, ↑ et ↓ parcourent les produits déjà ajoutés, ← et → ajustent leur quantité, et Entrée ouvre ou ferme la fiche détail. Pour terminer, Maj + Entrée crée la commande et Maj + Espace l'annule."
       }
     ],
     "contactTitle": "Contacter l'Assistance",

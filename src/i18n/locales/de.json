@@ -935,16 +935,24 @@
         "answer": "Gehen Sie zu „Meine Bestellungen“ und klicken Sie auf „Neue Bestellung“. Wählen Sie einen Kunden aus, fügen Sie die Produkte mit ihren Mengen hinzu und bestätigen Sie. Die Bestellung erhält automatisch eine Belegnummer. Sie können auch von jedem Bildschirm aus Umschalt + N drücken, um das Formular direkt zu öffnen."
       },
       {
-        "question": "Wie ändere ich den Status einer Bestellung?",
-        "answer": "Öffnen Sie die Bestelldetails. In der unteren Leiste finden Sie die Schaltfläche „Geliefert“, verfügbar wenn sich die Bestellung im Status „In Vorbereitung“ befindet. Der Status ändert sich auch automatisch zu „Geliefert“, sobald die Zahlungen vollständig beglichen sind."
+        "question": "Was ist der Unterschied zwischen Laufkundschaft und einem registrierten Kunden?",
+        "answer": "Im Formular „Neue Bestellung“ wählen Sie zwischen den Reitern „Laufkundschaft“ und „Registrierter Kunde“. Ein registrierter Kunde wird im Bereich „Kunden“ mit Telefon, Adresse und Foto gespeichert: Sie können ihn für weitere Bestellungen wiederverwenden, seinen Bestellverlauf einsehen, und er zählt zum Kundenlimit Ihres Tarifs. Laufkundschaft ist nur ein Name für einen einmaligen Verkauf: Sie wird nicht gespeichert, verbraucht kein Kontingent des Tarifs, und da keine Telefonnummer vorliegt, kann die Bestellung nicht per WhatsApp gesendet werden und ist mit keinem Kundenverlauf verknüpft."
       },
       {
         "question": "Wie erfasse ich eine Zahlung für eine Bestellung?",
-        "answer": "Öffnen Sie die Bestelldetails. In der oberen Leiste finden Sie das Feld zur Eingabe des Zahlungsbetrags. Sie können ihn auf die Bestellung im Allgemeinen oder auf ein bestimmtes Produkt anwenden. Die Bestellung wird automatisch als „Geliefert“ markiert, sobald die vollständige Zahlung erfolgt ist."
+        "answer": "Öffnen Sie die Bestelldetails. In der oberen Leiste finden Sie das Feld zur Eingabe des Zahlungsbetrags. Sie können ihn auf die Bestellung im Allgemeinen oder auf ein bestimmtes Produkt anwenden. Sobald die vollständige Zahlung erfolgt ist, wechselt die Bestellung automatisch in den Status „In Vorbereitung“."
+      },
+      {
+        "question": "Wie ändere ich den Status einer Bestellung?",
+        "answer": "Öffnen Sie die Bestelldetails. In der oberen Leiste finden Sie die Schaltfläche „Geliefert“, die aktiv wird, sobald sich die Bestellung im Status „In Vorbereitung“ befindet. Sobald die Zahlungen vollständig beglichen sind, wechselt die Bestellung automatisch in den Status „In Vorbereitung“; als „Geliefert“ markieren Sie sie immer manuell."
       },
       {
         "question": "Wie sende ich eine Bestellung über WhatsApp?",
         "answer": "Öffnen Sie die Bestelldetails und verwenden Sie die WhatsApp-Schaltfläche in der oberen Leiste. WhatsApp öffnet sich mit einer vorformatierten Nachricht, die die vollständige Bestellzusammenfassung enthält."
+      },
+      {
+        "question": "Kann ich ein Bild der Bestellung herunterladen?",
+        "answer": "Ja. Öffnen Sie die Bestelldetails und verwenden Sie die Download-Schaltfläche in der oberen Leiste. Es wird ein PNG-Bild mit der vollständigen Bestellzusammenfassung erstellt, bereit zum Teilen."
       },
       {
         "question": "Wie durchsuche und filtere ich meine Bestellungen?",
@@ -956,23 +964,19 @@
       },
       {
         "question": "Was ist der Bereich „Archiviert“?",
-        "answer": "Gelieferte Bestellungen werden nach 48 Stunden automatisch archiviert. Im Bereich „Archiviert“ können Sie sie einsehen, als CSV exportieren oder bei Bedarf zur Hauptliste zurückholen."
+        "answer": "Gelieferte Bestellungen werden nach 48 Stunden automatisch archiviert. Im Bereich „Archiviert“ können Sie sie einsehen, als CSV exportieren."
       },
       {
         "question": "Wie wende ich einen Rabatt auf ein Produkt an?",
-        "answer": "Bearbeiten Sie im Bereich „Produkte“ das Produkt und legen Sie den Rabattprozentsatz zusammen mit einem Ablaufdatum fest. Der Rabatt wird automatisch auf Bestellungen angewendet, solange er aktiv ist, und in den Bestelldetails angezeigt."
+        "answer": "Bearbeiten Sie im Bereich „Lager“ das Produkt und legen Sie den Rabattprozentsatz zusammen mit einem Ablaufdatum fest. Der Rabatt wird automatisch auf Bestellungen angewendet, solange er aktiv ist, und in den Bestelldetails angezeigt."
       },
       {
         "question": "Wofür sind Mindest- und Höchstbestand?",
-        "answer": "Bearbeite im Bereich „Produkte“ ein Produkt mit aktivierter Bestandsverfolgung und lege einen Mindest- und Höchstbestand fest. Der Mindestbestand löst die Warnung bei niedrigem Bestand aus, sobald der Lagerbestand diesen Wert erreicht oder unterschreitet (statt eines festen Schwellenwerts für alle Produkte); der Höchstbestand ist eine Obergrenze, damit du nicht mehr nachbestellst, als du tatsächlich brauchst."
+        "answer": "Bearbeite im Bereich „Lager“ ein Produkt mit aktivierter Bestandsverfolgung und lege einen Mindest- und Höchstbestand fest. Der Mindestbestand löst die Warnung bei niedrigem Bestand aus, sobald der Lagerbestand diesen Wert erreicht oder unterschreitet (statt eines festen Schwellenwerts für alle Produkte); der Höchstbestand ist eine Obergrenze, damit du nicht mehr nachbestellst, als du tatsächlich brauchst."
       },
       {
         "question": "Was sind Etiketten und wofür sind sie gedacht?",
-        "answer": "Etiketten sind visuelle Kategorien, die Sie Ihren Produkten im Bereich „Produkte“ zuweisen können. Sie erscheinen in den Details jeder Bestellung neben den Produkten und erleichtern die schnelle Erkennung nach Kategorie, Typ oder einem beliebigen von Ihnen definierten Kriterium."
-      },
-      {
-        "question": "Kann ich ein Bild der Bestellung herunterladen?",
-        "answer": "Ja. Öffnen Sie die Bestelldetails und verwenden Sie die Download-Schaltfläche in der oberen Leiste. Es wird ein PNG-Bild mit der vollständigen Bestellzusammenfassung erstellt, bereit zum Teilen."
+        "answer": "Etiketten sind visuelle Kategorien, die Sie Ihren Produkten im Bereich „Lager“ zuweisen können. Sie erscheinen in den Details jeder Bestellung neben den Produkten und erleichtern die schnelle Erkennung nach Kategorie, Typ oder einem beliebigen von Ihnen definierten Kriterium."
       },
       {
         "question": "Wie sichere ich meine Daten?",
@@ -988,7 +992,7 @@
       },
       {
         "question": "Welche Tastaturkürzel gibt es im Formular „Neue Bestellung“?",
-        "answer": "Ja. Nach der Auswahl eines Kunden (registriert oder Laufkundschaft) springt der Fokus automatisch zum Produktsuchfeld. Dort navigieren ↑ und ↓ durch die Suchvorschläge, und die Eingabetaste fügt sie hinzu; bei leerem Suchfeld navigieren ↑ und ↓ durch die bereits hinzugefügten Produkte, ← und → passen deren Menge an, und die Eingabetaste öffnet oder schließt die Produktdetails. Zum Abschluss erstellt Umschalt + Eingabetaste die Bestellung, und Umschalt + Leertaste bricht sie ab."
+        "answer": "Nach der Auswahl eines Kunden (registriert oder Laufkundschaft) springt der Fokus automatisch zum Produktsuchfeld. Dort navigieren ↑ und ↓ durch die Suchvorschläge, und die Eingabetaste fügt sie hinzu; bei leerem Suchfeld navigieren ↑ und ↓ durch die bereits hinzugefügten Produkte, ← und → passen deren Menge an, und die Eingabetaste öffnet oder schließt die Produktdetails. Zum Abschluss erstellt Umschalt + Eingabetaste die Bestellung, und Umschalt + Leertaste bricht sie ab."
       }
     ],
     "contactTitle": "Support kontaktieren",

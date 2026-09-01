@@ -935,16 +935,24 @@
         "answer": "Buka \"Pesanan Saya\" dan klik \"Pesanan baru\". Pilih pelanggan, tambahkan produk beserta jumlahnya, lalu konfirmasi. Pesanan akan menerima nomor otomatis. Anda juga bisa menekan Shift + N dari layar mana pun untuk langsung membuka formulir."
       },
       {
-        "question": "Bagaimana cara mengubah status pesanan?",
-        "answer": "Buka detail pesanan. Di bilah bawah Anda akan menemukan tombol \"Kirim\", yang tersedia saat pesanan berstatus \"Sedang disiapkan\". Status juga akan otomatis berubah menjadi \"Terkirim\" ketika total pembayaran telah lunas."
+        "question": "Apa perbedaan antara pelanggan tanpa akun dan pelanggan terdaftar?",
+        "answer": "Di formulir Pesanan Baru Anda memilih antara tab \"Pelanggan tanpa akun\" dan \"Pelanggan terdaftar\". Pelanggan terdaftar disimpan di bagian \"Pelanggan\" beserta nomor telepon, alamat, dan foto: Anda dapat menggunakannya kembali pada pesanan lain, melihat riwayat pesanannya, dan ia dihitung dalam batas pelanggan paket Anda. Pelanggan tanpa akun hanya berupa nama untuk penjualan sekali pakai: tidak disimpan, tidak memakai kuota paket, dan karena tidak memiliki nomor telepon, pesanan tidak dapat dikirim via WhatsApp dan tidak terhubung ke riwayat pelanggan."
       },
       {
         "question": "Bagaimana cara mencatat pembayaran pada sebuah pesanan?",
-        "answer": "Buka detail pesanan. Di bilah atas Anda akan menemukan kolom untuk memasukkan jumlah pembayaran. Anda bisa menerapkannya ke pesanan secara umum atau ke produk tertentu. Pesanan akan otomatis ditandai \"Terkirim\" ketika pembayaran sudah lunas sepenuhnya."
+        "answer": "Buka detail pesanan. Di bilah atas Anda akan menemukan kolom untuk memasukkan jumlah pembayaran. Anda bisa menerapkannya ke pesanan secara umum atau ke produk tertentu. Ketika pembayaran sudah lunas sepenuhnya, pesanan otomatis berpindah ke status \"Sedang disiapkan\"."
+      },
+      {
+        "question": "Bagaimana cara mengubah status pesanan?",
+        "answer": "Buka detail pesanan. Di bilah atas Anda akan menemukan tombol \"Kirim\", yang aktif saat pesanan berstatus \"Sedang disiapkan\". Ketika total pembayaran telah lunas, pesanan otomatis berpindah ke status \"Sedang disiapkan\"; menandainya sebagai \"Terkirim\" selalu dilakukan manual."
       },
       {
         "question": "Bagaimana cara mengirim pesanan melalui WhatsApp?",
         "answer": "Buka detail pesanan dan gunakan tombol WhatsApp di bilah atas. WhatsApp akan terbuka dengan pesan yang sudah diformat, berisi ringkasan lengkap pesanan."
+      },
+      {
+        "question": "Bisakah saya mengunduh gambar pesanan?",
+        "answer": "Bisa. Buka detail pesanan dan gunakan tombol unduh di bilah atas. Gambar PNG akan dibuat dengan ringkasan lengkap pesanan, siap untuk dibagikan."
       },
       {
         "question": "Bagaimana cara mencari dan memfilter pesanan saya?",
@@ -956,23 +964,19 @@
       },
       {
         "question": "Apa itu bagian Arsip?",
-        "answer": "Pesanan yang sudah terkirim akan otomatis diarsipkan setelah 48 jam. Di bagian \"Arsip\" Anda dapat melihatnya, mengekspornya ke CSV, atau memulihkannya ke daftar utama jika diperlukan."
+        "answer": "Pesanan yang sudah terkirim akan otomatis diarsipkan setelah 48 jam. Di bagian \"Arsip\" Anda dapat melihatnya, mengekspornya ke CSV."
       },
       {
         "question": "Bagaimana cara menerapkan diskon pada sebuah produk?",
-        "answer": "Di bagian \"Produk\", edit produk dan atur persentase diskon beserta tanggal berakhirnya. Diskon akan otomatis diterapkan pada pesanan selama masih aktif dan ditampilkan di detail pesanan."
+        "answer": "Di bagian \"Inventaris\", edit produk dan atur persentase diskon beserta tanggal berakhirnya. Diskon akan otomatis diterapkan pada pesanan selama masih aktif dan ditampilkan di detail pesanan."
       },
       {
         "question": "Untuk apa stok minimum dan maksimum?",
-        "answer": "Di bagian \"Produk\", edit produk dengan pelacakan stok aktif dan atur nilai minimum serta maksimum. Nilai minimum memicu peringatan stok menipis saat persediaan mencapai level tersebut atau di bawahnya (bukan ambang batas tetap untuk semua produk); nilai maksimum adalah batas referensi agar Anda tidak menambah stok melebihi kebutuhan sebenarnya."
+        "answer": "Di bagian \"Inventaris\", edit produk dengan pelacakan stok aktif dan atur nilai minimum serta maksimum. Nilai minimum memicu peringatan stok menipis saat persediaan mencapai level tersebut atau di bawahnya (bukan ambang batas tetap untuk semua produk); nilai maksimum adalah batas referensi agar Anda tidak menambah stok melebihi kebutuhan sebenarnya."
       },
       {
         "question": "Apa itu label dan untuk apa fungsinya?",
-        "answer": "Label adalah kategori visual yang dapat Anda tetapkan pada produk dari bagian \"Produk\". Label ini muncul di detail setiap pesanan bersama produknya, memudahkan Anda mengidentifikasi dengan cepat berdasarkan kategori, jenis, atau kriteria apa pun yang Anda tentukan."
-      },
-      {
-        "question": "Bisakah saya mengunduh gambar pesanan?",
-        "answer": "Bisa. Buka detail pesanan dan gunakan tombol unduh di bilah atas. Gambar PNG akan dibuat dengan ringkasan lengkap pesanan, siap untuk dibagikan."
+        "answer": "Label adalah kategori visual yang dapat Anda tetapkan pada produk dari bagian \"Inventaris\". Label ini muncul di detail setiap pesanan bersama produknya, memudahkan Anda mengidentifikasi dengan cepat berdasarkan kategori, jenis, atau kriteria apa pun yang Anda tentukan."
       },
       {
         "question": "Bagaimana cara mencadangkan data saya?",
@@ -988,7 +992,7 @@
       },
       {
         "question": "Pintasan keyboard apa saja yang tersedia di formulir Pesanan Baru?",
-        "answer": "Ada. Setelah memilih pelanggan (terdaftar atau tanpa akun), fokus akan otomatis berpindah ke kotak pencarian produk. Di sana, ↑ dan ↓ menavigasi saran pencarian dan Enter menambahkannya; dengan kotak pencarian kosong, ↑ dan ↓ menavigasi produk yang sudah ada di keranjang, ← dan → menyesuaikan jumlahnya, dan Enter membuka atau menutup tampilan detail produk. Untuk menyelesaikan, Shift + Enter membuat pesanan dan Shift + Space membatalkannya."
+        "answer": "Setelah memilih pelanggan (terdaftar atau tanpa akun), fokus akan otomatis berpindah ke kotak pencarian produk. Di sana, ↑ dan ↓ menavigasi saran pencarian dan Enter menambahkannya; dengan kotak pencarian kosong, ↑ dan ↓ menavigasi produk yang sudah ada di keranjang, ← dan → menyesuaikan jumlahnya, dan Enter membuka atau menutup tampilan detail produk. Untuk menyelesaikan, Shift + Enter membuat pesanan dan Shift + Space membatalkannya."
       }
     ],
     "contactTitle": "Hubungi Dukungan",

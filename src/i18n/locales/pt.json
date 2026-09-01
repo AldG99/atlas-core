@@ -935,16 +935,24 @@
         "answer": "Vá para \"Meus Pedidos\" e clique em \"Novo Pedido\". Selecione um cliente, adicione os produtos com suas quantidades e confirme. O pedido receberá um número automático. Você também pode pressionar Shift + N em qualquer tela para abrir o formulário diretamente."
       },
       {
-        "question": "Como altero o status de um pedido?",
-        "answer": "Abra o detalhe do pedido. Na barra inferior você encontrará o botão \"Entregar\", disponível quando o pedido está com status \"Em preparo\". O status também muda automaticamente para \"Entregue\" quando os pagamentos totais são liquidados."
+        "question": "Qual é a diferença entre um cliente de balcão e um cliente cadastrado?",
+        "answer": "No formulário de Novo Pedido você escolhe entre as abas \"Cliente de balcão\" e \"Cliente cadastrado\". Um cliente cadastrado é salvo na seção \"Clientes\" com telefone, endereço e foto: você pode reutilizá-lo em outros pedidos, consultar seu histórico e ele conta para o limite de clientes do seu plano. Um cliente de balcão é apenas um nome para uma venda pontual: não é salvo, não consome cota do plano e, por não ter telefone, o pedido não pode ser enviado por WhatsApp nem fica associado a um histórico de cliente."
       },
       {
         "question": "Como registro um pagamento em um pedido?",
-        "answer": "Abra o detalhe do pedido. Na barra superior você encontrará o campo para inserir o valor do pagamento. Você pode aplicá-lo ao pedido em geral ou a um produto específico. O pedido é marcado automaticamente como \"Entregue\" quando o pagamento total é concluído."
+        "answer": "Abra o detalhe do pedido. Na barra superior você encontrará o campo para inserir o valor do pagamento. Você pode aplicá-lo ao pedido em geral ou a um produto específico. Quando o pagamento total é concluído, o pedido passa automaticamente para o status \"Em preparo\"."
+      },
+      {
+        "question": "Como altero o status de um pedido?",
+        "answer": "Abra o detalhe do pedido. Na barra superior você encontrará o botão \"Entregar\", que fica ativo quando o pedido está com status \"Em preparo\". Quando os pagamentos totais são liquidados, o pedido passa automaticamente para o status \"Em preparo\"; marcá-lo como \"Entregue\" é sempre manual."
       },
       {
         "question": "Como envio um pedido pelo WhatsApp?",
         "answer": "Abra o detalhe do pedido e use o botão do WhatsApp na barra superior. O WhatsApp abrirá com uma mensagem pré-formatada contendo o resumo completo do pedido."
+      },
+      {
+        "question": "Posso baixar uma imagem do pedido?",
+        "answer": "Sim. Abra o detalhe do pedido e use o botão de download na barra superior. Uma imagem PNG será gerada com o resumo completo do pedido, pronta para compartilhar."
       },
       {
         "question": "Como pesquiso e filtro meus pedidos?",
@@ -956,23 +964,19 @@
       },
       {
         "question": "O que é a seção Arquivados?",
-        "answer": "Os pedidos entregues são arquivados automaticamente após 48 horas. Na seção \"Arquivados\" você pode visualizá-los, exportá-los para CSV ou restaurá-los para a lista principal se necessário."
+        "answer": "Os pedidos entregues são arquivados automaticamente após 48 horas. Na seção \"Arquivados\" você pode visualizá-los, exportá-los para CSV."
       },
       {
         "question": "Como aplico um desconto a um produto?",
-        "answer": "Na seção \"Produtos\", edite o produto e defina a porcentagem de desconto junto com uma data de expiração. O desconto é aplicado automaticamente aos pedidos enquanto estiver ativo e é mostrado no detalhe do pedido."
+        "answer": "Na seção \"Estoque\", edite o produto e defina a porcentagem de desconto junto com uma data de expiração. O desconto é aplicado automaticamente aos pedidos enquanto estiver ativo e é mostrado no detalhe do pedido."
       },
       {
         "question": "Para que servem o estoque mínimo e máximo?",
-        "answer": "Na seção \"Produtos\", edite um produto com controle de estoque ativado e defina um mínimo e um máximo. O mínimo dispara o alerta de estoque baixo quando o inventário chega a esse nível ou menos (em vez de um limite fixo para todos os produtos); o máximo é um teto de referência para não reabastecer além do que você realmente precisa."
+        "answer": "Na seção \"Estoque\", edite um produto com controle de estoque ativado e defina um mínimo e um máximo. O mínimo dispara o alerta de estoque baixo quando o inventário chega a esse nível ou menos (em vez de um limite fixo para todos os produtos); o máximo é um teto de referência para não reabastecer além do que você realmente precisa."
       },
       {
         "question": "O que são etiquetas e para que servem?",
-        "answer": "Etiquetas são categorias visuais que você pode atribuir aos seus produtos na seção \"Produtos\". Elas aparecem no detalhe de cada pedido ao lado dos produtos, facilitando a identificação rápida por categoria, tipo ou qualquer critério que você defina."
-      },
-      {
-        "question": "Posso baixar uma imagem do pedido?",
-        "answer": "Sim. Abra o detalhe do pedido e use o botão de download na barra superior. Uma imagem PNG será gerada com o resumo completo do pedido, pronta para compartilhar."
+        "answer": "Etiquetas são categorias visuais que você pode atribuir aos seus produtos na seção \"Estoque\". Elas aparecem no detalhe de cada pedido ao lado dos produtos, facilitando a identificação rápida por categoria, tipo ou qualquer critério que você defina."
       },
       {
         "question": "Como faço backup dos meus dados?",
@@ -988,7 +992,7 @@
       },
       {
         "question": "Quais atalhos de teclado o formulário de Novo Pedido tem?",
-        "answer": "Sim. Ao selecionar um cliente (cadastrado ou de balcão), o foco pula automaticamente para o campo de busca de produtos. Ali, ↑ e ↓ navegam pelas sugestões de busca e Enter as adiciona; com o campo de busca vazio, ↑ e ↓ navegam pelos produtos já adicionados, ← e → ajustam a quantidade, e Enter abre ou fecha a ficha de detalhes. Para finalizar, Shift + Enter cria o pedido e Shift + Espaço o cancela."
+        "answer": "Ao selecionar um cliente (cadastrado ou de balcão), o foco pula automaticamente para o campo de busca de produtos. Ali, ↑ e ↓ navegam pelas sugestões de busca e Enter as adiciona; com o campo de busca vazio, ↑ e ↓ navegam pelos produtos já adicionados, ← e → ajustam a quantidade, e Enter abre ou fecha a ficha de detalhes. Para finalizar, Shift + Enter cria o pedido e Shift + Espaço o cancela."
       }
     ],
     "contactTitle": "Contato com Suporte",
