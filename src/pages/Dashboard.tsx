@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ShoppingBag, DollarSign, CheckCircle2, CloudUpload, Search, DownloadCloud, Plus, Wallet, TriangleAlert } from 'lucide-react';
+import { ShoppingBag, DollarSign, CheckCircle2, Search, DownloadCloud, Plus, Wallet, TriangleAlert } from 'lucide-react';
 import { useOrders } from '../hooks/useOrders';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
@@ -14,8 +14,7 @@ import type { OrderStatus } from '../types/Order';
 import { ORDER_STATUS_COLORS } from '../constants/orderStatus';
 import { ROUTES } from '../config/routes';
 import { archiveAllDelivered } from '../services/orderService';
-import { exportToCSV, generateCSVContent } from '../utils/formatters';
-import { uploadCSVToDrive } from '../services/googleDriveService';
+import { exportToCSV } from '../utils/formatters';
 import MainLayout from '../layouts/MainLayout';
 import OrdersTable from '../components/orders/OrdersTable';
 import './Dashboard.scss';
@@ -103,34 +102,6 @@ const Dashboard = () => {
   const animatedDeliveredSales = useAnimatedNumber(todaySummary.deliveredSales);
   const animatedProfit = useAnimatedNumber(todaySummary.totalProfit);
 
-  const [uploadingDrive, setUploadingDrive] = useState(false);
-
-  const handleGoogleDrive = async () => {
-    if (filteredAndSortedOrders.length === 0) {
-      showToast(t('dashboard.noOrdersExport'), 'warning');
-      return;
-    }
-    setUploadingDrive(true);
-    try {
-      const ordersWithCode = filteredAndSortedOrders.map(o => ({
-        ...o,
-        clientCountryCode: getCountryCode(clients.find(c => c.phone === o.clientPhone)?.phoneCountryCode ?? '')?.code
-      }));
-      const csvContent = generateCSVContent(ordersWithCode);
-      const fileName = `orders_${new Date().toISOString().split('T')[0]}.csv`;
-      const link = await uploadCSVToDrive(csvContent, fileName);
-      showToast(t('dashboard.driveSuccess'), 'success');
-      window.open(link, '_blank');
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : '';
-      if (msg !== 'popup_closed_by_user') {
-        showToast(t('dashboard.driveError'), 'error');
-      }
-    } finally {
-      setUploadingDrive(false);
-    }
-  };
-
   const handleExport = () => {
     if (filteredAndSortedOrders.length === 0) {
       showToast(t('dashboard.noOrdersExport'), 'warning');
@@ -157,15 +128,6 @@ const Dashboard = () => {
             >
               <DownloadCloud size={18} />
               {t('dashboard.exportCsv')}
-            </button>
-            <button
-              onClick={handleGoogleDrive}
-              className="btn btn--outline"
-              title={t('dashboard.googleDrive')}
-              disabled={uploadingDrive}
-            >
-              <CloudUpload size={18} />
-              {uploadingDrive ? t('dashboard.uploading') : t('dashboard.googleDrive')}
             </button>
             <Link to={ROUTES.NEW_ORDER} className="btn btn--primary dashboard__new-order-btn">
               <Plus size={18} />

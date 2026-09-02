@@ -8,7 +8,7 @@ function ContentES() {
   return (
     <>
       <h1 className="legal-page__title">Aviso de Privacidad</h1>
-      <p className="legal-page__date">Última actualización: 2 de mayo de 2026</p>
+      <p className="legal-page__date">Última actualización: 1 de septiembre de 2026</p>
 
       <section className="legal-page__section">
         <h2>1. Responsable del tratamiento</h2>
@@ -69,7 +69,9 @@ function ContentES() {
         </ul>
         <p>
           No utilizamos tus datos para fines publicitarios ni los vendemos a terceros bajo
-          ninguna circunstancia.
+          ninguna circunstancia. Tampoco utilizamos tus datos ni el contenido que registras
+          en la plataforma (clientes, productos y pedidos) para entrenar modelos de
+          inteligencia artificial, ni los compartimos con proveedores de IA de terceros.
         </p>
       </section>
 
@@ -90,18 +92,6 @@ function ContentES() {
             Stripe procesa tu nombre, correo electrónico e historial de facturación. Stripe es
             certificado PCI-DSS Level 1. Skytla no almacena datos de tarjeta en sus propios
             sistemas.
-          </li>
-          <li>
-            <strong>Google Cloud Vision (Google LLC)</strong> — Moderación de imágenes. Las
-            fotografías que subas a la plataforma (fotos de clientes, productos o perfil) son
-            analizadas automáticamente para detectar contenido inapropiado antes de almacenarse.
-            Las imágenes se procesan de forma temporal; Google Cloud Vision no las conserva.
-          </li>
-          <li>
-            <strong>Google Drive (Google LLC)</strong> — Respaldos opcionales. Si activas la
-            función de respaldo desde Configuración, tus datos exportados se almacenan en tu
-            propia cuenta de Google Drive. La gestión de esos datos queda sujeta a la Política
-            de Privacidad de Google.
           </li>
         </ul>
         <p>
@@ -227,7 +217,7 @@ function ContentEN() {
   return (
     <>
       <h1 className="legal-page__title">Privacy Notice</h1>
-      <p className="legal-page__date">Last updated: May 2, 2026</p>
+      <p className="legal-page__date">Last updated: September 1, 2026</p>
 
       <section className="legal-page__section">
         <h2>1. Data Controller</h2>
@@ -286,7 +276,9 @@ function ContentEN() {
         </ul>
         <p>
           We do not use your data for advertising purposes, nor do we sell it to third parties
-          under any circumstances.
+          under any circumstances. We also do not use your data or the content you enter into
+          the platform (customers, products, and orders) to train artificial-intelligence
+          models, nor do we share it with third-party AI providers.
         </p>
       </section>
 
@@ -306,17 +298,6 @@ function ContentEN() {
             <strong>Stripe, Inc.</strong> — Payment processing. When you subscribe to a paid plan,
             Stripe processes your name, email address, and billing history. Stripe is PCI-DSS Level 1
             certified. Skytla does not store card data in its own systems.
-          </li>
-          <li>
-            <strong>Google Cloud Vision (Google LLC)</strong> — Image moderation. Photos you upload
-            to the platform (customer, product, or profile photos) are automatically analyzed to
-            detect inappropriate content before being stored. Images are processed temporarily;
-            Google Cloud Vision does not retain them.
-          </li>
-          <li>
-            <strong>Google Drive (Google LLC)</strong> — Optional backups. If you enable the backup
-            feature from Settings, your exported data is stored in your own Google Drive account.
-            Management of that data is subject to Google's Privacy Policy.
           </li>
         </ul>
         <p>
@@ -442,7 +423,7 @@ function ContentPT() {
   return (
     <>
       <h1 className="legal-page__title">Aviso de Privacidade</h1>
-      <p className="legal-page__date">Última atualização: 2 de maio de 2026</p>
+      <p className="legal-page__date">Última atualização: 1 de setembro de 2026</p>
 
       <section className="legal-page__section">
         <h2>1. Responsável pelo Tratamento</h2>
@@ -503,7 +484,9 @@ function ContentPT() {
         </ul>
         <p>
           Não utilizamos seus dados para fins publicitários nem os vendemos a terceiros em
-          nenhuma circunstância.
+          nenhuma circunstância. Também não utilizamos seus dados nem o conteúdo que você
+          registra na plataforma (clientes, produtos e pedidos) para treinar modelos de
+          inteligência artificial, nem os compartilhamos com fornecedores de IA de terceiros.
         </p>
       </section>
 
@@ -524,18 +507,6 @@ function ContentPT() {
             pago, o Stripe processa seu nome, endereço de e-mail e histórico de faturamento. O
             Stripe é certificado PCI-DSS Nível 1. O Skytla não armazena dados de cartão em seus
             próprios sistemas.
-          </li>
-          <li>
-            <strong>Google Cloud Vision (Google LLC)</strong> — Moderação de imagens. As fotos que
-            você enviar à plataforma (fotos de clientes, produtos ou perfil) são analisadas
-            automaticamente para detectar conteúdo impróprio antes de serem armazenadas. As
-            imagens são processadas de forma temporária; o Google Cloud Vision não as retém.
-          </li>
-          <li>
-            <strong>Google Drive (Google LLC)</strong> — Backups opcionais. Se você ativar a função
-            de backup em Configurações, seus dados exportados serão armazenados em sua própria conta
-            do Google Drive. O gerenciamento desses dados está sujeito à Política de Privacidade
-            do Google.
           </li>
         </ul>
         <p>
@@ -661,7 +632,7 @@ function ContentFR() {
   return (
     <>
       <h1 className="legal-page__title">Politique de confidentialité</h1>
-      <p className="legal-page__date">Dernière mise à jour : 2 mai 2026</p>
+      <p className="legal-page__date">Dernière mise à jour : 1er septembre 2026</p>
 
       <section className="legal-page__section">
         <h2>1. Responsable du traitement</h2>
@@ -722,7 +693,10 @@ function ContentFR() {
         </ul>
         <p>
           Nous n'utilisons pas vos données à des fins publicitaires et ne les vendons à aucun
-          tiers, en aucune circonstance.
+          tiers, en aucune circonstance. Nous n'utilisons pas non plus vos données ni le
+          contenu que vous saisissez sur la plateforme (clients, produits et commandes) pour
+          entraîner des modèles d'intelligence artificielle, et nous ne les partageons pas
+          avec des fournisseurs d'IA tiers.
         </p>
       </section>
 
@@ -743,18 +717,6 @@ function ContentFR() {
             un plan payant, Stripe traite votre nom, adresse e-mail et historique de facturation.
             Stripe est certifié PCI-DSS Niveau 1. Skytla ne stocke pas les données de carte dans
             ses propres systèmes.
-          </li>
-          <li>
-            <strong>Google Cloud Vision (Google LLC)</strong> — Modération d'images. Les photos
-            que vous téléchargez sur la plateforme (photos de clients, produits ou profil) sont
-            analysées automatiquement pour détecter les contenus inappropriés avant d'être
-            stockées. Les images sont traitées temporairement ; Google Cloud Vision ne les conserve pas.
-          </li>
-          <li>
-            <strong>Google Drive (Google LLC)</strong> — Sauvegardes optionnelles. Si vous activez
-            la fonction de sauvegarde depuis Paramètres, vos données exportées sont stockées dans
-            votre propre compte Google Drive. La gestion de ces données est soumise à la Politique
-            de confidentialité de Google.
           </li>
         </ul>
         <p>
@@ -881,7 +843,7 @@ function ContentIT() {
   return (
     <>
       <h1 className="legal-page__title">Informativa sulla Privacy</h1>
-      <p className="legal-page__date">Ultimo aggiornamento: 2 maggio 2026</p>
+      <p className="legal-page__date">Ultimo aggiornamento: 1 settembre 2026</p>
 
       <section className="legal-page__section">
         <h2>1. Titolare del Trattamento</h2>
@@ -942,7 +904,9 @@ function ContentIT() {
         </ul>
         <p>
           Non utilizziamo i tuoi dati per finalità pubblicitarie, né li vendiamo a terzi
-          in alcuna circostanza.
+          in alcuna circostanza. Non utilizziamo inoltre i tuoi dati né i contenuti che
+          inserisci nella piattaforma (clienti, prodotti e ordini) per addestrare modelli di
+          intelligenza artificiale, né li condividiamo con fornitori di IA di terze parti.
         </p>
       </section>
 
@@ -963,19 +927,6 @@ function ContentIT() {
             un piano a pagamento, Stripe elabora il tuo nome, indirizzo e-mail e cronologia
             di fatturazione. Stripe è certificato PCI-DSS Livello 1. Skytla non conserva i
             dati della carta nei propri sistemi.
-          </li>
-          <li>
-            <strong>Google Cloud Vision (Google LLC)</strong> — Moderazione delle immagini.
-            Le foto che carichi sulla piattaforma (clienti, prodotti o profilo) vengono
-            analizzate automaticamente per rilevare contenuti inappropriati prima di essere
-            archiviate. Le immagini sono elaborate temporaneamente; Google Cloud Vision non
-            le conserva.
-          </li>
-          <li>
-            <strong>Google Drive (Google LLC)</strong> — Backup opzionali. Se attivi la
-            funzione di backup dalle Impostazioni, i tuoi dati esportati vengono archiviati
-            nel tuo account Google Drive personale. La gestione di tali dati è soggetta
-            all'Informativa sulla Privacy di Google.
           </li>
         </ul>
         <p>
